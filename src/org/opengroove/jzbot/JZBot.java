@@ -233,6 +233,10 @@ public class JZBot extends PircBot
             vars.put("" + (i + 1) + "-", cAppend);
         }
         vars.put("0", sender);
+        if (channel != null)
+            vars.put("channel", channel);
+        else
+            vars.put("channel", "none");
         String text = factoid.getValue();
         boolean isAction = false;
         StringBuffer result = new StringBuffer();
