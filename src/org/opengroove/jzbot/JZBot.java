@@ -343,7 +343,7 @@ public class JZBot extends PircBot
                 else if (command.equals("importp"))
                 {
                     String[] newArgs = new String[arguments.length - 1];
-                    System.arraycopy(arguments, 0, newArgs, 1, newArgs.length);
+                    System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
                     vars.put(arguments[0], doFactImport(channel, newArgs,
                             sender));
                 }
@@ -351,7 +351,7 @@ public class JZBot extends PircBot
                 {
                     // key,delay,factoid
                     String[] newArgs = new String[arguments.length - 2];
-                    System.arraycopy(arguments, 0, newArgs, 2, newArgs.length);
+                    System.arraycopy(arguments, 2, newArgs, 0, newArgs.length);
                     String key = arguments[0];
                     int delay = Integer.parseInt(arguments[1]);
                     FutureFactoid future = new FutureFactoid(delay, channel,
@@ -371,7 +371,7 @@ public class JZBot extends PircBot
                     {
                         targetVar = arguments[0];
                         newArgs = new String[arguments.length - 1];
-                        System.arraycopy(arguments, 0, newArgs, 1,
+                        System.arraycopy(arguments, 1, newArgs, 0,
                                 newArgs.length);
                     }
                     User[] users = bot.getUsers(channel);
