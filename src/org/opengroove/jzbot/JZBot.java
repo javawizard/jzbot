@@ -395,6 +395,55 @@ public class JZBot extends PircBot
                     else
                         vars.put(targetVar, resultString);
                 }
+                else if (command.equals("if") || command.equals("ifp"))
+                {
+                    String targetVar = "";
+                    String[] newArgs = arguments;
+                    if (command.equals("ifp"))
+                    {
+                        targetVar = arguments[0];
+                        newArgs = new String[arguments.length - 1];
+                        System.arraycopy(arguments, 1, newArgs, 0,
+                                newArgs.length);
+                    }
+                    String toCompare = "|" + arguments[0] + "|";
+                    String yesValues = "|yes|true|TRUE|1|";
+                    String noValues = "|no|false|FALSE|0|";
+                    String resultString = null;
+                    if (yesValues.contains(toCompare))
+                    {
+                        resultString = arguments[1];
+                    }
+                    else if (noValues.contains(toCompare))
+                    {
+                        if (arguments.length > 2)
+                            resultString = arguments[2];
+                        else
+                            resultString = "";
+                    }
+                    else
+                    {
+                        throw new RuntimeException("Value to if/ifp was "
+                                + toCompare + " with it should have been in "
+                                + yesValues + " or " + noValues);
+                    }
+                    if (command.equals("ifp"))
+                    {
+                        vars.put(targetVar, resultString);
+                    }
+                    else
+                    {
+                        result.append(resultString);
+                    }
+                }
+                else if(command.equals("greater"))
+                {
+                    
+                }
+                else if(command.equals("less"))
+                {
+                    
+                }
                 else
                 {
                     throw new RuntimeException("Invalid command " + command
