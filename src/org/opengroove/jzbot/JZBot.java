@@ -35,6 +35,7 @@ import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.WeatherCommand;
 import org.opengroove.jzbot.storage.*;
+import org.opengroove.jzbot.utils.Pastebin;
 
 /**
  * jzbot authenticates off of hostmask.
@@ -536,9 +537,22 @@ public class JZBot extends PircBot
                 Factoid f = cn.getFactoid(command);
                 if (f != null)
                 {
-                    String factValue = runFactoid(f, channel, sender,
-                            commandArguments.split(" "),
-                            new HashMap<String, String>());
+                    String factValue;
+                    try
+                    {
+                        factValue = runFactoid(f, channel, sender,
+                                commandArguments.split(" "),
+                                new HashMap<String, String>());
+                    }
+                    catch (Exception e)
+                    {
+                        StringWriter sw = new StringWriter();
+                        e.printStackTrace(new PrintWriter(sw, true));
+                        String eString = sw.toString();
+                        factValue = "Syntax error while running factoid: http://pastebin.com/"
+                                + Pastebin.createPost("jzbot", eString,
+                                        Pastebin.Duration.DAY, "");
+                    }
                     if (factValue.trim().equals(""))
                         ;
                     else if (factValue.startsWith("<ACTION>"))

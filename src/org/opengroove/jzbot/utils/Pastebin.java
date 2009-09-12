@@ -41,8 +41,8 @@ public class Pastebin
      *         "http://pastebin.com/" to obtain a url that can be used to view
      *         the post.
      */
-    public String createPost(String poster, String post, Duration duration,
-        String parent)
+    public static String createPost(String poster, String post,
+            Duration duration, String parent)
     {
         if (parent == null)
             parent = "";
@@ -51,21 +51,25 @@ public class Pastebin
             URL url = new URL("http://pastebin.com/pastebin.php");
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setInstanceFollowRedirects(false);
-            con.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
+            con.addRequestProperty("Content-type",
+                    "application/x-www-form-urlencoded");
             con.setRequestMethod("POST");
             con.setDoOutput(true);
             OutputStream out = con.getOutputStream();
-            out.write(("parent_pid=" + URLEncoder.encode(parent)
-                + "&format=text&code2=" + URLEncoder.encode(post) + "&poster="
-                + URLEncoder.encode(poster) + "&paste=Send&remember=1&expiry="
-                + duration.toString().substring(0, 1).toLowerCase() + "&email=")
-                .getBytes());
+            out
+                    .write(("parent_pid=" + URLEncoder.encode(parent)
+                            + "&format=text&code2=" + URLEncoder.encode(post)
+                            + "&poster=" + URLEncoder.encode(poster)
+                            + "&paste=Send&remember=1&expiry="
+                            + duration.toString().substring(0, 1).toLowerCase() + "&email=")
+                            .getBytes());
             out.flush();
             out.close();
             int responseCode = con.getResponseCode();
             if (responseCode != 302)
-                throw new RuntimeException("Received response code " + responseCode
-                    + " from pastebin: " + con.getResponseMessage());
+                throw new RuntimeException("Received response code "
+                        + responseCode + " from pastebin: "
+                        + con.getResponseMessage());
             String newUrl = con.getHeaderField("Location");
             if (!newUrl.startsWith("http://pastebin.com/"))
                 throw new RuntimeException("Invalid url prefix: " + newUrl);
@@ -73,7 +77,8 @@ public class Pastebin
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e.getClass().getName() + " " + e.getMessage(), e);
+            throw new RuntimeException(e.getClass().getName() + " "
+                    + e.getMessage(), e);
         }
     }
 }

@@ -166,7 +166,7 @@ public class FactoidCommand implements Command
         }
         if (!processed)
         {
-            throw new ResponseException("Invalid factoid command");
+            throw new ResponseException("Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
         }
     }
     
