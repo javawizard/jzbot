@@ -3,7 +3,7 @@ package org.opengroove.jzbot.fact;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opengroove.jzbot.fact.functions.IdentityFunction;
+import org.opengroove.jzbot.fact.functions.*;
 
 public class FactParser
 {
@@ -26,7 +26,7 @@ public class FactParser
      */
     public static FactEntity parse(String factoid)
     {
-        CharStack stack = new CharStack("{{literal||" + factoid + "}}");
+        CharStack stack = new CharStack("{{identity||" + factoid + "}}");
         FunctionReference reference = parseFunction(stack);
         return reference;
     }
@@ -108,7 +108,7 @@ public class FactParser
                     currentLiteral = new Literal();
                     currentArgument.add(currentLiteral);
                 }
-                currentLiteral.append(stack.next());
+                currentLiteral.append(c);
             }
         }
         /*
@@ -135,6 +135,20 @@ public class FactParser
     
     private static void installDefaultSet()
     {
+        install(new ActionFunction());
+        install(new EvalFunction());
+        install(new FirstvarFunction());
+        install(new FutureFunction());
         install(new IdentityFunction());
+        install(new IfeqFunction());
+        install(new IfFunction());
+        install(new IfjoinedFunction());
+        install(new IfneqFunction());
+        install(new IgnoreFunction());
+        install(new ImportFunction());
+        install(new LgetFunction());
+        install(new LsetFunction());
+        install(new RandomFunction());
+        install(new SendmessageFunction());
     }
 }

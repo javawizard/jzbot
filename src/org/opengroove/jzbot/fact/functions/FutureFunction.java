@@ -22,6 +22,7 @@ public class FutureFunction extends Function
             JZBot.futureFactoids.put(key, future);
             future.start();
         }
+        return "";
     }
     
     @Override

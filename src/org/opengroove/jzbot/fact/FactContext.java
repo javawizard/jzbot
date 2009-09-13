@@ -1,10 +1,11 @@
 package org.opengroove.jzbot.fact;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class FactContext
 {
-    private Map<String, String> localVars;
+    private Map<String, String> localVars = new HashMap<String, String>();
     private Map<String, String> globalVars;
     private boolean action;
     private String channel;

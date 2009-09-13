@@ -19,8 +19,15 @@ public class IdentityFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        // TODO Auto-generated method stub
-        return null;
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < arguments.length(); i++)
+        {
+            buffer.append(" ").append(arguments.get(i));
+        }
+        if (buffer.length() == 0)
+            return "";
+        else
+            return buffer.substring(1);
     }
     
     @Override

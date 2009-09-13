@@ -27,8 +27,9 @@ public class EvalFunction extends Function
         catch (Exception e)
         {
             throw new FactoidException("Exception while running {{eval}} on "
-                    + toEval);
+                    + toEval, e);
         }
+        return toRoundedString(value);
     }
     
     @Override
@@ -52,7 +53,8 @@ public class EvalFunction extends Function
         d = new BigDecimal(d.toBigInteger());
         d = d.movePointLeft(9);
         d = d.stripTrailingZeros();
-        System.out.println(d.toPlainString());
+        if (d.doubleValue() == 0)
+            return "0";
+        return d.toPlainString();
     }
-    
 }

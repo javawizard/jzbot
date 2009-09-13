@@ -18,6 +18,6 @@ public class FunctionReference extends FactEntity
         if (function == null)
             throw new FactoidException("No such function: " + functionName);
         ArgumentList sublist = list.subList(1);
-        return function.evaluate(list, context);
+        return function.evaluate(sublist, context);
     }
 }

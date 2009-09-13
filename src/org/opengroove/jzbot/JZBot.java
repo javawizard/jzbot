@@ -35,6 +35,9 @@ import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.WeatherCommand;
 import org.opengroove.jzbot.fact.ArgumentList;
+import org.opengroove.jzbot.fact.FactContext;
+import org.opengroove.jzbot.fact.FactEntity;
+import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.*;
 import org.opengroove.jzbot.utils.Pastebin;
 
@@ -43,6 +46,8 @@ import org.opengroove.jzbot.utils.Pastebin;
  */
 public class JZBot extends PircBot
 {
+    public static Map<String, String> globalVariables = new HashMap<String, String>();
+    
     public static class FutureFactoid extends Thread
     {
         private int delay;
@@ -240,228 +245,16 @@ public class JZBot extends PircBot
         else
             vars.put("channel", "none");
         String text = factoid.getValue();
-        boolean isAction = false;
-        StringBuffer result = new StringBuffer();
-        while (text.length() > 0)
-        {
-            if (text.startsWith(" "))
-            {
-                text = text.substring(1);
-                result.append(" ");
-            }
-            else if (text.startsWith("{{"))
-            {
-                int closeIndex = text.indexOf("}}");
-                if (closeIndex == -1)
-                    throw new RuntimeException("dangling command brace series");
-                String toClose = text.substring(0, closeIndex + 2);
-                text = text.substring(toClose.length());
-                String commandString = toClose.substring(2,
-                        toClose.length() - 2);
-                String[] commandStringTokens = commandString.split("\\|\\|", 2);
-                String command = commandStringTokens[0];
-                String[] arguments = (commandStringTokens.length == 1) ? new String[0]
-                        : commandStringTokens[1].split("\\|\\|");
-                for (int i = 0; i < arguments.length; i++)
-                {
-                    arguments[i] = replaceVars(arguments[i], vars);
-                }
-                if (command.equals("action"))
-                {
-                    isAction = true;
-                }
-                else if (command.equals("firstvar"))
-                {
-                    for (int i = 1; i < arguments.length; i++)
-                    {
-                        if (!arguments[i].trim().equals(""))
-                        {
-                            vars.put(arguments[0], arguments[i]);
-                            break;
-                        }
-                    }
-                }
-                else if (command.equals("random"))
-                {
-                    result
-                            .append(arguments[(int) (Math.random() * arguments.length)]);
-                }
-                else if (command.equals("randomp"))
-                {
-                    vars
-                            .put(
-                                    arguments[0],
-                                    arguments[((int) (Math.random() * (arguments.length - 1))) + 1]);
-                }
-                else if (command.equals("ifeq"))
-                {
-                    if (arguments[0].equalsIgnoreCase(arguments[1]))
-                        result.append(arguments[2]);
-                    else if (arguments.length > 3)
-                        result.append(arguments[3]);
-                }
-                else if (command.equals("ifeqp"))
-                {
-                    if (arguments[1].equalsIgnoreCase(arguments[2]))
-                        vars.put(arguments[0], arguments[3]);
-                    else if (arguments.length > 4)
-                        vars.put(arguments[0], arguments[4]);
-                }
-                // ~factoid create insult0 {{firstvar||person||%1%||%0%}}Hey
-                // %person%, you {{import||insult1}} {{import||insult2}} of
-                // {{import||insult3}} {{import||insult4}}
-                else if (command.equals("ifneq"))
-                {
-                    if (!arguments[0].equalsIgnoreCase(arguments[1]))
-                        result.append(arguments[2]);
-                    else if (arguments.length > 3)
-                        result.append(arguments[3]);
-                }
-                else if (command.equals("ifneqp"))
-                {
-                    if (!arguments[1].equalsIgnoreCase(arguments[2]))
-                        vars.put(arguments[0], arguments[3]);
-                    else if (arguments.length > 4)
-                        vars.put(arguments[0], arguments[4]);
-                }
-                else if (command.equals("pm"))
-                {
-                    if (arguments.length < 2)
-                        result
-                                .append("Invalid argument number to pm, needs at least 2");
-                    else
-                    {
-                        String message = arguments[arguments.length - 1];
-                        for (int i = 0; i < (arguments.length - 1); i++)
-                        {
-                            JZBot.bot.sendMessage(arguments[i], message);
-                        }
-                    }
-                }
-                else if (command.equals("import"))
-                {
-                    result.append(doFactImport(channel, arguments, sender));
-                }
-                else if (command.equals("importp"))
-                {
-                    String[] newArgs = new String[arguments.length - 1];
-                    System.arraycopy(arguments, 1, newArgs, 0, newArgs.length);
-                    vars.put(arguments[0], doFactImport(channel, newArgs,
-                            sender));
-                }
-                else if (command.equals("future"))
-                {
-                    // key,delay,factoid
-                    String[] newArgs = new String[arguments.length - 2];
-                    System.arraycopy(arguments, 2, newArgs, 0, newArgs.length);
-                    String key = arguments[0];
-                    int delay = Integer.parseInt(arguments[1]);
-                    FutureFactoid future = new FutureFactoid(delay, channel,
-                            newArgs, sender, key);
-                    synchronized (futureFactoidLock)
-                    {
-                        futureFactoids.put(key, future);
-                        future.start();
-                    }
-                }
-                else if (command.equals("ifjoined")
-                        || command.equals("ifjoinedp"))
-                {
-                    String targetVar = "";
-                    String[] newArgs = arguments;
-                    if (command.equals("ifjoinedp"))
-                    {
-                        targetVar = arguments[0];
-                        newArgs = new String[arguments.length - 1];
-                        System.arraycopy(arguments, 1, newArgs, 0,
-                                newArgs.length);
-                    }
-                    User[] users = bot.getUsers(channel);
-                    boolean isJoined = false;
-                    for (User user : users)
-                    {
-                        if (user.getNick().matches(newArgs[0]))
-                        {
-                            isJoined = true;
-                            break;
-                        }
-                    }
-                    String resultString = "";
-                    if (isJoined)
-                        resultString = newArgs[1];
-                    else if (arguments.length > 2)
-                        resultString = newArgs[2];
-                    if (command.equals("ifjoined"))
-                        result.append(resultString);
-                    else
-                        vars.put(targetVar, resultString);
-                }
-                else if (command.equals("if") || command.equals("ifp"))
-                {
-                    String targetVar = "";
-                    String[] newArgs = arguments;
-                    if (command.equals("ifp"))
-                    {
-                        targetVar = arguments[0];
-                        newArgs = new String[arguments.length - 1];
-                        System.arraycopy(arguments, 1, newArgs, 0,
-                                newArgs.length);
-                    }
-                    String toCompare = "|" + arguments[0] + "|";
-                    String yesValues = "|yes|true|TRUE|1|";
-                    String noValues = "|no|false|FALSE|0|";
-                    String resultString = null;
-                    if (yesValues.contains(toCompare))
-                    {
-                        resultString = arguments[1];
-                    }
-                    else if (noValues.contains(toCompare))
-                    {
-                        if (arguments.length > 2)
-                            resultString = arguments[2];
-                        else
-                            resultString = "";
-                    }
-                    else
-                    {
-                        throw new RuntimeException("Value to if/ifp was "
-                                + toCompare + " with it should have been in "
-                                + yesValues + " or " + noValues);
-                    }
-                    if (command.equals("ifp"))
-                    {
-                        vars.put(targetVar, resultString);
-                    }
-                    else
-                    {
-                        result.append(resultString);
-                    }
-                }
-                else if (command.equals("greater"))
-                {
-                    
-                }
-                else if (command.equals("less"))
-                {
-                    
-                }
-                else
-                {
-                    throw new RuntimeException("Invalid command " + command
-                            + " in def " + commandString);
-                }
-            }
-            else
-            {
-                String[] tokens = text.split(" ", 2);
-                result.append(replaceVars(tokens[0], vars));
-                if (tokens.length > 1)
-                    result.append(" ");
-                text = (tokens.length == 1) ? "" : tokens[1];
-            }
-        }
-        // FIXME: actually deal with isAction, probably prepend result with
-        // "<ACTION>"
+        FactEntity parsedFactoid = FactParser.parse(text);
+        FactContext context = new FactContext();
+        context.setChannel(channel);
+        context.setSender(sender);
+        context.setGlobalVars(globalVariables);
+        context.setLocalVars(vars);
+        // Now we actually run the factoid.
+        String result = parsedFactoid.resolve(context);
+        // The factoid has been run. Now we return the value.
+        boolean isAction = context.isAction();
         return (isAction ? "<ACTION>" : "") + result.toString();
     }
     
@@ -472,19 +265,19 @@ public class JZBot extends PircBot
         boolean channelSpecific = false;
         if (channel != null)
         {
-            f = JZBot.storage.getChannel(channel).getFactoid(arguments[0]);
+            f = JZBot.storage.getChannel(channel).getFactoid(arguments.get(0));
             if (f != null)
                 channelSpecific = true;
         }
         if (f == null)
         {
-            f = JZBot.storage.getFactoid(arguments[0]);
+            f = JZBot.storage.getFactoid(arguments.get(0));
         }
         if (f == null)
-            throw new RuntimeException("Invalid import factoid " + arguments[0]);
-        String[] subargs = new String[arguments.length - 1];
-        System.arraycopy(arguments, 1, subargs, 0, subargs.length);
-        return runFactoid(f, channelSpecific ? channel : null, sender, subargs,
+            throw new RuntimeException("Invalid import factoid "
+                    + arguments.get(0));
+        return runFactoid(f, channelSpecific ? channel : null, sender,
+                arguments.subList(1).evalToArray(),
                 new HashMap<String, String>());
     }
     
