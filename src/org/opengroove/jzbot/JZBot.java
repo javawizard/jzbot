@@ -23,6 +23,8 @@ import org.opengroove.jzbot.commands.HelpCommand;
 import org.opengroove.jzbot.commands.JoinCommand;
 import org.opengroove.jzbot.commands.JoinMessageCommand;
 import org.opengroove.jzbot.commands.LeaveCommand;
+import org.opengroove.jzbot.commands.LengthCommand;
+import org.opengroove.jzbot.commands.ListFunctionsCommand;
 import org.opengroove.jzbot.commands.MMCommand;
 import org.opengroove.jzbot.commands.OpCommand;
 import org.opengroove.jzbot.commands.ReconnectCommand;
@@ -123,6 +125,8 @@ public class JZBot extends PircBot
         loadCommand(new JoinCommand());
         loadCommand(new JoinMessageCommand());
         loadCommand(new LeaveCommand());
+        loadCommand(new LengthCommand());
+        loadCommand(new ListFunctionsCommand());
         loadCommand(new MMCommand());
         loadCommand(new OpCommand());
         loadCommand(new ReconnectCommand());

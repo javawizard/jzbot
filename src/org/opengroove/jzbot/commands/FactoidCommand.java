@@ -50,7 +50,7 @@ public class FactoidCommand implements Command
             processed = true;
             verifyOpSuperop(isGlobal, channel, hostname);
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
-            if (argumentsTokenized2.length != 2)
+            if (argumentsTokenized2.length != 2 && command.equals("replace"))
                 throw new ResponseException(
                         "You need to specify the factoid itself");
             String factoidName = argumentsTokenized2[0];
@@ -105,9 +105,11 @@ public class FactoidCommand implements Command
                 c.getFactoids().add(f);
             System.out.println("created fact " + factoidName + " "
                     + factoidContents);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Factoid "
-                    + factoidName
-                    + (command.equals("replace") ? "replaced. " : " created."));
+            JZBot.bot
+                    .sendMessage(pm ? sender : channel, "Factoid "
+                            + factoidName
+                            + (command.equals("replace") ? " replaced. "
+                                    : " created."));
         }
         if (command.equals("list"))
         {
@@ -166,7 +168,8 @@ public class FactoidCommand implements Command
         }
         if (!processed)
         {
-            throw new ResponseException("Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
+            throw new ResponseException(
+                    "Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
         }
     }
     

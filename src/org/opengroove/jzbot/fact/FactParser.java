@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.fact;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -136,9 +137,11 @@ public class FactParser
     private static void installDefaultSet()
     {
         install(new ActionFunction());
+        install(new DeleteFunction());
         install(new EvalFunction());
         install(new FirstvarFunction());
         install(new FutureFunction());
+        install(new GetFunction());
         install(new IdentityFunction());
         install(new IfeqFunction());
         install(new IfFunction());
@@ -147,8 +150,21 @@ public class FactParser
         install(new IgnoreFunction());
         install(new ImportFunction());
         install(new LgetFunction());
+        install(new LgvarsFunction());
         install(new LsetFunction());
+        install(new MatchFunction());
         install(new RandomFunction());
+        install(new RandomintFunction());
+        install(new ReplaceFunction());
         install(new SendmessageFunction());
+        install(new SetFunction());
+        install(new TimemsFunction());
+    }
+    
+    public static String[] getFunctionNames()
+    {
+        String[] names = functionMap.keySet().toArray(new String[0]);
+        Arrays.sort(names);
+        return names;
     }
 }
