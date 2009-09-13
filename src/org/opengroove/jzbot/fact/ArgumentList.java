@@ -51,7 +51,7 @@ public class ArgumentList
     
     public ArgumentList subList(int offset)
     {
-        return new ArgumentList(this, offset, length(), context);
+        return new ArgumentList(this, offset, length()-offset, context);
     }
     
     public ArgumentList subList(int offset, int length)

@@ -10,15 +10,11 @@ public class Test02
      */
     public static void main(String[] args) throws Throwable
     {
-        System.out.println("starting");
-        for (int i = 0; i < 10000; i++)
-        {
-            JEP jep = new JEP();
-            jep.addStandardConstants();
-            jep.addStandardFunctions();
-            jep.parseExpression("2+(3*5)");
-            double value = jep.getValue();
-        }
-        System.out.println("done");
+        JEP jep = new JEP();
+        jep.addStandardConstants();
+        jep.addStandardFunctions();
+        jep.parseExpression("add(2,3,4)");
+        double value = jep.getValue();
+        System.out.println("" + value);
     }
 }
