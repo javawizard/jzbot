@@ -22,6 +22,7 @@
 	<classpathentry kind="lib" path="lib/jdom.jar"/>
 	<classpathentry kind="lib" path="lib/saxpath.jar"/>
 	<classpathentry kind="lib" path="lib/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
+	<classpathentry kind="lib" path="lib/jeplite-0.8.7a-bin.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
