@@ -51,11 +51,21 @@ public class ArgumentList
     
     public ArgumentList subList(int offset)
     {
-        return new ArgumentList(this, offset, length()-offset, context);
+        return new ArgumentList(this, offset, length() - offset, context);
     }
     
     public ArgumentList subList(int offset, int length)
     {
         return new ArgumentList(this, offset, length, context);
+    }
+    
+    public String[] evalToArray()
+    {
+        String[] s = new String[length()];
+        for (int i = 0; i < s.length; i++)
+        {
+            s[i] = get(i);
+        }
+        return s;
     }
 }

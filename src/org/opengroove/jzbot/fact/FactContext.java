@@ -6,6 +6,39 @@ public class FactContext
 {
     private Map<String, String> localVars;
     private Map<String, String> globalVars;
+    private boolean action;
+    private String channel;
+    private String sender;
+    
+    public String getChannel()
+    {
+        return channel;
+    }
+    
+    public void setChannel(String channel)
+    {
+        this.channel = channel;
+    }
+    
+    public String getSender()
+    {
+        return sender;
+    }
+    
+    public void setSender(String sender)
+    {
+        this.sender = sender;
+    }
+    
+    public boolean isAction()
+    {
+        return action;
+    }
+    
+    public void setAction(boolean action)
+    {
+        this.action = action;
+    }
     
     public Map<String, String> getLocalVars()
     {

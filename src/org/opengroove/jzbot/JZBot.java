@@ -34,6 +34,7 @@ import org.opengroove.jzbot.commands.SuperopCommand;
 import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.WeatherCommand;
+import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.storage.*;
 import org.opengroove.jzbot.utils.Pastebin;
 
@@ -46,11 +47,11 @@ public class JZBot extends PircBot
     {
         private int delay;
         private String channel;
-        private String[] arguments;
+        private ArgumentList arguments;
         private String sender;
         private String key;
         
-        public FutureFactoid(int delay, String channel, String[] arguments,
+        public FutureFactoid(int delay, String channel, ArgumentList arguments,
                 String sender, String key)
         {
             if (channel == null)
@@ -436,11 +437,11 @@ public class JZBot extends PircBot
                         result.append(resultString);
                     }
                 }
-                else if(command.equals("greater"))
+                else if (command.equals("greater"))
                 {
                     
                 }
-                else if(command.equals("less"))
+                else if (command.equals("less"))
                 {
                     
                 }
@@ -464,7 +465,7 @@ public class JZBot extends PircBot
         return (isAction ? "<ACTION>" : "") + result.toString();
     }
     
-    public static String doFactImport(String channel, String[] arguments,
+    public static String doFactImport(String channel, ArgumentList arguments,
             String sender)
     {
         Factoid f = null;

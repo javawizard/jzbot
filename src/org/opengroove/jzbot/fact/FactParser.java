@@ -118,7 +118,7 @@ public class FactParser
         throw new ParseException(stack.at() - 1, "Function call not closed");
     }
     
-    public static void installFunction(Function function)
+    public static void install(Function function)
     {
         functionMap.put(function.getName().toLowerCase(), function);
     }
@@ -126,5 +126,15 @@ public class FactParser
     public static Function getFunction(String name)
     {
         return functionMap.get(name.toLowerCase());
+    }
+    
+    static
+    {
+        installDefaultSet();
+    }
+    
+    private static void installDefaultSet()
+    {
+        install(new IdentityFunction());
     }
 }

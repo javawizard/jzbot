@@ -1,5 +1,7 @@
 package test;
 
+import java.math.BigDecimal;
+
 import org.cheffo.jeplite.JEP;
 
 public class Test02
@@ -13,8 +15,14 @@ public class Test02
         JEP jep = new JEP();
         jep.addStandardConstants();
         jep.addStandardFunctions();
-        jep.parseExpression("add(2,3,4)");
+        jep.parseExpression("200.0");
         double value = jep.getValue();
         System.out.println("" + value);
+        BigDecimal d = new BigDecimal(value);
+        d = d.movePointRight(9);
+        d = new BigDecimal(d.toBigInteger());
+        d = d.movePointLeft(9);
+        d = d.stripTrailingZeros();
+        System.out.println(d.toPlainString());
     }
 }
