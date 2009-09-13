@@ -1,6 +1,7 @@
 package org.opengroove.jzbot.fact.functions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 
 import org.cheffo.jeplite.JEP;
 import org.opengroove.jzbot.fact.ArgumentList;
@@ -10,6 +11,7 @@ import org.opengroove.jzbot.fact.Function;
 
 public class EvalFunction extends Function
 {
+    public static DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
@@ -29,6 +31,12 @@ public class EvalFunction extends Function
             throw new FactoidException("Exception while running {{eval}} on "
                     + toEval, e);
         }
+        if (value != value)
+            return symbols.getNaN();
+        else if (value == Double.POSITIVE_INFINITY)
+            return symbols.getInfinity();
+        else if (value == Double.NEGATIVE_INFINITY)
+            return "-" + symbols.getInfinity();
         return toRoundedString(value);
     }
     

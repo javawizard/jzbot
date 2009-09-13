@@ -10,6 +10,7 @@ public class IgnoreFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
+        arguments.get(0);
         return "";
     }
     

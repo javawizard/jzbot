@@ -448,6 +448,11 @@ public class JZBot extends PircBot
     
     protected void onDisconnect()
     {
+        proxyStorage.close();
+        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
+                "storage/db"));
+        storage = proxyStorage.getRoot();
+        config = storage.getConfig();
         new Thread()
         {
             public void run()
