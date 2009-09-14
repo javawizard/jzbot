@@ -10,6 +10,12 @@ import org.opengroove.jzbot.eval.Operator;
 public class EvalEvaluator extends Evaluator
 {
     private static Map<String, BigDecimal> defaultVars = new HashMap<String, BigDecimal>();
+    static
+    {
+        defaultVars.put("pi", new BigDecimal(
+                "3.141592653589793238462643383279502884197169399375105820974"
+                        + "94459230781640628620899862803482534211706798214"));
+    }
     
     @Override
     public String evaluate(String value)

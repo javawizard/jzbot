@@ -12,11 +12,11 @@ public class ReconnectCommand implements Command
     }
     
     public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+            String arguments)
     {
         JZBot.bot.verifySuperop(hostname);
-        JZBot.bot.sendMessage(pm ? sender : channel, "Reconnecting on request from "
-            + sender);
+        JZBot.bot.sendMessage(pm ? sender : channel,
+                "Reconnecting on request from " + sender);
         try
         {
             Thread.sleep(2000);
@@ -26,6 +26,7 @@ public class ReconnectCommand implements Command
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        JZBot.manualReconnect = true;
         JZBot.bot.disconnect();
     }
     

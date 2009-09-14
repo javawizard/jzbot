@@ -1,5 +1,7 @@
 package org.opengroove.jzbot.commands;
 
+import java.util.Date;
+
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 import org.opengroove.jzbot.Command;
@@ -99,6 +101,12 @@ public class FactoidCommand implements Command
             f.setName(factoidName);
             f.setActive(true);
             f.setValue(factoidContents);
+            //history stuff
+            f.setCreationTime(System.currentTimeMillis());
+            f.setCreatorNick(sender);
+            f.setCreatorUsername(JZBot.getThreadLocalUsername());
+            f.setDirectRequests(0);
+            f.setIndirectRequests(0);
             if (isGlobal)
                 JZBot.storage.getFactoids().add(f);
             else
@@ -164,7 +172,24 @@ public class FactoidCommand implements Command
         if (command.equals("info"))
         {
             processed = true;
-            throw new ResponseException("Info is not supported yet.");
+            if (afterCommand.equals(""))
+                throw new ResponseException("You need to specify the factoid");
+            Factoid f;
+            if (isGlobal)
+                f = JZBot.storage.getFactoid(afterCommand);
+            else
+                f = c.getFactoid(afterCommand);
+            if (f == null)
+                throw new ResponseException("That factoid doesn't exist");
+            int directRequests = f.getDirectRequests();
+            int indirectRequests = f.getIndirectRequests();
+            int totalRequests = directRequests = indirectRequests;
+            JZBot.bot.sendMessage(pm ? sender : channel, "" + f.getName()
+                    + " -- created by " + f.getCreatorNick() + " <"
+                    + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
+                    + new Date(f.getCreationTime()).toString() + "; requested "
+                    + totalRequests + " times (" + directRequests
+                    + " directly, " + indirectRequests + " indirectly)");
         }
         if (!processed)
         {

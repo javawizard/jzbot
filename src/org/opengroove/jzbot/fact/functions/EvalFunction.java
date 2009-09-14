@@ -17,8 +17,12 @@ public class EvalFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        String toEval = arguments.get(0);
-        return JZBot.evaluateEquation(toEval,context.getChannel());
+        if (arguments.length() == 1)
+            return JZBot.evaluateEquation(arguments.get(0), context
+                    .getChannel());
+        else
+            return JZBot.evaluateEquation(arguments.get(1), context
+                    .getChannel(), arguments.get(0));
     }
     
     @Override

@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -37,4 +38,31 @@ public interface Factoid
     public String getCreator();
     
     public void setCreator(String creator);
+    
+    @Property
+    @Default(stringValue = "(unknown)")
+    public String getCreatorUsername();
+    
+    public void setCreatorUsername(String creatorUsername);
+    
+    @Property
+    @Default(stringValue = "")
+    public String getCreatorNick();
+    
+    public void setCreatorNick(String nick);
+    
+    @Property
+    public long getCreationTime();
+    
+    public void setCreationTime(long time);
+    
+    @Property
+    public int getDirectRequests();
+    
+    public void setDirectRequests(int count);
+    
+    @Property
+    public int getIndirectRequests();
+    
+    public void setIndirectRequests(int requests);
 }

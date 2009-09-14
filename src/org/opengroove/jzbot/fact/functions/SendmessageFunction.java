@@ -17,6 +17,7 @@ public class SendmessageFunction extends Function
                     "Can't send messages when the bot is disconnected");
         String to = arguments.get(0);
         String message = arguments.get(1);
+        context.incrementMessageCount();
         JZBot.bot.sendMessage(to, message);
         try
         {
@@ -34,7 +35,7 @@ public class SendmessageFunction extends Function
     {
         return "sendmessage";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {

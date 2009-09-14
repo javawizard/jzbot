@@ -11,6 +11,7 @@ public class RunFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
+        context.incrementImportCount();
         JZBot.doFactImport(context.getChannel(), arguments,
                 context.getSender(), true);
         return "";

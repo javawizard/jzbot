@@ -289,7 +289,7 @@ public enum Operator
             return value1;
         }
     };
-    public static MathContext defaultContext = new MathContext(128);
+    public static MathContext defaultContext = new MathContext(512);
     
     final int precedence;
     final int numberOfOperands;

@@ -224,6 +224,7 @@ public class JZBot extends PircBot
             Factoid f = chan.getFactoid("selfjoin");
             if (f != null)
             {
+                incrementIndirectRequests(f);
                 String factValue = runFactoid(f, channel, sender,
                         new String[0], new HashMap<String, String>(), true);
                 if (factValue.trim().equals(""))
@@ -262,6 +263,16 @@ public class JZBot extends PircBot
         }
     }
     
+    public static void incrementIndirectRequests(Factoid f)
+    {
+        f.setIndirectRequests(f.getIndirectRequests() + 1);
+    }
+    
+    public static void incrementDirectRequests(Factoid f)
+    {
+        f.setDirectRequests(f.getDirectRequests() + 1);
+    }
+    
     /**
      * Runs the factoid specified, outputting to the string specified.
      * 
@@ -295,6 +306,8 @@ public class JZBot extends PircBot
             vars.put("channel", channel);
         else
             vars.put("channel", "none");
+        vars.put("self", bot.getNick());
+        vars.put("source", channel == null ? sender : channel);
         String text = factoid.getValue();
         FactEntity parsedFactoid = FactParser.parse(text);
         FactContext context = new FactContext();
@@ -302,6 +315,7 @@ public class JZBot extends PircBot
         context.setSender(sender);
         context.setGlobalVars(globalVariables);
         context.setLocalVars(vars);
+        context.setSelf(bot.getNick());
         // Now we actually run the factoid.
         String result = parsedFactoid.resolve(context);
         // The factoid has been run. Now we return the value.
@@ -327,6 +341,7 @@ public class JZBot extends PircBot
         if (f == null)
             throw new RuntimeException("Invalid import factoid "
                     + arguments.get(0));
+        incrementIndirectRequests(f);
         return runFactoid(f, channelSpecific ? channel : null, sender,
                 arguments.subList(1).evalToArray(),
                 new HashMap<String, String>(), allowRestricted);
@@ -362,8 +377,8 @@ public class JZBot extends PircBot
         {
             try
             {
-                runMessageCommand(channel, false, sender, hostname, message
-                        .substring(trigger.length()));
+                runMessageCommand(channel, false, sender, hostname, login,
+                        message.substring(trigger.length()));
             }
             catch (Exception e)
             {
@@ -374,7 +389,7 @@ public class JZBot extends PircBot
     }
     
     private void runMessageCommand(String channel, boolean pm, String sender,
-            String hostname, String message)
+            String hostname, String username, String message)
     {
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
@@ -385,6 +400,7 @@ public class JZBot extends PircBot
         {
             try
             {
+                threadLocalUsername.set(username);
                 c.run(channel, pm, sender, hostname, commandArguments);
             }
             catch (Exception e)
@@ -431,6 +447,7 @@ public class JZBot extends PircBot
                 Factoid f = cn.getFactoid(command);
                 if (f != null)
                 {
+                    incrementDirectRequests(f);
                     String factValue;
                     try
                     {
@@ -465,6 +482,7 @@ public class JZBot extends PircBot
         Factoid f = storage.getFactoid(command);
         if (f != null)
         {
+            incrementDirectRequests(f);
             sendMessage(channel, runFactoid(f, channel, sender,
                     commandArguments.split(" "), new HashMap<String, String>(),
                     bot.isSuperop(hostname)));
@@ -568,7 +586,7 @@ public class JZBot extends PircBot
         }
         try
         {
-            runMessageCommand(channel, true, sender, hostname, message);
+            runMessageCommand(channel, true, sender, hostname, login, message);
         }
         catch (Exception e)
         {
@@ -676,9 +694,15 @@ public class JZBot extends PircBot
     
     public static String evaluateEquation(String toEval, String channel)
     {
+        return evaluateEquation(toEval, channel, config.getEvalEngine());
+    }
+    
+    public static String evaluateEquation(String toEval, String channel,
+            String engineName)
+    {
         try
         {
-            Evaluator engine = getDefaultEvalEngine(channel);
+            Evaluator engine = getEvalEngine(engineName);
             return engine.evaluate(toEval);
         }
         catch (Exception e)
@@ -725,6 +749,13 @@ public class JZBot extends PircBot
     public static Factoid getGlobalFactoid(String factoid)
     {
         return storage.getFactoid(factoid);
+    }
+    
+    private static ThreadLocal<String> threadLocalUsername = new ThreadLocal<String>();
+    
+    public static String getThreadLocalUsername()
+    {
+        return threadLocalUsername.get();
     }
     
 }

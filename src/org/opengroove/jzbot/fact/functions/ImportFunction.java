@@ -11,6 +11,7 @@ public class ImportFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
+        context.incrementImportCount();
         return JZBot.doFactImport(context.getChannel(),
                 arguments, context.getSender(),true);
     }
