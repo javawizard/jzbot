@@ -14,22 +14,24 @@ public class ShutdownCommand implements Command
     }
     
     public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+            String arguments)
     {
         if (!JZBot.isSuperop(hostname))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, "You're not a superop.");
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "You're not a superop.");
             return;
         }
-        JZBot.bot.sendMessage(pm ? sender : channel,
-            "Shutdown has been scheduled. No further commands will be acknowledged.");
+        JZBot.bot
+                .sendMessage(pm ? sender : channel,
+                        "Shutdown has been scheduled. No further commands will be acknowledged.");
         long sleepDuration = 5000;
-        for (Channel c : JZBot.storage.getChannels().isolate())
-        {
-            sleepDuration += 1100;
-            JZBot.bot.sendMessage(c.getName(), sender
-                + " has requested that I shut down. Later all.");
-        }
+        // for (Channel c : JZBot.storage.getChannels().isolate())
+        // {
+        // sleepDuration += 1100;
+        // JZBot.bot.sendMessage(c.getName(), sender
+        // + " has requested that I shut down. Later all.");
+        // }
         try
         {
             Thread.sleep(sleepDuration);
