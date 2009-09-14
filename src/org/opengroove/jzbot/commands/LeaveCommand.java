@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.commands;
 
+import org.jibble.pircbot.User;
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
@@ -21,11 +22,20 @@ public class LeaveCommand implements Command
     }
     
     public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+            String arguments)
     {
         if (channel == null)
             throw new ResponseException("You must specify a channel.");
-        JZBot.bot.verifySuperop(hostname);
+        try
+        {
+            JZBot.bot.verifySuperop(hostname);
+        }
+        catch (RuntimeException e)
+        {
+            User user = JZBot.getUser(channel, sender);
+            if (!user.isOp())
+                throw e;
+        }
         Channel c = JZBot.storage.getChannel(channel);
         if (c == null)
             throw new ResponseException("I'm not a member of that channel.");
@@ -33,9 +43,10 @@ public class LeaveCommand implements Command
             throw new ResponseException("I've already left that channel.");
         c.setSuspended(true);
         JZBot.bot.sendMessage(pm ? sender : channel,
-            "Ok, I'll leave now. I'll remember this channel's "
-                + "settings, though. Use /msg " + JZBot.bot.getNick() + " join "
-                + channel + " to have me join the channel again.");
+                "Ok, I'll leave now. I'll remember this channel's "
+                        + "settings, though. Use /msg " + JZBot.bot.getNick()
+                        + " join " + channel
+                        + " to have me join the channel again.");
         JZBot.bot.partChannel(channel, "Leaving on request from " + sender);
     }
     

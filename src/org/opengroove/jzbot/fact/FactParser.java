@@ -138,6 +138,7 @@ public class FactParser
     {
         install(new ActionFunction());
         install(new DeleteFunction());
+        install(new ErrorFunction());
         install(new EvalFunction());
         install(new FirstvarFunction());
         install(new FutureFunction());
@@ -149,6 +150,8 @@ public class FactParser
         install(new IfneqFunction());
         install(new IgnoreFunction());
         install(new ImportFunction());
+        install(new IsopFunction());
+        install(new KickFunction());
         install(new LgetFunction());
         install(new LgvarsFunction());
         install(new LsetFunction());

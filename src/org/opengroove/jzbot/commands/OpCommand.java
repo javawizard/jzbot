@@ -1,5 +1,7 @@
 package org.opengroove.jzbot.commands;
 
+import java.util.ArrayList;
+
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.storage.Channel;
@@ -14,17 +16,18 @@ public class OpCommand implements Command
     }
     
     public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+            String arguments)
     {
         if (channel == null)
         {
             JZBot.bot.sendMessage(pm ? sender : channel,
-                "You have to specify a channel.");
+                    "You have to specify a channel.");
             return;
         }
         if (!JZBot.isOp(channel, hostname))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, "You're not an op here.");
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "You're not an op here.");
             return;
         }
         String[] tokens = arguments.split(" ", 2);
@@ -37,12 +40,15 @@ public class OpCommand implements Command
         }
         if (subcommand.equals("list"))
         {
-            JZBot.bot
-                .sendMessage(pm ? sender : channel, "Start of op list by hostname");
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "Start of op list by hostname");
+            ArrayList<String> strings = new ArrayList<String>();
             for (Operator op : c.getOperators().isolate())
             {
-                JZBot.bot.sendMessage(pm ? sender : channel, op.getHostname());
+                strings.add(op.getHostname());
             }
+            JZBot.sendDelimited(strings.toArray(new String[0]), "    ",
+                    pm ? sender : channel);
             JZBot.bot.sendMessage(pm ? sender : channel, "End of op list");
         }
         else if (subcommand.equals("add"))
@@ -50,22 +56,22 @@ public class OpCommand implements Command
             if (tokens.length == 0)
             {
                 JZBot.bot.sendMessage(pm ? sender : channel,
-                    "You need to specify a hostname.");
+                        "You need to specify a hostname.");
                 return;
             }
             String newHostname = tokens[1];
             Operator op = JZBot.storage.createOperator();
             op.setHostname(newHostname);
             c.getOperators().add(op);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Hostname " + newHostname
-                + " was successfully added as an op.");
+            JZBot.bot.sendMessage(pm ? sender : channel, "Hostname "
+                    + newHostname + " was successfully added as an op.");
         }
         else if (subcommand.equals("delete"))
         {
             if (tokens.length == 0)
             {
                 JZBot.bot.sendMessage(pm ? sender : channel,
-                    "You need to specify a hostname.");
+                        "You need to specify a hostname.");
                 return;
             }
             String newHostname = tokens[1];
@@ -73,7 +79,7 @@ public class OpCommand implements Command
             if (op == null)
             {
                 JZBot.bot.sendMessage(pm ? sender : channel,
-                    "That hostname isn't an op.");
+                        "That hostname isn't an op.");
                 return;
             }
             c.getOperators().remove(op);
@@ -82,7 +88,7 @@ public class OpCommand implements Command
         else
         {
             JZBot.bot.sendMessage(pm ? sender : channel,
-                "Specify one of add, list, or delete.");
+                    "Specify one of add, list, or delete.");
             return;
         }
     }

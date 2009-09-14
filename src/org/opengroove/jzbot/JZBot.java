@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
+import net.sf.opengroove.common.utils.StringUtils;
 
+import org.cheffo.jeplite.JEP;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
@@ -40,7 +43,9 @@ import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactEntity;
 import org.opengroove.jzbot.fact.FactParser;
+import org.opengroove.jzbot.fact.FactoidException;
 import org.opengroove.jzbot.storage.*;
+import org.opengroove.jzbot.utils.JZUtils;
 import org.opengroove.jzbot.utils.Pastebin;
 
 /**
@@ -49,6 +54,36 @@ import org.opengroove.jzbot.utils.Pastebin;
 public class JZBot extends PircBot
 {
     public static Map<String, String> globalVariables = new HashMap<String, String>();
+    
+    public static Map<String, Evaluator> evalEngines = new HashMap<String, Evaluator>();
+    
+    public static void registerEvalEngine(Evaluator engine)
+    {
+        evalEngines.put(engine.getName(), engine);
+    }
+    
+    static
+    {
+        registerEvalEngine(new JepEvaluator());
+        registerEvalEngine(new EvalEvaluator());
+    }
+    
+    public static Evaluator getEvalEngine(String name)
+    {
+        Evaluator engine = evalEngines.get(name);
+        if (engine == null)
+            throw new RuntimeException("Invalid evaluator engine name: "
+                    + name
+                    + ", expected one of "
+                    + StringUtils.delimited(evalEngines.keySet().toArray(
+                            new String[0]), ", "));
+        return engine;
+    }
+    
+    public static Evaluator getDefaultEvalEngine(String channel)
+    {
+        return getEvalEngine(config.getEvalEngine());
+    }
     
     public static class FutureFactoid extends Thread
     {
@@ -613,6 +648,57 @@ public class JZBot extends PircBot
     public static URI toAuthForm(URI user)
     {
         return null;
+    }
+    
+    public static User getUser(String channel, String sender)
+    {
+        User[] users = bot.getUsers(channel);
+        for (User u : users)
+        {
+            if (sender.equalsIgnoreCase(u.getNick()))
+                return u;
+        }
+        return null;
+    }
+    
+    public static String evaluateEquation(String toEval, String channel)
+    {
+        try
+        {
+            Evaluator engine = getDefaultEvalEngine(channel);
+            return engine.evaluate(toEval);
+        }
+        catch (Exception e)
+        {
+            throw new FactoidException("Exception while evaluating " + toEval
+                    + " with engine " + config.getEvalEngine(), e);
+        }
+    }
+    
+    /**
+     * Returns a string representing this double rounded to 8 decimal points,
+     * and with no decimal point if one is not needed.
+     * 
+     * @param value
+     *            The value to round
+     * @return The value
+     */
+    static String toRoundedString(double value)
+    {
+        BigDecimal d = new BigDecimal(value);
+        d = d.movePointRight(9);
+        d = new BigDecimal(d.toBigInteger());
+        d = d.movePointLeft(9);
+        d = d.stripTrailingZeros();
+        if (d.doubleValue() == 0)
+            return "0";
+        return d.toPlainString();
+    }
+    
+    public static void sendDelimited(String[] array, String delimiter,
+            String recipient)
+    {
+        JZUtils.ircSendDelimited(array, delimiter, bot, recipient);
     }
     
 }

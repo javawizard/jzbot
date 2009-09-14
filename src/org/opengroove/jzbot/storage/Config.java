@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -25,4 +26,10 @@ public interface Config
     public int getPort();
     
     public void setPort(int port);
+    
+    @Property
+    @Default(stringValue="eval")
+    public String getEvalEngine();
+    
+    public void setEvalEngine(String evalEngine);
 }

@@ -17,6 +17,11 @@ public interface Factoid
     public void setActive(boolean active);
     
     @Property
+    public boolean isRestricted();
+    
+    public void setRestricted(boolean restricted);
+    
+    @Property
     public String getValue();
     
     public void setValue(String value);
