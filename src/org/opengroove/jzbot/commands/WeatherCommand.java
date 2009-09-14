@@ -27,39 +27,40 @@ public class WeatherCommand implements Command
     }
     
     public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+            String arguments)
     {
         if (arguments.equals(""))
             throw new ResponseException(
-                "You need to specify a zip code. For example, ~weather 12345. Developers: you can run ~weather 12345 props");
+                    "You need to specify a zip code. For example, ~weather 12345. Developers: you can run ~weather 12345 props");
         boolean propsShown = false;
         if (arguments.endsWith("props"))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                "http://code.google.com/p/jwutils/source/browse/trunk/"
-                    + "projects/jzbot/src/org/opengroove/jzbot/commands/"
-                    + "WeatherCommand.java for command list");
+            JZBot.bot
+                    .sendMessage(
+                            pm ? sender : channel,
+                            "http://code.google.com/p/jwutils/source/browse/trunk/"
+                                    + "projects/jzbot/src/org/opengroove/jzbot/commands/"
+                                    + "WeatherCommand.java for command list");
             propsShown = true;
             arguments = arguments.substring(0, arguments.length() - 5);
         }
         arguments = arguments.trim();
         Factoid weatherFactoid = null;
         if (channel != null)
-            weatherFactoid =
-                JZBot.storage.getChannel(channel).getFactoid("weathertemplate");
+            weatherFactoid = JZBot.storage.getChannel(channel).getFactoid(
+                    "weathertemplate");
         if (weatherFactoid == null)
             weatherFactoid = JZBot.storage.getFactoid("weathertemplate");
         if (weatherFactoid == null)
-            throw new ResponseException("The weathertemplate factoid does not exist.");
+            throw new ResponseException(
+                    "The weathertemplate factoid does not exist.");
         Map<String, String> map = new TreeMap<String, String>();
         try
         {
-            URL weatherbugUrl =
-                new URL(
+            URL weatherbugUrl = new URL(
                     "http://a7686974884.isapi.wxbug.net/WxDataISAPI/WxDataISAPI.dll?Magic=10991&RegNum=0&ZipCode="
-                        + arguments.replace("&", "")
-                        + "&Units=0&Version=7&Fore=0&t="
-                        + Math.random());
+                            + arguments.replace("&", "")
+                            + "&Units=0&Version=7&Fore=0&t=" + Math.random());
             InputStream stream = weatherbugUrl.openStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
@@ -97,9 +98,9 @@ public class WeatherCommand implements Command
             map.put("gusttime", tokens[25]);
             map.put("station", tokens[35]);
             map.put("citystate", tokens[36]);
-            URL yahooUrl =
-                new URL("http://weather.yahooapis.com/forecastrss?p="
-                    + arguments.replace("&", ""));
+            URL yahooUrl = new URL(
+                    "http://weather.yahooapis.com/forecastrss?p="
+                            + arguments.replace("&", ""));
             stream = yahooUrl.openStream();
             baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
@@ -108,15 +109,14 @@ public class WeatherCommand implements Command
             String conditionStart = "yweather:condition  text=\"";
             int conditionsIndex = yahooResult.indexOf(conditionStart);
             String conditions = "";
-            System.out.println("result:" + yahooResult + ",idx:" + conditionsIndex);
+            System.out.println("result:" + yahooResult + ",idx:"
+                    + conditionsIndex);
             if (conditionsIndex != -1)
             {
-                int endIndex =
-                    yahooResult.indexOf("\"", conditionsIndex + conditionStart.length()
-                        + 1);
-                conditions =
-                    yahooResult.substring(conditionsIndex + conditionStart.length(),
-                        endIndex);
+                int endIndex = yahooResult.indexOf("\"", conditionsIndex
+                        + conditionStart.length() + 1);
+                conditions = yahooResult.substring(conditionsIndex
+                        + conditionStart.length(), endIndex);
             }
             map.put("conditions", conditions);
             if (propsShown)
@@ -127,17 +127,18 @@ public class WeatherCommand implements Command
                     currentList += name + "=" + map.get(name) + "          ";
                     if (currentList.length() > 200)
                     {
-                        JZBot.bot.sendMessage(pm ? sender : channel, currentList);
+                        JZBot.bot.sendMessage(pm ? sender : channel,
+                                currentList);
                         currentList = "";
                     }
                 }
                 if (!currentList.equals(""))
                     JZBot.bot.sendMessage(pm ? sender : channel, currentList);
                 JZBot.bot.sendMessage(pm ? sender : channel,
-                    "End weather properties list");
+                        "End weather properties list");
             }
-            String result =
-                JZBot.runFactoid(weatherFactoid, channel, sender, new String[0], map);
+            String result = JZBot.runFactoid(weatherFactoid, channel, sender,
+                    new String[0], map, true);
             JZBot.bot.sendMessage(pm ? sender : channel, result);
         }
         catch (Exception e)
@@ -145,14 +146,16 @@ public class WeatherCommand implements Command
             if (e instanceof ResponseException)
                 throw (ResponseException) e;
             e.printStackTrace();
-            throw new RuntimeException(e.getClass().getName() + ": " + e.getMessage(),
-                e);
+            throw new RuntimeException(e.getClass().getName() + ": "
+                    + e.getMessage(), e);
         }
     }
     
-    private static final String[] WIND_DIRECTIONS =
-        new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW",
-            "SW", "WSW", "W", "WNW", "NW", "NNW" };
+    private static final String[] WIND_DIRECTIONS = new String[]
+    {
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
+            "WSW", "W", "WNW", "NW", "NNW"
+    };
     
     private String windDegreesToReadable(String string)
     {
@@ -162,11 +165,12 @@ public class WeatherCommand implements Command
         windDegrees += halfSlice;
         for (int i = 0; i < WIND_DIRECTIONS.length; i++)
         {
-            if (windDegrees >= (i * sliceSize) && windDegrees <= ((i + 1) * sliceSize))
+            if (windDegrees >= (i * sliceSize)
+                    && windDegrees <= ((i + 1) * sliceSize))
                 return WIND_DIRECTIONS[i];
             
         }
         throw new RuntimeException("slice size:" + sliceSize + ",degrees:"
-            + windDegrees + ",halfSlice:" + halfSlice);
+                + windDegrees + ",halfSlice:" + halfSlice);
     }
 }

@@ -11,9 +11,8 @@ public class RunFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        JZBot
-                .doFactImport(context.getChannel(), arguments, context
-                        .getSender());
+        JZBot.doFactImport(context.getChannel(), arguments,
+                context.getSender(), true);
         return "";
     }
     
@@ -22,7 +21,7 @@ public class RunFunction extends Function
     {
         return "run";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {

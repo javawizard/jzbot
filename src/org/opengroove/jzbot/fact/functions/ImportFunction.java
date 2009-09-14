@@ -12,7 +12,7 @@ public class ImportFunction extends Function
     public String evaluate(ArgumentList arguments, FactContext context)
     {
         return JZBot.doFactImport(context.getChannel(),
-                arguments, context.getSender());
+                arguments, context.getSender(),true);
     }
     
     @Override

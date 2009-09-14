@@ -23,6 +23,7 @@ import org.opengroove.jzbot.commands.ConfigCommand;
 import org.opengroove.jzbot.commands.FactoidCommand;
 import org.opengroove.jzbot.commands.GoogleCommand;
 import org.opengroove.jzbot.commands.HelpCommand;
+import org.opengroove.jzbot.commands.IsRestrictedCommand;
 import org.opengroove.jzbot.commands.JoinCommand;
 import org.opengroove.jzbot.commands.JoinMessageCommand;
 import org.opengroove.jzbot.commands.LeaveCommand;
@@ -32,12 +33,14 @@ import org.opengroove.jzbot.commands.MMCommand;
 import org.opengroove.jzbot.commands.OpCommand;
 import org.opengroove.jzbot.commands.ReconnectCommand;
 import org.opengroove.jzbot.commands.RegexCommand;
+import org.opengroove.jzbot.commands.RestrictCommand;
 import org.opengroove.jzbot.commands.RouletteCommand;
 import org.opengroove.jzbot.commands.SayCommand;
 import org.opengroove.jzbot.commands.ShutdownCommand;
 import org.opengroove.jzbot.commands.SuperopCommand;
 import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
+import org.opengroove.jzbot.commands.UnrestrictCommand;
 import org.opengroove.jzbot.commands.WeatherCommand;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
@@ -121,7 +124,7 @@ public class JZBot extends PircBot
                 if (futureFactoids.get(key) != this)
                     return;
                 futureFactoids.remove(key);
-                String result = doFactImport(channel, arguments, sender);
+                String result = doFactImport(channel, arguments, sender, true);
                 if (result.trim().equals(""))
                     return;
                 if (result.startsWith("<ACTION>"))
@@ -158,6 +161,7 @@ public class JZBot extends PircBot
         loadCommand(new FactoidCommand());
         loadCommand(new GoogleCommand());
         loadCommand(new HelpCommand());
+        loadCommand(new IsRestrictedCommand());
         loadCommand(new JoinCommand());
         loadCommand(new JoinMessageCommand());
         loadCommand(new LeaveCommand());
@@ -167,12 +171,14 @@ public class JZBot extends PircBot
         loadCommand(new OpCommand());
         loadCommand(new ReconnectCommand());
         loadCommand(new RegexCommand());
-        loadCommand(new RouletteCommand());
+        loadCommand(new RestrictCommand());
+        // loadCommand(new RouletteCommand());
         loadCommand(new SayCommand());
         loadCommand(new ShutdownCommand());
         loadCommand(new SuperopCommand());
         loadCommand(new TriggerCommand());
         loadCommand(new TTTCommand());
+        loadCommand(new UnrestrictCommand());
         loadCommand(new WeatherCommand());
     }
     
@@ -219,7 +225,7 @@ public class JZBot extends PircBot
             if (f != null)
             {
                 String factValue = runFactoid(f, channel, sender,
-                        new String[0], new HashMap<String, String>());
+                        new String[0], new HashMap<String, String>(), true);
                 if (factValue.trim().equals(""))
                     ;
                 else if (factValue.startsWith("<ACTION>"))
@@ -249,7 +255,7 @@ public class JZBot extends PircBot
                         System.out.println("found, issuing");
                         sendMessage(channel, runFactoid(factoid, channel,
                                 sender, new String[0],
-                                new HashMap<String, String>()));
+                                new HashMap<String, String>(), true));
                     }
                 }
             }
@@ -267,8 +273,13 @@ public class JZBot extends PircBot
      *            The sender of the factoid request
      */
     public static String runFactoid(Factoid factoid, String channel,
-            String sender, String[] args, Map<String, String> vars)
+            String sender, String[] args, Map<String, String> vars,
+            boolean allowRestricted)
     {
+        if (allowRestricted == false && factoid.isRestricted())
+            throw new FactoidException("The factoid " + factoid.getName()
+                    + " is restricted. Only ops and superops "
+                    + "can run it, as well as the bot itself.");
         for (int i = 0; i < args.length; i++)
         {
             vars.put("" + (i + 1), args[i]);
@@ -299,7 +310,7 @@ public class JZBot extends PircBot
     }
     
     public static String doFactImport(String channel, ArgumentList arguments,
-            String sender)
+            String sender, boolean allowRestricted)
     {
         Factoid f = null;
         boolean channelSpecific = false;
@@ -318,7 +329,7 @@ public class JZBot extends PircBot
                     + arguments.get(0));
         return runFactoid(f, channelSpecific ? channel : null, sender,
                 arguments.subList(1).evalToArray(),
-                new HashMap<String, String>());
+                new HashMap<String, String>(), allowRestricted);
     }
     
     protected void onKick(String channel, String kickerNick,
@@ -425,7 +436,8 @@ public class JZBot extends PircBot
                     {
                         factValue = runFactoid(f, channel, sender,
                                 commandArguments.split(" "),
-                                new HashMap<String, String>());
+                                new HashMap<String, String>(), bot.isOp(
+                                        channel, hostname));
                     }
                     catch (Exception e)
                     {
@@ -454,7 +466,8 @@ public class JZBot extends PircBot
         if (f != null)
         {
             sendMessage(channel, runFactoid(f, channel, sender,
-                    commandArguments.split(" "), new HashMap<String, String>()));
+                    commandArguments.split(" "), new HashMap<String, String>(),
+                    bot.isSuperop(hostname)));
             return;
         }
         doInvalidCommand(pm, channel, sender);
@@ -699,6 +712,19 @@ public class JZBot extends PircBot
             String recipient)
     {
         JZUtils.ircSendDelimited(array, delimiter, bot, recipient);
+    }
+    
+    public static Factoid getChannelFactoid(String channelName, String factoid)
+    {
+        Channel channel = storage.getChannel(channelName);
+        if (channel == null)
+            throw new ResponseException("No such channel: " + channel);
+        return channel.getFactoid(factoid);
+    }
+    
+    public static Factoid getGlobalFactoid(String factoid)
+    {
+        return storage.getFactoid(factoid);
     }
     
 }
