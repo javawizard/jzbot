@@ -20,5 +20,12 @@ public class ImportFunction extends Function
     {
         return "import";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

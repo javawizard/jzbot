@@ -32,11 +32,11 @@ public class EvalFunction extends Function
                     + toEval, e);
         }
         if (value != value)
-            return symbols.getNaN();
+            return "Not a number";
         else if (value == Double.POSITIVE_INFINITY)
-            return symbols.getInfinity();
+            return "Infinity";
         else if (value == Double.NEGATIVE_INFINITY)
-            return "-" + symbols.getInfinity();
+            return "Negative infinity";
         return toRoundedString(value);
     }
     
@@ -64,5 +64,12 @@ public class EvalFunction extends Function
         if (d.doubleValue() == 0)
             return "0";
         return d.toPlainString();
+    }
+    
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

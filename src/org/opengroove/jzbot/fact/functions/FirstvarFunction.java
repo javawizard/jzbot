@@ -26,5 +26,12 @@ public class FirstvarFunction extends Function
     {
         return "firstvar";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

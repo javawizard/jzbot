@@ -35,5 +35,12 @@ public class IdentityFunction extends Function
     {
         return "identity";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

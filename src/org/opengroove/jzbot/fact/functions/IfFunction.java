@@ -34,5 +34,12 @@ public class IfFunction extends Function
     {
         return "if";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

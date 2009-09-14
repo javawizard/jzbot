@@ -1,26 +1,30 @@
 package org.opengroove.jzbot.fact.functions;
 
 import org.opengroove.jzbot.JZBot;
-import org.opengroove.jzbot.JZBot.FutureFactoid;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
+import org.opengroove.jzbot.fact.FactoidException;
 import org.opengroove.jzbot.fact.Function;
 
-public class FutureFunction extends Function
+public class SendactionFunction extends Function
 {
     
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        ArgumentList newArgs = arguments.subList(2);
-        String key = arguments.get(0);
-        int delay = Integer.parseInt(arguments.get(1));
-        FutureFactoid future = new FutureFactoid(delay, context.getChannel(),
-                newArgs, context.getSender(), key);
-        synchronized (JZBot.futureFactoidLock)
+        if (!JZBot.bot.isConnected())
+            throw new FactoidException(
+                    "Can't send messages when the bot is disconnected");
+        String to = arguments.get(0);
+        String message = arguments.get(1);
+        JZBot.bot.sendMessage(to, message);
+        try
         {
-            JZBot.futureFactoids.put(key, future);
-            future.start();
+            Thread.sleep(500);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
         }
         return "";
     }
@@ -28,7 +32,7 @@ public class FutureFunction extends Function
     @Override
     public String getName()
     {
-        return "future";
+        return "sendaction";
     }
 
     @Override

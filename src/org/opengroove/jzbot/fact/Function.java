@@ -5,4 +5,6 @@ public abstract class Function
     public abstract String getName();
     
     public abstract String evaluate(ArgumentList arguments, FactContext context);
+    
+    public abstract String getHelp(String topic);
 }

@@ -19,4 +19,11 @@ public class TimemsFunction extends Function
         return "timems";
     }
     
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

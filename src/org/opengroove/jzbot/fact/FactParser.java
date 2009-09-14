@@ -156,6 +156,8 @@ public class FactParser
         install(new RandomFunction());
         install(new RandomintFunction());
         install(new ReplaceFunction());
+        install(new RunFunction());
+        install(new SendactionFunction());
         install(new SendmessageFunction());
         install(new SetFunction());
         install(new TimemsFunction());

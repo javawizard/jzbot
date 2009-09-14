@@ -21,5 +21,12 @@ public class RandomintFunction extends Function
     {
         return "randomint";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

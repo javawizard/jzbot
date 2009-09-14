@@ -25,5 +25,12 @@ public class LgvarsFunction extends Function
     {
         return "lgvars";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

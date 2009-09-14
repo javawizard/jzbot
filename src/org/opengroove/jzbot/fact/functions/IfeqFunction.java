@@ -23,4 +23,11 @@ public class IfeqFunction extends Function
     {
         return "ifeq";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

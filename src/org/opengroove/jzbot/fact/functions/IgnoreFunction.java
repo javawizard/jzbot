@@ -19,5 +19,12 @@ public class IgnoreFunction extends Function
     {
         return "ignore";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

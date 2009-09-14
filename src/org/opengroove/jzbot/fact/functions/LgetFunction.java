@@ -21,5 +21,12 @@ public class LgetFunction extends Function
     {
         return "lget";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

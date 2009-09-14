@@ -100,6 +100,7 @@ public class JZBot extends PircBot
     
     public static HashMap<String, FutureFactoid> futureFactoids = new HashMap<String, FutureFactoid>();
     public static final Object futureFactoidLock = new Object();
+    public static boolean manualReconnect = false;
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
     public static final JZBot bot = new JZBot();
     // numeric 320: is signed on as account
@@ -440,6 +441,14 @@ public class JZBot extends PircBot
         {
             if (!channel.isSuspended())
             {
+                try
+                {
+                    Thread.sleep(2300);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
                 System.out.println("joining " + channel.getName());
                 joinChannel(channel.getName());
             }
@@ -448,6 +457,7 @@ public class JZBot extends PircBot
     
     protected void onDisconnect()
     {
+        System.out.println("on disconnect");
         proxyStorage.close();
         proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
                 "storage/db"));
@@ -455,6 +465,7 @@ public class JZBot extends PircBot
         config = storage.getConfig();
         new Thread()
         {
+            
             public void run()
             {
                 int attempts = 0;
@@ -478,6 +489,12 @@ public class JZBot extends PircBot
                             time = 120;
                         else
                             time = 240;
+                        // This is to make sure that we don't flood ourselves
+                        // off again after we join
+                        if (manualReconnect)
+                            manualReconnect = false;
+                        else
+                            time += 30;
                         Thread.sleep(time * 1000);
                         reconnect();
                     }

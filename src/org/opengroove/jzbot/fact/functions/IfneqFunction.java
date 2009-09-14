@@ -23,4 +23,11 @@ public class IfneqFunction extends Function
     {
         return "ifneq";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

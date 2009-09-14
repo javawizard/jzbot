@@ -19,5 +19,12 @@ public class DeleteFunction extends Function
     {
         return "delete";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

@@ -36,5 +36,12 @@ public class ReplaceFunction extends Function
     {
         return "replace";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

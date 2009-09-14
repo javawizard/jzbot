@@ -21,5 +21,12 @@ public class GetFunction extends Function
     {
         return "get";
     }
+
+    @Override
+    public String getHelp(String topic)
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }
