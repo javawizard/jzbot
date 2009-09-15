@@ -47,12 +47,15 @@ public class IsopFunction extends Function
     {
         return "isop";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{isop||<nick>}} -- Evaluates to \"1\" if the nick specified is "
+                + "a channel operator at this channel or \"0\" if the nick specified is not"
+                + " a channel operator at this channel. %self% can be used to get the bot's "
+                + "own nick, so {{isop||%self%}} would indicate whether the bot has operator "
+                + "privileges at this channel.";
     }
     
 }

@@ -21,12 +21,15 @@ public class LgetFunction extends Function
     {
         return "lget";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{lget||<varname>}} -- Evaluates to the value of the specified local "
+                + "variable. {{lget||something}} is equivalent to %something%. However, using "
+                + "percent signs doesn't allow for dynamic variable names (as an "
+                + "example, you couldn't do something like %param-%index%% for "
+                + "syntax reasons), which is where you would use {{lget}}.";
     }
     
 }

@@ -10,21 +10,18 @@ public class FactContext
     private boolean action;
     private String channel;
     private String sender;
-    private int messageCount = 0;
-    private int importCount = 0;
-    public static final int MAX_IMPORT_COUNT = 30;
-    
-    public int getImportCount()
-    {
-        return importCount;
-    }
-    
-    public void setImportCount(int importCount)
-    {
-        this.importCount = importCount;
-    }
-    
     private String self;
+    private FactQuota quota;
+    
+    public FactQuota getQuota()
+    {
+        return quota;
+    }
+    
+    public void setQuota(FactQuota quota)
+    {
+        this.quota = quota;
+    }
     
     public String getSelf()
     {
@@ -35,8 +32,6 @@ public class FactContext
     {
         this.self = self;
     }
-    
-    public static final int MAX_MESSAGE_COUNT = 6;
     
     public String getChannel()
     {
@@ -90,28 +85,12 @@ public class FactContext
     
     public void incrementMessageCount()
     {
-        messageCount += 1;
-        if (messageCount > MAX_MESSAGE_COUNT)
-            throw new FactoidException("Maximum limit of " + messageCount
-                    + " messages per factoid invocation exceeded.");
+        quota.incrementMessageCount();
     }
     
     public void incrementImportCount()
     {
-        importCount += 1;
-        if (importCount > MAX_IMPORT_COUNT)
-            throw new FactoidException("Maximum limit of " + importCount
-                    + " {{import}} and {{run}} calls per "
-                    + "factoid invocation exceeded.");
+        quota.incrementImportCount();
     }
     
-    public int getMessageCount()
-    {
-        return messageCount;
-    }
-    
-    public void setMessageCount(int messageCount)
-    {
-        this.messageCount = messageCount;
-    }
 }

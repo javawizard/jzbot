@@ -46,6 +46,7 @@ import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactEntity;
 import org.opengroove.jzbot.fact.FactParser;
+import org.opengroove.jzbot.fact.FactQuota;
 import org.opengroove.jzbot.fact.FactoidException;
 import org.opengroove.jzbot.storage.*;
 import org.opengroove.jzbot.utils.JZUtils;
@@ -95,9 +96,10 @@ public class JZBot extends PircBot
         private ArgumentList arguments;
         private String sender;
         private String key;
+        private FactQuota quota;
         
         public FutureFactoid(int delay, String channel, ArgumentList arguments,
-                String sender, String key)
+                String sender, String key, FactQuota quota)
         {
             if (channel == null)
                 throw new RuntimeException(
@@ -108,6 +110,7 @@ public class JZBot extends PircBot
             this.arguments = arguments;
             this.sender = sender;
             this.key = key;
+            this.quota = quota;
         }
         
         public void run()
@@ -124,7 +127,8 @@ public class JZBot extends PircBot
                 if (futureFactoids.get(key) != this)
                     return;
                 futureFactoids.remove(key);
-                String result = doFactImport(channel, arguments, sender, true);
+                String result = doFactImport(channel, arguments, sender, true,
+                        quota);
                 if (result.trim().equals(""))
                     return;
                 if (result.startsWith("<ACTION>"))
@@ -225,8 +229,8 @@ public class JZBot extends PircBot
             if (f != null)
             {
                 incrementIndirectRequests(f);
-                String factValue = runFactoid(f, channel, sender,
-                        new String[0], new HashMap<String, String>(), true);
+                String factValue = safeRunFactoid(f, channel, sender,
+                        new String[0], true, new HashMap<String, String>());
                 if (factValue.trim().equals(""))
                     ;
                 else if (factValue.startsWith("<ACTION>"))
@@ -256,7 +260,7 @@ public class JZBot extends PircBot
                         System.out.println("found, issuing");
                         sendMessage(channel, runFactoid(factoid, channel,
                                 sender, new String[0],
-                                new HashMap<String, String>(), true));
+                                new HashMap<String, String>(), true, null));
                     }
                 }
             }
@@ -285,8 +289,10 @@ public class JZBot extends PircBot
      */
     public static String runFactoid(Factoid factoid, String channel,
             String sender, String[] args, Map<String, String> vars,
-            boolean allowRestricted)
+            boolean allowRestricted, FactQuota quota)
     {
+        if (quota == null)
+            quota = new FactQuota();
         if (allowRestricted == false && factoid.isRestricted())
             throw new FactoidException("The factoid " + factoid.getName()
                     + " is restricted. Only ops and superops "
@@ -311,6 +317,7 @@ public class JZBot extends PircBot
         String text = factoid.getValue();
         FactEntity parsedFactoid = FactParser.parse(text);
         FactContext context = new FactContext();
+        context.setQuota(quota);
         context.setChannel(channel);
         context.setSender(sender);
         context.setGlobalVars(globalVariables);
@@ -324,7 +331,7 @@ public class JZBot extends PircBot
     }
     
     public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted)
+            String sender, boolean allowRestricted, FactQuota quota)
     {
         Factoid f = null;
         boolean channelSpecific = false;
@@ -344,7 +351,7 @@ public class JZBot extends PircBot
         incrementIndirectRequests(f);
         return runFactoid(f, channelSpecific ? channel : null, sender,
                 arguments.subList(1).evalToArray(),
-                new HashMap<String, String>(), allowRestricted);
+                new HashMap<String, String>(), allowRestricted, quota);
     }
     
     protected void onKick(String channel, String kickerNick,
@@ -449,22 +456,9 @@ public class JZBot extends PircBot
                 {
                     incrementDirectRequests(f);
                     String factValue;
-                    try
-                    {
-                        factValue = runFactoid(f, channel, sender,
-                                commandArguments.split(" "),
-                                new HashMap<String, String>(), bot.isOp(
-                                        channel, hostname));
-                    }
-                    catch (Exception e)
-                    {
-                        StringWriter sw = new StringWriter();
-                        e.printStackTrace(new PrintWriter(sw, true));
-                        String eString = sw.toString();
-                        factValue = "Syntax error while running factoid: http://pastebin.com/"
-                                + Pastebin.createPost("jzbot", eString,
-                                        Pastebin.Duration.DAY, "");
-                    }
+                    factValue = safeRunFactoid(f, channel, sender,
+                            commandArguments.split(" "), bot.isOp(channel,
+                                    hostname), new HashMap<String, String>());
                     if (factValue.trim().equals(""))
                         ;
                     else if (factValue.startsWith("<ACTION>"))
@@ -483,12 +477,64 @@ public class JZBot extends PircBot
         if (f != null)
         {
             incrementDirectRequests(f);
-            sendMessage(channel, runFactoid(f, channel, sender,
-                    commandArguments.split(" "), new HashMap<String, String>(),
-                    bot.isSuperop(hostname)));
+            String factValue;
+            factValue = safeRunFactoid(f, channel, sender, commandArguments
+                    .split(" "), bot.isOp(channel, hostname),
+                    new HashMap<String, String>());
+            if (factValue.trim().equals(""))
+                ;
+            else if (factValue.startsWith("<ACTION>"))
+                sendAction(channel, factValue.substring("<ACTION>".length()));
+            else
+                sendMessage(channel, factValue);
             return;
         }
         doInvalidCommand(pm, channel, sender);
+    }
+    
+    /**
+     * Runs the specified factoid, returning its output. If an exception is
+     * thrown while running the factoid, the exception's stack trace, along with
+     * some additional information, is sent to pastebin.com, and an error
+     * message (including a url to the pastebin post) returned instead of the
+     * factoid's output.
+     * 
+     * @param f
+     *            The factoid to run
+     * @param channel
+     *            The name of the channel that the factoid is being run at
+     * @param sender
+     *            The nickname of the user that is running the factoid
+     * @param arguments
+     *            The arguments to the factoid
+     * @param allowRestricted
+     *            True to allow restricted factoids
+     * @param vars
+     *            The local variables to use. Extra variables will be added for
+     *            function arguments and stuff like %channel%.
+     * @return The output of the factoid, or an error message containing a
+     *         pastebin url if the factoid threw an exception while running
+     */
+    public static String safeRunFactoid(Factoid f, String channel,
+            String sender, String[] arguments, boolean allowRestricted,
+            Map<String, String> vars)
+    {
+        String factValue;
+        try
+        {
+            factValue = runFactoid(f, channel, sender, arguments, vars,
+                    allowRestricted, null);
+        }
+        catch (Exception e)
+        {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw, true));
+            String eString = sw.toString();
+            factValue = "Syntax error while running factoid: http://pastebin.com/"
+                    + Pastebin.createPost("jzbot", eString,
+                            Pastebin.Duration.DAY, "");
+        }
+        return factValue;
     }
     
     private void doInvalidCommand(boolean pm, String channel, String sender)
@@ -519,6 +565,8 @@ public class JZBot extends PircBot
                 joinChannel(channel.getName());
             }
         }
+        sendMessage("#bztraining", "jcp, remember to put an extension cord in "
+                + "the left pocket of your backpack.");
     }
     
     protected void onDisconnect()

@@ -18,12 +18,12 @@ public class MatchFunction extends Function
     {
         return "match";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{match||<regex>||<test>}} -- Evaluates to 1 if <test> matches the "
+                + "regular expression <regex>, or 0 if it does not.";
     }
     
 }

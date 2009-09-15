@@ -26,12 +26,14 @@ public class FirstvarFunction extends Function
     {
         return "firstvar";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{firstvar||<varname>||<firstarg>||<secondarg>||...}} -- "
+                + "Sets the local variable <varname> to be the first argument that "
+                + "comes after it whose value does not evaluate to the empty string,"
+                + " ignoring whitespace and newlines.";
     }
     
 }

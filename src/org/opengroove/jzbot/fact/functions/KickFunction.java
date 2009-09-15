@@ -26,8 +26,10 @@ public class KickFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{kick||<nick>||<reason>}} -- Kicks the specified nickname off of "
+                + "the current channel. If the bot is not an op at the channel, this function "
+                + "does nothing. <reason> is optional, and the bot's name will be used as "
+                + "the reason if no reason is provided.";
     }
     
 }

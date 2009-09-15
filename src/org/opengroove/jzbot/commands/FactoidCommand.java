@@ -183,7 +183,7 @@ public class FactoidCommand implements Command
                 throw new ResponseException("That factoid doesn't exist");
             int directRequests = f.getDirectRequests();
             int indirectRequests = f.getIndirectRequests();
-            int totalRequests = directRequests = indirectRequests;
+            int totalRequests = directRequests + indirectRequests;
             JZBot.bot.sendMessage(pm ? sender : channel, "" + f.getName()
                     + " -- created by " + f.getCreatorNick() + " <"
                     + f.getCreatorUsername() + "@" + f.getCreator() + "> at "

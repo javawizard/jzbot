@@ -35,12 +35,15 @@ public class IdentityFunction extends Function
     {
         return "identity";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{identity||<argument1>||<argument2>||...}} -- Evaluates to "
+                + "all of its arguments, concatenated and with a space inbetween. "
+                + "Essentially the same as \"<argument1> <argument2> ...\". This "
+                + "function is primarily intended for the bot's internal use but can be "
+                + "used in factoids as well.";
     }
     
 }

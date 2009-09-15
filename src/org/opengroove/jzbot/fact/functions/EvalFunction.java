@@ -3,6 +3,8 @@ package org.opengroove.jzbot.fact.functions;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import org.cheffo.jeplite.JEP;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.ArgumentList;
@@ -34,7 +36,12 @@ public class EvalFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{eval||<toeval>}} or {{eval||<engine>||<toeval>}} -- "
+                + "Evaluates <toeval> as a mathematical equation. Engine specifies "
+                + "the engine to use. Each engine exhibits different properties "
+                + "and equation syntax.\n"
+                + "Allowed engines are (separated by a space): "
+                + StringUtils.delimited(JZBot.evalEngines.keySet().toArray(
+                        new String[0]), " ");
     }
 }

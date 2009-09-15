@@ -19,12 +19,13 @@ public class ActionFunction extends Function
     {
         return "action";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{action}} -- Causes the factoid to appear using \"/me\". It "
+                + "essentially causes the bot to do the equivalent of prepending the "
+                + "message with \"/me\" on a typical IRC client.";
     }
     
 }

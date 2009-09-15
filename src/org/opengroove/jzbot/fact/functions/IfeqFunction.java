@@ -23,11 +23,14 @@ public class IfeqFunction extends Function
     {
         return "ifeq";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{ifeq||<compare1>||<compare2>||<trueaction>||<falseaction>}} -- "
+                + "Evaluates to <trueaction> if <compare1> is the same as <compare2>, ignoring "
+                + "case, or <falseaction> if they are not equal. <falseaction> is optional, "
+                + "and if not present {{ifeq}} will act as if <falseaction> were empty. This "
+                + "is essentially the opposite of {{ifneq}}.";
     }
 }

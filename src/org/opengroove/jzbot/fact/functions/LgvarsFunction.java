@@ -25,12 +25,15 @@ public class LgvarsFunction extends Function
     {
         return "lgvars";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{lgvars}} -- Returns a pipe-delimited list of global variable"
+                + " names, with pipes in those names escaped (pipes in variable names "
+                + "are still a bad idea anyway) with backslashes. This is mostly for "
+                + "when you're trying to debug stuff and you want to see the list of "
+                + "global variables that exist.";
     }
     
 }

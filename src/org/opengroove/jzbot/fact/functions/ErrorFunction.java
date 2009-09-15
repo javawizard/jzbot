@@ -23,7 +23,8 @@ public class ErrorFunction extends Function
     @Override
     public String getName()
     {
-        return "error";
+        return "Syntax: {{error||<message>}} -- Causes a syntax error to "
+                + "be reported with the specified message.";
     }
     
 }

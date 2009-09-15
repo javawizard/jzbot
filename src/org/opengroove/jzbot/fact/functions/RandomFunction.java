@@ -18,12 +18,14 @@ public class RandomFunction extends Function
     {
         return "random";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{random||<choice1>||<choice2>||...}} -- Evaluates to one of "
+                + "the choices at random. For example, "
+                + "{{random||bye||see ya||laters||so long}} would evaluate to one of "
+                + "\"bye\", \"see ya\", \"laters\", or \"so long\", chosen at random.";
     }
     
 }

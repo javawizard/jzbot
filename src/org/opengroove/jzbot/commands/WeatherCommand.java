@@ -137,8 +137,8 @@ public class WeatherCommand implements Command
                 JZBot.bot.sendMessage(pm ? sender : channel,
                         "End weather properties list");
             }
-            String result = JZBot.runFactoid(weatherFactoid, channel, sender,
-                    new String[0], map, true);
+            String result = JZBot.safeRunFactoid(weatherFactoid, channel,
+                    sender, new String[0], true, map);
             JZBot.bot.sendMessage(pm ? sender : channel, result);
         }
         catch (Exception e)
