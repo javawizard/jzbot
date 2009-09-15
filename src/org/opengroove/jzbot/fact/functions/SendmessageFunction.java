@@ -39,8 +39,8 @@ public class SendmessageFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{sendmessage||<to>||<message>}} -- Sends the specified message to "
+                + "the specified recipient, which can be a channel or a nickname.";
     }
     
 }

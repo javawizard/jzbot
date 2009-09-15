@@ -19,12 +19,12 @@ public class SetFunction extends Function
     {
         return "set";
     }
-
+    
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{set||<varname>||<value}} -- Sets the named global variable "
+                + "to the specified value.";
     }
     
 }

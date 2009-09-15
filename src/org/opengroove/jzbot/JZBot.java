@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +49,8 @@ import org.opengroove.jzbot.fact.FactEntity;
 import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.fact.FactQuota;
 import org.opengroove.jzbot.fact.FactoidException;
+import org.opengroove.jzbot.help.DefaultHelpProvider;
+import org.opengroove.jzbot.help.FunctionHelpProvider;
 import org.opengroove.jzbot.storage.*;
 import org.opengroove.jzbot.utils.JZUtils;
 import org.opengroove.jzbot.utils.Pastebin;
@@ -58,6 +61,14 @@ import org.opengroove.jzbot.utils.Pastebin;
 public class JZBot extends PircBot
 {
     public static Map<String, String> globalVariables = new HashMap<String, String>();
+    
+    public static ArrayList<HelpProvider> helpProviders = new ArrayList<HelpProvider>();
+    
+    static
+    {
+        helpProviders.add(new DefaultHelpProvider());
+        helpProviders.add(new FunctionHelpProvider());
+    }
     
     public static Map<String, Evaluator> evalEngines = new HashMap<String, Evaluator>();
     

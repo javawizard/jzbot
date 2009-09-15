@@ -22,8 +22,8 @@ public class TimemsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{timems}} -- Returns the server's current time in milliseconds since "
+                + "January 1, 1970 Midnight UTC.";
     }
     
 }

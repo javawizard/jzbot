@@ -39,8 +39,9 @@ public class SendactionFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{sendaction||<to>||<message>}} -- Sends the specified message to "
+                + "the specified recipient as if it were typed at an IRC client with \"/me\" "
+                + "at the beginning.";
     }
     
 }
