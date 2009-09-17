@@ -7,6 +7,7 @@ import net.sf.opengroove.common.proxystorage.StoredList;
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
+import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Factoid;
 
@@ -47,6 +48,12 @@ public class FactoidCommand implements Command
         if (!isGlobal)
             c = JZBot.storage.getChannel(channel);
         boolean processed = false;
+        /*
+         * oldFact is set to the old factoid when the replace command is used.
+         * This is then used when the new factoid is created to set its
+         * restricted status and request counts.
+         */
+        Factoid oldFact = null;
         if (command.equals("delete") || command.equals("replace"))
         {
             processed = true;
@@ -72,17 +79,20 @@ public class FactoidCommand implements Command
             if (command.equals("delete"))
                 JZBot.bot.sendMessage(pm ? sender : channel, "Factoid "
                         + afterCommand + " deleted.");
+            if (command.equals("replace"))
+                oldFact = f;
         }
         if (command.equals("create") || command.equals("replace"))
         {
             processed = true;
             verifyOpSuperop(isGlobal, channel, hostname);
             if (afterCommand.equals(""))
-                throw new ResponseException("You need to specify the factoid");
+                throw new ResponseException(
+                        "You need to specify the factoid name");
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
             if (argumentsTokenized2.length != 2)
                 throw new ResponseException(
-                        "You need to specify the factoid itself");
+                        "You need to specify the factoid contents");
             String factoidName = argumentsTokenized2[0];
             if (JZBot.commands.get(factoidName) != null)
                 throw new ResponseException("That is a reserved keyword.");
@@ -94,19 +104,33 @@ public class FactoidCommand implements Command
                 throw new ResponseException(
                         "That factoid already exists as a global factoid");
             /*
-             * The factoid does not exist. Let's create it.
+             * The factoid does not exist. Let's create it. First, we'll try
+             * parsing it to make sure we don't have syntax errors.
              */
+            try
+            {
+                FactParser.parse(factoidContents);
+            }
+            catch (Exception e)
+            {
+                recreate(oldFact, isGlobal, c);
+                throw new ResponseException(
+                        "There is a syntax error in the contents of the factoid: "
+                                + JZBot.pastebinStack(e));
+            }
             Factoid f = JZBot.storage.createFactoid();
             f.setCreator(hostname);
             f.setName(factoidName);
             f.setActive(true);
             f.setValue(factoidContents);
-            //history stuff
+            // history stuff
             f.setCreationTime(System.currentTimeMillis());
             f.setCreatorNick(sender);
             f.setCreatorUsername(JZBot.getThreadLocalUsername());
             f.setDirectRequests(0);
             f.setIndirectRequests(0);
+            if (oldFact != null)
+                f.setRestricted(oldFact.isRestricted());
             if (isGlobal)
                 JZBot.storage.getFactoids().add(f);
             else
@@ -195,6 +219,23 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
+        }
+    }
+    
+    private void recreate(Factoid oldFact, boolean isGlobal, Channel c)
+    {
+        if (oldFact != null)
+        {
+            if (isGlobal)
+            {
+                if (JZBot.storage.getFactoid(oldFact.getName()) == null)
+                    JZBot.storage.getFactoids().add(oldFact);
+            }
+            else
+            {
+                if (c.getFactoid(oldFact.getName()) == null)
+                    c.getFactoids().add(oldFact);
+            }
         }
     }
     

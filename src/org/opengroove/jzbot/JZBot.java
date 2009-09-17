@@ -21,6 +21,7 @@ import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
 import org.opengroove.jzbot.commands.CommandListCommand;
 import org.opengroove.jzbot.commands.ConfigCommand;
+import org.opengroove.jzbot.commands.ExplainCommand;
 import org.opengroove.jzbot.commands.FactoidCommand;
 import org.opengroove.jzbot.commands.GoogleCommand;
 import org.opengroove.jzbot.commands.HelpCommand;
@@ -172,6 +173,7 @@ public class JZBot extends PircBot
     {
         loadCommand(new CommandListCommand());
         loadCommand(new ConfigCommand());
+        loadCommand(new ExplainCommand());
         loadCommand(new FactoidCommand());
         loadCommand(new GoogleCommand());
         loadCommand(new HelpCommand());
@@ -432,20 +434,7 @@ public class JZBot extends PircBot
                     e.printStackTrace();
                     sendMessage(pm ? sender : channel,
                             "An error occured while running the command "
-                                    + command + ":");
-                    StringWriter sw = new StringWriter();
-                    e.printStackTrace(new PrintWriter(sw, true));
-                    String[] eTokens = sw.toString().split("\n");
-                    for (int i = 0; i < eTokens.length && i < 2; i++)
-                    {
-                        sendMessage(pm ? sender : channel, eTokens[i]);
-                    }
-                    if (eTokens.length > 2)
-                        sendMessage(pm ? sender : channel, "...");
-                    sendMessage(pm ? sender : channel,
-                            "The full stack trace of the exception has been printed to stdout.");
-                    sendMessage(pm ? sender : channel,
-                            "End of exception report.");
+                                    + command + ": " + pastebinStack(e));
                 }
             }
             return;
@@ -537,14 +526,20 @@ public class JZBot extends PircBot
         }
         catch (Exception e)
         {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw, true));
-            String eString = sw.toString();
-            factValue = "Syntax error while running factoid: http://pastebin.com/"
-                    + Pastebin.createPost("jzbot", eString,
-                            Pastebin.Duration.DAY, "");
+            factValue = "Syntax error while running factoid: "
+                    + pastebinStack(e);
         }
         return factValue;
+    }
+    
+    public static String pastebinStack(Throwable e)
+    {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw, true));
+        String eString = sw.toString();
+        return "http://pastebin.com/"
+                + Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY,
+                        "");
     }
     
     private void doInvalidCommand(boolean pm, String channel, String sender)
