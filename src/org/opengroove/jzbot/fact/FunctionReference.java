@@ -20,4 +20,18 @@ public class FunctionReference extends FactEntity
         ArgumentList sublist = list.subList(1);
         return function.evaluate(sublist, context);
     }
+    
+    @Override
+    public String explain(int indentation, int increment)
+    {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(spaces(indentation) + "function:\n");
+        buffer.append(arguments.explain(indentation, increment, false));
+        return buffer.toString();
+    }
+    
+    public Sequence getArgumentSequence()
+    {
+        return arguments;
+    }
 }

@@ -23,7 +23,7 @@ public class SetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{set||<varname>||<value}} -- Sets the named global variable "
+        return "Syntax: {{set||<varname>||<value>}} -- Sets the named global variable "
                 + "to the specified value.";
     }
     

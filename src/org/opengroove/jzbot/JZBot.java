@@ -388,6 +388,7 @@ public class JZBot extends PircBot
         Channel chan = storage.getChannel(channel);
         if (chan == null)
             return;
+        
         String trigger = chan.getTrigger();
         if (trigger != null && message.startsWith(trigger))
         {
@@ -574,8 +575,6 @@ public class JZBot extends PircBot
                 joinChannel(channel.getName());
             }
         }
-        sendMessage("#bztraining", "jcp, remember to put an extension cord in "
-                + "the left pocket of your backpack.");
     }
     
     protected void onDisconnect()

@@ -2,6 +2,7 @@ package org.opengroove.jzbot.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.HelpProvider;
@@ -33,14 +34,9 @@ public class HelpCommand implements Command
             if (possibleSubpages != null)
                 subpages.addAll(Arrays.asList(possibleSubpages));
         }
+        Collections.sort(subpages);
         if (text == null)
             throw new ResponseException("No such help page");
-        String[] messages = text.split("\n");
-        for (String s : messages)
-        {
-            if (!s.trim().equals(""))
-                JZBot.bot.sendMessage(pm ? sender : channel, s);
-        }
         String helpCommand;
         if (pm)
             helpCommand = "/msg " + JZBot.bot.getNick() + " help";
@@ -52,15 +48,22 @@ public class HelpCommand implements Command
             else
                 helpCommand = "~trigger";
         }
+        text = text.replace("%HELPCMD%", helpCommand);
+        String[] messages = text.split("\n");
+        for (String s : messages)
+        {
+            if (!s.trim().equals(""))
+                JZBot.bot.sendMessage(pm ? sender : channel, s);
+        }
         String pageWithSpace = page;
         if (!pageWithSpace.trim().equals(""))
             pageWithSpace = " " + pageWithSpace;
-        String startText = (subpages.size() > 0 ? "Subpages: (\"" + helpCommand
-                + pageWithSpace + " <pagename>\" to show a page) "
+        String startText = (subpages.size() > 0 ? "Subpages (\"" + helpCommand
+                + pageWithSpace + " <pagename>\" to show a page): "
                 : "No subpages.");
         String prefix = "---> ";
         String[] delimited = JZUtils.delimitedLengthRestricted(subpages
-                .toArray(new String[0]), "  ", 290);
+                .toArray(new String[0]), "   ", 290);
         boolean sentFirst = false;
         if (delimited.length > 0)
         {

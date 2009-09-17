@@ -43,4 +43,10 @@ public class Literal extends FactEntity
         return finalized;
     }
     
+    @Override
+    public String explain(int indentation, int increment)
+    {
+        return spaces(indentation) + "literal: \"" + resolve(null) + "\"\n";
+    }
+    
 }

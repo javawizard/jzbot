@@ -13,13 +13,14 @@ public class DefaultHelpProvider implements HelpProvider
         if (page.equals(""))
             return ""
                     + JZBot.bot.getNick()
-                    + " is an IRC bot. Use \"%HELPCMD% about\" for more info.\n"
-                    + "Below each help page (including this one) is a list of subpages, "
-                    + "pages on topics under the current one. You can use these to get "
-                    + "more information. It also explains how to show each of those pages.";
+                    + " is an IRC bot. Use \"%HELPCMD% about\" for more info.";
         else if (page.equals("factoids"))
             return "Factoid help coming soon. In the mean time, try \"%HELPCMD% functions\" "
                     + "for functions that can be used within factoids.";
+        else if (page.equals("about"))
+            return "" + JZBot.bot.getNick()
+                    + " is an IRC bot. The software it runs is JZBot "
+                    + "(http://jzbot.googlecode.com).";
         return null;
     }
     

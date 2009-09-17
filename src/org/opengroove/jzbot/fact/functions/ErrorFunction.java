@@ -17,14 +17,14 @@ public class ErrorFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "error";
+        return "Syntax: {{error||<message>}} -- Causes a syntax error to "
+                + "be reported with the specified message.";
     }
     
     @Override
     public String getName()
     {
-        return "Syntax: {{error||<message>}} -- Causes a syntax error to "
-                + "be reported with the specified message.";
+        return "error";
     }
     
 }

@@ -41,10 +41,10 @@ public class ReplaceFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {{replace||<mode>||<text>||<search>||<replacement>}} -- Replaces "
-                + "<search> in the text <text> with <replacement> if <mode> is text, or "
+                + "<search> in the text <text> with <replacement> if <mode> is \"text\", or "
                 + "replaces any string that matches the regular expression <search> in the "
                 + "text <text> with <replacement> (which can contain back references) if <mode> "
-                + "is regex. Mode can be omitted, and will default to regex.";
+                + "is \"regex\". <mode> can be omitted, and will default to regex.";
     }
     
 }

@@ -6,6 +6,12 @@ import java.util.Map;
 
 import org.opengroove.jzbot.fact.functions.*;
 
+/**
+ * A class that can parse factoids. This is where factoid execution starts.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class FactParser
 {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
@@ -19,7 +25,11 @@ public class FactParser
      * Currently, the resulting FactEntity is an instance of
      * {@link FunctionReference} that points to the {@link IdentityFunction
      * identity} function, although this behavior should not be relied upon as
-     * it may change in the future.
+     * it may change in the future.<br/><br/>
+     * 
+     * Parsing a factoid does not cause any side effects, such as changes to
+     * local or global variables, to occur. It's only when you actually resolve
+     * a factoid that these side effects would occur.
      * 
      * @param factoid
      *            The factoid text to parse
@@ -29,10 +39,32 @@ public class FactParser
     {
         CharStack stack = new CharStack("{{identity||" + factoid + "}}");
         FunctionReference reference = parseFunction(stack);
+        if (stack.more())
+            /*
+             * The only way we can have more here is if they closed the identity
+             * function accidentally
+             */
+            throw new ParseException(stack.at(),
+                    "There are more \"}}\" than there are \"{{\"");
+        if (reference.getArgumentSequence().length() > 2)
+            throw new ParseException(stack.at(),
+                    "\"||\" used somewhere in your factoid outside of a function");
         return reference;
     }
     
-    private static FunctionReference parseFunction(CharStack stack)
+    /**
+     * Parses a CharStack representing a function call into a function
+     * reference. Usually, if you're just trying to parse/run a factoid, you'll
+     * use {@link #parse(String)} instead. parse(String) interally calls this
+     * method with the argument "{{identity||" + factText + "}}" where factText
+     * is the text of the factoid.
+     * 
+     * 
+     * @param stack
+     *            The CharStack to parse
+     * @return The parsed function
+     */
+    public static FunctionReference parseFunction(CharStack stack)
     {
         // This should be | instead of || to make sure that it's not
         // short-circuit, so that at()-2 would yield the correct result.
@@ -69,17 +101,13 @@ public class FactParser
             else if (c == '%')
             {
                 currentLiteral = null;
-                Literal l = new Literal();
+                StringBuffer l = new StringBuffer();
                 char v;
                 while ((v = stack.next()) != '%')
                 {
                     l.append(v);
                 }
-                Sequence refArgs = new Sequence();
-                refArgs.add(new Literal("lget"));
-                refArgs.add(l);
-                FunctionReference ref = new FunctionReference(refArgs);
-                currentArgument.add(ref);
+                currentArgument.add(new VarReference(l.toString()));
             }
             else if (c == '{' && stack.peek() == '{')
             {
@@ -92,6 +120,15 @@ public class FactParser
             {
                 currentLiteral = null;
                 stack.next();
+                if (currentArgument.length() == 1)
+                {
+                    /*
+                     * If the current argument sequence only has one child,
+                     * we'll replace it with its child for efficiency reasons.
+                     */
+                    argumentSequence.remove(argumentSequence.length() - 1);
+                    argumentSequence.add(currentArgument.get(0));
+                }
                 currentArgument = new Sequence();
                 argumentSequence.add(currentArgument);
             }
@@ -99,6 +136,15 @@ public class FactParser
             {
                 currentLiteral = null;
                 stack.next();
+                if (currentArgument.length() == 1)
+                {
+                    /*
+                     * If the current argument sequence only has one child,
+                     * we'll replace it with its child for efficiency reasons.
+                     */
+                    argumentSequence.remove(argumentSequence.length() - 1);
+                    argumentSequence.add(currentArgument.get(0));
+                }
                 FunctionReference ref = new FunctionReference(argumentSequence);
                 return ref;
             }
@@ -116,7 +162,9 @@ public class FactParser
          * We shouldn't ever get here. If we do, then it means that a function
          * call wasn't closed properly, so we'll throw an exception.
          */
-        throw new ParseException(stack.at() - 1, "Function call not closed");
+        throw new ParseException(stack.at() - 1,
+                "Function call not closed (IE you have "
+                        + "more \"{{\" than you have \"}}\"");
     }
     
     public static void install(Function function)
@@ -171,5 +219,20 @@ public class FactParser
         String[] names = functionMap.keySet().toArray(new String[0]);
         Arrays.sort(names);
         return names;
+    }
+    
+    /**
+     * Parses the specified text and then explains it, omitting the default
+     * {{identity}} function.
+     * 
+     * @param factoid
+     *            The text of the factoid to explain
+     * @return The explanation
+     */
+    public static String explain(String factoid)
+    {
+        FunctionReference ref = (FunctionReference) parse(factoid);
+        FactEntity entity = ref.getArgumentSequence().get(1);
+        return entity.explain(0, 4);
     }
 }

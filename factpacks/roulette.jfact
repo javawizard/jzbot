@@ -5,7 +5,7 @@ roulette. When a user issues "~roulette", They will either get a response such a
 followed by "The gun was unloaded. Luckster". Also, if ~roulette is not used for 5
 minutes, the game will be reset.
 
-~factoid create roulette {{import||roulette-create}}{{import||roulette-next}}{{ifeq||{{get||roulette-loaded}}||{{get||roulette-current}}||{{import||roulette-die||%0%}}||{{sendmessage||%channel%||Chamber {{get||roulette-current}} of 6: *click*}}{{ifeq||{{get||roulette-current}}||6||{{import||roulette-unloaded}}}}}}
+~factoid create roulette {{import||roulette-create}}{{import||roulette-next}}{{ifeq||{{get||roulette-loaded}}||{{get||roulette-current}}||{{import||roulette-die||%0%}}||{{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) *click*}}{{ifeq||{{get||roulette-current}}||6||{{import||roulette-unloaded}}}}}}
 ~factoid create roulette-create {{ifeq||{{get||roulette-loaded}}||||{{set||roulette-loaded||{{eval||1+{{randomint||7}}}}}}}}{{ifeq||{{get||roulette-current}}||||{{set||roulette-current||0}}}}{{future||roulette-delete-key||300||roulette-delete}}
 ~restrict roulette-create
 ~factoid create roulette-delete {{delete||roulette-loaded}}{{delete||roulette-current}}
@@ -14,7 +14,7 @@ minutes, the game will be reset.
 ~restrict roulette-next
 ~factoid create roulette-unloaded {{sendmessage||%channel%||The gun was unloaded. Luckster.}}{{import||roulette-reset}}
 ~restrict roulette-unloaded
-~factoid create roulette-die {{sendmessage||%channel%||Chamber {{get||roulette-current}} of 6: BANG! you're dead.}}{{import||roulette-reset}}
+~factoid create roulette-die {{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) BANG! you're dead.}}{{import||roulette-reset}}
 ~restrict roulette-die
 ~factoid create roulette-reset {{delete||roulette-current}}{{delete||roulette-loaded}}{{sendaction||%channel%||reloads and spins the chamber}}
 ~restrict roulette-reset

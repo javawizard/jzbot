@@ -42,4 +42,27 @@ public class Sequence extends FactEntity
         }
         return buffer.toString();
     }
+    
+    @Override
+    public String explain(int indentation, int increment)
+    {
+        return explain(indentation, increment, true);
+    }
+    
+    public String explain(int indentation, int increment, boolean prefix)
+    {
+        StringBuffer b = new StringBuffer();
+        if (prefix)
+            b.append(spaces(indentation)).append("sequence:\n");
+        for (FactEntity entity : list)
+        {
+            b.append(entity.explain(indentation + increment, increment));
+        }
+        return b.toString();
+    }
+    
+    public void remove(int index)
+    {
+        list.remove(index);
+    }
 }
