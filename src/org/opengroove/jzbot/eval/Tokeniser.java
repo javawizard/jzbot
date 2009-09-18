@@ -106,6 +106,10 @@ final class Tokeniser
             {
                 return Operator.MUL;
             }
+            case '^':
+            {
+                return Operator.POWC;
+            }
             case '?':
             {
                 return Operator.TERNARY;

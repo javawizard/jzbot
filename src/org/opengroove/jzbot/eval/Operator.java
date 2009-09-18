@@ -265,6 +265,25 @@ public enum Operator
         }
     },
     /**
+     * pow using ^
+     */
+    POWC(4, 2, "^", Type.ARITHMETIC, Type.ARITHMETIC)
+    {
+        @Override
+        BigDecimal perform(BigDecimal value1, BigDecimal value2,
+                BigDecimal value3)
+        {
+            try
+            {
+                return value1.pow(value2.intValueExact(), defaultContext);
+            }
+            catch (ArithmeticException ae)
+            {
+                throw new RuntimeException("powc argument: " + ae.getMessage());
+            }
+        }
+    },
+    /**
      * int
      */
     INT(4, 1, "int ", Type.ARITHMETIC, Type.ARITHMETIC)

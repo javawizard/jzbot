@@ -20,7 +20,7 @@ public class IsRestrictedCommand implements Command
     {
         if (arguments.equals(""))
             throw new ResponseException(
-                    "You need to specify the name of a factoid to restrict.");
+                    "You need to specify the name of a factoid to test for restriction.");
         Factoid fact = JZBot.getChannelFactoid(channel, arguments);
         if (fact != null)
         {
@@ -41,8 +41,9 @@ public class IsRestrictedCommand implements Command
         if (fact.isRestricted())
             JZBot.bot.sendMessage(pm ? sender : channel, "" + arguments
                     + " is restricted.");
-        JZBot.bot.sendMessage(pm ? sender : channel, "" + arguments
-                + " is not restricted.");
+        else
+            JZBot.bot.sendMessage(pm ? sender : channel, "" + arguments
+                    + " is not restricted.");
     }
     
 }

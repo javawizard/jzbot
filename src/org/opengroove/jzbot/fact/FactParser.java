@@ -185,6 +185,7 @@ public class FactParser
     private static void installDefaultSet()
     {
         install(new ActionFunction());
+        install(new CancelFunction());
         install(new DeleteFunction());
         install(new ErrorFunction());
         install(new EvalFunction());
@@ -198,12 +199,16 @@ public class FactParser
         install(new IfneqFunction());
         install(new IgnoreFunction());
         install(new ImportFunction());
+        install(new IsfutureFunction());
         install(new IsopFunction());
         install(new KickFunction());
         install(new LgetFunction());
         install(new LgvarsFunction());
+        install(new LlvarsFunction());
         install(new LsetFunction());
         install(new MatchFunction());
+        install(new ModeFunction());
+        install(new NumberlistFunction());
         install(new RandomFunction());
         install(new RandomintFunction());
         install(new ReplaceFunction());
@@ -211,6 +216,7 @@ public class FactParser
         install(new SendactionFunction());
         install(new SendmessageFunction());
         install(new SetFunction());
+        install(new SplitFunction());
         install(new TimemsFunction());
     }
     

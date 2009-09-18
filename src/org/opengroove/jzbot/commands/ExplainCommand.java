@@ -28,11 +28,11 @@ public class ExplainCommand implements Command
         }
         Factoid f = null;
         if (channel != null)
-            JZBot.getChannelFactoid(channel, arguments);
+            f = JZBot.getChannelFactoid(channel, arguments);
         if (f == null)
             f = JZBot.getGlobalFactoid(arguments);
         if (f == null)
-            throw new ResponseException("No such factoid.");
+            throw new ResponseException("No such factoid: " + arguments);
         String explanation = FactParser.explain(f.getValue());
         StringBuffer buffer = new StringBuffer();
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());

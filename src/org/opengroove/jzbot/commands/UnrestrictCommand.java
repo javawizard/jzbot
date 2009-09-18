@@ -20,7 +20,7 @@ public class UnrestrictCommand implements Command
     {
         if (arguments.equals(""))
             throw new ResponseException(
-                    "You need to specify the name of a factoid to restrict.");
+                    "You need to specify the name of a factoid to unrestrict.");
         Factoid fact = JZBot.getChannelFactoid(channel, arguments);
         if (fact != null)
         {

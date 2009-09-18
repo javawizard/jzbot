@@ -25,6 +25,18 @@ public class ArgumentList
         this.length = length;
     }
     
+    public String resolve(int index)
+    {
+        if (delegate != null)
+        {
+            return delegate.get(index + offset);
+        }
+        else
+        {
+            return sequence.get(index).resolve(context);
+        }
+    }
+    
     public String get(int index)
     {
         if (delegate != null)

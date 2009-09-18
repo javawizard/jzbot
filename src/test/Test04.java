@@ -9,12 +9,12 @@ public class Test04
     public static void main(String[] args)
     {
         System.out
-                .println(("Syntax: {{run||<factoid>||<argument1>||...}} -- Runs the specified factoid "
-                        + "without actually importing it. This function therefore evaluates "
-                        + "to nothing. This is pretty much only useful when the factoid in question "
-                        + "has useful side effects, like setting a global variable."
-                        + " <factoid> is the name of the factoid, and "
-                        + "<argument1>, <argument2>, etc. are the arguments to be passed to the factoid.")
+                .println(("For example, {{numberlist||1||5}} evaluates to \"1 2 3 4 5\", "
+                        + "{{numberlist||5||1}} evaluates to \"5 4 3 2 1\", {{numberlist||3||3}} "
+                        + "evaluates to \"3\", {{numberlist||45||8||10}} evaluates to \"45 35 25 15\", "
+                        + "{{numberlist||8||45||10}} evaluates to \"8 18 28 38\", and {{numberlist||"
+                        + "8||45||10}} evaluates to \"8 18 28 38\". This can be used with {{split}} "
+                        + "to create a for loop.")
                         .length());
     }
 }
