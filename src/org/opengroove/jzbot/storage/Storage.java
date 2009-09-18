@@ -34,6 +34,9 @@ public interface Storage
     @Constructor
     public Channel createChannel();
     
+    @Constructor
+    public Regex createRegex();
+    
     @Property
     @ListType(Factoid.class)
     public StoredList<Factoid> getFactoids();

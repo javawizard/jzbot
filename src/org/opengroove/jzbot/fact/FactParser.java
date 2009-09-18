@@ -211,6 +211,7 @@ public class FactParser
         install(new MatchFunction());
         install(new ModeFunction());
         install(new NumberlistFunction());
+        install(new OverrideFunction());
         install(new PadFunction());
         install(new RadixFunction());
         install(new RandomFunction());

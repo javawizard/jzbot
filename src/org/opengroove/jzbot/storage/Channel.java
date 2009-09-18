@@ -44,6 +44,9 @@ public interface Channel
     @ListType(Regex.class)
     public StoredList<Regex> getRegularExpressions();
     
+    @Search(listProperty = "regularExpressions", searchProperty = "expression")
+    public Regex getRegex(String expression);
+    
     @Search(listProperty = "operators", searchProperty = "hostname")
     public Operator getOperator(String hostname);
     

@@ -904,4 +904,10 @@ public class JZBot extends PircBot
                             + "(in new String(byte[],String))", e);
         }
     }
+    
+    public static void reloadRegexes()
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }
