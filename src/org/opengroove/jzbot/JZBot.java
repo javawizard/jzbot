@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
@@ -222,6 +225,13 @@ public class JZBot extends PircBot
         }
         bot.setLogin(config.getNick());
         bot.setName(config.getNick());
+        try
+        {
+            bot.setEncoding(config.getCharset());
+        }
+        catch (UnsupportedEncodingException e)
+        {
+        }
         System.out.println("connecting");
         bot.connect(config.getServer(), config.getPort(), config.getPassword());
         System.out.println("connected");
@@ -837,4 +847,60 @@ public class JZBot extends PircBot
         return threadLocalUsername.get();
     }
     
+    public static String getCurrentCharset()
+    {
+        String charset = config.getCharset();
+        if (charset == null)
+            return Charset.defaultCharset().name();
+        return config.getCharset();
+    }
+    
+    public static void setCurrentCharset(String charset)
+    {
+        try
+        {
+            Charset.forName(charset);
+        }
+        catch (Exception e)
+        {
+            throw new ResponseException(
+                    "That is not a charset supported on this platform.", e);
+        }
+        validateWorkableCharset(charset);
+        try
+        {
+            bot.setEncoding(charset);
+        }
+        catch (Exception e)
+        {
+            throw new ResponseException(
+                    "That is not a charset supported on this platform. "
+                            + "(in bot.setEncoding(String))", e);
+        }
+        config.setCharset(charset);
+    }
+    
+    private static void validateWorkableCharset(String charset)
+    {
+        byte[] bytes = new byte[]
+        {
+                '~', 's', 'o', 'm', 'e', 't', 'h', 'i', 'n', 'g'
+        };
+        try
+        {
+            String s = new String(bytes, charset);
+            if (s.length() != 10)
+                throw new ResponseException("Charset failed length validation");
+            if (s.charAt(0) != '~')
+                throw new ResponseException("Charset failed prefix validation");
+            if (s.charAt(4) != 'e')
+                throw new ResponseException("Charset failed content validation");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new ResponseException(
+                    "That is not a charset supported on this platform. "
+                            + "(in new String(byte[],String))", e);
+        }
+    }
 }
