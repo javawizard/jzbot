@@ -147,8 +147,8 @@ public class FactoidCommand implements Command
         {
             processed = true;
             System.out.println("command is list, " + isGlobal);
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Start of factoid list");
+            // JZBot.bot.sendMessage(pm ? sender : channel,
+            // "Start of factoid list");
             StoredList<Factoid> list;
             if (isGlobal)
                 list = JZBot.storage.getFactoids();

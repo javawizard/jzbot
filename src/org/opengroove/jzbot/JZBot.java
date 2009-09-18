@@ -11,6 +11,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -408,6 +409,8 @@ public class JZBot extends PircBot
             System.out.println("No matching channel");
             return;
         }
+        boolean processFactoids = processChannelRegex(channel, sender,
+                hostname, message);
         String trigger = chan.getTrigger();
         if (trigger != null && message.startsWith(trigger))
         {
@@ -415,7 +418,7 @@ public class JZBot extends PircBot
             {
                 System.out.println("running message command");
                 runMessageCommand(channel, false, sender, hostname, login,
-                        message.substring(trigger.length()));
+                        message.substring(trigger.length()), processFactoids);
             }
             catch (Throwable e)
             {
@@ -432,8 +435,24 @@ public class JZBot extends PircBot
         }
     }
     
+    private boolean processChannelRegex(String channel, String sender,
+            String hostname, String message)
+    {
+        synchronized (regexLock)
+        {
+            List<String> channelList = regexCache.get(channel);
+            if (channelList == null)
+                return true;
+            for(String regex : channelList)
+            {
+                
+            }
+        }
+    }
+    
     private void runMessageCommand(String channel, boolean pm, String sender,
-            String hostname, String username, String message)
+            String hostname, String username, String message,
+            boolean processFactoids)
     {
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
@@ -471,6 +490,8 @@ public class JZBot extends PircBot
          * 
          * Our first check will be for a channel-specific factoid.
          */
+        if (!processFactoids)
+            return;
         if (channel != null)
         {
             Channel cn = storage.getChannel(channel);
@@ -681,7 +702,8 @@ public class JZBot extends PircBot
         }
         try
         {
-            runMessageCommand(channel, true, sender, hostname, login, message);
+            runMessageCommand(channel, true, sender, hostname, login, message,
+                    true);
         }
         catch (Throwable e)
         {
@@ -905,9 +927,24 @@ public class JZBot extends PircBot
         }
     }
     
+    private static Map<String, List<String>> regexCache = new HashMap<String, List<String>>();
+    
+    private static Object regexLock = new Object();
+    
     public static void reloadRegexes()
     {
-        // TODO Auto-generated method stub
-        
+        synchronized (regexLock)
+        {
+            regexCache.clear();
+            for (Channel c : storage.getChannels().isolate())
+            {
+                ArrayList<String> list = new ArrayList<String>();
+                regexCache.put(c.getName(), list);
+                for (Regex regex : c.getRegularExpressions().isolate())
+                {
+                    list.add(regex.getExpression());
+                }
+            }
+        }
     }
 }

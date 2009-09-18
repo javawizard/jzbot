@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.commands;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,8 @@ import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Regex;
+import org.opengroove.jzbot.utils.Pastebin;
+import org.opengroove.jzbot.utils.Pastebin.Duration;
 
 public class RegexCommand implements Command
 {
@@ -62,12 +65,33 @@ public class RegexCommand implements Command
             c.getRegularExpressions().remove(regex);
             JZBot.bot.reloadRegexes();
             JZBot.bot.sendMessage(pm ? sender : channel,
-            "Successfully removed and deactivated.");
+                    "Successfully removed and deactivated.");
             
         }
         else if (command.equals("list"))
         {
-            
+            StringBuffer buffer = new StringBuffer();
+            for (Regex regex : c.getRegularExpressions().isolate())
+            {
+                buffer.append(regex.getExpression());
+            }
+            String[] split = buffer.toString().split("\n");
+            if (split.length > 2)
+            {
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "Regex list: http://pastebin.com/"
+                                + Pastebin.createPost("jzbot", buffer
+                                        .toString(), Duration.DAY, ""));
+            }
+            else
+            {
+                for (String s : split)
+                {
+                    JZBot.bot.sendMessage(pm ? sender : channel, s);
+                }
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "End of regex list");
+            }
         }
         else
         {
