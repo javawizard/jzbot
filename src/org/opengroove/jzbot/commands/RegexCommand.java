@@ -73,7 +73,8 @@ public class RegexCommand implements Command
             StringBuffer buffer = new StringBuffer();
             for (Regex regex : c.getRegularExpressions().isolate())
             {
-                buffer.append(regex.getExpression());
+                buffer.append(regex.getExpression() + " " + regex.getFactoid()
+                        + "\n");
             }
             String[] split = buffer.toString().split("\n");
             if (split.length > 2)

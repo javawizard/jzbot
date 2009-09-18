@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.utils.StringUtils;
@@ -224,8 +226,10 @@ public class JZBot extends PircBot
             System.out.println("No connect info specified. JZBot will exit.");
             System.exit(0);
         }
+        reloadRegexes();
         bot.setLogin(config.getNick());
         bot.setName(config.getNick());
+        bot.setAutoNickChange(true);
         try
         {
             if (config.getCharset() != null)
@@ -438,16 +442,84 @@ public class JZBot extends PircBot
     private boolean processChannelRegex(String channel, String sender,
             String hostname, String message)
     {
-        synchronized (regexLock)
+        try
         {
-            List<String> channelList = regexCache.get(channel);
-            if (channelList == null)
-                return true;
-            for(String regex : channelList)
+            synchronized (regexLock)
             {
-                
+                List<String> channelList = regexCache.get(channel);
+                if (channelList == null)
+                    return true;
+                for (String regex : channelList)
+                {
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(message);
+                    if (!matcher.find())
+                        continue;
+                    /*
+                     * We found something.
+                     */
+                    if (runRegex(channel, sender, hostname, message, matcher,
+                            regex))
+                        return false;
+                }
             }
+            return true;
         }
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            bot.sendMessage(channel, "Pre-process regex error: "
+                    + pastebinStack(e));
+            return true;
+        }
+    }
+    
+    /**
+     * 
+     * @param channel
+     * @param sender
+     * @param hostname
+     * @param message
+     * @param regex
+     * @return True if this overrides, false if it doesn't
+     */
+    private boolean runRegex(String channel, String sender, String hostname,
+            String message, Matcher matcher, String regexValue)
+    {
+        Channel c = storage.getChannel(channel);
+        if (c == null)
+            return false;
+        Regex regex = c.getRegex(regexValue);
+        if (regex == null)
+            return false;
+        Factoid f = c.getFactoid(regex.getFactoid());
+        if (f == null)
+        {
+            bot.sendMessage(channel, "Invalid factoid in regex " + regexValue
+                    + ": " + regex.getFactoid());
+            return false;
+        }
+        HashMap<String, String> vars = new HashMap<String, String>();
+        vars.put("regex", regexValue);
+        vars.put("original", message);
+        vars.put("matched", matcher.group(0));
+        vars.put("hostname", hostname);
+        String[] strings = new String[matcher.groupCount()];
+        for (int i = 1; i <= matcher.groupCount(); i++)
+        {
+            strings[i - 1] = matcher.group(i);
+        }
+        String factValue = safeRunFactoid(f, channel, sender, strings, true,
+                vars);
+        if (factValue.trim().equals(""))
+            ;
+        else if (factValue.startsWith("<ACTION>"))
+            sendAction(channel, factValue.substring("<ACTION>".length()));
+        else
+            sendMessage(channel, factValue);
+        if ("true".equalsIgnoreCase(vars.get("__internal_override")))
+            return true;
+        return false;
     }
     
     private void runMessageCommand(String channel, boolean pm, String sender,
@@ -644,6 +716,7 @@ public class JZBot extends PircBot
                 "storage/db"));
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
+        reloadRegexes();
         new Thread()
         {
             

@@ -11,13 +11,19 @@ public class Test07
      */
     public static void main(String[] args)
     {
-        Matcher m = Pattern.compile("^(H|h)(...)(....)").matcher(
-                "hello world,");
-        System.out.println(m.find());
-        for (int i = 0; i <= m.groupCount(); i++)
+        // Matcher m = Pattern.compile("^(H|h)(...)(....)").matcher(
+        // "hello world,");
+        // System.out.println(m.find());
+        // for (int i = 0; i <= m.groupCount(); i++)
+        // {
+        // System.out.println("Group " + i + ": " + m.group(i));
+        // }
+        System.out.println("starting");
+        for (int i = 0; i < 1000000; i++)
         {
-            System.out.println("Group " + i + ": " + m.group(i));
+            Pattern p = Pattern.compile("<([A-Z][A-Z0-9]*)\\b[^>]*>(.*?)</$1>");
         }
+        System.out.println("done");
     }
     
 }
