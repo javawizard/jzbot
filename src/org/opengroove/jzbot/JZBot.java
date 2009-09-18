@@ -387,23 +387,35 @@ public class JZBot extends PircBot
     protected void onMessage(String channel, String sender, String login,
             String hostname, String message)
     {
+        System.out.println("Message from " + channel + " by " + sender + ": "
+                + message);
         Channel chan = storage.getChannel(channel);
         if (chan == null)
+        {
+            System.out.println("No matching channel");
             return;
-        
+        }
         String trigger = chan.getTrigger();
         if (trigger != null && message.startsWith(trigger))
         {
             try
             {
+                System.out.println("running message command");
                 runMessageCommand(channel, false, sender, hostname, login,
                         message.substring(trigger.length()));
             }
             catch (Exception e)
             {
                 e.printStackTrace();
-                throw new RuntimeException(e);
+                JZBot.bot
+                        .sendMessage(channel,
+                                "Internal upper-propegation error: "
+                                        + pastebinStack(e));
             }
+        }
+        else
+        {
+            System.out.println("Incorrect trigger");
         }
     }
     
@@ -417,6 +429,7 @@ public class JZBot extends PircBot
         Command c = commands.get(command);
         if (c != null)
         {
+            System.out.println("Command: " + c.getName());
             try
             {
                 threadLocalUsername.set(username);
@@ -453,11 +466,13 @@ public class JZBot extends PircBot
                 Factoid f = cn.getFactoid(command);
                 if (f != null)
                 {
+                    System.out.println("channel-specific factoid");
                     incrementDirectRequests(f);
                     String factValue;
                     factValue = safeRunFactoid(f, channel, sender,
                             commandArguments.split(" "), bot.isOp(channel,
                                     hostname), new HashMap<String, String>());
+                    System.out.println("fact value: " + factValue);
                     if (factValue.trim().equals(""))
                         ;
                     else if (factValue.startsWith("<ACTION>"))
@@ -475,19 +490,26 @@ public class JZBot extends PircBot
         Factoid f = storage.getFactoid(command);
         if (f != null)
         {
+            System.out.println("global factoid");
             incrementDirectRequests(f);
             String factValue;
             factValue = safeRunFactoid(f, channel, sender, commandArguments
                     .split(" "), bot.isOp(channel, hostname),
                     new HashMap<String, String>());
+            System.out.println("fact value: " + factValue);
             if (factValue.trim().equals(""))
                 ;
             else if (factValue.startsWith("<ACTION>"))
                 sendAction(channel, factValue.substring("<ACTION>".length()));
             else
+            {
+                System.out.println("sending global message " + channel + " to "
+                        + factValue);
                 sendMessage(channel, factValue);
+            }
             return;
         }
+        System.out.println("invalid command");
         doInvalidCommand(pm, channel, sender);
     }
     
@@ -554,22 +576,28 @@ public class JZBot extends PircBot
     
     protected void onConnect()
     {
-        for (Channel channel : storage.getChannels().isolate())
+        new Thread()
         {
-            if (!channel.isSuspended())
+            public void run()
             {
-                try
+                for (Channel channel : storage.getChannels().isolate())
                 {
-                    Thread.sleep(2300);
+                    if (!channel.isSuspended())
+                    {
+                        try
+                        {
+                            Thread.sleep(2500);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        System.out.println("joining " + channel.getName());
+                        joinChannel(channel.getName());
+                    }
                 }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-                System.out.println("joining " + channel.getName());
-                joinChannel(channel.getName());
             }
-        }
+        }.start();
     }
     
     protected void onDisconnect()
@@ -629,6 +657,7 @@ public class JZBot extends PircBot
     protected void onPrivateMessage(String sender, String login,
             String hostname, String message)
     {
+        System.out.println("pm from " + sender + ": " + message);
         String channel = null;
         if (message.startsWith("#") && message.contains(" "))
         {
@@ -642,14 +671,9 @@ public class JZBot extends PircBot
         catch (Exception e)
         {
             e.printStackTrace();
-            throw new RuntimeException(e);
+            sendMessage(sender, "Internal upper-propegating pm exception: "
+                    + pastebinStack(e));
         }
-        
-    }
-    
-    private void doHelp(String sender)
-    {
-        // TODO Auto-generated method stub
         
     }
     
