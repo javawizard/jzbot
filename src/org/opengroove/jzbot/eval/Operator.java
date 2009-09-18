@@ -185,6 +185,15 @@ public enum Operator
             return value1.divide(value2, defaultContext);
         }
     },
+    DIVC(3, 2, "÷", Type.ARITHMETIC, Type.ARITHMETIC)
+    {
+        @Override
+        BigDecimal perform(BigDecimal value1, BigDecimal value2,
+                BigDecimal value3)
+        {
+            return value1.divide(value2, defaultContext);
+        }
+    },
     /**
      * %
      */

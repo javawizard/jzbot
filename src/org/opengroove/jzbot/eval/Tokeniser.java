@@ -98,6 +98,10 @@ final class Tokeniser
             {
                 return Operator.DIV;
             }
+            case '÷':
+            {
+                return Operator.DIVC;
+            }
             case '%':
             {
                 return Operator.REMAINDER;
