@@ -8,6 +8,8 @@ import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.utils.JZUtils;
+import org.opengroove.jzbot.utils.Pastebin;
+import org.opengroove.jzbot.utils.Pastebin.Duration;
 
 public class ConfigCommand implements Command
 {
@@ -44,12 +46,19 @@ public class ConfigCommand implements Command
         {
             if (tokens.length == 1)
             {
-                JZBot.bot.sendMessage(pm ? sender : channel, "Charset is "
-                        + JZBot.getCurrentCharset()
-                        + " and allowed values are (separated by spaces):");
-                JZUtils.ircSendDelimited(Charset.availableCharsets().keySet()
-                        .toArray(new String[0]), "  ", JZBot.bot, pm ? sender
-                        : channel);
+                JZBot.bot
+                        .sendMessage(
+                                pm ? sender : channel,
+                                "Charset is "
+                                        + JZBot.getCurrentCharset()
+                                        + ". Allowed charsets (separated by spaces) are: http://pastebin.com/"
+                                        + Pastebin.createPost("jzbot",
+                                                StringUtils.delimited(Charset
+                                                        .availableCharsets()
+                                                        .keySet().toArray(
+                                                                new String[0]),
+                                                        "   "), Duration.DAY,
+                                                null));
                 return;
             }
             String charset = tokens[1];

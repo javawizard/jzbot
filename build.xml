@@ -4,6 +4,9 @@
 			<fileset dir=".">
 				<include name="**/*" />
 				<exclude name="**/.svn" />
+				<exclude name="jzbot2-old.tar.gz" />
+				<exclude name="storage" />
+				<exclude name="storage/**" />
 			</fileset>
 		</tar>
 	</target>
