@@ -29,7 +29,7 @@ public class ArgumentList
     {
         if (delegate != null)
         {
-            return delegate.get(index + offset);
+            return delegate.resolve(index + offset);
         }
         else
         {

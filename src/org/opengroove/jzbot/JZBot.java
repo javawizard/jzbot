@@ -285,7 +285,9 @@ public class JZBot extends PircBot
     
     public static void incrementDirectRequests(Factoid f)
     {
+        System.out.println("Incrementing direct requests for " + f.getName());
         f.setDirectRequests(f.getDirectRequests() + 1);
+        System.out.println("incremented");
     }
     
     /**
@@ -404,7 +406,7 @@ public class JZBot extends PircBot
                 runMessageCommand(channel, false, sender, hostname, login,
                         message.substring(trigger.length()));
             }
-            catch (Exception e)
+            catch (Throwable e)
             {
                 e.printStackTrace();
                 JZBot.bot
@@ -492,13 +494,15 @@ public class JZBot extends PircBot
         {
             System.out.println("global factoid");
             incrementDirectRequests(f);
+            System.out.println("requests incremented");
             String factValue;
+            System.out.println("calculating fact value");
             factValue = safeRunFactoid(f, channel, sender, commandArguments
                     .split(" "), bot.isOp(channel, hostname),
                     new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             if (factValue.trim().equals(""))
-                ;
+                System.out.println("Empty value; doing nothing");
             else if (factValue.startsWith("<ACTION>"))
                 sendAction(channel, factValue.substring("<ACTION>".length()));
             else
@@ -668,7 +672,7 @@ public class JZBot extends PircBot
         {
             runMessageCommand(channel, true, sender, hostname, login, message);
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             e.printStackTrace();
             sendMessage(sender, "Internal upper-propegating pm exception: "

@@ -47,7 +47,7 @@ public class SplitFunction extends Function
                 + "each of the evaluations of <action> evaluated to, separated by "
                 + "<delimiter>.\nBear in mind that backslashes in regular expressions "
                 + "need to be double-escaped, since the factoid language treats back "
-                + "slashes specially. As an example, {{split||\\,||first,second,third||"
+                + "slashes specially. As an example, {{split||\\\\.||first.second.third||"
                 + "thevalue||This is the %thevalue%|| -- }} would result in \"This is "
                 + "the first -- This is the second -- This is the third\". <delimiter>"
                 + " is optional.\n"
@@ -59,8 +59,7 @@ public class SplitFunction extends Function
     @Override
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "split";
     }
     
 }

@@ -31,6 +31,6 @@ public class IfneqFunction extends Function
                 + "Evaluates to <trueaction> if <compare1> is not the same as <compare2>, ignoring "
                 + "case, or <falseaction> if they are equal. <falseaction> is optional, "
                 + "and if not present {{ifneq}} will act as if <falseaction> were empty. This "
-                + "is essentially the opposite of {{ifeq}}.";
+                + "function is essentially the opposite of {{ifeq}}.";
     }
 }

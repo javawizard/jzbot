@@ -186,10 +186,12 @@ public class FactParser
     {
         install(new ActionFunction());
         install(new CancelFunction());
+        install(new DateformatFunction());
         install(new DeleteFunction());
         install(new ErrorFunction());
         install(new EvalFunction());
         install(new FirstvarFunction());
+        install(new FormatFunction());
         install(new FutureFunction());
         install(new GetFunction());
         install(new IdentityFunction());
@@ -209,6 +211,8 @@ public class FactParser
         install(new MatchFunction());
         install(new ModeFunction());
         install(new NumberlistFunction());
+        install(new PadFunction());
+        install(new RadixFunction());
         install(new RandomFunction());
         install(new RandomintFunction());
         install(new ReplaceFunction());

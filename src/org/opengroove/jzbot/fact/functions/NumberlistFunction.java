@@ -24,7 +24,7 @@ public class NumberlistFunction extends Function
             throw new FactoidException("A <step> of 0 is not allowed.");
         if (start == end)
             return "" + start;
-        while ((start < end && step > 0) || (start > end && step < 0))
+        while ((start <= end && step > 0) || (start >= end && step < 0))
         {
             if (first)
                 first = false;
