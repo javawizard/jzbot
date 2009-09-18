@@ -1,0 +1,10 @@
+<project name="jzbot2" default="archive">
+	<target name="archive">
+		<tar destfile="jzbot2-old.tar.gz" compression="gzip">
+			<fileset dir=".">
+				<include name="**/*" />
+				<exclude name="**/.svn" />
+			</fileset>
+		</tar>
+	</target>
+</project>

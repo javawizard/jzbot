@@ -227,7 +227,8 @@ public class JZBot extends PircBot
         bot.setName(config.getNick());
         try
         {
-            bot.setEncoding(config.getCharset());
+            if (config.getCharset() != null)
+                bot.setEncoding(config.getCharset());
         }
         catch (UnsupportedEncodingException e)
         {
