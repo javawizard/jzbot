@@ -3,25 +3,33 @@ package org.opengroove.jzbot.fact;
 public class VarReference extends FactEntity
 {
     private String name;
+    private boolean global;
     
-    public VarReference(String name)
+    public VarReference(String name, boolean global)
     {
         this.name = name;
+        this.global = global;
     }
     
     @Override
     public String explain(int indentation, int increment)
     {
-        return spaces(indentation) + "variable: \"" + name + "\"\n";
+        if (global)
+            return spaces(indentation) + "global variable: \"" + name + "\"\n";
+        else
+            return spaces(indentation) + "variable: \"" + name + "\"\n";
     }
     
     @Override
     public String resolve(FactContext context)
     {
-        String var = context.getLocalVars().get(name);
+        String var;
+        if (global)
+            var = context.getGlobalVars().get(name);
+        else
+            var = context.getLocalVars().get(name);
         if (var == null)
             return "";
         return var;
     }
-    
 }

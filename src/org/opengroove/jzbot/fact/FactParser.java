@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jibble.pircbot.Colors;
 import org.opengroove.jzbot.fact.functions.*;
 
 /**
@@ -98,16 +99,16 @@ public class FactParser
                 }
                 currentLiteral.append(stack.next());
             }
-            else if (c == '%')
+            else if (c == '%' || c == '$')
             {
                 currentLiteral = null;
                 StringBuffer l = new StringBuffer();
                 char v;
-                while ((v = stack.next()) != '%')
+                while ((v = stack.next()) != c)
                 {
                     l.append(v);
                 }
-                currentArgument.add(new VarReference(l.toString()));
+                currentArgument.add(new VarReference(l.toString(), c == '$'));
             }
             else if (c == '{' && stack.peek() == '{')
             {
@@ -180,6 +181,7 @@ public class FactParser
     static
     {
         installDefaultSet();
+        installSpecialSet();
     }
     
     private static void installDefaultSet()
@@ -223,6 +225,31 @@ public class FactParser
         install(new SetFunction());
         install(new SplitFunction());
         install(new TimemsFunction());
+    }
+    
+    private static void installSpecialSet()
+    {
+        install(new CharCodeSpecial(
+                "c",
+                "\u0003",
+                "Inserts the IRC color change character. Immediately following "
+                        + "this should be two digits, which represent the color of text "
+                        + "that should show up."));
+        install(new CharCodeSpecial("n", Colors.NORMAL,
+                "Resets any coloring that has been applied in the factoid, so that "
+                        + "all succeeding text has no special formatting."));
+        install(new CharCodeSpecial("b", Colors.BOLD,
+                "Inserts the IRC bold character, which causes all following text "
+                        + "to be shown as bold."));
+        install(new CharCodeSpecial(
+                "i",
+                Colors.REVERSE,
+                "Inserts the IRC reverse character, which, depending on the client, "
+                        + "either reverses the foreground and background colors or shows text"
+                        + " as italic."));
+        install(new CharCodeSpecial("u", Colors.UNDERLINE,
+                "Inserts the IRC underline character, which causes all "
+                        + "succeeding text to be underlined."));
     }
     
     public static String[] getFunctionNames()

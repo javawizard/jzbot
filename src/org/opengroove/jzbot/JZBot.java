@@ -229,6 +229,7 @@ public class JZBot extends PircBot
         reloadRegexes();
         bot.setLogin(config.getNick());
         bot.setName(config.getNick());
+        bot.setVersion("JZBot -- http://jzbot.googlecode.com");
         bot.setAutoNickChange(true);
         try
         {
@@ -405,37 +406,51 @@ public class JZBot extends PircBot
     protected void onMessage(String channel, String sender, String login,
             String hostname, String message)
     {
-        System.out.println("Message from " + channel + " by " + sender + ": "
-                + message);
-        Channel chan = storage.getChannel(channel);
-        if (chan == null)
+        TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
+        tkt.start();
+        try
         {
-            System.out.println("No matching channel");
-            return;
-        }
-        boolean processFactoids = processChannelRegex(channel, sender,
-                hostname, message);
-        String trigger = chan.getTrigger();
-        if (trigger != null && message.startsWith(trigger))
-        {
-            try
+            System.out.println("Message from " + channel + " by " + sender
+                    + ": " + message);
+            Channel chan = storage.getChannel(channel);
+            if (chan == null)
             {
-                System.out.println("running message command");
-                runMessageCommand(channel, false, sender, hostname, login,
-                        message.substring(trigger.length()), processFactoids);
+                System.out.println("No matching channel");
+                return;
             }
-            catch (Throwable e)
+            boolean processFactoids = processChannelRegex(channel, sender,
+                    hostname, message);
+            String trigger = chan.getTrigger();
+            if (trigger != null && message.startsWith(trigger))
             {
-                e.printStackTrace();
-                JZBot.bot
-                        .sendMessage(channel,
-                                "Internal upper-propegation error: "
-                                        + pastebinStack(e));
+                try
+                {
+                    System.out.println("running message command");
+                    runMessageCommand(channel, false, sender, hostname, login,
+                            message.substring(trigger.length()),
+                            processFactoids);
+                }
+                catch (Throwable e)
+                {
+                    e.printStackTrace();
+                    JZBot.bot.sendMessage(channel,
+                            "Internal upper-propegation error: "
+                                    + pastebinStack(e));
+                }
+            }
+            else
+            {
+                System.out.println("Incorrect trigger");
             }
         }
-        else
+        catch (FactTimeExceededError e)
         {
-            System.out.println("Incorrect trigger");
+            JZBot.bot
+                    .sendMessage(channel, "Time exceeded: " + pastebinStack(e));
+        }
+        finally
+        {
+            tkt.active = false;
         }
     }
     
@@ -659,17 +674,29 @@ public class JZBot extends PircBot
             factValue = "Syntax error while running factoid: "
                     + pastebinStack(e);
         }
+        catch (FactTimeExceededError e)
+        {
+            factValue = "The factoid took too long to run: " + pastebinStack(e);
+        }
         return factValue;
     }
     
     public static String pastebinStack(Throwable e)
     {
+        e.printStackTrace();
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw, true));
         String eString = sw.toString();
-        return "http://pastebin.com/"
-                + Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY,
-                        "");
+        try
+        {
+            return "http://pastebin.com/"
+                    + Pastebin.createPost("jzbot", eString,
+                            Pastebin.Duration.DAY, "");
+        }
+        catch (Exception e2)
+        {
+            return "(pastebin service unavailable)";
+        }
     }
     
     private void doInvalidCommand(boolean pm, String channel, String sender)
@@ -766,23 +793,37 @@ public class JZBot extends PircBot
     protected void onPrivateMessage(String sender, String login,
             String hostname, String message)
     {
-        System.out.println("pm from " + sender + ": " + message);
-        String channel = null;
-        if (message.startsWith("#") && message.contains(" "))
-        {
-            channel = message.substring(0, message.indexOf(" "));
-            message = message.substring(message.indexOf(" ") + 1);
-        }
+        TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
+        tkt.start();
+        
         try
         {
-            runMessageCommand(channel, true, sender, hostname, login, message,
-                    true);
+            System.out.println("pm from " + sender + ": " + message);
+            String channel = null;
+            if (message.startsWith("#") && message.contains(" "))
+            {
+                channel = message.substring(0, message.indexOf(" "));
+                message = message.substring(message.indexOf(" ") + 1);
+            }
+            try
+            {
+                runMessageCommand(channel, true, sender, hostname, login,
+                        message, true);
+            }
+            catch (Throwable e)
+            {
+                e.printStackTrace();
+                sendMessage(sender, "Internal upper-propegating pm exception: "
+                        + pastebinStack(e));
+            }
         }
-        catch (Throwable e)
+        catch (FactTimeExceededError e)
         {
-            e.printStackTrace();
-            sendMessage(sender, "Internal upper-propegating pm exception: "
-                    + pastebinStack(e));
+            JZBot.bot.sendMessage(sender, "Time exceeded: " + pastebinStack(e));
+        }
+        finally
+        {
+            tkt.active = false;
         }
         
     }
