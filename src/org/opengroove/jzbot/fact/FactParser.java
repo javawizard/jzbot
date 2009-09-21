@@ -192,6 +192,7 @@ public class FactParser
         install(new DeleteFunction());
         install(new ErrorFunction());
         install(new EvalFunction());
+        install(new FactoverrideFunction());
         install(new FirstvarFunction());
         install(new FormatFunction());
         install(new FutureFunction());
@@ -225,6 +226,7 @@ public class FactParser
         install(new SetFunction());
         install(new SplitFunction());
         install(new TimemsFunction());
+        install(new UptimeFunction());
     }
     
     private static void installSpecialSet()

@@ -45,6 +45,14 @@ public class RegexCommand implements Command
             if (existing != null)
                 throw new ResponseException(
                         "That exact same regex already exists here.");
+            try
+            {
+                Pattern.compile(regexString);
+            }
+            catch(Exception e)
+            {
+                throw new ResponseException("Malformed regex pattern: " + JZBot.pastebinStack(e));
+            }
             Regex regex = JZBot.storage.createRegex();
             regex.setExpression(regexString);
             regex.setFactoid(factoid);
@@ -61,12 +69,18 @@ public class RegexCommand implements Command
             Regex regex = c.getRegex(args);
             if (regex == null)
                 throw new ResponseException(
-                        "That regex doesn't exist on this channel.");
+                        "That regex (" + args + ") doesn't exist on this channel.");
             c.getRegularExpressions().remove(regex);
             JZBot.bot.reloadRegexes();
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "Successfully removed and deactivated.");
             
+        }
+        else if(command.equals("deleteall"))
+        {
+            c.getRegularExpressions().clear();
+            JZBot.reloadRegexes();
+            JZBot.bot.sendMessage(pm?sender:channel, "Successfully deleted all regexes on this channel..");
         }
         else if (command.equals("list"))
         {
@@ -96,7 +110,7 @@ public class RegexCommand implements Command
         }
         else
         {
-            throw new ResponseException("Specify one of add, delete, or list.");
+            throw new ResponseException("Specify one of add, delete, deleteall, or list.");
         }
     }
 }

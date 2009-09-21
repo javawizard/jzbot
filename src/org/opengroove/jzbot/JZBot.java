@@ -1045,6 +1045,8 @@ public class JZBot extends PircBot
     
     private static Object regexLock = new Object();
     
+    public static final long startedAtTime = System.currentTimeMillis();
+    
     public static void reloadRegexes()
     {
         synchronized (regexLock)
