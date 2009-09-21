@@ -459,6 +459,7 @@ public class JZBot extends PircBot
     {
         try
         {
+            boolean factOverridden = false;
             synchronized (regexLock)
             {
                 List<String> channelList = regexCache.get(channel);
@@ -473,11 +474,16 @@ public class JZBot extends PircBot
                     /*
                      * We found something.
                      */
-                    if (runRegex(channel, sender, hostname, message, matcher,
-                            regex))
+                    OverrideStatus override = runRegex(channel, sender,
+                            hostname, message, matcher, regex);
+                    if (override == OverrideStatus.override)
                         return false;
+                    else if (override == OverrideStatus.factoverride)
+                        factOverridden = true;
                 }
             }
+            if (factOverridden)
+                return false;
             return true;
         }
         catch (Throwable e)
@@ -489,6 +495,11 @@ public class JZBot extends PircBot
         }
     }
     
+    public static enum OverrideStatus
+    {
+        override, factoverride, none
+    }
+    
     /**
      * 
      * @param channel
@@ -498,21 +509,21 @@ public class JZBot extends PircBot
      * @param regex
      * @return True if this overrides, false if it doesn't
      */
-    private boolean runRegex(String channel, String sender, String hostname,
-            String message, Matcher matcher, String regexValue)
+    private OverrideStatus runRegex(String channel, String sender,
+            String hostname, String message, Matcher matcher, String regexValue)
     {
         Channel c = storage.getChannel(channel);
         if (c == null)
-            return false;
+            return OverrideStatus.none;
         Regex regex = c.getRegex(regexValue);
         if (regex == null)
-            return false;
+            return OverrideStatus.none;
         Factoid f = c.getFactoid(regex.getFactoid());
         if (f == null)
         {
             bot.sendMessage(channel, "Invalid factoid in regex " + regexValue
                     + ": " + regex.getFactoid());
-            return false;
+            return OverrideStatus.none;
         }
         HashMap<String, String> vars = new HashMap<String, String>();
         vars.put("regex", regexValue);
@@ -533,8 +544,10 @@ public class JZBot extends PircBot
         else
             sendMessage(channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
-            return true;
-        return false;
+            return OverrideStatus.override;
+        else if ("true".equalsIgnoreCase(vars.get("__fact_override")))
+            return OverrideStatus.factoverride;
+        return OverrideStatus.none;
     }
     
     private void runMessageCommand(String channel, boolean pm, String sender,
