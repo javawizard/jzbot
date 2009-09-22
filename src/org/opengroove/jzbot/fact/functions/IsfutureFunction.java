@@ -22,7 +22,6 @@ public class IsfutureFunction extends Function
                 + "or 0 if there is no such scheduled future task.";
     }
     
-    @Override
     public String getName()
     {
         return "isfuture";

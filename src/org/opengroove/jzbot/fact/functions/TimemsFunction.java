@@ -13,7 +13,6 @@ public class TimemsFunction extends Function
         return "" + System.currentTimeMillis();
     }
     
-    @Override
     public String getName()
     {
         return "timems";

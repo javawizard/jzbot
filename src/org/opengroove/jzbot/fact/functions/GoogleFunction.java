@@ -67,7 +67,6 @@ public class GoogleFunction extends Function
                 + "a space, and a summary of that result.";
     }
     
-    @Override
     public String getName()
     {
         return "google";

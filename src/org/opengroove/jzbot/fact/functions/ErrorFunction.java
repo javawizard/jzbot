@@ -21,7 +21,6 @@ public class ErrorFunction extends Function
                 + "be reported with the specified message.";
     }
     
-    @Override
     public String getName()
     {
         return "error";

@@ -25,7 +25,6 @@ public class FutureFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "future";

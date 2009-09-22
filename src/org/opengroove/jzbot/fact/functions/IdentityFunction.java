@@ -30,7 +30,6 @@ public class IdentityFunction extends Function
             return buffer.substring(1);
     }
     
-    @Override
     public String getName()
     {
         return "identity";

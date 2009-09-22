@@ -23,7 +23,6 @@ public class FactoverrideFunction extends Function
                 + "will not. As with {{override}}, this does not block commands from running.";
     }
     
-    @Override
     public String getName()
     {
         return "factoverride";

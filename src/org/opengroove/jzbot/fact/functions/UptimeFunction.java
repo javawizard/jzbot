@@ -21,7 +21,6 @@ public class UptimeFunction extends Function
                 + "January 1, 1970, at which the bot started up.";
     }
     
-    @Override
     public String getName()
     {
         return "uptime";

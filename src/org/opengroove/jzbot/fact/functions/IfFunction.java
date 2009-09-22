@@ -29,7 +29,6 @@ public class IfFunction extends Function
                     + noValues);
     }
     
-    @Override
     public String getName()
     {
         return "if";

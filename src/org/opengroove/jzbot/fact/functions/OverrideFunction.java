@@ -22,7 +22,6 @@ public class OverrideFunction extends Function
                 + "matching the channel's trigger. This does not block commands from running.";
     }
     
-    @Override
     public String getName()
     {
         return "override";

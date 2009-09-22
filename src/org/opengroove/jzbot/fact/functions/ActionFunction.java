@@ -14,7 +14,6 @@ public class ActionFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "action";

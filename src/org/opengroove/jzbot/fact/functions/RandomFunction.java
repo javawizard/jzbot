@@ -13,7 +13,6 @@ public class RandomFunction extends Function
         return arguments.get((int) (Math.random() * arguments.length()));
     }
     
-    @Override
     public String getName()
     {
         return "random";

@@ -31,7 +31,6 @@ public class ReplaceFunction extends Function
                     + ", not regex or text");
     }
     
-    @Override
     public String getName()
     {
         return "replace";

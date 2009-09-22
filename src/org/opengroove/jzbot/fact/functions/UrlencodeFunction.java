@@ -21,7 +21,6 @@ public class UrlencodeFunction extends Function
                 + "suitable for including in a URL.";
     }
     
-    @Override
     public String getName()
     {
         return "urlencode";

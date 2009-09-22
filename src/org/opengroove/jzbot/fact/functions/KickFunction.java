@@ -17,7 +17,6 @@ public class KickFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "kick";

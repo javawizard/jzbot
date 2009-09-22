@@ -54,7 +54,6 @@ public class FormatFunction extends Function
                 + "are passed as strings.";
     }
     
-    @Override
     public String getName()
     {
         return "format";

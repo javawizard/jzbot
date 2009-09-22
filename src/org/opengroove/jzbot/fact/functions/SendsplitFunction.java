@@ -46,7 +46,6 @@ public class SendsplitFunction extends Function
                 + "function on that string.";
     }
     
-    @Override
     public String getName()
     {
         return "sendsplit";

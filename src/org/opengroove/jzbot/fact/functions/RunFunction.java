@@ -17,7 +17,6 @@ public class RunFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "run";

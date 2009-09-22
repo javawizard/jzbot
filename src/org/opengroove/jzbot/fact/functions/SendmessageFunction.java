@@ -30,7 +30,6 @@ public class SendmessageFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "sendmessage";

@@ -13,7 +13,6 @@ public class MatchFunction extends Function
         return arguments.get(1).matches(arguments.get(0)) ? "1" : "0";
     }
     
-    @Override
     public String getName()
     {
         return "match";

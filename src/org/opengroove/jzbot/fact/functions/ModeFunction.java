@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.fact.functions;
 
+import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
@@ -10,8 +11,8 @@ public class ModeFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        // TODO Auto-generated method stub
-        return null;
+        JZBot.bot.setMode(context.getChannel(), arguments.get(0));
+        return "";
     }
     
     @Override
@@ -24,7 +25,6 @@ public class ModeFunction extends Function
                 + "hyperion-specific mode), you could use {{mode||+c}}.";
     }
     
-    @Override
     public String getName()
     {
         return "mode";

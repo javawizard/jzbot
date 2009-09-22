@@ -26,7 +26,6 @@ public class DateformatFunction extends Function
                 + "of {{dateformat}}.";
     }
     
-    @Override
     public String getName()
     {
         return "dateformat";

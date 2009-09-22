@@ -56,7 +56,6 @@ public class SplitFunction extends Function
                 + "with \"first,second,third,,,\", the output would still be the same.";
     }
     
-    @Override
     public String getName()
     {
         return "split";

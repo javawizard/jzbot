@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -12,6 +13,7 @@ public interface MapEntry
     public void setKey(String key);
     
     @Property
+    @Default(stringValue = "")
     public String getValue();
     
     public void setValue(String value);

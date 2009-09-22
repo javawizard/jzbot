@@ -42,7 +42,6 @@ public class IsopFunction extends Function
                 + "to see if the user is joined");
     }
     
-    @Override
     public String getName()
     {
         return "isop";

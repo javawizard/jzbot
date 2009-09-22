@@ -30,7 +30,6 @@ public class IfjoinedFunction extends Function
             return "";
     }
     
-    @Override
     public String getName()
     {
         return "ifjoined";

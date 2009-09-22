@@ -29,7 +29,6 @@ public class PadFunction extends Function
                 + "{{pad||7||0||1234}} would evaluate to \"0001234\".";
     }
     
-    @Override
     public String getName()
     {
         return "pad";

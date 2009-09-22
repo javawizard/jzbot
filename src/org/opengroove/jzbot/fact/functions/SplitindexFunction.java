@@ -29,7 +29,6 @@ public class SplitindexFunction extends Function
                 + "the last token.";
     }
     
-    @Override
     public String getName()
     {
         // TODO Auto-generated method stub

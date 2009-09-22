@@ -27,7 +27,6 @@ public class EvalFunction extends Function
                     .getChannel(), arguments.get(0));
     }
     
-    @Override
     public String getName()
     {
         return "eval";

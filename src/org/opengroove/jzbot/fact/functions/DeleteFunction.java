@@ -14,7 +14,6 @@ public class DeleteFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "delete";

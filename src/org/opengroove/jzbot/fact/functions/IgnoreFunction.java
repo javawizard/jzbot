@@ -14,7 +14,6 @@ public class IgnoreFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "ignore";

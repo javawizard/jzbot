@@ -16,7 +16,6 @@ public class LgetFunction extends Function
         return var;
     }
     
-    @Override
     public String getName()
     {
         return "lget";

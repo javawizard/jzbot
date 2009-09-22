@@ -1,8 +1,10 @@
 package org.opengroove.jzbot.fact.functions;
 
+import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
+import org.opengroove.jzbot.storage.MapEntry;
 
 public class PsetFunction extends Function
 {
@@ -10,8 +12,20 @@ public class PsetFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        // TODO Auto-generated method stub
-        return null;
+        String key = arguments.get(0);
+        String value = arguments.get(1);
+        if (key.length() > 64 || value.length() > 512)
+            throw new RuntimeException(
+                    "Key longer than 64 or value longer than 512");
+        MapEntry entry = JZBot.storage.getPersistentVariable(key);
+        if (entry == null)
+        {
+            entry = JZBot.storage.createPersistentVariable();
+            entry.setKey(key);
+            JZBot.storage.getPersistentVariables().add(entry);
+        }
+        entry.setValue(value);
+        return "";
     }
     
     @Override
@@ -24,7 +38,6 @@ public class PsetFunction extends Function
                 + "the bot restarts.";
     }
     
-    @Override
     public String getName()
     {
         return "pset";

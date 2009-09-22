@@ -30,7 +30,6 @@ public class SendactionFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "sendaction";

@@ -22,7 +22,6 @@ public class CancelFunction extends Function
                 + "the specified key. If there is no such future task, nothing happens.";
     }
     
-    @Override
     public String getName()
     {
         return "cancel";

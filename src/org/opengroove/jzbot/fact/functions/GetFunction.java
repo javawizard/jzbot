@@ -16,7 +16,6 @@ public class GetFunction extends Function
         return var;
     }
     
-    @Override
     public String getName()
     {
         return "get";

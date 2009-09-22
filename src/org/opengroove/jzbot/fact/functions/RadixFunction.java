@@ -28,7 +28,6 @@ public class RadixFunction extends Function
                 + "evaluates to \"23\". Fractional numbers are not currently allowed.";
     }
     
-    @Override
     public String getName()
     {
         return "radix";

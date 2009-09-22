@@ -27,7 +27,6 @@ public class LlvarsFunction extends Function
                 + "instead of global variables.";
     }
     
-    @Override
     public String getName()
     {
         return "llvars";

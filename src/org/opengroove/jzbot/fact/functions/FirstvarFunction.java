@@ -21,7 +21,6 @@ public class FirstvarFunction extends Function
         return "";
     }
     
-    @Override
     public String getName()
     {
         return "firstvar";
