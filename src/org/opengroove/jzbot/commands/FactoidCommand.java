@@ -71,7 +71,16 @@ public class FactoidCommand implements Command
             else
                 f = c.getFactoid(factoidName);
             if (f == null)
+            {
+                if ((!isGlobal)
+                        && JZBot.storage.getFactoid(afterCommand) != null)
+                    throw new ResponseException(
+                            "That factoid doesn't exist. However, there is a global "
+                                    + "factoid with that name. Use \"factoid global\" instead "
+                                    + "of \"factoid\" in the command to do stuff with "
+                                    + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist");
+            }
             if (isGlobal)
                 JZBot.storage.getFactoids().remove(f);
             else
@@ -190,7 +199,16 @@ public class FactoidCommand implements Command
             else
                 f = c.getFactoid(afterCommand);
             if (f == null)
+            {
+                if ((!isGlobal)
+                        && JZBot.storage.getFactoid(afterCommand) != null)
+                    throw new ResponseException(
+                            "That factoid doesn't exist. However, there is a global "
+                                    + "factoid with that name. Use \"factoid global\" instead "
+                                    + "of \"factoid\" in the command to do stuff with "
+                                    + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist");
+            }
             JZBot.bot.sendMessage(pm ? sender : channel, f.getValue());
         }
         if (command.equals("info"))
@@ -204,7 +222,16 @@ public class FactoidCommand implements Command
             else
                 f = c.getFactoid(afterCommand);
             if (f == null)
+            {
+                if ((!isGlobal)
+                        && JZBot.storage.getFactoid(afterCommand) != null)
+                    throw new ResponseException(
+                            "That factoid doesn't exist. However, there is a global "
+                                    + "factoid with that name. Use \"factoid global\" instead "
+                                    + "of \"factoid\" in the command to do stuff with "
+                                    + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist");
+            }
             int directRequests = f.getDirectRequests();
             int indirectRequests = f.getIndirectRequests();
             int totalRequests = directRequests + indirectRequests;
