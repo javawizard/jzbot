@@ -29,10 +29,4 @@ public class CharCodeSpecial extends Function
         return "Syntax: {{" + name + "}} -- " + help;
     }
     
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-    
 }

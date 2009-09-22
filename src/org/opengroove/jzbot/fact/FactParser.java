@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.fact;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.opengroove.jzbot.fact.functions.*;
 public class FactParser
 {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
+    private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
     
     /**
      * Parses the specified factoid into a FactEntity. This fact entity can then
@@ -168,14 +170,20 @@ public class FactParser
                         + "more \"{{\" than you have \"}}\"");
     }
     
-    public static void install(Function function)
+    public static void install(String name, Function function)
     {
-        functionMap.put(function.getName().toLowerCase(), function);
+        functionMap.put(name.toLowerCase(), function);
+        reverseFunctionMap.put(function, name.toLowerCase());
     }
     
     public static Function getFunction(String name)
     {
         return functionMap.get(name.toLowerCase());
+    }
+    
+    public static String getFunctionName(Function function)
+    {
+        return reverseFunctionMap.get(function);
     }
     
     static
@@ -186,70 +194,75 @@ public class FactParser
     
     private static void installDefaultSet()
     {
-        install(new ActionFunction());
-        install(new CancelFunction());
-        install(new DateformatFunction());
-        install(new DeleteFunction());
-        install(new ErrorFunction());
-        install(new EvalFunction());
-        install(new FactoverrideFunction());
-        install(new FirstvarFunction());
-        install(new FormatFunction());
-        install(new FutureFunction());
-        install(new GetFunction());
-        install(new IdentityFunction());
-        install(new IfeqFunction());
-        install(new IfFunction());
-        install(new IfjoinedFunction());
-        install(new IfneqFunction());
-        install(new IgnoreFunction());
-        install(new ImportFunction());
-        install(new IsfutureFunction());
-        install(new IsopFunction());
-        install(new KickFunction());
-        install(new LgetFunction());
-        install(new LgvarsFunction());
-        install(new LlvarsFunction());
-        install(new LsetFunction());
-        install(new MatchFunction());
-        install(new ModeFunction());
-        install(new NumberlistFunction());
-        install(new OverrideFunction());
-        install(new PadFunction());
-        install(new RadixFunction());
-        install(new RandomFunction());
-        install(new RandomintFunction());
-        install(new ReplaceFunction());
-        install(new RunFunction());
-        install(new SendactionFunction());
-        install(new SendmessageFunction());
-        install(new SetFunction());
-        install(new SplitFunction());
-        install(new TimemsFunction());
-        install(new UptimeFunction());
+        try
+        {
+            File factFolder = new File(FactParser.class.getResource(
+                    "FactParser.class").toURI()).getParentFile();
+            File functionsFolder = new File(factFolder, "functions");
+            String[] files = functionsFolder.list();
+            for (String file : files)
+            {
+                try
+                {
+                    if (file.endsWith("Function.class"))
+                    {
+                        String className = file.substring(0, file.length()
+                                - ".class".length());
+                        String functionName = className.substring(0, className
+                                .length()
+                                - "Function".length());
+                        System.out.println("Loading function " + functionName);
+                        Class<? extends Function> c = (Class<? extends Function>) Class
+                                .forName("org.opengroove.jzbot.fact.functions."
+                                        + className);
+                        install(functionName, c.newInstance());
+                    }
+                    else
+                    {
+                        System.out.println("Skipping non-function class "
+                                + file);
+                    }
+                }
+                catch (Throwable t)
+                {
+                    throw new RuntimeException(
+                            "Exception while loading function for class file "
+                                    + file, t);
+                }
+            }
+        }
+        catch (Throwable t)
+        {
+            throw new RuntimeException(
+                    "Error while loading default function set", t);
+        }
     }
     
     private static void installSpecialSet()
     {
-        install(new CharCodeSpecial(
+        install(
                 "c",
-                "\u0003",
-                "Inserts the IRC color change character. Immediately following "
-                        + "this should be two digits, which represent the color of text "
-                        + "that should show up."));
-        install(new CharCodeSpecial("n", Colors.NORMAL,
+                new CharCodeSpecial(
+                        "c",
+                        "\u0003",
+                        "Inserts the IRC color change character. Immediately following "
+                                + "this should be two digits, which represent the color of text "
+                                + "that should show up."));
+        install("n", new CharCodeSpecial("n", Colors.NORMAL,
                 "Resets any coloring that has been applied in the factoid, so that "
                         + "all succeeding text has no special formatting."));
-        install(new CharCodeSpecial("b", Colors.BOLD,
+        install("b", new CharCodeSpecial("b", Colors.BOLD,
                 "Inserts the IRC bold character, which causes all following text "
                         + "to be shown as bold."));
-        install(new CharCodeSpecial(
+        install(
                 "i",
-                Colors.REVERSE,
-                "Inserts the IRC reverse character, which, depending on the client, "
-                        + "either reverses the foreground and background colors or shows text"
-                        + " as italic."));
-        install(new CharCodeSpecial("u", Colors.UNDERLINE,
+                new CharCodeSpecial(
+                        "i",
+                        Colors.REVERSE,
+                        "Inserts the IRC reverse character, which, depending on the client, "
+                                + "either reverses the foreground and background colors or shows text"
+                                + " as italic."));
+        install("u", new CharCodeSpecial("u", Colors.UNDERLINE,
                 "Inserts the IRC underline character, which causes all "
                         + "succeeding text to be underlined."));
     }

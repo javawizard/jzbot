@@ -23,10 +23,14 @@ public interface Storage
     public void setConfig(Config config);
     
     @Property
-    public MapContainer getGlobalVariables();
+    @ListType(MapEntry.class)
+    public StoredList<MapEntry> getPersistentVariables();
+    
+    @Search(listProperty = "persistentVariables", searchProperty = "key")
+    public MapEntry getPersistentVariable(String key);
     
     @Constructor
-    public MapContainer createMapContainer();
+    public MapEntry createPersistentVariable();
     
     @Constructor
     public Config createConfig();
