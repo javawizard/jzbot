@@ -25,6 +25,7 @@ public class StatusCommand implements Command
                 + Runtime.getRuntime().totalMemory() + ","
                 + Runtime.getRuntime().maxMemory() + ";uptime(seconds):"
                 + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000);
+        JZBot.bot.sendMessage(pm ? sender : channel, s);
     }
     
 }
