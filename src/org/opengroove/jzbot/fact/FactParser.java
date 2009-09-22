@@ -174,6 +174,9 @@ public class FactParser
     {
         functionMap.put(name.toLowerCase(), function);
         reverseFunctionMap.put(function, name.toLowerCase());
+        if (function.getHelp(null) == null || function.getHelp(null).equals(""))
+            System.out.println("Warning: function " + name
+                    + " does not have help text");
     }
     
     public static Function getFunction(String name)
@@ -247,7 +250,11 @@ public class FactParser
                         "\u0003",
                         "Inserts the IRC color change character. Immediately following "
                                 + "this should be two digits, which represent the color of text "
-                                + "that should show up."));
+                                + "that should show up.\n"
+                                + "Create a factoid with the text \"{{split|| ||{{numberlist||1||15}}||"
+                                + "c||{{c}}{{lset||c||{{pad||2||0||%c%}}}}%c%%c%|| }}\" (without "
+                                + "quotes), then run it; the result will be a list of numbers and "
+                                + "the color they represent."));
         install("n", new CharCodeSpecial("n", Colors.NORMAL,
                 "Resets any coloring that has been applied in the factoid, so that "
                         + "all succeeding text has no special formatting."));

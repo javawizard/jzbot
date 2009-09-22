@@ -10,6 +10,8 @@ import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.utils.JZUtils;
+import org.opengroove.jzbot.utils.Pastebin;
+import org.opengroove.jzbot.utils.Pastebin.Duration;
 
 public class HelpCommand implements Command
 {
@@ -25,6 +27,12 @@ public class HelpCommand implements Command
         ArrayList<String> subpages = new ArrayList<String>();
         String page = arguments;
         String text = null;
+        boolean allSubpages = false;
+        if (page.endsWith(" --"))
+        {
+            allSubpages = true;
+            page = page.substring(0, page.length() - " --".length());
+        }
         for (HelpProvider provider : JZBot.helpProviders)
         {
             String possibleText = provider.getPage(page);
@@ -49,41 +57,70 @@ public class HelpCommand implements Command
                 helpCommand = "~trigger";
         }
         text = text.replace("%HELPCMD%", helpCommand);
-        String[] messages = text.split("\n");
-        for (String s : messages)
+        if (!allSubpages)
         {
-            if (!s.trim().equals(""))
-                JZBot.bot.sendMessage(pm ? sender : channel, s);
-        }
-        String pageWithSpace = page;
-        if (!pageWithSpace.trim().equals(""))
-            pageWithSpace = " " + pageWithSpace;
-        String startText = (subpages.size() > 0 ? "Subpages (\"" + helpCommand
-                + pageWithSpace + " <pagename>\" to show a page): "
-                : "No subpages.");
-        String prefix = "---> ";
-        String[] delimited = JZUtils.delimitedLengthRestricted(subpages
-                .toArray(new String[0]), "   ", 290);
-        boolean sentFirst = false;
-        if (delimited.length > 0)
-        {
-            for (String s : delimited)
+            String[] messages = text.split("\n");
+            for (String s : messages)
             {
-                if (sentFirst)
+                if (!s.trim().equals(""))
+                    JZBot.bot.sendMessage(pm ? sender : channel, s);
+            }
+            String pageWithSpace = page;
+            if (!pageWithSpace.trim().equals(""))
+                pageWithSpace = " " + pageWithSpace;
+            String startText = (subpages.size() > 0 ? "Subpages (\""
+                    + helpCommand + pageWithSpace
+                    + " <pagename>\" to show a page): " : "No subpages.");
+            String prefix = "---> ";
+            String[] delimited = JZUtils.delimitedLengthRestricted(subpages
+                    .toArray(new String[0]), "   ", 320);
+            boolean sentFirst = false;
+            if (delimited.length > 0)
+            {
+                for (String s : delimited)
                 {
-                    JZBot.bot.sendMessage(pm ? sender : channel, prefix + s);
+                    if (sentFirst)
+                    {
+                        JZBot.bot
+                                .sendMessage(pm ? sender : channel, prefix + s);
+                    }
+                    else
+                    {
+                        sentFirst = true;
+                        JZBot.bot.sendMessage(pm ? sender : channel, prefix
+                                + startText + s);
+                    }
                 }
-                else
-                {
-                    sentFirst = true;
-                    JZBot.bot.sendMessage(pm ? sender : channel, prefix
-                            + startText + s);
-                }
+            }
+            else
+            {
+                JZBot.bot
+                        .sendMessage(pm ? sender : channel, prefix + startText);
             }
         }
         else
+        // if(allSubpages)
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, prefix + startText);
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("All immediate subpages of \"" + page + "\":\n\n");
+            for (String subpage : subpages)
+            {
+                String subtext = "";
+                for (HelpProvider provider : JZBot.helpProviders)
+                {
+                    String possibleText = provider
+                            .getPage(page + " " + subpage);
+                    if (possibleText != null)
+                        subtext = possibleText;
+                }
+                buffer.append(subpage).append(":\n");
+                buffer.append(subtext).append("\n\n");
+            }
+            JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \""
+                    + page
+                    + "\": http://pastebin.com/"
+                    + Pastebin.createPost("jzbot", buffer.toString(),
+                            Duration.DAY, null));
         }
     }
 }

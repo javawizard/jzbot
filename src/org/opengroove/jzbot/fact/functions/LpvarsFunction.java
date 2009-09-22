@@ -26,8 +26,10 @@ public class LpvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{lpvars}} -- Same as {{lgvars}}, but lists "
+                + "persistent variables instead of global variables. See \"%HELPCMD% "
+                + "functions pset\" for information on the difference between persistent variables "
+                + "and global variables.";
     }
     
 }

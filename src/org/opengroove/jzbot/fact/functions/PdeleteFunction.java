@@ -21,8 +21,11 @@ public class PdeleteFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "Syntax: {{pdelete||<varname>}} -- Same as {{delete||<varname>}}, but deletes "
+                + "the specified "
+                + "persistent variable instead of the specified global variable. See \"%HELPCMD% "
+                + "functions pset\" for information on the difference between persistent variables "
+                + "and global variables.";
     }
     
 }

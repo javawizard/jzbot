@@ -44,6 +44,7 @@ import org.opengroove.jzbot.commands.RestrictCommand;
 import org.opengroove.jzbot.commands.RouletteCommand;
 import org.opengroove.jzbot.commands.SayCommand;
 import org.opengroove.jzbot.commands.ShutdownCommand;
+import org.opengroove.jzbot.commands.StatusCommand;
 import org.opengroove.jzbot.commands.SuperopCommand;
 import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
@@ -163,7 +164,7 @@ public class JZBot extends PircBot
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
     public static final JZBot bot = new JZBot();
     // numeric 320: is signed on as account
-    private static ProxyStorage<Storage> proxyStorage;
+    public static ProxyStorage<Storage> proxyStorage;
     public static Storage storage;
     
     public static Config config;
@@ -196,6 +197,7 @@ public class JZBot extends PircBot
         // loadCommand(new RouletteCommand());
         loadCommand(new SayCommand());
         loadCommand(new ShutdownCommand());
+        loadCommand(new StatusCommand());
         loadCommand(new SuperopCommand());
         loadCommand(new TriggerCommand());
         loadCommand(new TTTCommand());
