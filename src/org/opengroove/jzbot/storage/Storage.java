@@ -22,6 +22,12 @@ public interface Storage
     
     public void setConfig(Config config);
     
+    @Property
+    public MapContainer getGlobalVariables();
+    
+    @Constructor
+    public MapContainer createMapContainer();
+    
     @Constructor
     public Config createConfig();
     

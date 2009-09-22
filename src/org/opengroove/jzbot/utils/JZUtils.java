@@ -13,12 +13,18 @@ public class JZUtils
         StringBuffer currentBuffer = new StringBuffer();
         for (int i = 0; i < items.length; i++)
         {
-            currentBuffer.append(items[i]).append(delimiter);
-            if (currentBuffer.length() > length)
+            String item = items[i];
+            int targetLength = (currentBuffer.length() == 0 ? item.length()
+                    : delimiter.length() + item.length());
+            if ((currentBuffer.length() + targetLength) > length
+                    && currentBuffer.length() > 0)
             {
                 strings.add(currentBuffer.toString());
                 currentBuffer = new StringBuffer();
             }
+            if (currentBuffer.length() != 0)
+                currentBuffer.append(delimiter);
+            currentBuffer.append(item);
         }
         if (!currentBuffer.toString().equals(""))
             strings.add(currentBuffer.toString());
@@ -27,7 +33,7 @@ public class JZUtils
     
     public static String[] ircDelimited(String[] items, String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, 400);
+        return delimitedLengthRestricted(items, delimiter, 450);
     }
     
     public static void ircSendDelimited(String[] items, String delimiter,

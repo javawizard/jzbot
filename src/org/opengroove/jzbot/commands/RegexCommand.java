@@ -34,7 +34,7 @@ public class RegexCommand implements Command
             throw new ResponseException("Orphaned channel.");
         if (command.equals("add"))
         {
-            int index = args.indexOf(" ");
+            int index = args.lastIndexOf(" ");
             if (index == -1)
                 throw new ResponseException(
                         "You need to specify the regex and the factoid"

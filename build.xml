@@ -10,4 +10,13 @@
 			</fileset>
 		</tar>
 	</target>
+	<target name="upload">
+		<exec executable="rsync">
+			<arg value="-vvv" />
+			<arg value="-e"/>
+			<arg value="ssh"/>
+			<arg value="jzbot2-old.tar.gz"/>
+			<arg value="root@trivergia.com:/jzbot2/jzbot2-old.tar.gz"/>
+		</exec>
+	</target>
 </project>

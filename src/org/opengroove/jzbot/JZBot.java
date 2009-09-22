@@ -535,6 +535,7 @@ public class JZBot extends PircBot
         {
             strings[i - 1] = matcher.group(i);
         }
+        incrementIndirectRequests(f);
         String factValue = safeRunFactoid(f, channel, sender, strings, true,
                 vars);
         if (factValue.trim().equals(""))
@@ -690,6 +691,10 @@ public class JZBot extends PircBot
         catch (FactTimeExceededError e)
         {
             factValue = "The factoid took too long to run: " + pastebinStack(e);
+        }
+        catch (StackOverflowError e)
+        {
+            factValue = "Internal stack overflow error: " + e;
         }
         return factValue;
     }
