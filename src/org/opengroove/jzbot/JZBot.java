@@ -520,6 +520,8 @@ public class JZBot extends PircBot
             return OverrideStatus.none;
         Factoid f = c.getFactoid(regex.getFactoid());
         if (f == null)
+            f = JZBot.storage.getFactoid(regex.getFactoid());
+        if (f == null)
         {
             bot.sendMessage(channel, "Invalid factoid in regex " + regexValue
                     + ": " + regex.getFactoid());
