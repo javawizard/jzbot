@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
+import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Factoid;
 
@@ -24,7 +25,10 @@ public class StatusCommand implements Command
                 + ";free,total,max:" + Runtime.getRuntime().freeMemory() + ","
                 + Runtime.getRuntime().totalMemory() + ","
                 + Runtime.getRuntime().maxMemory() + ";uptime(seconds):"
-                + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000);
+                + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
+                + "," + FactParser.getFunctionNames().length + " functions,"
+                + JZBot.commands.size() + " commands,queue:"
+                + JZBot.bot.getOutgoingQueueSize();
         JZBot.bot.sendMessage(pm ? sender : channel, s);
     }
     
