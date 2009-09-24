@@ -14,13 +14,13 @@ public class PsetFunction extends Function
     {
         String key = arguments.get(0);
         String value = arguments.get(1);
-        if (key.length() > 64 || value.length() > 512)
+        if (key.length() > 128 || value.length() > (50 * 1024))
             throw new RuntimeException(
-                    "Key longer than 64 or value longer than 512");
+                    "Key longer than 128 or value longer than " + (50 * 1024));
         MapEntry entry = JZBot.storage.getPersistentVariable(key);
         if (entry == null)
         {
-            entry = JZBot.storage.createPersistentVariable();
+            entry = JZBot.storage.createMapEntry();
             entry.setKey(key);
             JZBot.storage.getPersistentVariables().add(entry);
         }

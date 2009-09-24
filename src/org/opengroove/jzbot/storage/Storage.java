@@ -29,8 +29,30 @@ public interface Storage
     @Search(listProperty = "persistentVariables", searchProperty = "key")
     public MapEntry getPersistentVariable(String key);
     
+    @Property
+    @ListType(MapEntry.class)
+    public StoredList<MapEntry> getRedefinitions();
+    
+    /**
+     * Returns the redefinition that has the specified key, or new command name.
+     * 
+     * @param key
+     * @return
+     */
+    @Search(listProperty = "redefinitions", searchProperty = "key")
+    public MapEntry getRedefinitionByKey(String key);
+    
+    /**
+     * Returns the redefinition that has the specified value, or target command.
+     * 
+     * @param value
+     * @return
+     */
+    @Search(listProperty = "redefinitions", searchProperty = "value")
+    public MapEntry getRedefinitionByValue(String value);
+    
     @Constructor
-    public MapEntry createPersistentVariable();
+    public MapEntry createMapEntry();
     
     @Constructor
     public Config createConfig();

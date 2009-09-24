@@ -139,7 +139,11 @@ public class FactoidCommand implements Command
             f.setDirectRequests(0);
             f.setIndirectRequests(0);
             if (oldFact != null)
+            {
                 f.setRestricted(oldFact.isRestricted());
+                f.setDirectRequests(oldFact.getDirectRequests());
+                f.setIndirectRequests(oldFact.getIndirectRequests());
+            }
             if (isGlobal)
                 JZBot.storage.getFactoids().add(f);
             else

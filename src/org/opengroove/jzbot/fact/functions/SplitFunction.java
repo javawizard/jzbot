@@ -52,8 +52,8 @@ public class SplitFunction extends Function
                 + "the first -- This is the second -- This is the third\". <delimiter>"
                 + " is optional.\n"
                 + "Currently, empty values at the end of the list are ignored. This "
-                + "means that in the above example, if \"first,second,third\" were replaced "
-                + "with \"first,second,third,,,\", the output would still be the same.";
+                + "means that in the above example, if \"first.second.third\" were replaced "
+                + "with \"first.second.third...\", the output would still be the same."; 
     }
     
     public String getName()

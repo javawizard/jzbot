@@ -5,7 +5,7 @@ public class TimedKillThread extends Thread
     public volatile boolean active = true;
     private Thread target;
     
-    public static final int MAX_FACT_RUN_TIME = 1000 * 15;
+    public static final int MAX_FACT_RUN_TIME = 1000 * 20;
     
     public TimedKillThread(Thread target)
     {
