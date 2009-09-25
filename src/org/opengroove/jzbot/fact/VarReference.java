@@ -21,7 +21,7 @@ public class VarReference extends FactEntity
     }
     
     @Override
-    public String resolve(FactContext context)
+    public String execute(FactContext context)
     {
         String var;
         if (global)

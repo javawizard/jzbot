@@ -1,4 +1,4 @@
-package org.opengroove.jzbot.commands;
+package org.opengroove.jzbot.commands.d;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;

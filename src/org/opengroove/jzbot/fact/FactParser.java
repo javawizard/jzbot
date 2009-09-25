@@ -36,12 +36,19 @@ public class FactParser
      * 
      * @param factoid
      *            The factoid text to parse
+     * @param name
+     *            The name of this factoid. This doesn't technically need to be
+     *            the actual name of the factoid. For that matter, it could even
+     *            be the empty string. It's used when constructing the factoid
+     *            stack trace if an exception gets thrown while running the
+     *            factoid.
      * @return The parsed factoid
      */
-    public static FactEntity parse(String factoid)
+    public static FactEntity parse(String factoid, String name)
     {
         CharStack stack = new CharStack("{{identity||" + factoid + "}}");
-        FunctionReference reference = parseFunction(stack);
+        FunctionReference reference = parseFunction(stack, name, "{{identity||"
+                .length());
         if (stack.more())
             /*
              * The only way we can have more here is if they closed the identity
@@ -52,6 +59,7 @@ public class FactParser
         if (reference.getArgumentSequence().length() > 2)
             throw new ParseException(stack.at(),
                     "\"||\" used somewhere in your factoid outside of a function");
+        reference.setFactText(factoid);
         return reference;
     }
     
@@ -65,17 +73,25 @@ public class FactParser
      * 
      * @param stack
      *            The CharStack to parse
+     * @param name
+     *            The name of the factoid that we're in. See the <tt>name</tt>
+     *            parameter of the <tt>parse</tt> method for more info on what
+     *            this is.
      * @return The parsed function
      */
-    public static FunctionReference parseFunction(CharStack stack)
+    public static FunctionReference parseFunction(CharStack stack, String name,
+            int indexOffset)
     {
         // This should be | instead of || to make sure that it's not
         // short-circuit, so that at()-2 would yield the correct result.
         if (stack.next() != '{' | stack.next() != '{')
             throw new ParseException(stack.at() - 2,
                     "Start of function reference must be two open braces but is not");
-        Sequence argumentSequence = new Sequence();
-        Sequence currentArgument = new Sequence();
+        int startFunctionIndex = stack.at() - 2;
+        Sequence argumentSequence = init(new Sequence(), name, stack.at()
+                - indexOffset);
+        Sequence currentArgument = init(new Sequence(), name, stack.at()
+                - indexOffset);
         argumentSequence.add(currentArgument);
         Literal currentLiteral = null;
         // Now we parse until we hit one of "%", "{{", "||", or "}}". "%" means
@@ -96,13 +112,15 @@ public class FactParser
             {
                 if (currentLiteral == null)
                 {
-                    currentLiteral = new Literal();
+                    currentLiteral = init(new Literal(), name, stack.at()
+                            - indexOffset);
                     currentArgument.add(currentLiteral);
                 }
-                currentLiteral.append(stack.next());
+                currentLiteral.append(getEscapedChar(stack.next()));
             }
             else if (c == '%' || c == '$')
             {
+                int startIndex = stack.at();
                 currentLiteral = null;
                 StringBuffer l = new StringBuffer();
                 char v;
@@ -110,13 +128,14 @@ public class FactParser
                 {
                     l.append(v);
                 }
-                currentArgument.add(new VarReference(l.toString(), c == '$'));
+                currentArgument.add(init(new VarReference(l.toString(),
+                        c == '$'), name, startIndex - indexOffset));
             }
             else if (c == '{' && stack.peek() == '{')
             {
                 currentLiteral = null;
                 stack.back();
-                FunctionReference ref = parseFunction(stack);
+                FunctionReference ref = parseFunction(stack, name, indexOffset);
                 currentArgument.add(ref);
             }
             else if (c == '|' && stack.peek() == '|')
@@ -132,7 +151,8 @@ public class FactParser
                     argumentSequence.remove(argumentSequence.length() - 1);
                     argumentSequence.add(currentArgument.get(0));
                 }
-                currentArgument = new Sequence();
+                currentArgument = init(new Sequence(), name, stack.at()
+                        - indexOffset);
                 argumentSequence.add(currentArgument);
             }
             else if (c == '}' && stack.peek() == '}')
@@ -149,6 +169,7 @@ public class FactParser
                     argumentSequence.add(currentArgument.get(0));
                 }
                 FunctionReference ref = new FunctionReference(argumentSequence);
+                init(ref, name, startFunctionIndex - indexOffset);
                 return ref;
             }
             else
@@ -167,7 +188,40 @@ public class FactParser
          */
         throw new ParseException(stack.at() - 1,
                 "Function call not closed (IE you have "
-                        + "more \"{{\" than you have \"}}\"");
+                        + "more \"{{\" than you have \"}}\")");
+    }
+    
+    private static <T extends FactEntity> T init(T entity, String factName,
+            int index)
+    {
+        entity.setFactName(factName);
+        entity.setCharIndex(index);
+        return entity;
+    }
+    
+    /**
+     * Gets the character that corresponds to the escaped character
+     * <tt>char</tt>. This is called whenever there is a backslash followed by a
+     * character within the factoid parser, to see what the actual character
+     * that corresponds to the backslash-character pair should be. For example,
+     * passing 'n' into this method causes it to return a newline character. Any
+     * character that is not "special" according to this method will be returned
+     * as-is. For example, calling this with '|' causes the method to return
+     * '|'.
+     * 
+     * @param c
+     *            The special character
+     * @return The corresponding character
+     */
+    private static char getEscapedChar(char c)
+    {
+        switch (c)
+        {
+            case 'n':
+                return '\n';
+                
+        }
+        return c;
     }
     
     public static void install(String name, Function function)
@@ -287,11 +341,15 @@ public class FactParser
      * 
      * @param factoid
      *            The text of the factoid to explain
+     * @param name
+     *            The name of the factoid that we're in. See the <tt>name</tt>
+     *            parameter of the <tt>parse</tt> method for more info on what
+     *            this is.
      * @return The explanation
      */
-    public static String explain(String factoid)
+    public static String explain(String factoid, String name)
     {
-        FunctionReference ref = (FunctionReference) parse(factoid);
+        FunctionReference ref = (FunctionReference) parse(factoid, name);
         FactEntity entity = ref.getArgumentSequence().get(1);
         return entity.explain(0, 4);
     }

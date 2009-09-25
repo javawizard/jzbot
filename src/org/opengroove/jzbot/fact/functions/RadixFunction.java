@@ -24,7 +24,7 @@ public class RadixFunction extends Function
     {
         return "Syntax: {{radix||<from>||<to>||<value>}} -- Converts <value>, which is a "
                 + "number in base-<from>, to be a value in base-<to>. For example, "
-                + "{{radix||10||16||12}} evaluates to \"b\", and {{radix||10||16||35}} "
+                + "{{radix||10||16||12}} evaluates to \"c\", and {{radix||10||16||35}} "
                 + "evaluates to \"23\". Fractional numbers are not currently allowed.";
     }
     

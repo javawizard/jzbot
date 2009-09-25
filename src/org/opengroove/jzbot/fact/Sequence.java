@@ -26,7 +26,7 @@ public class Sequence extends FactEntity
      * together, and returns it.
      */
     @Override
-    public String resolve(FactContext context)
+    public String execute(FactContext context)
     {
         /*
          * Due to the fact that the parser wraps a lot of single entities with a

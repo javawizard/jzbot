@@ -16,11 +16,6 @@ public class ImportFunction extends Function
                 .getSender(), true, context.getQuota());
     }
     
-    public String getName()
-    {
-        return "import";
-    }
-    
     @Override
     public String getHelp(String topic)
     {

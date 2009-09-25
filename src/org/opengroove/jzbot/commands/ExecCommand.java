@@ -1,5 +1,7 @@
 package org.opengroove.jzbot.commands;
 
+import java.util.HashMap;
+
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.FactContext;
@@ -21,12 +23,14 @@ public class ExecCommand implements Command
             String arguments)
     {
         JZBot.bot.verifyOp(channel, hostname);
-        FactEntity entity = FactParser.parse(arguments);
+        FactEntity entity = FactParser.parse(arguments, "__internal_exec");
         FactContext context = new FactContext();
         context.setChannel(channel);
         context.setSender(sender);
         context.setSelf(JZBot.bot.getNick());
         context.setQuota(new FactQuota());
+        context.setLocalVars(new HashMap<String, String>());
+        context.setGlobalVars(JZBot.globalVariables);
         String result = entity.resolve(context);
         if (result.equals(""))
             result = "(no result)";

@@ -1,6 +1,6 @@
 package test;
 
-import org.opengroove.jzbot.eval.Expression;
+import org.opengroove.jzbot.eval.jeval.Expression;
 
 public class Test06
 {

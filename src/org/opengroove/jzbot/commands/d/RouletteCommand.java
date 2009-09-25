@@ -1,4 +1,4 @@
-package org.opengroove.jzbot.commands;
+package org.opengroove.jzbot.commands.d;
 
 import java.util.ArrayList;
 import java.util.Collections;

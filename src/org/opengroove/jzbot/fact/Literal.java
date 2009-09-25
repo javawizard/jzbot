@@ -36,7 +36,7 @@ public class Literal extends FactEntity
      * Returns the value passed to {@link #Literal(String)}.
      */
     @Override
-    public String resolve(FactContext context)
+    public String execute(FactContext context)
     {
         if (finalized == null)
             finalize();

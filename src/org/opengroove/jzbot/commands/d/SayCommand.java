@@ -1,4 +1,4 @@
-package org.opengroove.jzbot.commands;
+package org.opengroove.jzbot.commands.d;
 
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;

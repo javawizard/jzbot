@@ -30,27 +30,27 @@ import org.opengroove.jzbot.commands.ConfigCommand;
 import org.opengroove.jzbot.commands.ExecCommand;
 import org.opengroove.jzbot.commands.ExplainCommand;
 import org.opengroove.jzbot.commands.FactoidCommand;
-import org.opengroove.jzbot.commands.GoogleCommand;
 import org.opengroove.jzbot.commands.HelpCommand;
 import org.opengroove.jzbot.commands.IsRestrictedCommand;
 import org.opengroove.jzbot.commands.JoinCommand;
 import org.opengroove.jzbot.commands.LeaveCommand;
-import org.opengroove.jzbot.commands.LengthCommand;
 import org.opengroove.jzbot.commands.MMCommand;
 import org.opengroove.jzbot.commands.OpCommand;
 import org.opengroove.jzbot.commands.ReconnectCommand;
 import org.opengroove.jzbot.commands.RedefineCommand;
 import org.opengroove.jzbot.commands.RegexCommand;
 import org.opengroove.jzbot.commands.RestrictCommand;
-import org.opengroove.jzbot.commands.RouletteCommand;
-import org.opengroove.jzbot.commands.SayCommand;
 import org.opengroove.jzbot.commands.ShutdownCommand;
 import org.opengroove.jzbot.commands.StatusCommand;
 import org.opengroove.jzbot.commands.SuperopCommand;
-import org.opengroove.jzbot.commands.TTTCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.UnrestrictCommand;
-import org.opengroove.jzbot.commands.WeatherCommand;
+import org.opengroove.jzbot.commands.d.GoogleCommand;
+import org.opengroove.jzbot.commands.d.LengthCommand;
+import org.opengroove.jzbot.commands.d.RouletteCommand;
+import org.opengroove.jzbot.commands.d.SayCommand;
+import org.opengroove.jzbot.commands.d.TTTCommand;
+import org.opengroove.jzbot.commands.d.WeatherCommand;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactEntity;
@@ -422,6 +422,14 @@ public class JZBot extends PircBot
     public static String doFactImport(String channel, ArgumentList arguments,
             String sender, boolean allowRestricted, FactQuota quota)
     {
+        return doFactImport(channel, arguments, sender, allowRestricted, quota,
+                null);
+    }
+    
+    public static String doFactImport(String channel, ArgumentList arguments,
+            String sender, boolean allowRestricted, FactQuota quota,
+            Map<String, String> cascadingVars)
+    {
         Factoid f = null;
         boolean channelSpecific = false;
         if (channel != null)
@@ -437,10 +445,13 @@ public class JZBot extends PircBot
         if (f == null)
             throw new RuntimeException("Invalid import factoid "
                     + arguments.get(0));
+        Map<String, String> varMap = new HashMap<String, String>();
+        if (cascadingVars != null)
+            varMap.putAll(cascadingVars);
         incrementIndirectRequests(f);
         return runFactoid(f, channelSpecific ? channel : null, sender,
-                arguments.subList(1).evalToArray(),
-                new HashMap<String, String>(), allowRestricted, quota);
+                arguments.subList(1).evalToArray(), varMap, allowRestricted,
+                quota);
     }
     
     protected void onKick(String channel, String kickerNick,

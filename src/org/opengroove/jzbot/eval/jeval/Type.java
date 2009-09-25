@@ -1,4 +1,4 @@
-package org.opengroove.jzbot.eval;
+package org.opengroove.jzbot.eval.jeval;
 
 /*
  * Copyright 2008  Reg Whitton
