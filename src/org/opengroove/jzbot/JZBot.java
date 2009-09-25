@@ -699,10 +699,10 @@ public class JZBot extends PircBot
                     if (factValue.trim().equals(""))
                         ;
                     else if (factValue.startsWith("<ACTION>"))
-                        sendAction(channel, factValue.substring("<ACTION>"
-                                .length()));
+                        sendAction((pm ? sender : channel), factValue
+                                .substring("<ACTION>".length()));
                     else
-                        sendMessage(channel, factValue);
+                        sendMessage((pm ? sender : channel), factValue);
                     return;
                 }
             }
@@ -725,12 +725,13 @@ public class JZBot extends PircBot
             if (factValue.trim().equals(""))
                 System.out.println("Empty value; doing nothing");
             else if (factValue.startsWith("<ACTION>"))
-                sendAction(channel, factValue.substring("<ACTION>".length()));
+                sendAction((pm ? sender : channel), factValue
+                        .substring("<ACTION>".length()));
             else
             {
                 System.out.println("sending global message " + channel + " to "
                         + factValue);
-                sendMessage(channel, factValue);
+                sendMessage((pm ? sender : channel), factValue);
             }
             return;
         }

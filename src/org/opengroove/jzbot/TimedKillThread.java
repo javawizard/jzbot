@@ -12,6 +12,7 @@ public class TimedKillThread extends Thread
         this.target = target;
     }
     
+    @SuppressWarnings("deprecation")
     public void run()
     {
         try
@@ -23,6 +24,9 @@ public class TimedKillThread extends Thread
             e.printStackTrace();
         }
         if (active)
-            target.stop(new FactTimeExceededError());
+            target.stop(new FactTimeExceededError(
+                    "This factoid or command took too long to run. Factoids and "
+                            + "commands can only run for "
+                            + (MAX_FACT_RUN_TIME / 1000) + " seconds."));
     }
 }

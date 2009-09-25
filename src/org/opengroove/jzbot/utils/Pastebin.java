@@ -21,7 +21,7 @@ public class Pastebin
 {
     public static enum Duration
     {
-        DAY, MONTH, YEAR
+        DAY, MONTH, FOREVER
     }
     
     /**
