@@ -51,6 +51,8 @@ import org.opengroove.jzbot.commands.d.RouletteCommand;
 import org.opengroove.jzbot.commands.d.SayCommand;
 import org.opengroove.jzbot.commands.d.TTTCommand;
 import org.opengroove.jzbot.commands.d.WeatherCommand;
+import org.opengroove.jzbot.eval.EvalEvaluator;
+import org.opengroove.jzbot.eval.JepEvaluator;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactEntity;

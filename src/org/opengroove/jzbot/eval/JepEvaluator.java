@@ -1,6 +1,8 @@
-package org.opengroove.jzbot;
+package org.opengroove.jzbot.eval;
 
 import org.cheffo.jeplite.JEP;
+import org.opengroove.jzbot.Evaluator;
+import org.opengroove.jzbot.JZBot;
 
 public class JepEvaluator extends Evaluator
 {

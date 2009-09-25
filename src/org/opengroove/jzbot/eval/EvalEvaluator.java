@@ -1,10 +1,11 @@
-package org.opengroove.jzbot;
+package org.opengroove.jzbot.eval;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jibble.pircbot.Colors;
+import org.opengroove.jzbot.Evaluator;
 import org.opengroove.jzbot.eval.jeval.Expression;
 import org.opengroove.jzbot.eval.jeval.Operator;
 
