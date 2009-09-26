@@ -453,7 +453,7 @@ public class JZBot extends PircBot
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
         incrementIndirectRequests(f);
-        return runFactoid(f, channelSpecific ? channel : null, sender,
+        return runFactoid(f, channel, sender,
                 arguments.subList(1).evalToArray(), varMap, allowRestricted,
                 quota);
     }

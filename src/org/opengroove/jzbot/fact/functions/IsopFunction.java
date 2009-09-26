@@ -50,11 +50,13 @@ public class IsopFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isop||<nick>}} -- Evaluates to \"1\" if the nick specified is "
+        return "Syntax: {{isop||<channel>||<nick>}} -- Evaluates to \"1\" if the nick specified is "
                 + "a channel operator at this channel or \"0\" if the nick specified is not"
                 + " a channel operator at this channel. %self% can be used to get the bot's "
                 + "own nick, so {{isop||%self%}} would indicate whether the bot has operator "
-                + "privileges at this channel.";
+                + "privileges at this channel.\n"
+                + "<channel> means the channel to check at. If it's not present, then the "
+                + "channel that this factoid is being run at will be used.";
     }
     
 }
