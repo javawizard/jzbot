@@ -11,7 +11,7 @@ package org.opengroove.jzbot.eval.caltech;
 
 import java.util.Vector;
 
-public class CaltechEvaluator
+public class CaltechEval
 {
     String expression;
     String[] Operators;
@@ -30,14 +30,14 @@ public class CaltechEvaluator
         
         try
         {
-            CaltechEvaluator m = new CaltechEvaluator(args[0]);
+            CaltechEval m = new CaltechEval(args[0]);
         }
         catch (Exception e)
         {
         }
     }
     
-    public CaltechEvaluator(String s)
+    public CaltechEval(String s)
     {
         init();
         expression = s.replace(" ", "");
@@ -180,8 +180,7 @@ public class CaltechEvaluator
             return (Math.max(arg1, arg2));
         if (op.equals("min"))
             return (Math.min(arg1, arg2));
-        System.err.println("Error: no operator " + op + " implemented");
-        return 0;
+        throw new RuntimeException("Invalid operator: " + op);
     }
     
     private boolean inOperand(char c)
@@ -295,17 +294,17 @@ public class CaltechEvaluator
     private double eval(String s)
     {
         Double D = new Double(0);
-        System.out.println("Evaluating " + s);
+        // System.out.println("Evaluating " + s);
         
         Vector tokens = toTokens(s);
         
-        System.out.print("Tokenized: ");
-        for (int it = 0; it < tokens.size(); it++)
-        {
-            System.out.print((String) tokens.elementAt(it) + " ");
-            
-        }
-        System.out.println("");
+        // System.out.print("Tokenized: ");
+        // for (int it = 0; it < tokens.size(); it++)
+        // {
+        // System.out.print((String) tokens.elementAt(it) + " ");
+        
+        // }
+        // System.out.println("");
         
         while (tokens.size() > 1)
         {
@@ -321,10 +320,10 @@ public class CaltechEvaluator
         Double D = new Double(0);
         Vector rightTokens = new Vector();
         double leftValue = 0, rightValue1, rightValue2;
-        System.out.print("Simplify Tokens :");
-        for (int i = 0; i < tokens.size(); i++)
-            System.out.print(" " + (String) tokens.elementAt(i));
-        System.out.println("");
+        // System.out.print("Simplify Tokens :");
+        // for (int i = 0; i < tokens.size(); i++)
+        // System.out.print(" " + (String) tokens.elementAt(i));
+        // System.out.println("");
         while (tokens.indexOf("(") != -1)
         {
             int ib = tokens.indexOf("(");
@@ -374,10 +373,10 @@ public class CaltechEvaluator
                     break;
                 }
             }
-            System.out.print("After bracket reduction: ");
-            for (int i = 0; i < tokens.size(); i++)
-                System.out.print(" " + (String) tokens.elementAt(i));
-            System.out.println("");
+            // System.out.print("After bracket reduction: ");
+            // for (int i = 0; i < tokens.size(); i++);
+            // System.out.print(" " + (String) tokens.elementAt(i));
+            // System.out.println("");
         }
         
         // treat the operators in order of precedence
@@ -385,10 +384,10 @@ public class CaltechEvaluator
         while (tokens.size() > 1)
         {
             
-            System.out.print("Iterating expression: ");
-            for (int i = 0; i < tokens.size(); i++)
-                System.out.print(" " + (String) tokens.elementAt(i));
-            System.out.println("");
+            // System.out.print("Iterating expression: ");
+            // for (int i = 0; i < tokens.size(); i++)
+            // System.out.print(" " + (String) tokens.elementAt(i));
+            // System.out.println("");
             
             int maxprec = 0;
             int ipos = -1;

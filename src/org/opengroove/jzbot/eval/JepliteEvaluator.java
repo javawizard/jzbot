@@ -4,7 +4,7 @@ import org.cheffo.jeplite.JEP;
 import org.opengroove.jzbot.Evaluator;
 import org.opengroove.jzbot.JZBot;
 
-public class JepEvaluator extends Evaluator
+public class JepliteEvaluator extends Evaluator
 {
     
     public String evaluate(String toEval)
@@ -34,6 +34,6 @@ public class JepEvaluator extends Evaluator
     @Override
     public String getName()
     {
-        return "jep";
+        return "jeplite";
     }
 }

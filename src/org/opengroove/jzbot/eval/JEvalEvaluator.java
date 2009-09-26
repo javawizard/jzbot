@@ -9,7 +9,7 @@ import org.opengroove.jzbot.Evaluator;
 import org.opengroove.jzbot.eval.jeval.Expression;
 import org.opengroove.jzbot.eval.jeval.Operator;
 
-public class EvalEvaluator extends Evaluator
+public class JEvalEvaluator extends Evaluator
 {
     private static Map<String, BigDecimal> defaultVars = new HashMap<String, BigDecimal>();
     static
@@ -59,7 +59,7 @@ public class EvalEvaluator extends Evaluator
     @Override
     public String getName()
     {
-        return "eval";
+        return "jeval";
     }
     
 }

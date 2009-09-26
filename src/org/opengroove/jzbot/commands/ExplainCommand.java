@@ -33,7 +33,7 @@ public class ExplainCommand implements Command
             f = JZBot.getGlobalFactoid(arguments);
         if (f == null)
             throw new ResponseException("No such factoid: " + arguments);
-        String explanation = FactParser.explain(f.getValue());
+        String explanation = FactParser.explain(f.getValue(), f.getName());
         StringBuffer buffer = new StringBuffer();
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());
         buffer.append("\n\nExplanation for this factoid:\n\n");

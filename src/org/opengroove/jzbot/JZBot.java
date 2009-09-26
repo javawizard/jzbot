@@ -51,8 +51,9 @@ import org.opengroove.jzbot.commands.d.RouletteCommand;
 import org.opengroove.jzbot.commands.d.SayCommand;
 import org.opengroove.jzbot.commands.d.TTTCommand;
 import org.opengroove.jzbot.commands.d.WeatherCommand;
-import org.opengroove.jzbot.eval.EvalEvaluator;
-import org.opengroove.jzbot.eval.JepEvaluator;
+import org.opengroove.jzbot.eval.CaltechEvaluator;
+import org.opengroove.jzbot.eval.JEvalEvaluator;
+import org.opengroove.jzbot.eval.JepliteEvaluator;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactEntity;
@@ -89,8 +90,9 @@ public class JZBot extends PircBot
     
     static
     {
-        registerEvalEngine(new JepEvaluator());
-        registerEvalEngine(new EvalEvaluator());
+        registerEvalEngine(new JepliteEvaluator());
+        registerEvalEngine(new JEvalEvaluator());
+        registerEvalEngine(new CaltechEvaluator());
     }
     
     public static Evaluator getEvalEngine(String name)
@@ -406,7 +408,7 @@ public class JZBot extends PircBot
         vars.put("self", bot.getNick());
         vars.put("source", channel == null ? sender : channel);
         String text = factoid.getValue();
-        FactEntity parsedFactoid = FactParser.parse(text);
+        FactEntity parsedFactoid = FactParser.parse(text, factoid.getName());
         FactContext context = new FactContext();
         context.setQuota(quota);
         context.setChannel(channel);
@@ -1066,7 +1068,7 @@ public class JZBot extends PircBot
      *            The value to round
      * @return The value
      */
-    static String toRoundedString(double value)
+    public static String toRoundedString(double value)
     {
         BigDecimal d = new BigDecimal(value);
         d = d.movePointRight(9);

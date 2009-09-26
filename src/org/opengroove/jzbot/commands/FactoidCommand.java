@@ -118,7 +118,8 @@ public class FactoidCommand implements Command
              */
             try
             {
-                FactParser.parse(factoidContents);
+                FactParser.parse(factoidContents, "__internal_create_"
+                        + factoidName);
             }
             catch (Exception e)
             {

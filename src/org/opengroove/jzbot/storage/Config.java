@@ -28,7 +28,7 @@ public interface Config
     public void setPort(int port);
     
     @Property
-    @Default(stringValue = "eval")
+    @Default(stringValue = "jeval")
     public String getEvalEngine();
     
     public void setEvalEngine(String evalEngine);
