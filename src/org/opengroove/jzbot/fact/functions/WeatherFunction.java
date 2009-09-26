@@ -23,7 +23,18 @@ public class WeatherFunction extends Function
     {
         Map<String, String> map = new HashMap<String, String>();
         String zipcode = arguments.get(0);
+        if (zipcode.length() != 5)
+            throw new FactoidException("The zipcode you specified is \""
+                    + zipcode
+                    + "\". This isn't exactly 5 characters. Specify a zipcode "
+                    + "that's exactly 5 characters. Canadians/Britans: "
+                    + "sorry, but international weather isn't supported "
+                    + "yet. If you'd like to modify the bot to support "
+                    + "international weather, feel free to contact jcp on "
+                    + "irc.freenode.net channel #bztraining.");
         String prefix = arguments.length() > 1 ? arguments.get(1) : "";
+        String weatherbugResultString = null;
+        String yahooResultString = null;
         try
         {
             URL weatherbugUrl = new URL(
@@ -34,7 +45,8 @@ public class WeatherFunction extends Function
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
             stream.close();
-            String[] tokens = new String(baos.toByteArray()).split("\\|");
+            weatherbugResultString = new String(baos.toByteArray());
+            String[] tokens = weatherbugResultString.split("\\|");
             map.put("date", tokens[2]);
             map.put("time", tokens[1]);
             map.put("temp", tokens[3]);
@@ -75,6 +87,7 @@ public class WeatherFunction extends Function
             StringUtils.copy(stream, baos);
             stream.close();
             String yahooResult = new String(baos.toByteArray());
+            yahooResultString = yahooResult;
             String conditionStart = "yweather:condition  text=\"";
             int conditionsIndex = yahooResult.indexOf(conditionStart);
             String conditions = "";
@@ -93,7 +106,9 @@ public class WeatherFunction extends Function
         {
             e.printStackTrace();
             throw new FactoidException("Exception while parsing weather data: "
-                    + e.getClass().getName() + ": " + e.getMessage(), e);
+                    + e.getClass().getName() + ": " + e.getMessage()
+                    + "\nWeatherbug data: " + weatherbugResultString
+                    + "\nYahoo data: " + yahooResultString, e);
         }
         for (String s : map.keySet())
         {

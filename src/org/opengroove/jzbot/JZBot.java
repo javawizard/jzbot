@@ -177,6 +177,13 @@ public class JZBot extends PircBot
     
     public static void main(String[] args) throws Throwable
     {
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            public void run()
+            {
+                System.out.println("JZBot has terminated.");
+            }
+        });
         bot.setMessageDelay(250);
         bot.start();
     }
@@ -453,9 +460,8 @@ public class JZBot extends PircBot
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
         incrementIndirectRequests(f);
-        return runFactoid(f, channel, sender,
-                arguments.subList(1).evalToArray(), varMap, allowRestricted,
-                quota);
+        return runFactoid(f, channel, sender, arguments.subList(1)
+                .evalToArray(), varMap, allowRestricted, quota);
     }
     
     protected void onKick(String channel, String kickerNick,
