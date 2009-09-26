@@ -39,12 +39,27 @@ public class FactoidException extends RuntimeException
         StringBuffer buffer = new StringBuffer();
         FactoidStackFrame firstFrame = stackFrames.size() > 0 ? stackFrames
                 .get(0) : null;
-        String charMessage = firstFrame == null ? "" : " at char "
+        String charMessage = firstFrame == null ? "" : " in "
+                + firstFrame.getFactName() + " at char "
                 + firstFrame.getCharIndex();
         buffer.append("Factoid error" + charMessage + ": " + getMessage()
                 + "\n");
-        if(firstFrame != null)
+        if (firstFrame != null)
         {
+            String content = factContents.get(firstFrame.getFactName());
+            if (content != null)
+            {
+                buffer.append("\n").append(content).append("\n");
+                buffer.append(FactEntity.spaces(firstFrame.getCharIndex()))
+                        .append("^\n");
+            }
+        }
+        buffer.append("\n");
+        for (FactoidStackFrame frame : stackFrames)
+        {
+            buffer.append("    in " + frame.getFactName() + " -> "
+                    + frame.getFunctionName() + " (" + frame.getCharIndex()
+                    + ")\n");
         }
         return buffer.toString();
     }

@@ -6,6 +6,18 @@ public class FunctionReference extends FactEntity
     
     private String functionName;
     
+    private boolean omitFromStack = false;
+    
+    public boolean isOmitFromStack()
+    {
+        return omitFromStack;
+    }
+    
+    public void setOmitFromStack(boolean omitFromStack)
+    {
+        this.omitFromStack = omitFromStack;
+    }
+    
     public FunctionReference(Sequence arguments)
     {
         this.arguments = arguments;
@@ -20,13 +32,27 @@ public class FunctionReference extends FactEntity
         if (function == null)
             throw new FactoidException("No such function: " + functionName);
         ArgumentList sublist = list.subList(1);
-        return function.evaluate(sublist, context);
+        try
+        {
+            return function.evaluate(sublist, context);
+        }
+        catch (FactoidException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new FactoidException("Internal error while running "
+                    + functionName, e);
+        }
     }
     
     @Override
     protected void addStackFrame(FactoidException e)
     {
         super.addStackFrame(e);
+        if (omitFromStack)
+            return;
         String functionName = this.functionName;
         if (functionName.equals(""))
             functionName = "(blank function reference)";

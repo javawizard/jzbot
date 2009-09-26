@@ -60,6 +60,7 @@ public class FactParser
             throw new ParseException(stack.at(),
                     "\"||\" used somewhere in your factoid outside of a function");
         reference.setFactText(factoid);
+        reference.setOmitFromStack(true);
         return reference;
     }
     

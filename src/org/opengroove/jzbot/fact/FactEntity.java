@@ -61,7 +61,7 @@ public abstract class FactEntity
      * @param number
      * @return
      */
-    protected String spaces(int number)
+    public static String spaces(int number)
     {
         char[] c = new char[number];
         for (int i = 0; i < number; i++)

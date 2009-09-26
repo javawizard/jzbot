@@ -787,9 +787,14 @@ public class JZBot extends PircBot
             factValue = runFactoid(f, channel, sender, arguments, vars,
                     allowRestricted, null);
         }
+        catch (FactoidException e)
+        {
+            factValue = "Syntax exception while running factoid: "
+                    + pastebinStack(e);
+        }
         catch (Exception e)
         {
-            factValue = "Syntax error while running factoid: "
+            factValue = "External exception while running factoid: "
                     + pastebinStack(e);
         }
         catch (FactTimeExceededError e)
@@ -809,6 +814,9 @@ public class JZBot extends PircBot
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw, true));
         String eString = sw.toString();
+        if (e instanceof FactoidException)
+            eString = ((FactoidException) e).createFactoidStackTrace()
+                    + "\n\nJava stack trace:\n\n" + eString;
         try
         {
             return "http://pastebin.com/"
