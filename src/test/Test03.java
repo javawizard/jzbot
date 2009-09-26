@@ -18,7 +18,7 @@ public class Test03
         context.setSender("jcp");
         context.getLocalVars().put("1", "3");
         context.getLocalVars().put("2", "5");
-        FactEntity entity = FactParser.parse(factoid);
+        FactEntity entity = FactParser.parse(factoid, "testing");
         System.out.println(entity.resolve(context));
     }
     

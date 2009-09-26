@@ -97,8 +97,9 @@ public class WeatherFunction extends Function
         }
         for (String s : map.keySet())
         {
-            context.getLocalVars().put(s, map.get(s));
+            context.getLocalVars().put(prefix + s, map.get(s));
         }
+        return "";
     }
     
     @Override

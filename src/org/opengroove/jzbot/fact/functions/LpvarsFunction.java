@@ -16,7 +16,9 @@ public class LpvarsFunction extends Function
         for (MapEntry entry : JZBot.storage.getPersistentVariables())
         {
             String s = entry.getKey();
-            b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
+            if ((arguments.length() == 0) || s.matches(arguments.get(0)))
+                b.append("|").append(
+                        s.replace("\\", "\\\\").replace("|", "\\|"));
         }
         if (b.length() == 0)
             return "";
@@ -26,7 +28,7 @@ public class LpvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lpvars}} -- Same as {{lgvars}}, but lists "
+        return "Syntax: {{lpvars||<regex>}} -- Same as {{lgvars}}, but lists "
                 + "persistent variables instead of global variables. See \"%HELPCMD% "
                 + "functions pset\" for information on the difference between persistent variables "
                 + "and global variables.";
