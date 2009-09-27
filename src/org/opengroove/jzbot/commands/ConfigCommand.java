@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import org.opengroove.jzbot.Command;
+import org.opengroove.jzbot.ConfigVars;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.utils.JZUtils;
@@ -28,73 +29,47 @@ public class ConfigCommand implements Command
                     "You're not a superop.");
             return;
         }
-        String[] tokens = arguments.split(" ");
-        if (tokens[0].equals("delay"))
+        String[] tokens = arguments.split(" ", 2);
+        if (!tokens[0].equals(""))
         {
-            if (tokens.length == 1)
-            {
-                JZBot.bot.sendMessage(pm ? sender : channel, "Delay is "
-                        + JZBot.bot.getMessageDelay());
-                return;
-            }
-            int delay = Integer.parseInt(tokens[1]);
-            JZBot.bot.setMessageDelay(delay);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Delay set to "
-                    + delay + " (session local)");
-        }
-        else if (tokens[0].equals("charset"))
-        {
-            if (tokens.length == 1)
-            {
-                JZBot.bot
-                        .sendMessage(
-                                pm ? sender : channel,
-                                "Charset is "
-                                        + JZBot.getCurrentCharset()
-                                        + ". Allowed charsets (separated by spaces) are: http://pastebin.com/"
-                                        + Pastebin.createPost("jzbot",
-                                                StringUtils.delimited(Charset
-                                                        .availableCharsets()
-                                                        .keySet().toArray(
-                                                                new String[0]),
-                                                        "   "), Duration.DAY,
-                                                null));
-                return;
-            }
-            String charset = tokens[1];
-            JZBot.setCurrentCharset(charset);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Charset set to "
-                    + charset + ". Reconnect the bot (with ~reconnect) "
-                    + "as soon as possible.");
-        }
-        else if (tokens[0].equals("evalengine"))
-        {
-            if (tokens.length == 1)
-            {
-                JZBot.bot.sendMessage(pm ? sender : channel, "Evalengine is "
-                        + JZBot.config.getEvalEngine());
-                return;
-            }
-            if (!StringUtils.isMemberOf(tokens[1], JZBot.evalEngines.keySet()
-                    .toArray(new String[0])))
-            {
+            ConfigVars var = ConfigVars.valueOf(tokens[0]);
+            if (var == null)
                 throw new ResponseException(
-                        "Invalid eval engine. Valid values are (separated by space): "
-                                + StringUtils.delimited(JZBot.evalEngines
-                                        .keySet().toArray(new String[0]), " "));
+                        "That isn't a valid var name. Use \"~config\" to see "
+                                + "a list of var names.");
+            if (tokens.length == 1)
+            {
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "This variable's current value is \"" + var.get()
+                                + "\". You can use \"~config " + var.name()
+                                + " <newvalue>\" to set a new value."
+                                + " The variable's description is:");
+                JZBot.bot.sendMessage(pm ? sender : channel, var
+                        .getDescription());
             }
-            JZBot.config.setEvalEngine(tokens[1]);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Evalengine set to "
-                    + tokens[1]);
+            else
+            {
+                var.set(tokens[1]);
+                JZBot.bot
+                        .sendMessage(pm ? sender : channel,
+                                "Successfully set the var \"" + var.name()
+                                        + "\" to have the value \"" + tokens[1]
+                                        + "\".");
+            }
         }
         else
         {
-            JZBot.bot
-                    .sendMessage(
-                            pm ? sender : channel,
-                            "Use \"~config <varname>\" to see a var or \"~config "
-                                    + "<varname> <value>\" to set a var. Currently, "
-                                    + "allowed varnames are delay, evalengine, and charset.");
+            String[] configVarNames = new String[ConfigVars.values().length];
+            for (int i = 0; i < configVarNames.length; i++)
+            {
+                configVarNames[i] = ConfigVars.values()[i].name();
+            }
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "Use \"~config <varname>\" to see a var (value and description) "
+                            + "or \"~config "
+                            + "<varname> <value>\" to set a var. Currently, "
+                            + "allowed varnames are, separated by spaces: "
+                            + StringUtils.delimited(configVarNames, "  "));
         }
     }
 }

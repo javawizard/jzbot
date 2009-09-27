@@ -18,6 +18,7 @@
 	<classpathentry kind="lib" path="lib/TableLayout-bin-jdk1.5-2007-04-21.jar"/>
 	<classpathentry kind="lib" path="lib/jeplite-0.8.7a-bin.jar" sourcepath="/data/downloads/jeplite-0.8.7a-src.zip"/>
 	<classpathentry kind="lib" path="lib/ogcommon-r1660.jar"/>
+	<classpathentry kind="lib" path="lib/MicroCrypt-0.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

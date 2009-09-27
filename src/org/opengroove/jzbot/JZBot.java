@@ -45,12 +45,6 @@ import org.opengroove.jzbot.commands.StatusCommand;
 import org.opengroove.jzbot.commands.SuperopCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.UnrestrictCommand;
-import org.opengroove.jzbot.commands.d.GoogleCommand;
-import org.opengroove.jzbot.commands.d.LengthCommand;
-import org.opengroove.jzbot.commands.d.RouletteCommand;
-import org.opengroove.jzbot.commands.d.SayCommand;
-import org.opengroove.jzbot.commands.d.TTTCommand;
-import org.opengroove.jzbot.commands.d.WeatherCommand;
 import org.opengroove.jzbot.eval.CaltechEvaluator;
 import org.opengroove.jzbot.eval.JEvalEvaluator;
 import org.opengroove.jzbot.eval.JepliteEvaluator;
@@ -109,7 +103,7 @@ public class JZBot extends PircBot
     
     public static Evaluator getDefaultEvalEngine(String channel)
     {
-        return getEvalEngine(config.getEvalEngine());
+        return getEvalEngine(ConfigVars.evalengine.get());
     }
     
     public static class FutureFactoid extends Thread
@@ -184,7 +178,14 @@ public class JZBot extends PircBot
                 System.out.println("JZBot has terminated.");
             }
         });
-        bot.setMessageDelay(250);
+        try
+        {
+            bot.setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         bot.start();
     }
     
@@ -195,12 +196,12 @@ public class JZBot extends PircBot
         loadCommand(new ExecCommand());
         loadCommand(new ExplainCommand());
         loadCommand(new FactoidCommand());
-        loadCommand(new GoogleCommand());
+        // loadCommand(new GoogleCommand());
         loadCommand(new HelpCommand());
         loadCommand(new IsRestrictedCommand());
         loadCommand(new JoinCommand());
         loadCommand(new LeaveCommand());
-        loadCommand(new LengthCommand());
+        // loadCommand(new LengthCommand());
         loadCommand(new MMCommand());
         loadCommand(new OpCommand());
         loadCommand(new ReconnectCommand());
@@ -208,14 +209,14 @@ public class JZBot extends PircBot
         loadCommand(new RegexCommand());
         loadCommand(new RestrictCommand());
         // loadCommand(new RouletteCommand());
-        loadCommand(new SayCommand());
+        // loadCommand(new SayCommand());
         loadCommand(new ShutdownCommand());
         loadCommand(new StatusCommand());
         loadCommand(new SuperopCommand());
         loadCommand(new TriggerCommand());
-        loadCommand(new TTTCommand());
+        // loadCommand(new TTTCommand());
         loadCommand(new UnrestrictCommand());
-        loadCommand(new WeatherCommand());
+        // loadCommand(new WeatherCommand());
     }
     
     private static void loadCommand(Command command)
@@ -248,11 +249,11 @@ public class JZBot extends PircBot
         bot.setAutoNickChange(true);
         try
         {
-            if (config.getCharset() != null)
-                bot.setEncoding(config.getCharset());
+            bot.setEncoding(ConfigVars.charset.get());
         }
         catch (UnsupportedEncodingException e)
         {
+            e.printStackTrace();
         }
         System.out.println("connecting");
         bot.connect(config.getServer(), config.getPort(), config.getPassword());
@@ -1056,7 +1057,7 @@ public class JZBot extends PircBot
     
     public static String evaluateEquation(String toEval, String channel)
     {
-        return evaluateEquation(toEval, channel, config.getEvalEngine());
+        return evaluateEquation(toEval, channel, ConfigVars.evalengine.get());
     }
     
     public static String evaluateEquation(String toEval, String channel,
@@ -1070,7 +1071,7 @@ public class JZBot extends PircBot
         catch (Exception e)
         {
             throw new FactoidException("Exception while evaluating " + toEval
-                    + " with engine " + config.getEvalEngine(), e);
+                    + " with engine " + ConfigVars.evalengine.get(), e);
         }
     }
     
@@ -1120,14 +1121,6 @@ public class JZBot extends PircBot
         return threadLocalUsername.get();
     }
     
-    public static String getCurrentCharset()
-    {
-        String charset = config.getCharset();
-        if (charset == null)
-            return Charset.defaultCharset().name();
-        return config.getCharset();
-    }
-    
     public static void setCurrentCharset(String charset)
     {
         try
@@ -1150,7 +1143,6 @@ public class JZBot extends PircBot
                     "That is not a charset supported on this platform. "
                             + "(in bot.setEncoding(String))", e);
         }
-        config.setCharset(charset);
     }
     
     private static void validateWorkableCharset(String charset)

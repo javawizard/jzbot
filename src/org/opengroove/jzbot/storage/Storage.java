@@ -31,6 +31,13 @@ public interface Storage
     
     @Property
     @ListType(MapEntry.class)
+    public StoredList<MapEntry> getConfigVars();
+    
+    @Search(listProperty = "configVars", searchProperty = "key")
+    public MapEntry getConfigVar(String key);
+    
+    @Property
+    @ListType(MapEntry.class)
     public StoredList<MapEntry> getRedefinitions();
     
     /**

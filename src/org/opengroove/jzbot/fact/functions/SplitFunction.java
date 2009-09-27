@@ -53,7 +53,9 @@ public class SplitFunction extends Function
                 + " is optional.\n"
                 + "Currently, empty values at the end of the list are ignored. This "
                 + "means that in the above example, if \"first.second.third\" were replaced "
-                + "with \"first.second.third...\", the output would still be the same."; 
+                + "with \"first.second.third...\", the output would still be the same. {{split}} "
+                + "can be used with <string> being the {{numberlist}} function to effectively "
+                + "create a for loop.";
     }
     
     public String getName()

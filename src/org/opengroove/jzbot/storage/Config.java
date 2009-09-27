@@ -27,14 +27,14 @@ public interface Config
     
     public void setPort(int port);
     
-    @Property
-    @Default(stringValue = "jeval")
-    public String getEvalEngine();
-    
-    public void setEvalEngine(String evalEngine);
-    
-    @Property
-    public String getCharset();
-    
-    public void setCharset(String charset);
+    // @Property
+    // @Default(stringValue = "jeval")
+    // public String getEvalEngine();
+    //    
+    // public void setEvalEngine(String evalEngine);
+    //    
+    // @Property
+    // public String getCharset();
+    //    
+    // public void setCharset(String charset);
 }
