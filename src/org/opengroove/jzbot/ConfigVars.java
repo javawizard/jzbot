@@ -13,7 +13,7 @@ public enum ConfigVars
     delay(
             "1000",
             "This config variable sets how often marlen can send messages, in milliseconds. "
-                    + "For example, if this is 100 (the default), then marlen will send "
+                    + "For example, if this is 1000 (the default), then marlen will send "
                     + "no more than 1 "
                     + "message per second, and will buffer messages so that they aren't sent more "
                     + "often than that.")
@@ -79,6 +79,7 @@ public enum ConfigVars
         if (entry == null)
         {
             entry = JZBot.storage.createMapEntry();
+            JZBot.storage.getConfigVars().add(entry);
             entry.setKey(name());
         }
         entry.setValue(value);

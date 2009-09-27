@@ -33,7 +33,7 @@ public class JZUtils
     
     public static String[] ircDelimited(String[] items, String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, 450);
+        return delimitedLengthRestricted(items, delimiter, 400);
     }
     
     public static void ircSendDelimited(String[] items, String delimiter,

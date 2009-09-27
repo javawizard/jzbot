@@ -178,14 +178,6 @@ public class JZBot extends PircBot
                 System.out.println("JZBot has terminated.");
             }
         });
-        try
-        {
-            bot.setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
         bot.start();
     }
     
@@ -243,6 +235,14 @@ public class JZBot extends PircBot
             System.exit(0);
         }
         reloadRegexes();
+        try
+        {
+            bot.setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         bot.setLogin(config.getNick());
         bot.setName(config.getNick());
         bot.setVersion("JZBot -- http://jzbot.googlecode.com");

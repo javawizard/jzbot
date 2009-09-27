@@ -33,10 +33,10 @@ public class DefaultHelpProvider implements HelpProvider
             {
                     "JZBot uses the following libraries, and I (Alexander "
                             + "Boyd, javawizard2539/jcp) would like to thank the "
-                            + "authors of these libraries for their contributions: ",
-                    "PircBot (http://jibble.org/pircbot.php)",
+                            + "authors of these libraries for their contributions:  "
+                            + "PircBot (http://jibble.org/pircbot.php)",
                     "H2 (http://h2database.org)",
-                    "Log4J (http://log4j.apache.org)",
+                    "Log4J (http://logging.apache.org/log4j)",
                     "Commons Collections (http://commons.apache.org/collections)",
                     "JEPLite (http://jeplite.sourceforge.net)",
                     "OpenGroove Common (link coming soon)",
