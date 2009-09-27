@@ -48,7 +48,8 @@ import java.util.*;
  * bots and clients that use the PircBot framework.
  * 
  * @author Paul James Mutton, <a
- *         href="http://www.jibble.org/">http://www.jibble.org/</a>
+ *         href="http://www.jibble.org/">http://www.jibble.org/</a>, modified by
+ *         Alexander Boyd for use with JZBot (http://jzbot.googlecode.com)
  * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
  */
 public abstract class PircBot implements ReplyConstants
@@ -496,6 +497,8 @@ public abstract class PircBot implements ReplyConstants
      */
     public final void sendMessage(String target, String message)
     {
+        target = target.replace("\n", "");
+        message = message.replace("\n", "");
         _outQueue.add("PRIVMSG " + target + " :" + message);
     }
     
@@ -511,6 +514,8 @@ public abstract class PircBot implements ReplyConstants
      */
     public final void sendAction(String target, String action)
     {
+        target = target.replace("\n", "");
+        action = action.replace("\n", "");
         sendCTCPCommand(target, "ACTION " + action);
     }
     

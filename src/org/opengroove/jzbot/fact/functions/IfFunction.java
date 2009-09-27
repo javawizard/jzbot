@@ -13,18 +13,27 @@ public class IfFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        String toCompare = "|" + arguments.get(0).toLowerCase() + "|";
-        if (yesValues.contains(toCompare))
+        boolean result = findValue(arguments.get(0));
+        if (result)
             return arguments.get(1);
-        else if (noValues.contains(toCompare))
+        else
         {
             if (arguments.length() > 2)
                 return arguments.get(2);
             else
                 return "";
         }
+    }
+    
+    public static boolean findValue(String value)
+    {
+        String toCompare = "|" + value.toLowerCase() + "|";
+        if (yesValues.contains(toCompare))
+            return true;
+        else if (noValues.contains(toCompare))
+            return false;
         else
-            throw new FactoidException("Value to if was " + toCompare
+            throw new FactoidException("Value to check was " + toCompare
                     + " when it should have been in " + yesValues + " or "
                     + noValues);
     }

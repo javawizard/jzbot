@@ -10,8 +10,7 @@ public class CharFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "" + ((char) Integer.parseInt(arguments.get(0)));
     }
     
     @Override
