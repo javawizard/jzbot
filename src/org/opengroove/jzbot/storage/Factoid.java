@@ -1,6 +1,7 @@
 package org.opengroove.jzbot.storage;
 
 import net.sf.opengroove.common.proxystorage.Default;
+import net.sf.opengroove.common.proxystorage.Length;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -23,6 +24,7 @@ public interface Factoid
     public void setRestricted(boolean restricted);
     
     @Property
+    @Length(32768)
     public String getValue();
     
     public void setValue(String value);
