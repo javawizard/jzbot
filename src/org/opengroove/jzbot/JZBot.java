@@ -100,11 +100,14 @@ public class JZBot extends PircBot
     {
         try
         {
-            HttpServer server = httpServers.get(port);
-            if (server == null)
-                throw new RuntimeException("No such server by that port");
-            server.stopServer();
-            httpServers.remove(port);
+            synchronized (httpServers)
+            {
+                HttpServer server = httpServers.get(port);
+                if (server == null)
+                    throw new RuntimeException("No such server by that port");
+                server.stopServer();
+                httpServers.remove(port);
+            }
         }
         catch (Exception e)
         {
@@ -1000,6 +1003,14 @@ public class JZBot extends PircBot
     {
         System.out.println("on disconnect");
         proxyStorage.close();
+        synchronized (httpServers)
+        {
+            for (int port : httpServers.keySet())
+            {
+                httpServers.get(port).stopServer();
+            }
+            httpServers.clear();
+        }
         proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
                 "storage/db"));
         storage = proxyStorage.getRoot();
