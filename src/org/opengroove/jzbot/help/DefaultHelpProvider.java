@@ -31,8 +31,8 @@ public class DefaultHelpProvider implements HelpProvider
         {
             String[] creditsList = new String[]
             {
-                    "JZBot uses the following libraries, and I (Alexander "
-                            + "Boyd, javawizard2539/jcp) would like to thank the "
+                    "JZBot uses the following libraries, and the JZBot developers "
+                            + "would like to thank the "
                             + "authors of these libraries for their contributions:  "
                             + "PircBot (http://jibble.org/pircbot.php)",
                     "H2 (http://h2database.org)",
@@ -49,6 +49,19 @@ public class DefaultHelpProvider implements HelpProvider
             String[] messageList = JZUtils.ircDelimited(creditsList, ", ");
             return StringUtils.delimited(messageList, "\n");
         }
+        else if (page.equals("authors"))
+        {
+            String[] authorsList = new String[]
+            {
+                    "The following people have contributed to " +
+                    "the development of JZBot:  "
+                            + "Alexander Boyd (javawizard2539/jcp/jpc)",
+                    "MrDudle",
+                    "schrottplatz"
+            };
+            String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
+            return StringUtils.delimited(messageList, "\n");
+        }
         return null;
     }
     
@@ -58,7 +71,7 @@ public class DefaultHelpProvider implements HelpProvider
         if (page.equals(""))
             return new String[]
             {
-                    "about", "factoids", "credits"
+                    "about", "factoids", "credits", "authors"
             };
         return new String[0];
     }

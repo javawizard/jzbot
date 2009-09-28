@@ -10,9 +10,12 @@ import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Factoid;
+import org.opengroove.jzbot.utils.Pastebin;
+import org.opengroove.jzbot.utils.Pastebin.Duration;
 
 public class FactoidCommand implements Command
 {
+    public static String PASTEBIN_REGEX = "^http\\://pastebin\\.com/.{6,12}$";
     
     public String getName()
     {
@@ -112,6 +115,7 @@ public class FactoidCommand implements Command
             else if (c == null && JZBot.storage.getFactoid(factoidName) != null)
                 throw new ResponseException(
                         "That factoid already exists as a global factoid");
+            factoidContents = scanForPastebin(factoidContents);
             /*
              * The factoid does not exist. Let's create it. First, we'll try
              * parsing it to make sure we don't have syntax errors.
@@ -214,7 +218,13 @@ public class FactoidCommand implements Command
                                     + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist");
             }
-            JZBot.bot.sendMessage(pm ? sender : channel, f.getValue());
+            String value = f.getValue();
+            if (value.contains("\n") || value.contains("\r")
+                    || value.length() > 400 || value.matches(PASTEBIN_REGEX))
+                value = "http://pastebin.com/"
+                        + Pastebin.createPost("jzbot", value, Duration.DAY,
+                                null);
+            JZBot.bot.sendMessage(pm ? sender : channel, value);
         }
         if (command.equals("info"))
         {
@@ -252,6 +262,15 @@ public class FactoidCommand implements Command
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
         }
+    }
+    
+    private String scanForPastebin(String factoidContents)
+    {
+        if (factoidContents.matches(PASTEBIN_REGEX))
+        {
+            factoidContents = Pastebin.readPost(factoidContents.trim());
+        }
+        return factoidContents;
     }
     
     private void recreate(Factoid oldFact, boolean isGlobal, Channel c)

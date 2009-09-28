@@ -18,7 +18,7 @@ public class TypeFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {{type||<factoidname>}} -- Evaluates to the type of factoid that "
-                + "<factoidname> is. This is either \"global\", \"channel\", or \"nonexistent\"."
+                + "<factoidname> is. This is either \"global\", \"channel\", or \"nonexistent\". "
                 + "Global means that the factoid is a global factoid, channel means that the "
                 + "factoid is a channel-specific factoid, and nonexistent means that the "
                 + "factoid in question does not exist. This checks for channel-specific "

@@ -1,5 +1,7 @@
 package org.opengroove.jzbot.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -9,16 +11,16 @@ import java.net.URLEncoder;
  * Contains methods for creating, reading, and deleting posts from <a
  * href="http://pastebin.com">pastebin.com</a>. JZBot uses this to provide error
  * reports (when an exception occurs, JZBot pastebins the stack trace and then
- * sends a message to the source of the command, containing the error). JZBot
- * also uses this to allow editing of logo scripts, by pastebinning a procedure
- * when "proc edit" is run, and then saving the contents of the pastebin when
- * "proc save" is run.
+ * sends a message to the source of the command, containing the error), among
+ * various other things.
  * 
  * @author Alexander Boyd
  * 
  */
 public class Pastebin
 {
+    private static final int MAX_READ_LENGTH = 1024 * 200;
+    
     public static enum Duration
     {
         DAY, MONTH, FOREVER
@@ -81,4 +83,54 @@ public class Pastebin
                     + e.getMessage(), e);
         }
     }
+    
+    /**
+     * Returns the content of the post at the specified url. The post is handed
+     * back from pastebin.com with html entities and such to prevent the code
+     * from messing up the page; this method properly resolves these back into
+     * actual characters so that using
+     * {@link #createPost(String, String, Duration, String)} with the exact
+     * content returned from this method would result in two posts that are
+     * identical (ignoring the sequences of 2 at signs that can be used for
+     * highlighting).
+     * 
+     * @param postUrl
+     *            The url of the post
+     * @return The text of the specified post
+     */
+    public static String readPost(String postUrl)
+    {
+        try
+        {
+            if (!postUrl.startsWith("http://pastebin.com/"))
+                throw new RuntimeException(
+                        "Invalid url, needs to start with \"http://pastebin.com/\": "
+                                + postUrl);
+            postUrl = postUrl.substring("http://pastebin.com/".length());
+            postUrl = "http://pastebin.com/pastebin.php?dl=" + postUrl;
+            URL url = new URL(postUrl);
+            InputStream stream = url.openStream();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[512];
+            int read = 0;
+            while ((read = stream.read(buffer)) != -1)
+            {
+                if (read > MAX_READ_LENGTH)
+                    throw new RuntimeException(
+                            "Too many characters read (max is "
+                                    + MAX_READ_LENGTH + ")");
+                out.write(buffer, 0, read);
+            }
+            stream.close();
+            out.flush();
+            out.close();
+            String result = new String(out.toByteArray());
+            return result;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+    
 }

@@ -55,7 +55,17 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    keys("", "More info coming on this soon, but it's pipe-separated.");
+    keys("", "More info coming on this soon, but it's pipe-separated."), notfound(
+            "",
+            "This config variable is the name of a factoid to run when users "
+                    + "send a message that isn't recognized. If this is blank, then the text \""
+                    + "Huh? (pm \"help\" for more info)\" will be sent instead."), primary(
+            "",
+            "This config variable is the name of a channel that error messages " +
+            "will be sent to when there's not a logical channel to send them to. For" +
+            " example, if the global _onready factoid has a syntax error, the message will " +
+            "be sent to the channel specified in this config variable. Leaving this empty " +
+            "will cause such errors to simply be ignored.");
     private String defaultValue;
     private String description;
     

@@ -69,6 +69,82 @@ public class JZBot extends PircBot
     
     public static ArrayList<HelpProvider> helpProviders = new ArrayList<HelpProvider>();
     
+    public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
+    
+    public static void startHttpServer(int port, String factoid)
+    {
+        try
+        {
+            synchronized (httpServers)
+            {
+                if (httpServers.get(port) != null)
+                    throw new RuntimeException(
+                            "A server with that port has already been started, "
+                                    + "serving the factoid "
+                                    + httpServers.get(port).getFactoid());
+                verifyStartServer(port);
+                HttpServer server = new HttpServer(port, factoid);
+                httpServers.put(port, server);
+                server.startServer();
+            }
+        }
+        catch (Exception e)
+        {
+            throw new FactoidException(
+                    "Exception occured while starting an http server on port "
+                            + port + " with factoid " + factoid, e);
+        }
+    }
+    
+    public static void stopHttpServer(int port)
+    {
+        try
+        {
+            HttpServer server = httpServers.get(port);
+            if (server == null)
+                throw new RuntimeException("No such server by that port");
+            server.stopServer();
+            httpServers.remove(port);
+        }
+        catch (Exception e)
+        {
+            throw new FactoidException(
+                    "Exception occured while stopping an http server on port "
+                            + port);
+        }
+    }
+    
+    public static final File serverPortsFile = new File("storage",
+            "serverports.txt");
+    public static final File maxServersFile = new File("storage",
+            "maxservers.txt");
+    
+    private static void verifyStartServer(int port)
+    {
+        if (!serverPortsFile.exists())
+            throw new RuntimeException(
+                    "HTTP servers are disabled. To enable them, create "
+                            + "a file called serverports.txt in the bot's storage folder, and "
+                            + "set its contents to be a regular expression that will match the "
+                            + "port numbers you want to allow servers to be started on.");
+        String regex = StringUtils.readFile(serverPortsFile);
+        regex = regex.trim();
+        if (!("" + port).matches(regex))
+            throw new RuntimeException(
+                    "Invalid port; the port has to match the regex " + regex);
+        int maxServers;
+        if (maxServersFile.exists())
+            maxServers = Integer.parseInt(StringUtils.readFile(maxServersFile)
+                    .trim());
+        else
+            maxServers = 20;
+        if (httpServers.size() >= maxServers)
+            throw new RuntimeException("There are already "
+                    + httpServers.size()
+                    + " servers started. This bot imposes a "
+                    + "maximum limit of " + maxServers + " at a time.");
+    }
+    
     static
     {
         helpProviders.add(new DefaultHelpProvider());
@@ -340,16 +416,26 @@ public class JZBot extends PircBot
             tkt.start();
         try
         {
-            if (chan == null)
-                chan = storage.getChannel(channelName);
-            if (chan == null)
-                return;
-            Factoid f = chan.getFactoid(factname);
+            Factoid f;
+            if (channelName == null)
+            {
+                f = storage.getFactoid(factname);
+            }
+            else
+            {
+                if (chan == null)
+                    chan = storage.getChannel(channelName);
+                if (chan == null)
+                    return;
+                f = chan.getFactoid(factname);
+            }
             if (f != null)
             {
                 incrementIndirectRequests(f);
                 String factValue = safeRunFactoid(f, channelName, sender, args,
                         true, new HashMap<String, String>());
+                if (channelName == null)
+                    channelName = ConfigVars.primary.get();
                 if (factValue.trim().equals(""))
                     ;
                 else if (factValue.startsWith("<ACTION>"))
@@ -838,12 +924,40 @@ public class JZBot extends PircBot
     
     private void doInvalidCommand(boolean pm, String channel, String sender)
     {
-        if (channel != null)
+        Channel c = storage.getChannel(channel);
+        String notfoundFact = ConfigVars.notfound.get();
+        if (notfoundFact.trim().equals("") && c != null)
+        {
             sendMessage(pm ? sender : channel,
                     "Huh? (pm \"help\" for more info)");
+        }
         else
-            sendMessage(pm ? sender : channel,
-                    "Huh? (pm \"help\" for more info)");
+        {
+            try
+            {
+                Factoid f = c.getFactoid(notfoundFact);
+                if (f == null)
+                    f = storage.getFactoid(notfoundFact);
+                if (f == null)
+                    throw new RuntimeException("The factoid " + notfoundFact
+                            + " does not exist.");
+                String factValue = safeRunFactoid(f, channel, sender,
+                        new String[0], true, new HashMap<String, String>());
+                if (factValue.trim().equals(""))
+                    sendMessage(pm ? sender : channel,
+                            "Notfound factoid didn't output anything");
+                else if (factValue.startsWith("<ACTION>"))
+                    sendAction(pm ? sender : channel, factValue
+                            .substring("<ACTION>".length()));
+                else
+                    sendMessage(pm ? sender : channel, factValue);
+            }
+            catch (Throwable t)
+            {
+                sendMessage(pm ? sender : channel,
+                        "Syntax error in notfound factoid: " + pastebinStack(t));
+            }
+        }
     }
     
     protected void onConnect()
@@ -868,6 +982,16 @@ public class JZBot extends PircBot
                         joinChannel(channel.getName());
                     }
                 }
+                try
+                {
+                    Thread.sleep(2500);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                runNotificationFactoid(null, null, getNick(), "_onready",
+                        new String[0], true);
             }
         }.start();
     }

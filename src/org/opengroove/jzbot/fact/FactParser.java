@@ -109,7 +109,11 @@ public class FactParser
         while (stack.more())
         {
             char c = stack.next();
-            if (c == '\\')
+            if (c == '\n' || c == '\r')
+            {
+                continue;
+            }
+            else if (c == '\\')
             {
                 if (currentLiteral == null)
                 {
@@ -220,7 +224,18 @@ public class FactParser
         {
             case 'n':
                 return '\n';
-                
+            case 'r':
+                return '\r';
+            case 'p':
+                return '\u000f';
+            case 'b':
+                return '\u0002';
+            case 'u':
+                return '\u001f';
+            case 'i':
+                return '\u0016';
+            case 'c':
+                return '\u0003';
         }
         return c;
     }
