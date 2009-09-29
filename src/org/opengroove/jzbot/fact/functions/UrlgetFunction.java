@@ -76,10 +76,10 @@ public class UrlgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Not working yet, but when it is working, this will get the page at the specified "
-                + "http url. Only http will be supported (IE no \"file://\" urls), and the bot "
-                + "owner will be able to choose whether localhost or 127.0.0.1 works. Both IPv4 "
-                + "and IPv6 are supported.";
+        return "Syntax: {{urlget||<url>||<mode>||<prefix>}} -- Gets the page at the specified "
+                + "url. <url> is the url to get. This currently must only be an http or https "
+                + "url. <mode> is the mode to use, which is either \"text\" or \"binary\". "
+                + "TODO: binary hexcodes bytes separated by pipes";
     }
     
 }

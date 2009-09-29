@@ -244,9 +244,17 @@ public class FactParser
     {
         functionMap.put(name.toLowerCase(), function);
         reverseFunctionMap.put(function, name.toLowerCase());
-        if (function.getHelp(null) == null || function.getHelp(null).equals(""))
-            System.out.println("Warning: function " + name
-                    + " does not have help text");
+        try
+        {
+            if (function.getHelp(null) == null
+                    || function.getHelp(null).equals(""))
+                System.out.println("Warning: function " + name
+                        + " does not have help text");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     public static Function getFunction(String name)
