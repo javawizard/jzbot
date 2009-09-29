@@ -177,7 +177,7 @@ public class FactoidCommand implements Command
                 String currentList = "";
                 for (Factoid f : list.isolate())
                 {
-                    currentList += f.getName() + "    ";
+                    currentList += (f.isRestricted() ? "@" : "")+ f.getName() + "  ";
                     if (currentList.length() > 400)
                     {
                         JZBot.bot.sendMessage(pm ? sender : channel,
