@@ -27,7 +27,6 @@ public class IntcompareFunction extends Function
             result = 0;
         return "" + result;
     }
-    
     @Override
     public String getHelp(String topic)
     {

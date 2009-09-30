@@ -934,11 +934,18 @@ public class JZBot extends PircBot
             sendMessage(pm ? sender : channel,
                     "Huh? (pm \"help\" for more info)");
         }
+        else if (notfoundFact.trim().equals(""))
+        {
+            sendMessage(pm ? sender : channel,
+                    "Huh? (pm \"help\" for more info)");
+        }
         else
         {
             try
             {
-                Factoid f = c.getFactoid(notfoundFact);
+                Factoid f = null;
+                if (c != null)
+                    f = c.getFactoid(notfoundFact);
                 if (f == null)
                     f = storage.getFactoid(notfoundFact);
                 if (f == null)
