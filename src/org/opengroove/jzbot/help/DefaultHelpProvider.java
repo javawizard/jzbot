@@ -20,13 +20,16 @@ public class DefaultHelpProvider implements HelpProvider
             return "Factoid help coming soon. In the mean time, try \"%HELPCMD% functions\" "
                     + "for functions that can be used within factoids.";
         else if (page.equals("about"))
-            return "" + JZBot.bot.getNick()
+            return ""
+                    + JZBot.bot.getNick()
                     + " is an IRC bot. The software it runs is JZBot "
                     + "(http://jzbot.googlecode.com). JZBot uses (a "
                     + "slightly modified version of) PircBot"
                     + " (http://jibble.org/pircbot.php) as its IRC "
                     + "library. For other libraries that it uses, see "
-                    + "\"%HELPCMD% credits\".";
+                    + "\"%HELPCMD% credits\".\n"
+                    + "For a list of JZBot's main developers and authors, " +
+                    		"see \"%HELPCMD% authors\".";
         else if (page.equals("credits"))
         {
             String[] creditsList = new String[]
@@ -53,11 +56,10 @@ public class DefaultHelpProvider implements HelpProvider
         {
             String[] authorsList = new String[]
             {
-                    "The following people have contributed to " +
-                    "the development of JZBot:  "
+                    "The following people have contributed to "
+                            + "the development of JZBot:  "
                             + "Alexander Boyd (javawizard2539/jcp/jpc)",
-                    "MrDudle",
-                    "schrottplatz"
+                    "MrDudle", "Maximilian Dirkmann (schrottplatz)"
             };
             String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
             return StringUtils.delimited(messageList, "\n");
