@@ -299,6 +299,7 @@ public class FactParser
                         String functionName = className.substring(0,
                                 className.length() - "Function".length())
                                 .toLowerCase();
+                        functionName = functionName.replace("_", ".");
                         System.out.println("Loading function " + functionName);
                         Class<? extends Function> c = (Class<? extends Function>) Class
                                 .forName("org.opengroove.jzbot.fact.functions."
