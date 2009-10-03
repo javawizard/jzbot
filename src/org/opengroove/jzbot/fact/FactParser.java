@@ -121,7 +121,9 @@ public class FactParser
                             - indexOffset);
                     currentArgument.add(currentLiteral);
                 }
-                currentLiteral.append(getEscapedChar(stack.next()));
+                char theChar = getEscapedChar(stack.next());
+                if (theChar != 0)
+                    currentLiteral.append(theChar);
             }
             else if (c == '%' || c == '$')
             {
@@ -212,7 +214,10 @@ public class FactParser
      * passing 'n' into this method causes it to return a newline character. Any
      * character that is not "special" according to this method will be returned
      * as-is. For example, calling this with '|' causes the method to return
-     * '|'.
+     * '|'.<br/><br/>
+     * 
+     * If this method returns 0, then this indicates that no character is to be
+     * included. This is the case when 'x' is passed in.
      * 
      * @param c
      *            The special character
@@ -236,6 +241,8 @@ public class FactParser
                 return '\u0016';
             case 'c':
                 return '\u0003';
+            case 'x':
+                return 0;
         }
         return c;
     }
@@ -332,13 +339,24 @@ public class FactParser
                                 + "Create a factoid with the text \"{{split|| ||{{numberlist||1||15}}||"
                                 + "c||{{c}}{{lset||c||{{pad||2||0||%c%}}}}%c%%c%|| }}\" (without "
                                 + "quotes), then run it; the result will be a list of numbers and "
-                                + "the color they represent."));
-        install("n", new CharCodeSpecial("n", Colors.NORMAL,
-                "Resets any coloring that has been applied in the factoid, so that "
-                        + "all succeeding text has no special formatting."));
-        install("b", new CharCodeSpecial("b", Colors.BOLD,
-                "Inserts the IRC bold character, which causes all following text "
-                        + "to be shown as bold."));
+                                + "the color they represent.\n"
+                                + "This function is deprecated, and \"\\c\" should be used instead."));
+        install(
+                "n",
+                new CharCodeSpecial(
+                        "n",
+                        Colors.NORMAL,
+                        "Resets any coloring that has been applied in the factoid, so that "
+                                + "all succeeding text has no special formatting.\n"
+                                + "This function is deprecated, and \"\\p\" should be used instead."));
+        install(
+                "b",
+                new CharCodeSpecial(
+                        "b",
+                        Colors.BOLD,
+                        "Inserts the IRC bold character, which causes all following text "
+                                + "to be shown as bold.\n"
+                                + "This function is deprecated, and \"\\b\" should be used instead."));
         install(
                 "i",
                 new CharCodeSpecial(
@@ -346,10 +364,16 @@ public class FactParser
                         Colors.REVERSE,
                         "Inserts the IRC reverse character, which, depending on the client, "
                                 + "either reverses the foreground and background colors or shows text"
-                                + " as italic."));
-        install("u", new CharCodeSpecial("u", Colors.UNDERLINE,
-                "Inserts the IRC underline character, which causes all "
-                        + "succeeding text to be underlined."));
+                                + " as italic.\n"
+                                + "This function is deprecated, and \"\\i\" should be used instead."));
+        install(
+                "u",
+                new CharCodeSpecial(
+                        "u",
+                        Colors.UNDERLINE,
+                        "Inserts the IRC underline character, which causes all "
+                                + "succeeding text to be underlined.\n"
+                                + "This function is deprecated, and \"\\u\" should be used instead."));
     }
     
     public static String[] getFunctionNames()

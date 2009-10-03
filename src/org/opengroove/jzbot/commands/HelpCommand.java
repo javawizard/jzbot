@@ -28,10 +28,13 @@ public class HelpCommand implements Command
         String page = arguments;
         String text = null;
         boolean allSubpages = false;
-        if (page.endsWith(" --"))
+        if (page.endsWith(" --") || page.equals("--"))
         {
             allSubpages = true;
-            page = page.substring(0, page.length() - " --".length());
+            if (page.equals("--"))
+                page = "";
+            else
+                page = page.substring(0, page.length() - " --".length());
         }
         for (HelpProvider provider : JZBot.helpProviders)
         {

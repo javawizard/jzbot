@@ -34,6 +34,7 @@ public class FormatFunction extends Function
             }
             if (o == null)
                 o = s;
+            objects[i] = o;
         }
         return String.format(format, objects);
     }
