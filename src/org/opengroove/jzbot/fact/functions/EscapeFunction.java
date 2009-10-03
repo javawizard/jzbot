@@ -20,12 +20,10 @@ public class EscapeFunction extends Function
                 buffer.append("\\n");
             else if (c < 32 || c > 126)
                 buffer.append("{{char||" + ((int) c) + "}}");
+            else
+                buffer.append(c);
         }
-        text = text.replace("\\", "\\\\");
-        text = text.replaceAll("(\\$|\\%|\\{|\\}|\\|)", "\\$1");
-        text = text.replace("\r", "{{char||13}}");
-        text = text.replace("\n", "\\n");
-        return text;
+        return buffer.toString();
     }
     
     @Override
@@ -36,7 +34,8 @@ public class EscapeFunction extends Function
                 + "factoid, would evaluate to <text>. For example, all \"|\" characters, "
                 + "\"{\" characters, and \"}\" characters are prefixed with a \"\\\". "
                 + "<text> can also contain non-ascii-visible characters, and these will "
-                + "\nbe replaced with a call to the {{char}} function.";
+                + "\nbe replaced with a call to the {{char}} function. Currently, this " +
+                		"doesn't correctly support UTF-8.";
     }
     
 }

@@ -124,7 +124,7 @@ public class Pastebin
             stream.close();
             out.flush();
             out.close();
-            String result = new String(out.toByteArray());
+            String result = new String(out.toByteArray(), "US-ASCII");
             return result;
         }
         catch (Exception e)
