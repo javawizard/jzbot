@@ -11,6 +11,16 @@ public class EscapeFunction extends Function
     public String evaluate(ArgumentList arguments, FactContext context)
     {
         String text = arguments.get(0);
+        StringBuffer buffer = new StringBuffer();
+        for (char c : text.toCharArray())
+        {
+            if (".$.%.{.}.|.".contains("." + c + "."))
+                buffer.append("\\").append(c);
+            else if (c == '\n')
+                buffer.append("\\n");
+            else if (c < 32 || c > 126)
+                buffer.append("{{char||" + ((int) c) + "}}");
+        }
         text = text.replace("\\", "\\\\");
         text = text.replaceAll("(\\$|\\%|\\{|\\}|\\|)", "\\$1");
         text = text.replace("\r", "{{char||13}}");
