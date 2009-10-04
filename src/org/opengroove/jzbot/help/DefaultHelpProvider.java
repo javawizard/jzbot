@@ -20,16 +20,15 @@ public class DefaultHelpProvider implements HelpProvider
             return "Factoid help coming soon. In the mean time, try \"%HELPCMD% functions\" "
                     + "for functions that can be used within factoids.";
         else if (page.equals("about"))
-            return ""
-                    + JZBot.bot.getNick()
+            return "" + JZBot.bot.getNick()
                     + " is an IRC bot. The software it runs is JZBot "
                     + "(http://jzbot.googlecode.com). JZBot uses (a "
                     + "slightly modified version of) PircBot"
                     + " (http://jibble.org/pircbot.php) as its IRC "
                     + "library. For other libraries that it uses, see "
                     + "\"%HELPCMD% credits\".\n"
-                    + "For a list of JZBot's main developers and authors, " +
-                    		"see \"%HELPCMD% authors\".";
+                    + "For a list of JZBot's main developers and authors, "
+                    + "see \"%HELPCMD% authors\".";
         else if (page.equals("credits"))
         {
             String[] creditsList = new String[]
@@ -62,6 +61,21 @@ public class DefaultHelpProvider implements HelpProvider
                     "MrDudle", "Maximilian Dirkmann (schrottplatz)"
             };
             String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
+            return StringUtils.delimited(messageList, "\n")
+                    + "\nFor people that have contributed (directly or indirectly) to the "
+                    + "bot's built-in factpacks, see \"%HELPCMD% packwriters\".";
+        }
+        else if (page.equals("packwriters"))
+        {
+            String[] authorsList = new String[]
+            {
+                    "The following people have either directly provided factoids "
+                            + "for the bot's factpacks, or have provided significant inspiration "
+                            + "for the bot's factpacks or other functionality:  "
+                            + "blast007", "Bambino",
+                    "Argooon (blast007's bot)", "ibot (TimRiker's bot)"
+            };
+            String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
             return StringUtils.delimited(messageList, "\n");
         }
         return null;
@@ -73,7 +87,7 @@ public class DefaultHelpProvider implements HelpProvider
         if (page.equals(""))
             return new String[]
             {
-                    "about", "factoids", "credits", "authors"
+                    "about", "factoids", "credits", "authors", "packwriters"
             };
         return new String[0];
     }

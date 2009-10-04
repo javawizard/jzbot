@@ -61,7 +61,7 @@ public class Pastebin
             out
                     .write(("parent_pid=" + URLEncoder.encode(parent)
                             + "&format=text&code2="
-                            + URLEncoder.encode(post, "ASCII") + "&poster="
+                            + URLEncoder.encode(post, "US-ASCII") + "&poster="
                             + URLEncoder.encode(poster)
                             + "&paste=Send&remember=1&expiry="
                             + duration.toString().substring(0, 1).toLowerCase() + "&email=")

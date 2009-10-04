@@ -1,6 +1,7 @@
 package org.opengroove.jzbot;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,6 +57,7 @@ import org.opengroove.jzbot.fact.FactQuota;
 import org.opengroove.jzbot.fact.FactoidException;
 import org.opengroove.jzbot.help.DefaultHelpProvider;
 import org.opengroove.jzbot.help.FunctionHelpProvider;
+import org.opengroove.jzbot.help.XMLHelpProvider;
 import org.opengroove.jzbot.storage.*;
 import org.opengroove.jzbot.utils.JZUtils;
 import org.opengroove.jzbot.utils.Pastebin;
@@ -152,6 +154,7 @@ public class JZBot extends PircBot
     {
         helpProviders.add(new DefaultHelpProvider());
         helpProviders.add(new FunctionHelpProvider());
+        helpProviders.add(new XMLHelpProvider("docs/help.xml"));
     }
     
     public static Map<String, Evaluator> evalEngines = new HashMap<String, Evaluator>();
@@ -498,6 +501,7 @@ public class JZBot extends PircBot
             vars.put("" + (i + 1) + "-", cAppend);
         }
         vars.put("0", sender);
+        vars.put("who",sender);
         if (channel != null)
             vars.put("channel", channel);
         else

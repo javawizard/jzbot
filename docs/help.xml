@@ -1,0 +1,9 @@
+<help>
+	<helptext>
+        %SELFNICK% is an IRC bot. Use "%HELPCMD% about" for more info.
+    </helptext>
+    <factoids>
+       <helptext> Factoid help coming soon. In the mean time, try "%HELPCMD% functions" 
+        for functions that can be used within factoids.</helptext>
+    </factoids>
+</help>
