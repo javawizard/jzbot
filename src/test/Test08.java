@@ -12,7 +12,7 @@ public class Test08
     public static void main(String[] args) throws Throwable
     {
         Properties props = new Properties();
-        props.load(new StringReader("=hello\\nworld"));
+        props.load(new StringReader("=hello\\nworld\\\nbye"));
         System.out.println(props.get(""));
     }
     

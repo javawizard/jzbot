@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.opengroove.jzbot.HelpProvider;
+import org.opengroove.jzbot.JZBot;
 
 public class PropsHelpProvider implements HelpProvider
 {
@@ -38,7 +39,13 @@ public class PropsHelpProvider implements HelpProvider
     @Override
     public String getPage(String page)
     {
-        return props.get(page.replace(".", "_").replace(" ", "."));
+        String s = props.get(page.replace(".", "_").replace(" ", "."));
+        if (s != null)
+        {
+            s = s.trim();
+            s = s.replace("%SELFNICK%", JZBot.bot.getNick());
+        }
+        return s;
     }
     
     @Override

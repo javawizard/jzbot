@@ -1,1 +1,4 @@
-_=
+=%SELFNICK% is an IRC bot. Use "%HELPCMD% about" for more info.
+factoids=Factoid help coming soon. In the mean time, try "%HELPCMD% functions" for functions that can be used within factoids.
+about=%SELFNICK% is an IRC bot. The software it runs is JZBot (http://jzbot.googlecode.com). JZBot uses (a slightly modified version of) PircBot (http://jibble.org/pircbot.php) as its IRC library. For other libraries that it uses, see "%HELPCMD% credits".\n\
+For a list of JZBot's main developers and authors, see "%HELPCMD% authors", and for a list of JZBot's factpack writers (both direct and indirect), see "%HELPCMD packwriters".
