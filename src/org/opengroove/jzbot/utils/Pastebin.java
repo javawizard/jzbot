@@ -60,8 +60,9 @@ public class Pastebin
             OutputStream out = con.getOutputStream();
             out
                     .write(("parent_pid=" + URLEncoder.encode(parent)
-                            + "&format=text&code2=" + URLEncoder.encode(post)
-                            + "&poster=" + URLEncoder.encode(poster)
+                            + "&format=text&code2="
+                            + URLEncoder.encode(post, "ASCII") + "&poster="
+                            + URLEncoder.encode(poster)
                             + "&paste=Send&remember=1&expiry="
                             + duration.toString().substring(0, 1).toLowerCase() + "&email=")
                             .getBytes());
