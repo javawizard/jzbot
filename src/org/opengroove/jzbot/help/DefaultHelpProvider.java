@@ -13,23 +13,25 @@ public class DefaultHelpProvider implements HelpProvider
     @Override
     public String getPage(String page)
     {
-        if (page.equals(""))
-            return "" + JZBot.bot.getNick()
-                    + " is an IRC bot. Use \"%HELPCMD% about\" for more info.";
-        else if (page.equals("factoids"))
-            return "Factoid help coming soon. In the mean time, try \"%HELPCMD% functions\" "
-                    + "for functions that can be used within factoids.";
-        else if (page.equals("about"))
-            return "" + JZBot.bot.getNick()
-                    + " is an IRC bot. The software it runs is JZBot "
-                    + "(http://jzbot.googlecode.com). JZBot uses (a "
-                    + "slightly modified version of) PircBot"
-                    + " (http://jibble.org/pircbot.php) as its IRC "
-                    + "library. For other libraries that it uses, see "
-                    + "\"%HELPCMD% credits\".\n"
-                    + "For a list of JZBot's main developers and authors, "
-                    + "see \"%HELPCMD% authors\".";
-        else if (page.equals("credits"))
+        // if (page.equals(""))
+        // return "" + JZBot.bot.getNick()
+        // + " is an IRC bot. Use \"%HELPCMD% about\" for more info.";
+        // else if (page.equals("factoids"))
+        // return
+        // "Factoid help coming soon. In the mean time, try \"%HELPCMD% functions\" "
+        // + "for functions that can be used within factoids.";
+        // else if (page.equals("about"))
+        // return "" + JZBot.bot.getNick()
+        // + " is an IRC bot. The software it runs is JZBot "
+        // + "(http://jzbot.googlecode.com). JZBot uses (a "
+        // + "slightly modified version of) PircBot"
+        // + " (http://jibble.org/pircbot.php) as its IRC "
+        // + "library. For other libraries that it uses, see "
+        // + "\"%HELPCMD% credits\".\n"
+        // + "For a list of JZBot's main developers and authors, "
+        // + "see \"%HELPCMD% authors\".";
+        // else
+        if (page.equals("credits"))
         {
             String[] creditsList = new String[]
             {
@@ -87,7 +89,8 @@ public class DefaultHelpProvider implements HelpProvider
         if (page.equals(""))
             return new String[]
             {
-                    "about", "factoids", "credits", "authors", "packwriters"
+                    // "about", "factoids",
+                    "credits", "authors", "packwriters"
             };
         return new String[0];
     }

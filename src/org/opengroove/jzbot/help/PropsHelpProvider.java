@@ -62,9 +62,9 @@ public class PropsHelpProvider implements HelpProvider
                 matches = name.startsWith(page + ".")
                         && !(name.substring(page.length() + 1)).contains(".");
             if (matches)
-                pages.add(name);
+                pages.add(name.substring(page.length()
+                        + (page.equals("") ? 0 : 1)));
         }
         return pages.toArray(new String[0]);
     }
-    
 }
