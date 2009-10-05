@@ -1,0 +1,5 @@
+author=Alexander Boyd
+scope=any
+description=This factpack creates a "google" command that performs a google search and reports \
+the results back to the user that ran the command.
+t.google={{replace||text||{{google||%1-%}}||\||| \| }}

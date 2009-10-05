@@ -1,0 +1,27 @@
+TODO: factoids specify if they came from a factpack, so that when a factpack is removed it can remove all factoids created by it but not those that have since been replaced.
+
+Factpack files are basically just ".props"-format files, but with a bunch of properties. Here are the properties that are typically present:
+
+author: Not required, but generally preferred. Contains a list of authors of the factpack in whatever format the author wants.
+
+description: Describes the factoid. Lines within this property (which are separated by newlines) should not be longer than about 400 characters each, and there should generally be not more than 3 or 4 lines.
+
+preinstall: This is a program (in factoid language) to run before anything is installed. If it evaluates to anything, then the message will be sent to the user. If it sets the local variable "fail" to "1", then the factoid will not be installed, and it will be assumed that the message that this program sends to the user contains information on why installing the factoid failed. This can be used to validate some precondition, such as that another factpack has been installed, or that some specific settings have been set on the bot.
+
+postinstall: This is a program (in factoid language) to run after everything is installed. This cannot cause installation to fail, but if it evaluates to anything, the message will be sent to the user.
+
+scope: Specifies the scope that the factoid requires. This currently can be "channel", "global", "both", or "any". "channel" specifies that the factoid must be installed to a specific channel, and that the factpack will not install any global factoids specifically. "global" specifies that the factoid must be installed globally. "both" specifies that the factoid must be installed to a particular channel, but that it needs to install global factoids in the process. "any" specifies that the factoid can be installed either globally or to a channel, and it will only install factoids in the scope that it was targeted to. "channel" factpacks require op permissions at the channel when installing, "global" factpacks and "both" factpacks require superop permissions when installing, and "any" factpacks require either superop or op permissions, depending on where the factpack is installed to.
+
+g.*: Adds a global factoid called "*". These can only be used when the scope is global or both.
+
+c.*: Adds a channel-specific factoid called "*". These can only be used when the scope is channel or both.
+
+t.*: Adds a factoid either globally or to a channel, depending on what target the user has specified for the factpack to be installed to. This can only be used when the scope is any.
+
+rename.*: Specifies a factoid language program that will be evaluated before the property "*" that would install a factoid is run. The result is used as the name for that factoid. If the result is empty, then the factoid is omitted. For example, if there was a property called "g.test", and a property called "rename.g.test" whose value was "other", then this would have the exact same effect as if there was only one property called "g.other".
+
+restrict.*: Same format as rename.*, but specifies whether the factoid is restricted. If this evaluates to 1, the factoid will be restricted, and if it evaluates to 0, the factoid will not be restricted.
+
+preuninstall: Specifies a factoid language program that will be run before the factpack is uninstalled.
+
+postuninstall: Specifies a factoid language program that will be run after the factpack is uninstalled.

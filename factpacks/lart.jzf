@@ -1,0 +1,6 @@
+author=Alexander Boyd
+scope=any
+description=Adds a "lart" command, which chooses from one of 133 creative responses that would \
+generally serve to humiliate the person in question.
+preinstall={{if||{{isresource||lart.txt}}||||{{lset||fail||1}}This factpack depends on the resource "lart.txt" existing, but it doesn't seem to be present. Download a copy of JZBot and copy lart.txt in the resources folder in the copy you downloaded into the resources folder of your bot, then try again.}}
+t.lart={{action}}{{firstvar||p||%1-%||%0%}}{{replace||{{randomsplit||{{getresource||lart.txt}}||\\n||^[^\\#].*\$}}||WHO||%p%}}

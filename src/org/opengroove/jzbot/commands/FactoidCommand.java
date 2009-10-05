@@ -177,7 +177,8 @@ public class FactoidCommand implements Command
                 String currentList = "";
                 for (Factoid f : list.isolate())
                 {
-                    currentList += (f.isRestricted() ? "@" : "")+ f.getName() + "  ";
+                    currentList += (f.isRestricted() ? "@" : "") + f.getName()
+                            + "  ";
                     if (currentList.length() > 400)
                     {
                         JZBot.bot.sendMessage(pm ? sender : channel,
@@ -257,10 +258,53 @@ public class FactoidCommand implements Command
                     + totalRequests + " times (" + directRequests
                     + " directly, " + indirectRequests + " indirectly)");
         }
+        if (command.equals("pack"))
+        {
+            doFactpackCommand(afterCommand, isGlobal, channel);
+        }
         if (!processed)
         {
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global] <list|create|replace|delete|literal|info>'");
+        }
+    }
+    
+    private void doFactpackCommand(String commandString, boolean isGlobal,
+            String channel)
+    {
+        String[] argumentList = commandString.split(" ", 2);
+        if (commandString.equals(""))
+        {
+            throw new ResponseException(
+                    "Use \"factoid pack <list|install|remove|details|info>\"");
+        }
+        String command = argumentList[0];
+        String afterCommand = (argumentList.length == 1 ? "" : argumentList[1]);
+        if (command.equals("list"))
+        {
+            
+        }
+        else if (command.equals("install"))
+        {
+            
+        }
+        else if (command.equals("remove"))
+        {
+            
+        }
+        else if (command.equals("details"))
+        {
+            
+        }
+        else if (command.equals("info"))
+        {
+            
+        }
+        else
+        {
+            throw new ResponseException(
+                    "Invalid pack command. Try \"factoid pack\" for a list "
+                            + "of available pack commands.");
         }
     }
     
