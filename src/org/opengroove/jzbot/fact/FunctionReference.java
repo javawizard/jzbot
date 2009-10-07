@@ -54,7 +54,7 @@ public class FunctionReference extends FactEntity
         if (omitFromStack)
             return;
         String functionName = this.functionName;
-        if (functionName.equals(""))
+        if (functionName == null || functionName.equals(""))
             functionName = "(blank function reference)";
         e.addFrame(new FactoidStackFrame(super.getCharIndex(), super
                 .getFactName(), functionName));
