@@ -395,7 +395,7 @@ public abstract class PircBot implements ReplyConstants
      * @param channel
      *            The name of the channel to leave.
      */
-    public final void partChannel(String channel)
+    public void partChannel(String channel)
     {
         this.sendRawLine("PART " + channel);
     }
@@ -408,7 +408,7 @@ public abstract class PircBot implements ReplyConstants
      * @param reason
      *            The reason for parting the channel.
      */
-    public final void partChannel(String channel, String reason)
+    public void partChannel(String channel, String reason)
     {
         this.sendRawLine("PART " + channel + " :" + reason);
     }
@@ -418,7 +418,7 @@ public abstract class PircBot implements ReplyConstants
      * server, the onDisconnect() method will be called as soon as the IRC
      * server disconnects us.
      */
-    public final void quitServer()
+    public void quitServer()
     {
         this.quitServer("");
     }
@@ -431,7 +431,7 @@ public abstract class PircBot implements ReplyConstants
      * @param reason
      *            The reason for quitting the server.
      */
-    public final void quitServer(String reason)
+    public void quitServer(String reason)
     {
         this.sendRawLine("QUIT :" + reason);
     }
@@ -443,7 +443,7 @@ public abstract class PircBot implements ReplyConstants
      * @param line
      *            The raw line to send to the IRC server.
      */
-    public final synchronized void sendRawLine(String line)
+    public synchronized void sendRawLine(String line)
     {
         if (isConnected())
         {
@@ -457,7 +457,7 @@ public abstract class PircBot implements ReplyConstants
      * @param line
      *            The raw line to send to the IRC server.
      */
-    public final synchronized void sendRawLineViaQueue(String line)
+    public synchronized void sendRawLineViaQueue(String line)
     {
         if (line == null)
         {
@@ -495,7 +495,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see Colors
      */
-    public final void sendMessage(String target, String message)
+    public void sendMessage(String target, String message)
     {
         target = target.replace("\n", "");
         message = message.replace("\n", "");
@@ -512,7 +512,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see Colors
      */
-    public final void sendAction(String target, String action)
+    public void sendAction(String target, String action)
     {
         target = target.replace("\n", "");
         action = action.replace("\n", "");
@@ -527,7 +527,7 @@ public abstract class PircBot implements ReplyConstants
      * @param notice
      *            The notice to send.
      */
-    public final void sendNotice(String target, String notice)
+    public void sendNotice(String target, String notice)
     {
         _outQueue.add("NOTICE " + target + " :" + notice);
     }
@@ -547,7 +547,7 @@ public abstract class PircBot implements ReplyConstants
      * @param command
      *            The CTCP command to send.
      */
-    public final void sendCTCPCommand(String target, String command)
+    public void sendCTCPCommand(String target, String command)
     {
         _outQueue.add("PRIVMSG " + target + " :\u0001" + command + "\u0001");
     }
@@ -560,7 +560,7 @@ public abstract class PircBot implements ReplyConstants
      * @param newNick
      *            The new nick to use.
      */
-    public final void changeNick(String newNick)
+    public void changeNick(String newNick)
     {
         this.sendRawLine("NICK " + newNick);
     }
@@ -593,7 +593,7 @@ public abstract class PircBot implements ReplyConstants
      * @param password
      *            The password which will be used to identify with NickServ.
      */
-    public final void identify(String password)
+    public void identify(String password)
     {
         this.sendRawLine("NICKSERV IDENTIFY " + password);
     }
@@ -613,7 +613,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see #op(String,String) op
      */
-    public final void setMode(String channel, String mode)
+    public void setMode(String channel, String mode)
     {
         this.sendRawLine("MODE " + channel + " " + mode);
     }
@@ -629,7 +629,7 @@ public abstract class PircBot implements ReplyConstants
      *            The channel you are inviting the user to join.
      * 
      */
-    public final void sendInvite(String nick, String channel)
+    public void sendInvite(String nick, String channel)
     {
         this.sendRawLine("INVITE " + nick + " :" + channel);
     }
@@ -645,7 +645,7 @@ public abstract class PircBot implements ReplyConstants
      * @param hostmask
      *            A hostmask representing the user we're banning.
      */
-    public final void ban(String channel, String hostmask)
+    public void ban(String channel, String hostmask)
     {
         this.sendRawLine("MODE " + channel + " +b " + hostmask);
     }
@@ -660,7 +660,7 @@ public abstract class PircBot implements ReplyConstants
      * @param hostmask
      *            A hostmask representing the user we're unbanning.
      */
-    public final void unBan(String channel, String hostmask)
+    public void unBan(String channel, String hostmask)
     {
         this.sendRawLine("MODE " + channel + " -b " + hostmask);
     }
@@ -688,7 +688,7 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The nick of the user we are deopping.
      */
-    public final void deOp(String channel, String nick)
+    public void deOp(String channel, String nick)
     {
         this.setMode(channel, "-o " + nick);
     }
@@ -702,7 +702,7 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The nick of the user we are voicing.
      */
-    public final void voice(String channel, String nick)
+    public void voice(String channel, String nick)
     {
         this.setMode(channel, "+v " + nick);
     }
@@ -716,7 +716,7 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The nick of the user we are devoicing.
      */
-    public final void deVoice(String channel, String nick)
+    public void deVoice(String channel, String nick)
     {
         this.setMode(channel, "-v " + nick);
     }
@@ -732,7 +732,7 @@ public abstract class PircBot implements ReplyConstants
      *            The new topic for the channel.
      * 
      */
-    public final void setTopic(String channel, String topic)
+    public void setTopic(String channel, String topic)
     {
         this.sendRawLine("TOPIC " + channel + " :" + topic);
     }
@@ -746,7 +746,7 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The nick of the user to kick.
      */
-    public final void kick(String channel, String nick)
+    public void kick(String channel, String nick)
     {
         this.kick(channel, nick, "");
     }
@@ -763,7 +763,7 @@ public abstract class PircBot implements ReplyConstants
      * @param reason
      *            A description of the reason for kicking a user.
      */
-    public final void kick(String channel, String nick, String reason)
+    public void kick(String channel, String nick, String reason)
     {
         this.sendRawLine("KICK " + channel + " " + nick + " :" + reason);
     }
@@ -776,7 +776,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see #onChannelInfo(String,int,String) onChannelInfo
      */
-    public final void listChannels()
+    public void listChannels()
     {
         this.listChannels(null);
     }
@@ -797,7 +797,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see #onChannelInfo(String,int,String) onChannelInfo
      */
-    public final void listChannels(String parameters)
+    public void listChannels(String parameters)
     {
         if (parameters == null)
         {
@@ -833,7 +833,7 @@ public abstract class PircBot implements ReplyConstants
      * @see DccFileTransfer
      * 
      */
-    public final DccFileTransfer dccSendFile(File file, String nick, int timeout)
+    public DccFileTransfer dccSendFile(File file, String nick, int timeout)
     {
         DccFileTransfer transfer = new DccFileTransfer(this, _dccManager, file,
                 nick, timeout);
@@ -880,7 +880,7 @@ public abstract class PircBot implements ReplyConstants
      * 
      * @see DccChat
      */
-    public final DccChat dccSendChatRequest(String nick, int timeout)
+    public DccChat dccSendChatRequest(String nick, int timeout)
     {
         DccChat chat = null;
         try

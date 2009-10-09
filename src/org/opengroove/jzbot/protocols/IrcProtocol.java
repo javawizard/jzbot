@@ -6,18 +6,78 @@ import org.jibble.pircbot.PircBot;
 
 public class IrcProtocol extends PircBot implements Protocol
 {
+    @Override
+    public void changeNick(String newNick)
+    {
+        super.changeNick(newNick);
+    }
+    
+    @Override
+    public void kick(String channel, String nick, String reason)
+    {
+        JZBot.logEvent(channel, "kick", getNick(), nick + " " + reason);
+        super.kick(channel, nick, reason);
+    }
+    
+    @Override
+    public void partChannel(String channel, String reason)
+    {
+        JZBot.logEvent(channel, "left", getNick(), "Left the channel: "
+                + reason);
+        super.partChannel(channel, reason);
+    }
+    
+    @Override
+    public void partChannel(String channel)
+    {
+        JZBot.logEvent(channel, "left", getNick(), "Left the channel");
+        super.partChannel(channel);
+    }
+    
+    @Override
+    public void quitServer(String reason)
+    {
+        super.quitServer(reason);
+    }
+    
+    @Override
+    public void sendAction(String target, String action)
+    {
+        if (target.startsWith("#"))
+            JZBot.logEvent(target, "action", getNick(), action);
+        super.sendAction(target, action);
+    }
+    
+    @Override
+    public void sendMessage(String target, String message)
+    {
+        if (target.startsWith("#"))
+            JZBot.logEvent(target, "message", getNick(), message);
+        super.sendMessage(target, message);
+    }
+    
+    @Override
+    public void setMode(String channel, String mode)
+    {
+        super.setMode(channel, mode);
+    }
+    
+    @Override
+    public void setTopic(String channel, String topic)
+    {
+        super.setTopic(channel, topic);
+    }
+    
     public IrcProtocol()
     {
         super();
     }
     
-    @Override
     public int getProtocolDelimitedLength()
     {
         return 400;
     }
     
-    @Override
     public void init()
     {
     }

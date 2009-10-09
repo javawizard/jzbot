@@ -79,13 +79,17 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    logsize("0",
-            "this config variable is the maximum number of log entries to be saved "
-                    + "for each channel, or 0 to disable logging. Log entries "
-                    + "can be read with the {{logs}} function."), nolog(
+    logsize(
+            "0",
+            "This config variable is the maximum size, in bytes, of the logs to "
+                    + "keep for each channel on a per-channel basis. Use the {{logs}} function "
+                    + "to actually read these logs. 0 disables logging. This doesn't take effect "
+                    + "until the bot is reconnected."), nolog(
             "",
             "This config variable is a pipe-separated list of channels that should "
-                    + "not be logged, even if the logsize variable is set to a non-zero value.");
+                    + "not be logged, even if the logsize variable is set to a "
+                    + "non-zero value. This doesn't take effect until the bot "
+                    + "is reconnected.");
     private String defaultValue;
     private String description;
     

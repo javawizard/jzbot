@@ -1,5 +1,10 @@
 package org.opengroove.jzbot.fact.functions;
 
+import java.io.File;
+
+import net.sf.opengroove.common.utils.StringUtils;
+
+import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
@@ -10,15 +15,17 @@ public class LogsFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        throw new UnsupportedOperationException();
+        File file = new File(JZBot.logsFolder, context.getChannel());
+        if (!file.exists())
+            return "";
+        return StringUtils.readFile(file);
     }
     
     @Override
     public String getHelp(String topic)
     {
         return "Syntax: {{logs||<max>}} -- Returns the last few messages that were "
-                + "sent at this channel. No more than <max> events will be returned, "
-                + "although the config variable logsize can limit this further. The "
+                + "sent at this channel. The "
                 + "resulting log events will be separated by a newline character. Each "
                 + "line is of the format <action> <time> <source> <details>. <action> "
                 + "is the action that occured, which is one of \"mode\", \"kick\", \n"

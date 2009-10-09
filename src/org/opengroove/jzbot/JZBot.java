@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -69,6 +70,8 @@ import org.opengroove.jzbot.utils.Pastebin;
 public class JZBot
 {
     public static Protocol bot;
+    
+    public static File logsFolder = new File("storage/logs");
     
     public static Map<String, String> globalVariables = new HashMap<String, String>();
     
@@ -302,6 +305,7 @@ public class JZBot
     
     private static void start() throws Throwable
     {
+        logsFolder.mkdirs();
         proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
                 "storage/db"));
         storage = proxyStorage.getRoot();
@@ -319,6 +323,7 @@ public class JZBot
         }
         loadProtocol();
         loadCommands();
+        loadCachedConfig();
         reloadRegexes();
         try
         {
@@ -343,6 +348,20 @@ public class JZBot
         System.out.println("connecting");
         bot.connect(config.getServer(), config.getPort(), config.getPassword());
         System.out.println("connected");
+    }
+    
+    private static void loadCachedConfig()
+    {
+        configNolog = ConfigVars.nolog.get();
+        try
+        {
+            configLogsize = Integer.parseInt(ConfigVars.logsize.get());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            configLogsize = 0;
+        }
     }
     
     @SuppressWarnings("unchecked")
@@ -371,6 +390,7 @@ public class JZBot
         Channel chan = storage.getChannel(channel);
         if (chan == null)
             return;
+        logEvent(channel, "joined", sender, login + "@" + hostname);
         if (sender.equals(bot.getNick()))
         {
             runNotificationFactoid(channel, chan, sender, "_selfjoin", null,
@@ -385,12 +405,16 @@ public class JZBot
     public static void onPart(String channel, String sender, String login,
             String hostname)
     {
+        logEvent(channel, "left", sender, "Left the channel");
         runNotificationFactoid(channel, null, sender, "_onpart", null, true);
     }
     
     public static void onQuit(String sourceNick, String sourceLogin,
             String sourceHostname, String reason)
     {
+        // FIXME: log this and run a notification factoid. Probably change this
+        // to onBeforeQuit, and have protocols send that before they remove the
+        // user from the user list at this channel.
         // runNotificationFactoid(channel, null, sender, "_onquit", new String[]
         // {
         // reason
@@ -401,16 +425,20 @@ public class JZBot
             long date, boolean changed)
     {
         if (changed)
+        {
+            logEvent(channel, "topic", setBy, topic);
             runNotificationFactoid(channel, null, setBy, "_ontopic",
                     new String[]
                     {
                             topic, "" + date
                     }, true);
+        }
     }
     
     public static void onMode(String channel, String sourceNick,
             String sourceLogin, String sourceHostname, String mode)
     {
+        logEvent(channel, "mode", sourceNick, mode);
         runNotificationFactoid(channel, null, sourceNick, "_onmode",
                 new String[]
                 {
@@ -424,11 +452,14 @@ public class JZBot
         for (String channel : bot.getChannels())
         {
             if (getUser(channel, newNick) != null)
+            {
+                logEvent(channel, "nick", oldNick, newNick);
                 runNotificationFactoid(channel, null, newNick, "_onrename",
                         new String[]
                         {
                                 oldNick, newNick
                         }, true);
+            }
         }
     }
     
@@ -583,6 +614,7 @@ public class JZBot
             String kickerLogin, String kickerHostname, String recipientNick,
             String reason)
     {
+        logEvent(channel, "kick", kickerNick, recipientNick + " " + reason);
         runNotificationFactoid(channel, null, kickerNick, "_onkick",
                 new String[]
                 {
@@ -595,6 +627,7 @@ public class JZBot
     public static void onMessage(String channel, String sender, String login,
             String hostname, String message)
     {
+        logEvent(channel, "message", sender, message);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         try
@@ -750,6 +783,7 @@ public class JZBot
     {
         if (!(channel.startsWith("#")))
             return;
+        logEvent(channel, "action", sender, action);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         try
@@ -1031,22 +1065,30 @@ public class JZBot
     public static void onDisconnect()
     {
         System.out.println("on disconnect");
-        elevatedOpMap.clear();
-        elevatedSuperopList.clear();
-        proxyStorage.close();
-        synchronized (httpServers)
+        try
         {
-            for (int port : httpServers.keySet())
+            elevatedOpMap.clear();
+            elevatedSuperopList.clear();
+            proxyStorage.close();
+            synchronized (httpServers)
             {
-                httpServers.get(port).stopServer();
+                for (int port : httpServers.keySet())
+                {
+                    httpServers.get(port).stopServer();
+                }
+                httpServers.clear();
             }
-            httpServers.clear();
+            proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
+                    "storage/db"));
+            storage = proxyStorage.getRoot();
+            config = storage.getConfig();
+            reloadRegexes();
+            loadCachedConfig();
         }
-        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
-                "storage/db"));
-        storage = proxyStorage.getRoot();
-        config = storage.getConfig();
-        reloadRegexes();
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         new Thread()
         {
             
@@ -1098,7 +1140,6 @@ public class JZBot
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
-        
         try
         {
             System.out.println("pm from " + sender + ": " + message);
@@ -1365,6 +1406,10 @@ public class JZBot
     
     private static Object regexLock = new Object();
     
+    private static String configNolog;
+    
+    private static int configLogsize = 0;
+    
     public static final long startedAtTime = System.currentTimeMillis();
     
     public static void reloadRegexes()
@@ -1396,5 +1441,40 @@ public class JZBot
             }
         }
         return false;
+    }
+    
+    public static void logEvent(String channel, String event, String nick,
+            String details)
+    {
+        try
+        {
+            if (StringUtils.isMemberOf(channel, configNolog.split("\\|")))
+                return;
+            String data = event + " " + System.currentTimeMillis() + " " + nick
+                    + " " + details;
+            File logFile = new File(logsFolder, channel);
+            if (!logFile.exists())
+                if (!logFile.createNewFile())
+                    throw new Exception("Couldn't create new log file.");
+            String content = StringUtils.readFile(logFile);
+            if ((!content.endsWith("\n")) && content.length() > 0)
+                content += "\n";
+            content += data;
+            while (content.length() > configLogsize)
+            {
+                if (content.length() == 0)
+                    break;
+                int newlinePlace = content.indexOf('\n');
+                if (newlinePlace == -1)
+                    newlinePlace = content.length() - 1;
+                content = content.substring(newlinePlace + 1);
+            }
+            StringUtils.writeFile(content, logFile);
+        }
+        catch (Exception e)
+        {
+            new Exception("Exception while writing data to channel logs", e)
+                    .printStackTrace();
+        }
     }
 }
