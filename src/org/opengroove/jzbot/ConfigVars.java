@@ -61,11 +61,31 @@ public enum ConfigVars
                     + "send a message that isn't recognized. If this is blank, then the text \""
                     + "Huh? (pm \"help\" for more info)\" will be sent instead."), primary(
             "",
-            "This config variable is the name of a channel that error messages " +
-            "will be sent to when there's not a logical channel to send them to. For" +
-            " example, if the global _onready factoid has a syntax error, the message will " +
-            "be sent to the channel specified in this config variable. Leaving this empty " +
-            "will cause such errors to simply be ignored.");
+            "This config variable is the name of a channel that error messages "
+                    + "will be sent to when there's not a logical channel to send them to. For"
+                    + " example, if the global _onready factoid has a syntax error, the message will "
+                    + "be sent to the channel specified in this config variable. Leaving this empty "
+                    + "will cause such errors to simply be ignored."), chanops(
+            "0",
+            "This config variable specifies whether channel operators are treated as "
+                    + "bot ops. 1 means they are, 0 means they are not. Channel operators at "
+                    + "the bot's primary channel are also treated as bot superops.")
+    {
+        public void set(String value)
+        {
+            if (!(value.equals("0") || value.equals("1")))
+                throw new ResponseException(
+                        "Invalid value; must be 0 or 1, see \"~config chanops\" for help");
+            super.set(value);
+        }
+    },
+    logsize("0",
+            "this config variable is the maximum number of log entries to be saved "
+                    + "for each channel, or 0 to disable logging. Log entries "
+                    + "can be read with the {{logs}} function."), nolog(
+            "",
+            "This config variable is a pipe-separated list of channels that should "
+                    + "not be logged, even if the logsize variable is set to a non-zero value.");
     private String defaultValue;
     private String description;
     

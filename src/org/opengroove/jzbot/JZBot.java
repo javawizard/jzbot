@@ -401,7 +401,11 @@ public class JZBot
             long date, boolean changed)
     {
         if (changed)
-            runNotificationFactoid(channel, null, setBy, "_ontopic", null, true);
+            runNotificationFactoid(channel, null, setBy, "_ontopic",
+                    new String[]
+                    {
+                            topic, "" + date
+                    }, true);
     }
     
     public static void onMode(String channel, String sourceNick,
@@ -423,7 +427,7 @@ public class JZBot
                 runNotificationFactoid(channel, null, newNick, "_onrename",
                         new String[]
                         {
-                            oldNick
+                                oldNick, newNick
                         }, true);
         }
     }
@@ -582,7 +586,7 @@ public class JZBot
         runNotificationFactoid(channel, null, kickerNick, "_onkick",
                 new String[]
                 {
-                        recipientNick, reason
+                        recipientNick, reason, kickerNick
                 }, true);
         if (recipientNick.equals(bot.getNick()))
             bot.joinChannel(channel);
@@ -1024,9 +1028,11 @@ public class JZBot
         }.start();
     }
     
-    protected void onDisconnect()
+    public static void onDisconnect()
     {
         System.out.println("on disconnect");
+        elevatedOpMap.clear();
+        elevatedSuperopList.clear();
         proxyStorage.close();
         synchronized (httpServers)
         {
@@ -1087,7 +1093,7 @@ public class JZBot
         }.start();
     }
     
-    protected void onPrivateMessage(String sender, String login,
+    public static void onPrivateMessage(String sender, String login,
             String hostname, String message)
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
@@ -1126,6 +1132,26 @@ public class JZBot
         
     }
     
+    private static Map<String, ArrayList<String>> elevatedOpMap = new HashMap<String, ArrayList<String>>();
+    
+    private static ArrayList<String> elevatedSuperopList = new ArrayList<String>();
+    
+    public static void elevate(String hostname, String channel)
+    {
+        if (channel.equals(ConfigVars.primary.get()))
+            elevatedSuperopList.add(hostname);
+        else
+        {
+            ArrayList<String> list = elevatedOpMap.get(channel);
+            if (list == null)
+            {
+                list = new ArrayList<String>();
+                elevatedOpMap.put(channel, list);
+            }
+            list.add(hostname);
+        }
+    }
+    
     public static boolean isOp(String channel, String hostname)
     {
         if (isSuperop(hostname))
@@ -1133,11 +1159,16 @@ public class JZBot
         Channel c = storage.getChannel(channel);
         if (c == null)
             return false;
+        if (elevatedOpMap.get(channel) != null
+                && elevatedOpMap.get(channel).contains(hostname))
+            return true;
         return c.getOperator(hostname) != null;
     }
     
     public static boolean isSuperop(String hostname)
     {
+        if (elevatedSuperopList.contains(hostname))
+            return true;
         return storage.getOperator(hostname) != null;
     }
     
@@ -1351,5 +1382,19 @@ public class JZBot
                 }
             }
         }
+    }
+    
+    public static boolean isChannelOp(String channel, String sender)
+    {
+        User[] users = bot.getUsers(channel);
+        for (User user : users)
+        {
+            if (user.getNick().equals(sender))
+            {
+                if (user.isOp())
+                    return true;
+            }
+        }
+        return false;
     }
 }

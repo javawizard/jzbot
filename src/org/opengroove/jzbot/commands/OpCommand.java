@@ -3,7 +3,9 @@ package org.opengroove.jzbot.commands;
 import java.util.ArrayList;
 
 import org.opengroove.jzbot.Command;
+import org.opengroove.jzbot.ConfigVars;
 import org.opengroove.jzbot.JZBot;
+import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Operator;
 
@@ -22,6 +24,11 @@ public class OpCommand implements Command
         {
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "You have to specify a channel.");
+            return;
+        }
+        if (arguments.equals("elevate"))
+        {
+            doElevate(channel, pm, sender, hostname);
             return;
         }
         if (!JZBot.isOp(channel, hostname))
@@ -90,6 +97,26 @@ public class OpCommand implements Command
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "Specify one of add, list, or delete.");
             return;
+        }
+    }
+    
+    private void doElevate(String channel, boolean pm, String sender,
+            String hostname)
+    {
+        if (!(ConfigVars.chanops.get().equals("1")))
+            throw new ResponseException(
+                    "\"~op elevate\" is not enabled. To enable it, use \"~config chanops 1\".");
+        /*
+         * Op elevation is enabled. Now we check to see if the user's an op at
+         * this channel. If they are, we elevate them either to channel op if
+         * this channel is not the primary channel, or to superop if this
+         * channel is the primary channel.
+         */
+        if (JZBot.isChannelOp(channel, sender))
+        {
+            JZBot.elevate(hostname, channel);
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "You have successfully been elevated.");
         }
     }
 }

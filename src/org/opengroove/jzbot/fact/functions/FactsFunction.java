@@ -4,7 +4,7 @@ import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
 
-public class Facts extends Function
+public class FactsFunction extends Function
 {
     
     @Override
