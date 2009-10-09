@@ -2918,7 +2918,7 @@ public abstract class PircBot implements ReplyConstants
      * @param name
      *            The new name of the Bot.
      */
-    protected final void setName(String name)
+    public final void setName(String name)
     {
         _name = name;
     }
@@ -2943,7 +2943,7 @@ public abstract class PircBot implements ReplyConstants
      * @param login
      *            The new login of the Bot.
      */
-    protected final void setLogin(String login)
+    public final void setLogin(String login)
     {
         _login = login;
     }
@@ -2955,7 +2955,7 @@ public abstract class PircBot implements ReplyConstants
      * @param version
      *            The new version of the Bot.
      */
-    protected final void setVersion(String version)
+    public final void setVersion(String version)
     {
         _version = version;
     }
@@ -2967,7 +2967,7 @@ public abstract class PircBot implements ReplyConstants
      * @param finger
      *            The new finger message for the Bot.
      */
-    protected final void setFinger(String finger)
+    public final void setFinger(String finger)
     {
         _finger = finger;
     }

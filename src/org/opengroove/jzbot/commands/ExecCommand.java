@@ -22,7 +22,7 @@ public class ExecCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
-        JZBot.bot.verifyOp(channel, hostname);
+        JZBot.verifyOp(channel, hostname);
         FactEntity entity = FactParser.parse(arguments, "__internal_exec");
         FactContext context = new FactContext();
         context.setChannel(channel);

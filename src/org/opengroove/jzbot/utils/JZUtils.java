@@ -1,8 +1,10 @@
 package org.opengroove.jzbot.utils;
 
 import java.util.ArrayList;
+import org.opengroove.jzbot.JZBot;
 
 import org.jibble.pircbot.PircBot;
+import org.opengroove.jzbot.Protocol;
 
 public class JZUtils
 {
@@ -33,11 +35,12 @@ public class JZUtils
     
     public static String[] ircDelimited(String[] items, String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, 400);
+        return delimitedLengthRestricted(items, delimiter, JZBot.bot
+                .getProtocolDelimitedLength());
     }
     
     public static void ircSendDelimited(String[] items, String delimiter,
-            PircBot bot, String recipient)
+            Protocol bot, String recipient)
     {
         for (String s : ircDelimited(items, delimiter))
         {

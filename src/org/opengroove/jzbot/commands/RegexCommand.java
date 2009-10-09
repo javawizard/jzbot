@@ -25,7 +25,7 @@ public class RegexCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
-        JZBot.bot.verifyOp(channel, hostname);
+        JZBot.verifyOp(channel, hostname);
         String[] argSplit1 = arguments.split(" ", 2);
         String command = argSplit1[0];
         String args = (argSplit1.length > 1 ? argSplit1[1] : "");
@@ -71,7 +71,7 @@ public class RegexCommand implements Command
                 throw new ResponseException(
                         "That regex (" + args + ") doesn't exist on this channel.");
             c.getRegularExpressions().remove(regex);
-            JZBot.bot.reloadRegexes();
+            JZBot.reloadRegexes();
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "Successfully removed and deactivated.");
             

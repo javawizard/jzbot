@@ -8,6 +8,12 @@ import net.sf.opengroove.common.proxystorage.ProxyBean;
 public interface Config
 {
     @Property
+    @Default(stringValue = "org.opengroove.jzbot.protocols.IrcProtocol")
+    public String getProtocol();
+    
+    public void setProtocol(String protocol);
+    
+    @Property
     public String getPassword();
     
     public void setPassword(String password);

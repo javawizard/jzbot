@@ -24,14 +24,14 @@ public class RestrictCommand implements Command
         Factoid fact = JZBot.getChannelFactoid(channel, arguments);
         if (fact != null)
         {
-            JZBot.bot.verifyOp(channel, hostname);
+            JZBot.verifyOp(channel, hostname);
         }
         else
         {
             fact = JZBot.getGlobalFactoid(arguments);
             if (fact != null)
             {
-                JZBot.bot.verifySuperop(hostname);
+                JZBot.verifySuperop(hostname);
             }
             else
             {

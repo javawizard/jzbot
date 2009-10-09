@@ -14,7 +14,7 @@ public class ReconnectCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
-        JZBot.bot.verifySuperop(hostname);
+        JZBot.verifySuperop(hostname);
         JZBot.bot.sendMessage(pm ? sender : channel,
                 "Reconnecting on request from " + sender);
         try

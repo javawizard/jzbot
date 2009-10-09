@@ -28,7 +28,7 @@ public class LeaveCommand implements Command
             throw new ResponseException("You must specify a channel.");
         try
         {
-            JZBot.bot.verifySuperop(hostname);
+            JZBot.verifySuperop(hostname);
         }
         catch (RuntimeException e)
         {

@@ -346,8 +346,8 @@ public class FactoidCommand implements Command
             String hostname)
     {
         if (isGlobal)
-            JZBot.bot.verifySuperop(hostname);
+            JZBot.verifySuperop(hostname);
         else
-            JZBot.bot.verifyOp(channel, hostname);
+            JZBot.verifyOp(channel, hostname);
     }
 }

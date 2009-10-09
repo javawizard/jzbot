@@ -66,8 +66,10 @@ import org.opengroove.jzbot.utils.Pastebin;
 /**
  * jzbot authenticates off of hostmask.
  */
-public class JZBot extends PircBot
+public class JZBot
 {
+    public static Protocol bot;
+    
     public static Map<String, String> globalVariables = new HashMap<String, String>();
     
     public static ArrayList<HelpProvider> helpProviders = new ArrayList<HelpProvider>();
@@ -244,7 +246,6 @@ public class JZBot extends PircBot
     public static final Object futureFactoidLock = new Object();
     public static boolean manualReconnect = false;
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
-    public static final JZBot bot = new JZBot();
     // numeric 320: is signed on as account
     public static ProxyStorage<Storage> proxyStorage;
     public static Storage storage;
@@ -261,7 +262,7 @@ public class JZBot extends PircBot
                 System.out.println("JZBot has terminated.");
             }
         });
-        bot.start();
+        start();
     }
     
     private static void loadCommands()
@@ -299,9 +300,8 @@ public class JZBot extends PircBot
         commands.put(command.getName(), command);
     }
     
-    private void start() throws Throwable
+    private static void start() throws Throwable
     {
-        loadCommands();
         proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
                 "storage/db"));
         storage = proxyStorage.getRoot();
@@ -317,6 +317,8 @@ public class JZBot extends PircBot
             System.out.println("No connect info specified. JZBot will exit.");
             System.exit(0);
         }
+        loadProtocol();
+        loadCommands();
         reloadRegexes();
         try
         {
@@ -343,14 +345,33 @@ public class JZBot extends PircBot
         System.out.println("connected");
     }
     
-    protected void onJoin(String channel, String sender, String login,
+    @SuppressWarnings("unchecked")
+    private static void loadProtocol()
+    {
+        String protocolClass = config.getProtocol();
+        System.out.println("Using protocol " + protocolClass);
+        try
+        {
+            Class<? extends Protocol> classObject = (Class<? extends Protocol>) Class
+                    .forName(protocolClass);
+            bot = classObject.newInstance();
+            bot.init();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception occurred while loading protocol", e);
+        }
+    }
+    
+    public static void onJoin(String channel, String sender, String login,
             String hostname)
     {
         System.out.println("join detected on " + channel + " by " + sender);
         Channel chan = storage.getChannel(channel);
         if (chan == null)
             return;
-        if (sender.equals(getName()))
+        if (sender.equals(bot.getNick()))
         {
             runNotificationFactoid(channel, chan, sender, "_selfjoin", null,
                     true);
@@ -361,15 +382,13 @@ public class JZBot extends PircBot
         }
     }
     
-    @Override
-    protected void onPart(String channel, String sender, String login,
+    public static void onPart(String channel, String sender, String login,
             String hostname)
     {
         runNotificationFactoid(channel, null, sender, "_onpart", null, true);
     }
     
-    @Override
-    protected void onQuit(String sourceNick, String sourceLogin,
+    public static void onQuit(String sourceNick, String sourceLogin,
             String sourceHostname, String reason)
     {
         // runNotificationFactoid(channel, null, sender, "_onquit", new String[]
@@ -378,19 +397,16 @@ public class JZBot extends PircBot
         // }, true);
     }
     
-    @Override
-    protected void onTopic(String channel, String topic, String setBy,
+    public static void onTopic(String channel, String topic, String setBy,
             long date, boolean changed)
     {
         if (changed)
             runNotificationFactoid(channel, null, setBy, "_ontopic", null, true);
     }
     
-    @Override
-    protected void onMode(String channel, String sourceNick,
+    public static void onMode(String channel, String sourceNick,
             String sourceLogin, String sourceHostname, String mode)
     {
-        super.onMode(channel, sourceNick, sourceLogin, sourceHostname, mode);
         runNotificationFactoid(channel, null, sourceNick, "_onmode",
                 new String[]
                 {
@@ -398,11 +414,10 @@ public class JZBot extends PircBot
                 }, true);
     }
     
-    @Override
-    protected void onNickChange(String oldNick, String login, String hostname,
-            String newNick)
+    public static void onNickChange(String oldNick, String login,
+            String hostname, String newNick)
     {
-        for (String channel : getChannels())
+        for (String channel : bot.getChannels())
         {
             if (getUser(channel, newNick) != null)
                 runNotificationFactoid(channel, null, newNick, "_onrename",
@@ -413,8 +428,9 @@ public class JZBot extends PircBot
         }
     }
     
-    private void runNotificationFactoid(String channelName, Channel chan,
-            String sender, String factname, String[] args, boolean timed)
+    private static void runNotificationFactoid(String channelName,
+            Channel chan, String sender, String factname, String[] args,
+            boolean timed)
     {
         if (args == null)
             args = new String[0];
@@ -446,10 +462,10 @@ public class JZBot extends PircBot
                 if (factValue.trim().equals(""))
                     ;
                 else if (factValue.startsWith("<ACTION>"))
-                    sendAction(channelName, factValue.substring("<ACTION>"
+                    bot.sendAction(channelName, factValue.substring("<ACTION>"
                             .length()));
                 else
-                    sendMessage(channelName, factValue);
+                    bot.sendMessage(channelName, factValue);
             }
             return;
         }
@@ -559,26 +575,20 @@ public class JZBot extends PircBot
                 .evalToArray(), varMap, allowRestricted, quota);
     }
     
-    protected void onKick(String channel, String kickerNick,
+    public static void onKick(String channel, String kickerNick,
             String kickerLogin, String kickerHostname, String recipientNick,
             String reason)
     {
-        if (recipientNick.equals(this.getName()))
-            joinChannel(channel);
+        runNotificationFactoid(channel, null, kickerNick, "_onkick",
+                new String[]
+                {
+                        recipientNick, reason
+                }, true);
+        if (recipientNick.equals(bot.getNick()))
+            bot.joinChannel(channel);
     }
     
-    private static String replaceVars(String text, Map<String, String> vars)
-    {
-        for (String key : vars.keySet())
-        {
-            String value = vars.get(key);
-            text = text.replace("%" + key + "%", value);
-        }
-        text = text.replaceAll("\\%[^\\%]+%", "");
-        return text;
-    }
-    
-    protected void onMessage(String channel, String sender, String login,
+    public static void onMessage(String channel, String sender, String login,
             String hostname, String message)
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
@@ -629,7 +639,7 @@ public class JZBot extends PircBot
         }
     }
     
-    private boolean processChannelRegex(String channel, String sender,
+    public static boolean processChannelRegex(String channel, String sender,
             String hostname, String message, boolean action)
     {
         try
@@ -685,7 +695,7 @@ public class JZBot extends PircBot
      * @param regex
      * @return True if this overrides, false if it doesn't
      */
-    private OverrideStatus runRegex(String channel, String sender,
+    private static OverrideStatus runRegex(String channel, String sender,
             String hostname, String message, Matcher matcher,
             String regexValue, boolean action)
     {
@@ -721,9 +731,9 @@ public class JZBot extends PircBot
         if (factValue.trim().equals(""))
             ;
         else if (factValue.startsWith("<ACTION>"))
-            sendAction(channel, factValue.substring("<ACTION>".length()));
+            bot.sendAction(channel, factValue.substring("<ACTION>".length()));
         else
-            sendMessage(channel, factValue);
+            bot.sendMessage(channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
         else if ("true".equalsIgnoreCase(vars.get("__fact_override")))
@@ -731,8 +741,7 @@ public class JZBot extends PircBot
         return OverrideStatus.none;
     }
     
-    @Override
-    protected void onAction(String sender, String login, String hostname,
+    public static void onAction(String sender, String login, String hostname,
             String channel, String action)
     {
         if (!(channel.startsWith("#")))
@@ -746,7 +755,7 @@ public class JZBot extends PircBot
         catch (Throwable t)
         {
             t.printStackTrace();
-            sendMessage(sender, "Exception while processing action: "
+            bot.sendMessage(sender, "Exception while processing action: "
                     + pastebinStack(t));
         }
         finally
@@ -755,8 +764,8 @@ public class JZBot extends PircBot
         }
     }
     
-    private void runMessageCommand(String channel, boolean pm, String sender,
-            String hostname, String username, String message,
+    private static void runMessageCommand(String channel, boolean pm,
+            String sender, String hostname, String username, String message,
             boolean processFactoids)
     {
         String[] commandSplit = message.split(" ", 2);
@@ -776,13 +785,13 @@ public class JZBot extends PircBot
             {
                 if (e instanceof ResponseException)
                 {
-                    sendMessage(pm ? sender : channel, ((ResponseException) e)
-                            .getMessage());
+                    bot.sendMessage(pm ? sender : channel,
+                            ((ResponseException) e).getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
-                    sendMessage(pm ? sender : channel,
+                    bot.sendMessage(pm ? sender : channel,
                             "An error occured while running the command "
                                     + command + ": " + pastebinStack(e));
                 }
@@ -809,16 +818,17 @@ public class JZBot extends PircBot
                     incrementDirectRequests(f);
                     String factValue;
                     factValue = safeRunFactoid(f, channel, sender,
-                            commandArguments.split(" "), bot.isOp(channel,
-                                    hostname), new HashMap<String, String>());
+                            commandArguments.split(" "),
+                            isOp(channel, hostname),
+                            new HashMap<String, String>());
                     System.out.println("fact value: " + factValue);
                     if (factValue.trim().equals(""))
                         ;
                     else if (factValue.startsWith("<ACTION>"))
-                        sendAction((pm ? sender : channel), factValue
+                        bot.sendAction((pm ? sender : channel), factValue
                                 .substring("<ACTION>".length()));
                     else
-                        sendMessage((pm ? sender : channel), factValue);
+                        bot.sendMessage((pm ? sender : channel), factValue);
                     return;
                 }
             }
@@ -835,19 +845,19 @@ public class JZBot extends PircBot
             String factValue;
             System.out.println("calculating fact value");
             factValue = safeRunFactoid(f, channel, sender, commandArguments
-                    .split(" "), bot.isOp(channel, hostname),
+                    .split(" "), isOp(channel, hostname),
                     new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             if (factValue.trim().equals(""))
                 System.out.println("Empty value; doing nothing");
             else if (factValue.startsWith("<ACTION>"))
-                sendAction((pm ? sender : channel), factValue
+                bot.sendAction((pm ? sender : channel), factValue
                         .substring("<ACTION>".length()));
             else
             {
                 System.out.println("sending global message " + channel + " to "
                         + factValue);
-                sendMessage((pm ? sender : channel), factValue);
+                bot.sendMessage((pm ? sender : channel), factValue);
             }
             return;
         }
@@ -930,18 +940,19 @@ public class JZBot extends PircBot
         }
     }
     
-    private void doInvalidCommand(boolean pm, String channel, String sender)
+    private static void doInvalidCommand(boolean pm, String channel,
+            String sender)
     {
         Channel c = storage.getChannel(channel);
         String notfoundFact = ConfigVars.notfound.get();
         if (notfoundFact.trim().equals("") && c != null)
         {
-            sendMessage(pm ? sender : channel,
+            bot.sendMessage(pm ? sender : channel,
                     "Huh? (pm \"help\" for more info)");
         }
         else if (notfoundFact.trim().equals(""))
         {
-            sendMessage(pm ? sender : channel,
+            bot.sendMessage(pm ? sender : channel,
                     "Huh? (pm \"help\" for more info)");
         }
         else
@@ -959,23 +970,25 @@ public class JZBot extends PircBot
                 String factValue = safeRunFactoid(f, channel, sender,
                         new String[0], true, new HashMap<String, String>());
                 if (factValue.trim().equals(""))
-                    sendMessage(pm ? sender : channel,
+                    bot.sendMessage(pm ? sender : channel,
                             "Notfound factoid didn't output anything");
                 else if (factValue.startsWith("<ACTION>"))
-                    sendAction(pm ? sender : channel, factValue
+                    bot.sendAction(pm ? sender : channel, factValue
                             .substring("<ACTION>".length()));
                 else
-                    sendMessage(pm ? sender : channel, factValue);
+                    bot.sendMessage(pm ? sender : channel, factValue);
             }
             catch (Throwable t)
             {
-                sendMessage(pm ? sender : channel,
-                        "Syntax error in notfound factoid: " + pastebinStack(t));
+                bot
+                        .sendMessage(pm ? sender : channel,
+                                "Syntax error in notfound factoid: "
+                                        + pastebinStack(t));
             }
         }
     }
     
-    protected void onConnect()
+    public static void onConnect()
     {
         new Thread()
         {
@@ -994,7 +1007,7 @@ public class JZBot extends PircBot
                             e.printStackTrace();
                         }
                         System.out.println("joining " + channel.getName());
-                        joinChannel(channel.getName());
+                        bot.joinChannel(channel.getName());
                     }
                 }
                 try
@@ -1005,7 +1018,7 @@ public class JZBot extends PircBot
                 {
                     e.printStackTrace();
                 }
-                runNotificationFactoid(null, null, getNick(), "_onready",
+                runNotificationFactoid(null, null, bot.getNick(), "_onready",
                         new String[0], true);
             }
         }.start();
@@ -1061,7 +1074,7 @@ public class JZBot extends PircBot
                         else
                             time += 30;
                         Thread.sleep(time * 1000);
-                        reconnect();
+                        bot.reconnect();
                     }
                     catch (Exception e)
                     {
@@ -1097,8 +1110,9 @@ public class JZBot extends PircBot
             catch (Throwable e)
             {
                 e.printStackTrace();
-                sendMessage(sender, "Internal upper-propegating pm exception: "
-                        + pastebinStack(e));
+                bot.sendMessage(sender,
+                        "Internal upper-propegating pm exception: "
+                                + pastebinStack(e));
             }
         }
         catch (FactTimeExceededError e)
@@ -1127,14 +1141,14 @@ public class JZBot extends PircBot
         return storage.getOperator(hostname) != null;
     }
     
-    public void verifyOp(String channel, String hostname)
+    public static void verifyOp(String channel, String hostname)
     {
         if (!isOp(channel, hostname))
             throw new ResponseException(
                     "You are not an op, so you don't have permission to run this command.");
     }
     
-    public void verifySuperop(String hostname)
+    public static void verifySuperop(String hostname)
     {
         if (!isSuperop(hostname))
             throw new ResponseException(

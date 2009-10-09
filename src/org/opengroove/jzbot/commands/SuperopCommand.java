@@ -17,7 +17,7 @@ public class SuperopCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
-        JZBot.bot.verifySuperop(hostname);
+        JZBot.verifySuperop(hostname);
         String[] tokens = arguments.split(" ", 2);
         String subcommand = tokens[0];
         if (subcommand.equals("list"))
