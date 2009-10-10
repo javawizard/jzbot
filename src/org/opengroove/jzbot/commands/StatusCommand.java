@@ -26,11 +26,15 @@ public class StatusCommand implements Command
                 + Runtime.getRuntime().totalMemory() + ","
                 + Runtime.getRuntime().maxMemory() + ";uptime(seconds):"
                 + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
-                + ",functions:" + FactParser.getFunctionNames().length + ",commands:"
-                + JZBot.commands.size() + ",queue:"
+                + ",functions:" + FactParser.getFunctionNames().length
+                + ",commands:" + JZBot.commands.size() + ",queue:"
                 + JZBot.bot.getOutgoingQueueSize();
-        if(arguments.equals("gc"))
+        if (arguments.equals("gc"))
+        {
+            long t = System.currentTimeMillis();
             System.gc();
+            s += ",gctime:" + (System.currentTimeMillis() - t);
+        }
         JZBot.bot.sendMessage(pm ? sender : channel, s);
     }
     
