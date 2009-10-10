@@ -7,17 +7,21 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.utils.StringUtils;
@@ -258,6 +262,11 @@ public class JZBot
     
     public static void main(String[] args) throws Throwable
     {
+        if (args.length > 0)
+        {
+            doWithArguments(args);
+            return;
+        }
         Runtime.getRuntime().addShutdownHook(new Thread()
         {
             public void run()
@@ -266,6 +275,110 @@ public class JZBot
             }
         });
         start();
+    }
+    
+    private static void doWithArguments(String[] args)
+    {
+        if (args[0].equals("help"))
+        {
+            System.out
+                    .println("JZBot is an IRC bot. If you have questions, connect");
+            System.out.println("to irc.freenode.net and join channel ##jzbot.");
+            System.out
+                    .println("To set up your bot, run \"jzbot setup <server> ");
+            System.out
+                    .println("<port> <nick> <hostname> <password>\". <server>");
+            System.out
+                    .println("is the IRC server to connect to. For example, this");
+            System.out
+                    .println("could be \"irc.freenode.net\". <port> is the port");
+            System.out
+                    .println("on the server to connect to. This is usually 6667.");
+            System.out
+                    .println("<nick> is the nickname to use on that server. ");
+            System.out
+                    .println("<hostname> is your hostname or hostmask on the IRC");
+            System.out
+                    .println("server, which the bot will use to allow you to ");
+            System.out
+                    .println("tell it to join channels, leave channels, create ");
+            System.out
+                    .println("factoids, and so on. <password> is the password");
+            System.out
+                    .println("you want the bot to use when connecting to the");
+            System.out.println("server. <password> is entirely optional.");
+            System.out.println("");
+            System.out
+                    .println("If you set up the bot with incorrect information,");
+            System.out.println("you can always run the setup command again.");
+            System.out.println("");
+            System.out
+                    .println("Once you've set up the bot successfully, run \"jzbot\"");
+            System.out.println("to actually start your bot.");
+        }
+        else if (args[0].equals("setup"))
+        {
+            ArrayList<String> list = new ArrayList<String>(Arrays.asList(args));
+            list.remove(0);
+            args = list.toArray(new String[0]);
+            if (args.length < 4 || args.length > 5)
+            {
+                System.out.println("\"jzbot setup\" expects either 4 or 5 "
+                        + "arguments, but you provided " + args.length);
+                System.out.println("arguments. See \"jzbot help\" for help.");
+                return;
+            }
+            String server = args[0];
+            String portString = args[1];
+            String nick = args[2];
+            String hostname = args[3];
+            String password = (args.length > 4 ? args[4] : "");
+            int port;
+            try
+            {
+                port = Integer.parseInt(portString);
+            }
+            catch (NumberFormatException e)
+            {
+                System.out.println("You specified " + portString
+                        + " for the port, but");
+                System.out.println("the port must be a number.");
+                return;
+            }
+            if (port < 0 || port > 65535)
+            {
+                System.out.println("The port number you specified (" + port
+                        + "), should");
+                System.out
+                        .println("have been within the range 0 - 65535, but it was not.");
+                return;
+            }
+            System.out
+                    .println("Ok, it looks like the information you provided ");
+            System.out
+                    .println("will work. Hang on a sec while I set everything up.");
+            System.out.println("");
+            initProxyStorage();
+            config.setNick(nick);
+            config.setPassword(password);
+            config.setPort(port);
+            config.setServer(server);
+            if (storage.getOperator(hostname) == null)
+            {
+                Operator op = storage.createOperator();
+                op.setHostname(hostname);
+                storage.getOperators().add(op);
+            }
+            System.out.println("");
+            System.out
+                    .println("JZBot has been successfully set up. Run \"jzbot\"");
+            System.out.println("to start your bot.");
+        }
+        else
+        {
+            System.out
+                    .println("That's an invalid command. Try \"jzbot help\".");
+        }
     }
     
     private static void loadCommands()
@@ -306,15 +419,7 @@ public class JZBot
     private static void start() throws Throwable
     {
         logsFolder.mkdirs();
-        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
-                "storage/db"));
-        storage = proxyStorage.getRoot();
-        config = storage.getConfig();
-        if (config == null)
-        {
-            config = storage.createConfig();
-            storage.setConfig(config);
-        }
+        initProxyStorage();
         if (config.getNick() == null || config.getPassword() == null
                 || config.getServer() == null)
         {
@@ -350,6 +455,19 @@ public class JZBot
         System.out.println("connecting");
         bot.connect(config.getServer(), config.getPort(), config.getPassword());
         System.out.println("connected");
+    }
+    
+    private static void initProxyStorage()
+    {
+        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
+                "storage/db"));
+        storage = proxyStorage.getRoot();
+        config = storage.getConfig();
+        if (config == null)
+        {
+            config = storage.createConfig();
+            storage.setConfig(config);
+        }
     }
     
     private static void loadCachedConfig()
@@ -1080,10 +1198,7 @@ public class JZBot
                 }
                 httpServers.clear();
             }
-            proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
-                    "storage/db"));
-            storage = proxyStorage.getRoot();
-            config = storage.getConfig();
+            initProxyStorage();
             reloadRegexes();
             loadCachedConfig();
         }

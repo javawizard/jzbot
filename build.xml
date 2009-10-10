@@ -10,13 +10,33 @@
 			</fileset>
 		</tar>
 	</target>
+	<target name="make-dist">
+		<mkdir dir="${user.home}/jzbot2-make-dist-folder/jzbot" />
+		<copy todir="${user.home}/jzbot2-make-dist-folder/jzbot">
+			<fileset dir=".">
+				<include name="**/*" />
+				<exclude name="**/.svn" />
+				<exclude name="**/.*" />
+				<exclude name="jzbot2-old.tar.gz" />
+				<exclude name="storage" />
+				<exclude name="storage/**" />
+			</fileset>
+		</copy>
+		<tar destfile="${user.home}/jzbot2.tar.gz" compression="gzip">
+			<fileset dir="${user.home}/jzbot2-make-dist-folder">
+				<include name="**/*" />
+			</fileset>
+		</tar>
+		<delete dir="${user.home}/jzbot2-make-dist-folder">
+		</delete>
+	</target>
 	<target name="upload">
 		<exec executable="rsync">
 			<arg value="-vvv" />
-			<arg value="-e"/>
-			<arg value="ssh"/>
-			<arg value="jzbot2-old.tar.gz"/>
-			<arg value="root@trivergia.com:/jzbot2/jzbot2-old.tar.gz"/>
+			<arg value="-e" />
+			<arg value="ssh" />
+			<arg value="jzbot2-old.tar.gz" />
+			<arg value="root@trivergia.com:/jzbot2/jzbot2-old.tar.gz" />
 		</exec>
 	</target>
 </project>

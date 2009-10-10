@@ -1,2 +1,2 @@
 #!/bin/bash
-java -cp classes:lib/\* -Dsun.net.inetaddr.ttl=10 org.opengroove.jzbot.JZBot
+java -cp classes:lib/\* -Dsun.net.inetaddr.ttl=10 org.opengroove.jzbot.JZBot $*
