@@ -29,7 +29,7 @@ public class FirstvarFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{firstvar||<varname>||<firstarg>||<secondarg>||...}} -- "
+        return "Syntax: {{firstvar||<varname>||<arg1>||<arg2>||...}} -- "
                 + "Sets the local variable <varname> to be the first argument that "
                 + "comes after it whose value does not evaluate to the empty string,"
                 + " ignoring whitespace and newlines.";

@@ -20,6 +20,13 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
+    protected void onAction(String sender, String login, String hostname,
+            String target, String action)
+    {
+        JZBot.onAction(sender, login, hostname, target, action);
+    }
+    
+    @Override
     public void partChannel(String channel, String reason)
     {
         JZBot.logEvent(channel, "left", getNick(), "Left the channel: "

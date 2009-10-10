@@ -319,6 +319,8 @@ public class JZBot
                 || config.getServer() == null)
         {
             System.out.println("No connect info specified. JZBot will exit.");
+            System.out.println("Run \"jzbot help\" for help on how to set up");
+            System.out.println("JZBot and the connection info.");
             System.exit(0);
         }
         loadProtocol();
