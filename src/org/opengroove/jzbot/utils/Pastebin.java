@@ -46,6 +46,9 @@ public class Pastebin
     public static String createPost(String poster, String post,
             Duration duration, String parent)
     {
+        System.out.println("Creating pastebin post with text:");
+        System.out.println(post);
+        System.out.println("---------------------------------");
         if (parent == null)
             parent = "";
         try

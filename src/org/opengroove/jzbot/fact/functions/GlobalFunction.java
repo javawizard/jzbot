@@ -6,7 +6,7 @@ import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
 
-public class ImportFunction extends Function
+public class GlobalFunction extends Function
 {
     
     @Override
@@ -14,16 +14,15 @@ public class ImportFunction extends Function
     {
         context.incrementImportCount();
         return JZBot.doFactImport(context.getChannel(), arguments, context
-                .getSender(), true, context.getQuota(), ImportLevel.any);
+                .getSender(), true, context.getQuota(), ImportLevel.global);
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{import||<factoid>||<argument1>||...}} -- Imports the specified "
-                + "factoid into this one. This function evaluates to whatever the factoid "
-                + "indicated ends up outputting. <factoid> is the name of the factoid, and "
-                + "<argument1>, <argument2>, etc. are the arguments to be passed to the factoid.";
+        return "Syntax: {{global||<factoid>||<arg1>||<arg2>||...}} -- Same as {{import}}, "
+                + "but imports the specified global factoid only. This acts as if there "
+                + "were no channel-specific factoids named <factoid>, even if one does exist.";
     }
     
 }

@@ -1,6 +1,7 @@
 package org.opengroove.jzbot.fact.functions;
 
 import org.opengroove.jzbot.JZBot;
+import org.opengroove.jzbot.JZBot.ImportLevel;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
@@ -13,7 +14,7 @@ public class RunFunction extends Function
     {
         context.incrementImportCount();
         JZBot.doFactImport(context.getChannel(), arguments,
-                context.getSender(), true, context.getQuota());
+                context.getSender(), true, context.getQuota(), ImportLevel.any);
         return "";
     }
     

@@ -8,7 +8,7 @@ import net.sf.opengroove.common.proxystorage.Search;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
-public interface Storage
+public interface Storage extends HasFactoids
 {
     @Property
     @ListType(Channel.class)
@@ -82,6 +82,9 @@ public interface Storage
     
     @Search(listProperty = "factoids", searchProperty = "name", exact = true)
     public Factoid getFactoid(String name);
+    
+    @Search(listProperty = "factoids", searchProperty = "factpack", exact = true)
+    public Factoid[] getFactpackFactoids(String factpack);
     
     @Property
     @ListType(Operator.class)

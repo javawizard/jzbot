@@ -1,10 +1,14 @@
-TODO: factoids specify if they came from a factpack, so that when a factpack is removed it can remove all factoids created by it but not those that have since been replaced.
+Factpack files are basically just ".props"-format files, but with a bunch of properties. This file contains a list of these properties. For all properties that run a piece of text as a factoid program while the factpack is being installed or uninstalled, the property "factpack-channel" will be set to the channel that the factoid is being installed to, or the empty string if the factoid is being installed globally. The property "factpack-data" will be set to any additional data the user provides at the end of the message that is used to install the factpack. For example, "factoid pack install local.games.roulette this is some data" would install local.games.roulette with %factpack-data% being equal to "this is some data". This data is not set when the factoids are run once the factpack is installed, however, so if any data is to be retained the postinstall script should save it as a persistent variable. The property "factpack-name" is also set to the canonical name of the factpack.
 
-Factpack files are basically just ".props"-format files, but with a bunch of properties. Here are the properties that are typically present:
+Anyway, here are the properties:
+
+name (required): This is the canonical name of the factoid, and is used internally to track which factoids came from which factpacks. For factpacks installed from an external source, this should follow Java package name convention (IE starts with the reverse of a domain name related to the factoid, plus other info, and must contain at least one "." character). For factpacks installed from an internal source, this should be of the format "local.<category>.<name>". <category> is currently one of "games" (for factoids that implement games specifically, such as roulette or mastermind), "misc" (for factpacks that don't really fit into a category), "com" (for communications), "library" (for factpacks that are intended to be used as utilities by other factoids, not directly run by users), and "admin" (for factpacks that are generally related to IRC channel/server administration).
 
 author: Not required, but generally preferred. Contains a list of authors of the factpack in whatever format the author wants.
 
 description: Describes the factoid. Lines within this property (which are separated by newlines) should not be longer than about 400 characters each, and there should generally be not more than 3 or 4 lines.
+
+depends: A pipe-separated list of the canonical names of factpacks that should already be installed, in the format "<scope>:<name>". After each factpack name, preceded by a comma, can be a message that should be shown if the factpack is not installed. For example, this property could have the value "local.library.randomresline,The randomresline library is required to choose resource lines, and this factpack will not work without it.|local.com.pvarserver,The pvarserver utility is required for this factpack to serve up its statistics pages". Dependencies are checked *after* the preinstall script is run. If there is a missing dependency which is a locally-present factpack, the bot will tell the user that the factpack is locally present and that they should install it first. If the dependency is not present and not locally known, the bot won't give the user any additional info, so the message should have info about where to install it. <scope> can be one of "exact", "any", or "global". "exact" indicates that the dependency must exist exactly at the level that this factpack was installed at. "any" indicates that the dependency must exist either exactly at this factpack's level, or as a global factpack. "global" indicates that this factpack must be a global factpack.
 
 preinstall: This is a program (in factoid language) to run before anything is installed. If it evaluates to anything, then the message will be sent to the user. If it sets the local variable "fail" to "1", then the factoid will not be installed, and it will be assumed that the message that this program sends to the user contains information on why installing the factoid failed. This can be used to validate some precondition, such as that another factpack has been installed, or that some specific settings have been set on the bot.
 
@@ -22,6 +26,6 @@ rename.*: Specifies a factoid language program that will be evaluated before the
 
 restrict.*: Same format as rename.*, but specifies whether the factoid is restricted. If this evaluates to 1, the factoid will be restricted, and if it evaluates to 0, the factoid will not be restricted.
 
-preuninstall: Specifies a factoid language program that will be run before the factpack is uninstalled.
+preuninstall (not yet supported): Specifies a factoid language program that will be run before the factpack is uninstalled.
 
-postuninstall: Specifies a factoid language program that will be run after the factpack is uninstalled.
+postuninstall (not yet supported): Specifies a factoid language program that will be run after the factpack is uninstalled.

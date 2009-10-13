@@ -10,9 +10,8 @@ import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.commands.games.RouletteState;
 
 /**
- * This is obsolete. Enough functions exist in the factoid parser that the
- * roulette command can be written entirely as a set of factoids. I'll put a
- * file in marlen explaining those factoids in detail.
+ * This is obsolete, as the roulette command has been re-written as a factpack
+ * (specifically "local.games.roulette"). See "factpacks/roulette.jzf".
  * 
  * @author Alexander Boyd
  * 

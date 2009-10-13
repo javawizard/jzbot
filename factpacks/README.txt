@@ -1,13 +1,15 @@
-Factpacks are packages of factoids that might interest you. You import a factpack into
-the bot by sending each line as a message on a channel that the bot is connected to, 
-where the bot is using the trigger "~". They are, by default, imported as channel-specific
-factoids; this can be overriden by doing a search-and-replace of the factpack file, searching
-for "~factoid create" and replacing with "~factoid global create". 
+Factpacks are packages of factoids that might interest you. You can install factpacks in one 
+of two ways:
 
-In the future, there will be a mechanism to import factpacks via a pastebin post. This
-will essentially interpret each line as a message, with the restriction that the lines can
-only start with "~factoid create" or "~factoid global create", and a single error will cause
-the rest of the lines to be aborted and all changes made to be undone. "~restrict" will also
-be a valid line start command.
-
-Factpacks have the extension ".jfact", indicating that they are JZBot-style factpacks.
+  For factpacks that are located in this folder (the factpacks folder), you can install them 
+  by sending "~factoid pack install <packname>" to your bot. <packname> is the canonical 
+  name of the factpack, which can be found by opening the factpack file and searching for
+  "name=". The text that comes after "name=" is the canonical name of the factpack. For 
+  example, the canonical name of the factpack that resides in the file google.jzf is
+  "local.misc.google".
+  
+  For factpacks that aren't located in this folder (for example, factpacks that are available
+  on a website or factpacks that you're writing yourself), you can install them by placing 
+  the factpack's contents into a pastebin post, and then sending "~factoid pack install 
+  http://pastebin.com/<postid>" to your bot. For details on the format of a factpack's 
+  contents, see docs/technotes/factpacks.txt under the folder that you installed JZBot to.

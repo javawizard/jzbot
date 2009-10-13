@@ -1,0 +1,5 @@
+name=local.misc.bzfrag
+author=Alexander Boyd
+scope=any
+description=Coming soon.
+depends=global:local.library.randomresline

@@ -29,10 +29,4 @@ public class SplitindexFunction extends Function
                 + "the last token.";
     }
     
-    public String getName()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
 }

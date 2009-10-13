@@ -5,7 +5,7 @@ import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
 @ProxyBean
-public interface Config
+public interface Config 
 {
     @Property
     @Default(stringValue = "org.opengroove.jzbot.protocols.IrcProtocol")

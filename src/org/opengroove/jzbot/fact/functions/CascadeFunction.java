@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opengroove.jzbot.JZBot;
+import org.opengroove.jzbot.JZBot.ImportLevel;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
@@ -24,7 +25,7 @@ public class CascadeFunction extends Function
                 map.put(s, context.getLocalVars().get(s));
         }
         return JZBot.doFactImport(context.getChannel(), arguments, context
-                .getSender(), true, context.getQuota(), map);
+                .getSender(), true, context.getQuota(), ImportLevel.any, map);
     }
     
     @Override

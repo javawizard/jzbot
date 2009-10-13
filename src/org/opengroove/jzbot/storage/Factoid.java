@@ -67,4 +67,18 @@ public interface Factoid
     public int getIndirectRequests();
     
     public void setIndirectRequests(int requests);
+    
+    /**
+     * Gets the factpack for this factoid. The factpack is in the format of
+     * "<scope>:<name>", where <scope> is either the empty string for global
+     * factpacks or the name of a channel for channel-specific factpacks, and
+     * <name> is the canonical name of the factpack that caused this factoid to
+     * be created.
+     * 
+     * @return
+     */
+    @Property
+    public String getFactpack();
+    
+    public void setFactpack(String factpack);
 }

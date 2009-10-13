@@ -1,0 +1,9 @@
+name=local.library.randomresline
+author=Alexander Boyd
+scope=global
+description=This factpack contains a utility, library.randomresline, which can read a \
+particular resource, split it into lines, and evaluate to a random choice of one of \
+those lines. Lines starting with "#" will be ignored. "WHO" in any lines will be \
+replaced by the second argument to the utility (the first argument is the resource to read).
+g.library.randomresline={{replace||{{randomsplit||{{getresource||%1%}}||\\\\n||^[^\\\\#].*\\$}}||WHO||%2-%}}
+restrict.g.library.randomresline=1

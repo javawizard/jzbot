@@ -1,5 +1,7 @@
 package org.opengroove.jzbot.fact.functions;
 
+import org.opengroove.jzbot.JZBot;
+import org.opengroove.jzbot.JZBot.FutureFactoid;
 import org.opengroove.jzbot.fact.ArgumentList;
 import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.Function;
@@ -10,7 +12,10 @@ public class RemainingFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        throw new UnsupportedOperationException();
+        FutureFactoid fact = JZBot.futureFactoids.get(arguments.get(0));
+        if (fact == null)
+            return "";
+        return "" + Math.max(fact.startTime - System.currentTimeMillis(), 0);
     }
     
     @Override

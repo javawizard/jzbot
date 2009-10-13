@@ -1,6 +1,7 @@
 package org.opengroove.jzbot;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,6 +15,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -206,6 +209,7 @@ public class JZBot
         private String sender;
         private String key;
         private FactQuota quota;
+        public long startTime;
         
         public FutureFactoid(int delay, String channel, ArgumentList arguments,
                 String sender, String key, FactQuota quota)
@@ -220,12 +224,14 @@ public class JZBot
             this.sender = sender;
             this.key = key;
             this.quota = quota;
+            startTime = System.currentTimeMillis() + (delay * 1000);
         }
         
         public void run()
         {
             try
             {
+                startTime = System.currentTimeMillis() + (delay * 1000);
                 Thread.sleep(delay * 1000);
             }
             catch (InterruptedException e)
@@ -237,7 +243,7 @@ public class JZBot
                     return;
                 futureFactoids.remove(key);
                 String result = doFactImport(channel, arguments, sender, true,
-                        quota);
+                        quota, ImportLevel.any);
                 if (result.trim().equals(""))
                     return;
                 if (result.startsWith("<ACTION>"))
@@ -637,9 +643,10 @@ public class JZBot
     
     public static void incrementDirectRequests(Factoid f)
     {
-        System.out.println("Incrementing direct requests for " + f.getName());
+        // System.out.println("Incrementing direct requests for " +
+        // f.getName());
         f.setDirectRequests(f.getDirectRequests() + 1);
-        System.out.println("incremented");
+        // System.out.println("incremented");
     }
     
     /**
@@ -696,16 +703,22 @@ public class JZBot
         return (isAction ? "<ACTION>" : "") + result.toString();
     }
     
-    public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted, FactQuota quota)
+    public static enum ImportLevel
     {
-        return doFactImport(channel, arguments, sender, allowRestricted, quota,
-                null);
+        any, exact, global
     }
     
     public static String doFactImport(String channel, ArgumentList arguments,
             String sender, boolean allowRestricted, FactQuota quota,
-            Map<String, String> cascadingVars)
+            ImportLevel level)
+    {
+        return doFactImport(channel, arguments, sender, allowRestricted, quota,
+                level, null);
+    }
+    
+    public static String doFactImport(String channel, ArgumentList arguments,
+            String sender, boolean allowRestricted, FactQuota quota,
+            ImportLevel level, Map<String, String> cascadingVars)
     {
         Factoid f = null;
         boolean channelSpecific = false;
@@ -1593,5 +1606,39 @@ public class JZBot
             new Exception("Exception while writing data to channel logs", e)
                     .printStackTrace();
         }
+    }
+    
+    public static File[] listLocalFactpackFiles()
+    {
+        File[] files = new File("factpacks").listFiles(new FileFilter()
+        {
+            
+            @Override
+            public boolean accept(File file)
+            {
+                return file.getName().endsWith(".jzf");
+            }
+        });
+        Arrays.sort(files, new Comparator<File>()
+        {
+            
+            @Override
+            public int compare(File o1, File o2)
+            {
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+        return files;
+    }
+    
+    public static File getLocalFactpackFile(String canonicalName)
+    {
+        for (File file : listLocalFactpackFiles())
+        {
+            Factpack pack = Factpack.parse(StringUtils.readFile(file));
+            if (pack.name.equals(canonicalName))
+                return file;
+        }
+        return null;
     }
 }

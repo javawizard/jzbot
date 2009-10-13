@@ -1,6 +1,13 @@
+name=local.misc.lart
 author=Alexander Boyd
 scope=any
 description=Adds a "lart" command, which chooses from one of 133 creative responses that would \
-generally serve to humiliate the person in question.
+generally not be pleasant to the person in question. For example, "~lart jcp" might respond with \
+"/me rm -rf's jcp", "/me smacks jcp upside and over the head with one freakishly huge killer \
+whale named Hugh", "/me shoves avocados down jcp's throat until jcp dies", or "/me cats \
+/dev/urandom into jcp's ear".\n\
+Most of the responses (such as the "rm -rf" one or the "/dev/urandom" one) are of a technical \
+nature, and all of them are sent as actions (IE as if they were prefixed with "/me").
+depends=global:local.library.randomresline
 preinstall={{if||{{isresource||lart.txt}}||||{{lset||fail||1}}This factpack depends on the resource "lart.txt" existing, but it doesn't seem to be present. Download a copy of JZBot and copy lart.txt in the resources folder in the copy you downloaded into the resources folder of your bot, then try again.}}
-t.lart={{action}}{{firstvar||p||%1-%||%0%}}{{replace||{{randomsplit||{{getresource||lart.txt}}||\\n||^[^\\#].*\$}}||WHO||%p%}}
+t.lart={{action}}{{firstvar||p||%1-%||%0%}}{{global||library.randomresline||lart.txt||%p%}}

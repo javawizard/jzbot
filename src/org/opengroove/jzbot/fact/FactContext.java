@@ -3,15 +3,17 @@ package org.opengroove.jzbot.fact;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opengroove.jzbot.JZBot;
+
 public class FactContext
 {
     private Map<String, String> localVars = new HashMap<String, String>();
-    private Map<String, String> globalVars;
+    private Map<String, String> globalVars = JZBot.globalVariables;
     private boolean action;
     private String channel;
     private String sender;
-    private String self;
-    private FactQuota quota;
+    private String self = JZBot.bot.getNick();
+    private FactQuota quota = new FactQuota();
     
     public FactQuota getQuota()
     {

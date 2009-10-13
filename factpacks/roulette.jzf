@@ -1,3 +1,4 @@
+name=local.games.roulette
 author=Alexander Boyd
 scope=any
 description=This factpack creates a "roulette" factoid that can be used to play a game of russian \
@@ -7,16 +8,16 @@ unloaded. This is indicated by "Chamber 6 of 6: *click*" followed by "The gun wa
 Luckster". Also, if ~roulette is not used for 5 minutes, the game will be reset, and if the bot \
 is opped at a channel and a user loses at roulette, that user will be kicked off of the channel. \
 In a future release, there will be a mechanism to disable this kick functionality.
-t.roulette={{import||roulette-create}}{{import||roulette-next}}{{ifeq||{{get||roulette-loaded}}||{{get||roulette-current}}||{{import||roulette-die||%0%}}||{{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) *click*}}{{ifeq||{{get||roulette-current}}||6||{{import||roulette-unloaded}}}}}}
-t.roulette-create={{ifeq||{{get||roulette-loaded}}||||{{set||roulette-loaded||{{eval||1+{{randomint||7}}}}}}}}{{ifeq||{{get||roulette-current}}||||{{set||roulette-current||0}}}}{{future||roulette-delete-key||300||roulette-delete}}
+t.roulette={{exact||roulette-create}}{{exact||roulette-next}}{{ifeq||{{get||roulette-loaded}}||{{get||roulette-current}}||{{exact||roulette-die||%0%}}||{{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) *click*}}{{ifeq||{{get||roulette-current}}||6||{{exact||roulette-unloaded}}}}}}
+t.roulette-create={{ifeq||{{get||roulette-loaded}}||||{{set||roulette-loaded||{{eval||{{randomint||7}}+1}}}}}}{{ifeq||{{get||roulette-current}}||||{{set||roulette-current||0}}}}{{future||roulette-delete-key||300||roulette-delete}}
 restrict.t.roulette-create=1
 t.roulette-delete={{delete||roulette-loaded}}{{delete||roulette-current}}
 restrict.t.roulette-delete=1
 t.roulette-next={{set||roulette-current||{{eval||{{get||roulette-current}}+1}}}}
 restrict.t.roulette-next=1
-t.roulette-unloaded={{sendmessage||%channel%||The gun was unloaded. Luckster.}}{{import||roulette-reset}}
+t.roulette-unloaded={{sendmessage||%channel%||The gun was unloaded. Luckster.}}{{exact||roulette-reset}}
 restrict.t.roulette-unloaded=1
-t.roulette-die={{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) BANG! you're dead.}}{{import||roulette-reset}}
+t.roulette-die={{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) BANG! you're dead.}}{{exact||roulette-reset}}
 restrict.t.roulette-die=1
 t.roulette-reset={{delete||roulette-current}}{{delete||roulette-loaded}}{{sendaction||%channel%||reloads and spins the chamber}}
 restrict.t.roulette-reset=1
