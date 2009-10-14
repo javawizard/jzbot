@@ -472,6 +472,7 @@ public class FactoidCommand implements Command
             if (isGlobal)
             {
                 targetScopeLevel = "global";
+                targetScopeName = "";
                 vpSuperop(
                         hostname,
                         "That factpack has a scope of \"any\", and you're "
