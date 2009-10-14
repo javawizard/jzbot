@@ -2,7 +2,16 @@ Factpack files are basically just ".props"-format files, but with a bunch of pro
 
 Anyway, here are the properties:
 
-name (required): This is the canonical name of the factoid, and is used internally to track which factoids came from which factpacks. For factpacks installed from an external source, this should follow Java package name convention (IE starts with the reverse of a domain name related to the factoid, plus other info, and must contain at least one "." character). For factpacks installed from an internal source, this should be of the format "local.<category>.<name>". <category> is currently one of "games" (for factoids that implement games specifically, such as roulette or mastermind), "misc" (for factpacks that don't really fit into a category), "com" (for communications), "library" (for factpacks that are intended to be used as utilities by other factoids, not directly run by users), and "admin" (for factpacks that are generally related to IRC channel/server administration).
+name (required): This is the canonical name of the factoid, and is used internally to track which factoids came from which factpacks. For factpacks installed from an external source, this should follow Java package name convention (IE starts with the reverse of a domain name related to the factoid, plus other info, and must contain at least one "." character). For factpacks installed from an internal source, this should be of the format "local.<category>.<name>".
+
+For local factpacks, <category> is currently one of:
+
+  "games" (for factoids that implement games specifically, such as roulette or mastermind) 
+  "misc" (for factpacks that don't really fit into a category)
+  "com" (for communications-related factpacks) 
+  "library" (for factpacks that are intended to be used as utilities by other factoids, not directly run by users) 
+  "admin" (for factpacks that are generally related to IRC channel/server administration)
+  "stats" (for factpacks that provide statistics about channels or the bot)
 
 author: Not required, but generally preferred. Contains a list of authors of the factpack in whatever format the author wants.
 

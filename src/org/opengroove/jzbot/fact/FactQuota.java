@@ -1,5 +1,8 @@
 package org.opengroove.jzbot.fact;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class FactQuota
 {
     private int messageCount = 0;
@@ -8,6 +11,17 @@ public class FactQuota
     private int maxImportCount = MAX_IMPORT_COUNT;
     public static final int MAX_IMPORT_COUNT = 5000;
     public static final int MAX_MESSAGE_COUNT = 7;
+    private Map<String, String> chainVars = new HashMap<String, String>();
+    
+    public Map<String, String> getChainVars()
+    {
+        return chainVars;
+    }
+    
+    public void setChainVars(Map<String, String> chainVars)
+    {
+        this.chainVars = chainVars;
+    }
     
     public void incrementMessageCount()
     {

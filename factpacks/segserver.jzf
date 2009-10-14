@@ -1,0 +1,11 @@
+name=local.com.segserver
+author=Alexander Boyd
+scope=global
+description=Provides a utility that starts an HTTP server on a certain port. This HTTP server \
+then delegates to other factoids based on the URL used. A factoid can be registered to \
+handle a certain URL path by running "~segserver-register <url> <factoid>", where <url> is the \
+URL to trigger on and <factoid> is the factoid to run. There is one difference that \n\
+these factoids must account for, which is that http-* headers that are to be set by \
+the factoid should be set as chain variables instead of as local variables. http-* headers \
+that are created by the bot's web server functionality, however, will still be present as \
+local variables.

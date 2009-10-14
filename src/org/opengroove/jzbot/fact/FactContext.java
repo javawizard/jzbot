@@ -80,6 +80,11 @@ public class FactContext
         return globalVars;
     }
     
+    public Map<String,String> getChainVars()
+    {
+        return quota.getChainVars();
+    }
+    
     public void setGlobalVars(Map<String, String> globalVars)
     {
         this.globalVars = globalVars;

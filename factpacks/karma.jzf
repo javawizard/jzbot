@@ -1,4 +1,4 @@
-name=local.misc.karma
+name=local.stats.karma
 author=Alexander Boyd
 scope=global
 description=Adds a karma system into the bot. Particularly, this adds a karma command that \
