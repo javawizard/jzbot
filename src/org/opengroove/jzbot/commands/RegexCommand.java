@@ -26,6 +26,12 @@ public class RegexCommand implements Command
             String arguments)
     {
         JZBot.verifyOp(channel, hostname);
+        doRegexCommand(channel, pm, sender, arguments, true);
+    }
+    
+    public static void doRegexCommand(String channel, boolean pm,
+            String sender, String arguments, boolean reply)
+    {
         String[] argSplit1 = arguments.split(" ", 2);
         String command = argSplit1[0];
         String args = (argSplit1.length > 1 ? argSplit1[1] : "");
@@ -49,17 +55,19 @@ public class RegexCommand implements Command
             {
                 Pattern.compile(regexString);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                throw new ResponseException("Malformed regex pattern: " + JZBot.pastebinStack(e));
+                throw new ResponseException("Malformed regex pattern, see "
+                        + JZBot.pastebinStack(e));
             }
             Regex regex = JZBot.storage.createRegex();
             regex.setExpression(regexString);
             regex.setFactoid(factoid);
             c.getRegularExpressions().add(regex);
             JZBot.reloadRegexes();
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Successfully added and activated.");
+            if (reply)
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "Successfully added and activated.");
         }
         else if (command.equals("delete"))
         {
@@ -68,19 +76,22 @@ public class RegexCommand implements Command
                         "You need to specify the regex to delete.");
             Regex regex = c.getRegex(args);
             if (regex == null)
-                throw new ResponseException(
-                        "That regex (" + args + ") doesn't exist on this channel.");
+                throw new ResponseException("That regex (" + args
+                        + ") doesn't exist on this channel.");
             c.getRegularExpressions().remove(regex);
             JZBot.reloadRegexes();
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Successfully removed and deactivated.");
+            if (reply)
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "Successfully removed and deactivated.");
             
         }
-        else if(command.equals("deleteall"))
+        else if (command.equals("deleteall"))
         {
             c.getRegularExpressions().clear();
             JZBot.reloadRegexes();
-            JZBot.bot.sendMessage(pm?sender:channel, "Successfully deleted all regexes on this channel..");
+            if (reply)
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "Successfully deleted all regexes on this channel.");
         }
         else if (command.equals("list"))
         {
@@ -93,24 +104,28 @@ public class RegexCommand implements Command
             String[] split = buffer.toString().split("\n");
             if (split.length > 2)
             {
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "Regex list: http://pastebin.com/"
-                                + Pastebin.createPost("jzbot", buffer
-                                        .toString(), Duration.DAY, ""));
+                if (reply)
+                    JZBot.bot.sendMessage(pm ? sender : channel,
+                            "Regex list: http://pastebin.com/"
+                                    + Pastebin.createPost("jzbot", buffer
+                                            .toString(), Duration.DAY, ""));
             }
             else
             {
                 for (String s : split)
                 {
-                    JZBot.bot.sendMessage(pm ? sender : channel, s);
+                    if (reply)
+                        JZBot.bot.sendMessage(pm ? sender : channel, s);
                 }
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "End of regex list");
+                if (reply)
+                    JZBot.bot.sendMessage(pm ? sender : channel,
+                            "End of regex list");
             }
         }
         else
         {
-            throw new ResponseException("Specify one of add, delete, deleteall, or list.");
+            throw new ResponseException(
+                    "Specify one of add, delete, deleteall, or list.");
         }
     }
 }

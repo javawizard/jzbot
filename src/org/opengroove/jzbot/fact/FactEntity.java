@@ -1,5 +1,13 @@
 package org.opengroove.jzbot.fact;
 
+/**
+ * A part of a factoid (or even a whole factoid). This represents the factoid in
+ * compiled form, and it can be used to actually run the factoid and get the
+ * output of the factoid.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public abstract class FactEntity
 {
     /**

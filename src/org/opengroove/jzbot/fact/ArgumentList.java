@@ -25,6 +25,15 @@ public class ArgumentList
         this.length = length;
     }
     
+    /**
+     * Same as <tt>get()</tt>, but the argument is "run" again even if it has
+     * already been run before. Functions like {{split}} use this for the
+     * <action> argument to cause it to be run once for each substring in the
+     * string to split.
+     * 
+     * @param index
+     * @return
+     */
     public String resolve(int index)
     {
         if (delegate != null)
@@ -37,6 +46,16 @@ public class ArgumentList
         }
     }
     
+    /**
+     * Gets the argument at the specified index. If this argument has not
+     * actually been "run" to find out what its value should be, it is run, and
+     * the value is stored so that future calls to <tt>get()</tt> will not
+     * result in the argument being "run" again.
+     * 
+     * @param index
+     *            The index of the argument. Indexes start at 0.
+     * @return The result of running the argument at the specified index
+     */
     public String get(int index)
     {
         if (delegate != null)
@@ -53,6 +72,11 @@ public class ArgumentList
         }
     }
     
+    /**
+     * Returns the number of arguments in this argument list.
+     * 
+     * @return
+     */
     public int length()
     {
         if (delegate == null)
@@ -61,6 +85,14 @@ public class ArgumentList
             return length;
     }
     
+    /**
+     * Returns a "sub"-list that views a portion of this list. This could be
+     * compared to <tt>String.substring()</tt>.
+     * 
+     * @param offset
+     *            The offset at which the sublist is supposed to start
+     * @return The new sublist
+     */
     public ArgumentList subList(int offset)
     {
         return new ArgumentList(this, offset, length() - offset, context);
@@ -71,6 +103,12 @@ public class ArgumentList
         return new ArgumentList(this, offset, length, context);
     }
     
+    /**
+     * Gets (with a call to <tt>get()</tt>) all arguments in this argument list,
+     * puts them into a new String array, and returns the array.
+     * 
+     * @return
+     */
     public String[] evalToArray()
     {
         String[] s = new String[length()];

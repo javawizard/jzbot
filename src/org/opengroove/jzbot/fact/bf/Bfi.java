@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * I don't honestly recall where I got this program, but the majority of it was
+ * not written by me. If anyone knows where this came from, send me an email
+ * (javawizard@trivergia.com).
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class Bfi
 {
     /** Output of the brainf___ programm goes here, default = System.out **/

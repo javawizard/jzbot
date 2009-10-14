@@ -42,7 +42,7 @@ executes killall -TERM WHO
 explains, ever so gently, that if WHO doesn't give the channel more information, they can't help
 passes wind in WHO's general direction
 flings dung at WHO
-follows WHO with a gauntlet and ... scratch ... HUMILIATION
+#follows WHO with a gauntlet and ... scratch ... HUMILIATION
 forces avocados down WHO's throat until WHO dies
 forces WHO to use Outlook Express
 frags WHO with his BFG9000
