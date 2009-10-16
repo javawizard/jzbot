@@ -24,6 +24,11 @@ public interface Factoid
     public void setRestricted(boolean restricted);
     
     @Property
+    public boolean isLibrary();
+    
+    public boolean setLibrary(boolean library);
+    
+    @Property
     @Length(32768)
     public String getValue();
     
@@ -81,4 +86,15 @@ public interface Factoid
     public String getFactpack();
     
     public void setFactpack(String factpack);
+    
+    /**
+     * True if this factoid is an uninstall factoid for its factpack. Uninstall
+     * factoids will be run after a factpack has been uninstalled.
+     * 
+     * @return
+     */
+    @Property
+    public boolean isUninstall();
+    
+    public void setUninstall(boolean uninstall);
 }

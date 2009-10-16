@@ -11,4 +11,7 @@ public interface HasFactoids
     public Factoid getFactoid(String name);
     
     public Factoid[] getFactpackFactoids(String factpack);
+    
+    public Factoid[] searchFactoids(String search);
+    
 }

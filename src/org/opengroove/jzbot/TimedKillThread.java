@@ -7,6 +7,8 @@ public class TimedKillThread extends Thread
     
     public static final int MAX_FACT_RUN_TIME = 1000 * 20;
     
+    public volatile int maxRunTime = MAX_FACT_RUN_TIME;
+    
     public TimedKillThread(Thread target)
     {
         this.target = target;
@@ -17,7 +19,7 @@ public class TimedKillThread extends Thread
     {
         try
         {
-            Thread.sleep(MAX_FACT_RUN_TIME);
+            Thread.sleep(maxRunTime);
         }
         catch (InterruptedException e)
         {

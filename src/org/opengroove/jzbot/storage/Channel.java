@@ -20,9 +20,9 @@ public interface Channel extends HasFactoids
     public void setName(String name);
     
     /**
-     * True if this channel is suspended. A suspended channel is one where the
-     * bot has been directed to leave the channel, so it should not join the
-     * channel on startup until a user issues "~join" again.
+     * True if this channel is suspended. A suspended channel is one where the bot has
+     * been directed to leave the channel, so it should not join the channel on startup
+     * until a user issues "~join" again.
      * 
      * @return
      */
@@ -32,8 +32,8 @@ public interface Channel extends HasFactoids
     public void setSuspended(boolean suspended);
     
     /**
-     * The channel's trigger. Messages starting with the channel's trigger that
-     * are sent to the channel will cause the bot to execute commands.
+     * The channel's trigger. Messages starting with the channel's trigger that are sent
+     * to the channel will cause the bot to execute commands.
      * 
      * @return
      */
@@ -48,6 +48,9 @@ public interface Channel extends HasFactoids
     
     @Search(listProperty = "factoids", searchProperty = "name", exact = true)
     public Factoid getFactoid(String name);
+    
+    @Search(listProperty = "factoids", searchProperty = "name", exact = false, anywhere = false)
+    public Factoid[] searchFactoids(String search);
     
     /**
      * Returns a list of all factoids that have the specified factpack name.

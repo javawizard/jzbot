@@ -83,6 +83,9 @@ public interface Storage extends HasFactoids
     @Search(listProperty = "factoids", searchProperty = "name", exact = true)
     public Factoid getFactoid(String name);
     
+    @Search(listProperty = "factoids", searchProperty = "name", exact = false, anywhere = false)
+    public Factoid[] searchFactoids(String search);
+    
     @Search(listProperty = "factoids", searchProperty = "factpack", exact = true)
     public Factoid[] getFactpackFactoids(String factpack);
     

@@ -374,7 +374,8 @@ public class FactoidCommand implements Command
         }
         else if (command.equals("remove"))
         {
-            
+            doFactpackRemove(pm, sender, hostname, isGlobal, channel,
+                    storedChannel, force, absolute, afterCommand);
         }
         else if (command.equals("details"))
         {
@@ -390,6 +391,107 @@ public class FactoidCommand implements Command
                     "Invalid pack command. Try \"factoid pack\" for a list "
                             + "of available pack commands.");
         }
+    }
+    
+    private void doFactpackRemove(boolean pm, String sender, String hostname,
+            boolean isGlobal, String channel, Channel storedChannel,
+            boolean force, boolean absolute, String afterCommand)
+    {
+        /*
+         * Here's what we need to do:
+         * 
+         * First, we need to validate that the user has permission to remove
+         * this factoid. To do that, we do this:
+         */
+        // -- if isGlobal is true
+        // ---- make sure that the user is a superop
+        // -- if isGlobal is false
+        // ---- if the factpack has factoids present globally for that
+        // installation
+        // ------ make sure that the user is a superop
+        // ---- else (if the factpack does not have any global factoids)
+        // ------ make sure that the user is a channel operator at the channel
+        /*
+         * Then, we set the factpack name that we're going to remove to be the
+         * channel name (or "" if isGlobal is false) plus ":" plus the name of
+         * the factpack to remove. We then scan over all factoids in the entire
+         * system, and if the factoid's factpack matches, we delete it. If we
+         * get through and there were no factoids to delete, then we report to
+         * the user that the factpack in question is not installed at the scope
+         * the user specified.
+         */
+        boolean hasGlobalFactoids = false;
+        boolean hasAnyFactoids = false;
+        ArrayList<Factoid> factoidList = new ArrayList<Factoid>();
+        factoidList.addAll(JZBot.storage.getFactoids().isolate());
+        for (Channel c : JZBot.storage.getChannels().isolate())
+        {
+            factoidList.addAll(c.getFactoids().isolate());
+        }
+        String factpackName = (isGlobal ? "" : channel) + ":" + afterCommand;
+        /*
+         * Now we do the initial iteration to figure out if there are any
+         * factoids, and if they are global.
+         */
+        for (Factoid f : factoidList)
+        {
+            if (factpackName.equals(f.getFactpack()))
+            {
+                hasAnyFactoids = true;
+                if (JZBot.storage.getFactoids().contains(f))
+                    hasGlobalFactoids = true;
+            }
+        }
+        if (!hasAnyFactoids)
+            throw new ResponseException(
+                    "There isn't such a factpack installed at that "
+                            + "scope. Try \"factoid pack list all\".");
+        /*
+         * Now we check permissions.
+         */
+        if (isGlobal)
+            vpSuperop(hostname,
+                    "You need to be a superop to remove this factpack.");
+        else
+        {
+            if (hasGlobalFactoids)
+                vpSuperop(hostname, "You need to be a superop to remove this "
+                        + "globally-contributed factpack.");
+            else
+                vpOp(channel, hostname, "You need to be an op at this channel "
+                        + "to remove this factpack.");
+        }
+        /*
+         * We have permission to delete this factpack. Now we'll go through and
+         * actually delete it.
+         */
+        ArrayList<String> uninstallScripts = new ArrayList<String>();
+        ArrayList<HasFactoids> containers = new ArrayList<HasFactoids>();
+        containers.add(JZBot.storage);
+        for (Channel c : JZBot.storage.getChannels().isolate())
+        {
+            containers.add(c);
+        }
+        for (HasFactoids container : containers)
+        {
+            for (Factoid factoid : container.getFactoids().isolate())
+            {
+                if (factpackName.equals(factoid.getFactpack()))
+                {
+                    if (factoid.isUninstall())
+                        uninstallScripts.add(factoid.getValue());
+                    container.getFactoids().remove(factoid);
+                }
+            }
+        }
+        /*
+         * The factpack has been uninstalled.
+         * 
+         * FIXME: run the uninstall scripts, and add support during factoid
+         * installation for adding the factoid uninstall script.
+         */
+        JZBot.bot.sendMessage(pm ? sender : channel,
+                "The factpack has been successfully uninstalled.");
     }
     
     private void doFactpackInstall(boolean pm, String sender, String hostname,

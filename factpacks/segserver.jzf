@@ -3,9 +3,23 @@ author=Alexander Boyd
 scope=global
 description=Provides a utility that starts an HTTP server on a certain port. This HTTP server \
 then delegates to other factoids based on the URL used. A factoid can be registered to \
-handle a certain URL path by running "~segserver-register <url> <factoid>", where <url> is the \
+handle a certain URL path by running "~segserver-config register <url> <factoid>", where <url> is the \
 URL to trigger on and <factoid> is the factoid to run. There is one difference that \n\
 these factoids must account for, which is that http-* headers that are to be set by \
 the factoid should be set as chain variables instead of as local variables. http-* headers \
 that are created by the bot's web server functionality, however, will still be present as \
-local variables.
+local variables. The port for the server can be specified with "~segserver-config port <port>".
+# There are global variables for each path called "segserver-page-<pagename>", whose value is
+# the name of the factoid that should be called when that page (or any subpage of that page)
+# ends up being called.
+g.segserver-start=
+restrict.g.segserver-start=1
+g.segserver-serve=
+restrict.g.segserver-serve=1
+g.segserver-config=
+restrict.g.segserver-config=1
+g._onready_segserver={{exact||segserver-start}}
+restrict.g._onready_segserver=1
+g.segserver-uninstall=
+restrict.g.segserver-uninstall=1
+postuninstall=segserver-uninstall

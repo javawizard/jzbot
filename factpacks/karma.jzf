@@ -3,7 +3,10 @@ author=Alexander Boyd
 scope=global
 description=Adds a karma system into the bot. Particularly, this adds a karma command that \
 can be used to view a user's current karma. Then, at each channel where karma should be \
-used, "karma-configure add" should be run to add support for karma at that channel.
+used, "karma-configure add" should be run to add support for karma at that channel. \n\
+This factpack will also install a page that can be used to view karma over the internet. \
+If you'd like to enable this page, install local.com.segserver and run \
+"segserver-config register karma karma-segserver-serve".
 g.karma={{ifeq||%1%||for||{{import||karma-get||%2%}}||{{ifeq||%1%||set||Sorry, setting karma isn't allowed yet.||{{import||karma-get||%1%}}}}}}
 g.regex.karma-plus={{factoverride}}{{lset||k||{{lower||%1%}}}}{{ifjoined||%1%||{{ifeq||{{pget||karma-%k%}}||||{{pset||karma-%k%||0}}}}{{pset||karma-%k%||{{eval||{{pget||karma-%k%}}+{{ifeq||%2%||++||1||-1}}}}}}{{sendmessage||%channel%||{{import||karma-get||%1%||changed}}}}||%0%: %1% isn't here right now, so you can't change their karma.}}
 restrict.g.regex.karma-plus=1

@@ -1,0 +1,2 @@
+#!/bin/bash
+rsync -vvv -e ssh jzbot2-old.tar.gz jcp@bztraining.org:/jzbot2/jzbot2-old.tar.gz

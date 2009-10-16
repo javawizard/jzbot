@@ -106,8 +106,8 @@ public class JZBot
         catch (Exception e)
         {
             throw new FactoidException(
-                    "Exception occured while starting an http server on port "
-                            + port + " with factoid " + factoid, e);
+                    "Exception occured while starting an http server on port " + port
+                            + " with factoid " + factoid, e);
         }
     }
     
@@ -127,40 +127,34 @@ public class JZBot
         catch (Exception e)
         {
             throw new FactoidException(
-                    "Exception occured while stopping an http server on port "
-                            + port);
+                    "Exception occured while stopping an http server on port " + port);
         }
     }
     
-    public static final File serverPortsFile = new File("storage",
-            "serverports.txt");
-    public static final File maxServersFile = new File("storage",
-            "maxservers.txt");
+    public static final File serverPortsFile = new File("storage", "serverports.txt");
+    public static final File maxServersFile = new File("storage", "maxservers.txt");
     
     private static void verifyStartServer(int port)
     {
         if (!serverPortsFile.exists())
-            throw new RuntimeException(
-                    "HTTP servers are disabled. To enable them, create "
-                            + "a file called serverports.txt in the bot's storage folder, and "
-                            + "set its contents to be a regular expression that will match the "
-                            + "port numbers you want to allow servers to be started on.");
+            throw new RuntimeException("HTTP servers are disabled. To enable them, create "
+                    + "a file called serverports.txt in the bot's storage folder, and "
+                    + "set its contents to be a regular expression that will match the "
+                    + "port numbers you want to allow servers to be started on.");
         String regex = StringUtils.readFile(serverPortsFile);
         regex = regex.trim();
         if (!("" + port).matches(regex))
-            throw new RuntimeException(
-                    "Invalid port; the port has to match the regex " + regex);
+            throw new RuntimeException("Invalid port; the port has to match the regex "
+                    + regex);
         int maxServers;
         if (maxServersFile.exists())
-            maxServers = Integer.parseInt(StringUtils.readFile(maxServersFile)
-                    .trim());
+            maxServers = Integer.parseInt(StringUtils.readFile(maxServersFile).trim());
         else
             maxServers = 20;
         if (httpServers.size() >= maxServers)
-            throw new RuntimeException("There are already "
-                    + httpServers.size()
-                    + " servers started. This bot imposes a "
-                    + "maximum limit of " + maxServers + " at a time.");
+            throw new RuntimeException("There are already " + httpServers.size()
+                    + " servers started. This bot imposes a " + "maximum limit of "
+                    + maxServers + " at a time.");
     }
     
     static
@@ -191,8 +185,8 @@ public class JZBot
             throw new RuntimeException("Invalid evaluator engine name: "
                     + name
                     + ", expected one of "
-                    + StringUtils.delimited(evalEngines.keySet().toArray(
-                            new String[0]), ", "));
+                    + StringUtils.delimited(evalEngines.keySet().toArray(new String[0]),
+                            ", "));
         return engine;
     }
     
@@ -215,9 +209,8 @@ public class JZBot
                 String sender, String key, FactQuota quota)
         {
             if (channel == null)
-                throw new RuntimeException(
-                        "Can't schedule future factoids in pm. "
-                                + "Run this factoid at a channel.");
+                throw new RuntimeException("Can't schedule future factoids in pm. "
+                        + "Run this factoid at a channel.");
             this.delay = delay;
             this.channel = channel;
             this.arguments = arguments;
@@ -242,13 +235,12 @@ public class JZBot
                 if (futureFactoids.get(key) != this)
                     return;
                 futureFactoids.remove(key);
-                String result = doFactImport(channel, arguments, sender, true,
-                        quota, ImportLevel.any);
+                String result = doFactImport(channel, arguments, sender, true, quota,
+                        ImportLevel.any);
                 if (result.trim().equals(""))
                     return;
                 if (result.startsWith("<ACTION>"))
-                    bot.sendAction(channel, result.substring("<ACTION>"
-                            .length()));
+                    bot.sendAction(channel, result.substring("<ACTION>".length()));
                 else
                     bot.sendMessage(channel, result);
             }
@@ -287,39 +279,25 @@ public class JZBot
     {
         if (args[0].equals("help"))
         {
-            System.out
-                    .println("JZBot is an IRC bot. If you have questions, connect");
+            System.out.println("JZBot is an IRC bot. If you have questions, connect");
             System.out.println("to irc.freenode.net and join channel ##jzbot.");
-            System.out
-                    .println("To set up your bot, run \"jzbot setup <server> ");
-            System.out
-                    .println("<port> <nick> <hostname> <password>\". <server>");
-            System.out
-                    .println("is the IRC server to connect to. For example, this");
-            System.out
-                    .println("could be \"irc.freenode.net\". <port> is the port");
-            System.out
-                    .println("on the server to connect to. This is usually 6667.");
-            System.out
-                    .println("<nick> is the nickname to use on that server. ");
-            System.out
-                    .println("<hostname> is your hostname or hostmask on the IRC");
-            System.out
-                    .println("server, which the bot will use to allow you to ");
-            System.out
-                    .println("tell it to join channels, leave channels, create ");
-            System.out
-                    .println("factoids, and so on. <password> is the password");
-            System.out
-                    .println("you want the bot to use when connecting to the");
+            System.out.println("To set up your bot, run \"jzbot setup <server> ");
+            System.out.println("<port> <nick> <hostname> <password>\". <server>");
+            System.out.println("is the IRC server to connect to. For example, this");
+            System.out.println("could be \"irc.freenode.net\". <port> is the port");
+            System.out.println("on the server to connect to. This is usually 6667.");
+            System.out.println("<nick> is the nickname to use on that server. ");
+            System.out.println("<hostname> is your hostname or hostmask on the IRC");
+            System.out.println("server, which the bot will use to allow you to ");
+            System.out.println("tell it to join channels, leave channels, create ");
+            System.out.println("factoids, and so on. <password> is the password");
+            System.out.println("you want the bot to use when connecting to the");
             System.out.println("server. <password> is entirely optional.");
             System.out.println("");
-            System.out
-                    .println("If you set up the bot with incorrect information,");
+            System.out.println("If you set up the bot with incorrect information,");
             System.out.println("you can always run the setup command again.");
             System.out.println("");
-            System.out
-                    .println("Once you've set up the bot successfully, run \"jzbot\"");
+            System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
         }
         else if (args[0].equals("setup"))
@@ -346,23 +324,18 @@ public class JZBot
             }
             catch (NumberFormatException e)
             {
-                System.out.println("You specified " + portString
-                        + " for the port, but");
+                System.out.println("You specified " + portString + " for the port, but");
                 System.out.println("the port must be a number.");
                 return;
             }
             if (port < 0 || port > 65535)
             {
-                System.out.println("The port number you specified (" + port
-                        + "), should");
-                System.out
-                        .println("have been within the range 0 - 65535, but it was not.");
+                System.out.println("The port number you specified (" + port + "), should");
+                System.out.println("have been within the range 0 - 65535, but it was not.");
                 return;
             }
-            System.out
-                    .println("Ok, it looks like the information you provided ");
-            System.out
-                    .println("will work. Hang on a sec while I set everything up.");
+            System.out.println("Ok, it looks like the information you provided ");
+            System.out.println("will work. Hang on a sec while I set everything up.");
             System.out.println("");
             initProxyStorage();
             config.setNick(nick);
@@ -376,14 +349,12 @@ public class JZBot
                 storage.getOperators().add(op);
             }
             System.out.println("");
-            System.out
-                    .println("JZBot has been successfully set up. Run \"jzbot\"");
+            System.out.println("JZBot has been successfully set up. Run \"jzbot\"");
             System.out.println("to start your bot.");
         }
         else
         {
-            System.out
-                    .println("That's an invalid command. Try \"jzbot help\".");
+            System.out.println("That's an invalid command. Try \"jzbot help\".");
         }
     }
     
@@ -465,8 +436,7 @@ public class JZBot
     
     private static void initProxyStorage()
     {
-        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File(
-                "storage/db"));
+        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File("storage/db"));
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
         if (config == null)
@@ -504,13 +474,11 @@ public class JZBot
         }
         catch (Exception e)
         {
-            throw new RuntimeException(
-                    "Exception occurred while loading protocol", e);
+            throw new RuntimeException("Exception occurred while loading protocol", e);
         }
     }
     
-    public static void onJoin(String channel, String sender, String login,
-            String hostname)
+    public static void onJoin(String channel, String sender, String login, String hostname)
     {
         System.out.println("join detected on " + channel + " by " + sender);
         Channel chan = storage.getChannel(channel);
@@ -519,8 +487,7 @@ public class JZBot
         logEvent(channel, "joined", sender, login + "@" + hostname);
         if (sender.equals(bot.getNick()))
         {
-            runNotificationFactoid(channel, chan, sender, "_selfjoin", null,
-                    true);
+            runNotificationFactoid(channel, chan, sender, "_selfjoin", null, true);
         }
         else
         {
@@ -528,15 +495,14 @@ public class JZBot
         }
     }
     
-    public static void onPart(String channel, String sender, String login,
-            String hostname)
+    public static void onPart(String channel, String sender, String login, String hostname)
     {
         logEvent(channel, "left", sender, "Left the channel");
         runNotificationFactoid(channel, null, sender, "_onpart", null, true);
     }
     
-    public static void onQuit(String sourceNick, String sourceLogin,
-            String sourceHostname, String reason)
+    public static void onQuit(String sourceNick, String sourceLogin, String sourceHostname,
+            String reason)
     {
         // FIXME: log this and run a notification factoid. Probably change this
         // to onBeforeQuit, and have protocols send that before they remove the
@@ -547,88 +513,95 @@ public class JZBot
         // }, true);
     }
     
-    public static void onTopic(String channel, String topic, String setBy,
-            long date, boolean changed)
+    public static void onTopic(String channel, String topic, String setBy, long date,
+            boolean changed)
     {
         if (changed)
         {
             logEvent(channel, "topic", setBy, topic);
-            runNotificationFactoid(channel, null, setBy, "_ontopic",
-                    new String[]
-                    {
-                            topic, "" + date
-                    }, true);
+            runNotificationFactoid(channel, null, setBy, "_ontopic", new String[]
+            {
+                    topic, "" + date
+            }, true);
         }
     }
     
-    public static void onMode(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String mode)
+    public static void onMode(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String mode)
     {
         logEvent(channel, "mode", sourceNick, mode);
-        runNotificationFactoid(channel, null, sourceNick, "_onmode",
-                new String[]
-                {
-                    mode
-                }, true);
+        runNotificationFactoid(channel, null, sourceNick, "_onmode", new String[]
+        {
+            mode
+        }, true);
     }
     
-    public static void onNickChange(String oldNick, String login,
-            String hostname, String newNick)
+    public static void onNickChange(String oldNick, String login, String hostname,
+            String newNick)
     {
         for (String channel : bot.getChannels())
         {
             if (getUser(channel, newNick) != null)
             {
                 logEvent(channel, "nick", oldNick, newNick);
-                runNotificationFactoid(channel, null, newNick, "_onrename",
-                        new String[]
-                        {
-                                oldNick, newNick
-                        }, true);
+                runNotificationFactoid(channel, null, newNick, "_onrename", new String[]
+                {
+                        oldNick, newNick
+                }, true);
             }
         }
     }
     
-    private static void runNotificationFactoid(String channelName,
-            Channel chan, String sender, String factname, String[] args,
-            boolean timed)
+    private static void runNotificationFactoid(String channelName, Channel chan,
+            String sender, String factname, String[] args, boolean timed)
     {
+        if (!factname.startsWith("_"))
+            System.err.println("Factoid notification name \"" + factname
+                    + "\" doesn't start with an underscore");
         if (args == null)
             args = new String[0];
+        ArrayList<Factoid> facts = new ArrayList<Factoid>();
+        if (channelName == null)
+        {
+            facts.addAll(Arrays.asList(storage.searchFactoids(factname)));
+            facts.addAll(Arrays.asList(storage.searchFactoids(factname + "_*")));
+        }
+        else
+        {
+            if (chan == null)
+                chan = storage.getChannel(channelName);
+            if (chan == null)
+                return;
+            facts.addAll(Arrays.asList(chan.searchFactoids(factname)));
+            facts.addAll(Arrays.asList(chan.searchFactoids(factname + "_*")));
+            facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname)));
+            facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname + "_*")));
+        }
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
+        tkt.maxRunTime = 40 * 1000;
         if (timed)
             tkt.start();
         try
         {
-            Factoid f;
-            if (channelName == null)
+            for (Factoid f : facts)
             {
-                f = storage.getFactoid(factname);
+                if (f != null)
+                {
+                    incrementIndirectRequests(f);
+                    String factValue = safeRunFactoid(f, channelName, sender, args, true,
+                            new HashMap<String, String>());
+                    String pseudoChannel = channelName;
+                    if (pseudoChannel == null)
+                        pseudoChannel = ConfigVars.primary.get();
+                    if (factValue.trim().equals(""))
+                        ;
+                    else if (factValue.startsWith("<ACTION>"))
+                        bot.sendAction(pseudoChannel, factValue.substring("<ACTION>"
+                                .length()));
+                    else
+                        bot.sendMessage(pseudoChannel, factValue);
+                }
             }
-            else
-            {
-                if (chan == null)
-                    chan = storage.getChannel(channelName);
-                if (chan == null)
-                    return;
-                f = chan.getFactoid(factname);
-            }
-            if (f != null)
-            {
-                incrementIndirectRequests(f);
-                String factValue = safeRunFactoid(f, channelName, sender, args,
-                        true, new HashMap<String, String>());
-                if (channelName == null)
-                    channelName = ConfigVars.primary.get();
-                if (factValue.trim().equals(""))
-                    ;
-                else if (factValue.startsWith("<ACTION>"))
-                    bot.sendAction(channelName, factValue.substring("<ACTION>"
-                            .length()));
-                else
-                    bot.sendMessage(channelName, factValue);
-            }
-            return;
         }
         finally
         {
@@ -659,9 +632,9 @@ public class JZBot
      * @param sender
      *            The sender of the factoid request
      */
-    public static String runFactoid(Factoid factoid, String channel,
-            String sender, String[] args, Map<String, String> vars,
-            boolean allowRestricted, FactQuota quota)
+    public static String runFactoid(Factoid factoid, String channel, String sender,
+            String[] args, Map<String, String> vars, boolean allowRestricted,
+            FactQuota quota)
     {
         if (quota == null)
             quota = new FactQuota();
@@ -709,16 +682,14 @@ public class JZBot
     }
     
     public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted, FactQuota quota,
-            ImportLevel level)
+            String sender, boolean allowRestricted, FactQuota quota, ImportLevel level)
     {
-        return doFactImport(channel, arguments, sender, allowRestricted, quota,
-                level, null);
+        return doFactImport(channel, arguments, sender, allowRestricted, quota, level, null);
     }
     
     public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted, FactQuota quota,
-            ImportLevel level, Map<String, String> cascadingVars)
+            String sender, boolean allowRestricted, FactQuota quota, ImportLevel level,
+            Map<String, String> cascadingVars)
     {
         Factoid f = null;
         boolean channelSpecific = false;
@@ -733,26 +704,23 @@ public class JZBot
             f = JZBot.storage.getFactoid(arguments.get(0));
         }
         if (f == null)
-            throw new RuntimeException("Invalid import factoid "
-                    + arguments.get(0));
+            throw new RuntimeException("Invalid import factoid " + arguments.get(0));
         Map<String, String> varMap = new HashMap<String, String>();
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
         incrementIndirectRequests(f);
-        return runFactoid(f, channel, sender, arguments.subList(1)
-                .evalToArray(), varMap, allowRestricted, quota);
+        return runFactoid(f, channel, sender, arguments.subList(1).evalToArray(), varMap,
+                allowRestricted, quota);
     }
     
-    public static void onKick(String channel, String kickerNick,
-            String kickerLogin, String kickerHostname, String recipientNick,
-            String reason)
+    public static void onKick(String channel, String kickerNick, String kickerLogin,
+            String kickerHostname, String recipientNick, String reason)
     {
         logEvent(channel, "kick", kickerNick, recipientNick + " " + reason);
-        runNotificationFactoid(channel, null, kickerNick, "_onkick",
-                new String[]
-                {
-                        recipientNick, reason, kickerNick
-                }, true);
+        runNotificationFactoid(channel, null, kickerNick, "_onkick", new String[]
+        {
+                recipientNick, reason, kickerNick
+        }, true);
         if (recipientNick.equals(bot.getNick()))
             bot.joinChannel(channel);
     }
@@ -765,32 +733,30 @@ public class JZBot
         tkt.start();
         try
         {
-            System.out.println("Message from " + channel + " by " + sender
-                    + ": " + message);
+            System.out
+                    .println("Message from " + channel + " by " + sender + ": " + message);
             Channel chan = storage.getChannel(channel);
             if (chan == null)
             {
                 System.out.println("No matching channel");
                 return;
             }
-            boolean processFactoids = processChannelRegex(channel, sender,
-                    hostname, message, false);
+            boolean processFactoids = processChannelRegex(channel, sender, hostname,
+                    message, false);
             String trigger = chan.getTrigger();
             if (trigger != null && message.startsWith(trigger))
             {
                 try
                 {
                     System.out.println("running message command");
-                    runMessageCommand(channel, false, sender, hostname, login,
-                            message.substring(trigger.length()),
-                            processFactoids);
+                    runMessageCommand(channel, false, sender, hostname, login, message
+                            .substring(trigger.length()), processFactoids);
                 }
                 catch (Throwable e)
                 {
                     e.printStackTrace();
-                    JZBot.bot.sendMessage(channel,
-                            "Internal upper-propegation error: "
-                                    + pastebinStack(e));
+                    JZBot.bot.sendMessage(channel, "Internal upper-propegation error: "
+                            + pastebinStack(e));
                 }
             }
             else
@@ -800,8 +766,7 @@ public class JZBot
         }
         catch (FactTimeExceededError e)
         {
-            JZBot.bot
-                    .sendMessage(channel, "Time exceeded: " + pastebinStack(e));
+            JZBot.bot.sendMessage(channel, "Time exceeded: " + pastebinStack(e));
         }
         finally
         {
@@ -829,8 +794,8 @@ public class JZBot
                     /*
                      * We found something.
                      */
-                    OverrideStatus override = runRegex(channel, sender,
-                            hostname, message, matcher, regex, action);
+                    OverrideStatus override = runRegex(channel, sender, hostname, message,
+                            matcher, regex, action);
                     if (override == OverrideStatus.override)
                         return false;
                     else if (override == OverrideStatus.factoverride)
@@ -844,8 +809,7 @@ public class JZBot
         catch (Throwable e)
         {
             e.printStackTrace();
-            bot.sendMessage(channel, "Pre-process regex error: "
-                    + pastebinStack(e));
+            bot.sendMessage(channel, "Pre-process regex error: " + pastebinStack(e));
             return true;
         }
     }
@@ -865,9 +829,8 @@ public class JZBot
      * @param regex
      * @return True if this overrides, false if it doesn't
      */
-    private static OverrideStatus runRegex(String channel, String sender,
-            String hostname, String message, Matcher matcher,
-            String regexValue, boolean action)
+    private static OverrideStatus runRegex(String channel, String sender, String hostname,
+            String message, Matcher matcher, String regexValue, boolean action)
     {
         Channel c = storage.getChannel(channel);
         if (c == null)
@@ -880,8 +843,8 @@ public class JZBot
             f = JZBot.storage.getFactoid(regex.getFactoid());
         if (f == null)
         {
-            bot.sendMessage(channel, "Invalid factoid in regex " + regexValue
-                    + ": " + regex.getFactoid());
+            bot.sendMessage(channel, "Invalid factoid in regex " + regexValue + ": "
+                    + regex.getFactoid());
             return OverrideStatus.none;
         }
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -896,8 +859,7 @@ public class JZBot
             strings[i - 1] = matcher.group(i);
         }
         incrementIndirectRequests(f);
-        String factValue = safeRunFactoid(f, channel, sender, strings, true,
-                vars);
+        String factValue = safeRunFactoid(f, channel, sender, strings, true, vars);
         if (factValue.trim().equals(""))
             ;
         else if (factValue.startsWith("<ACTION>"))
@@ -935,14 +897,17 @@ public class JZBot
         }
     }
     
-    private static void runMessageCommand(String channel, boolean pm,
-            String sender, String hostname, String username, String message,
-            boolean processFactoids)
+    private static void runMessageCommand(String channel, boolean pm, String sender,
+            String hostname, String username, String message, boolean processFactoids)
     {
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
-        String commandArguments = (commandSplit.length == 1 ? ""
-                : commandSplit[1]);
+        String commandArguments = (commandSplit.length == 1 ? "" : commandSplit[1]);
+        /*
+         * We'll check to see if the text entered is a command. This is done before a
+         * check to see if we're supposed to process factoids so that regexes can't
+         * override commands.
+         */
         Command c = commands.get(command);
         if (c != null)
         {
@@ -956,22 +921,22 @@ public class JZBot
             {
                 if (e instanceof ResponseException)
                 {
-                    bot.sendMessage(pm ? sender : channel,
-                            ((ResponseException) e).getMessage());
+                    bot.sendMessage(pm ? sender : channel, ((ResponseException) e)
+                            .getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
                     bot.sendMessage(pm ? sender : channel,
-                            "An error occured while running the command "
-                                    + command + ": " + pastebinStack(e));
+                            "An error occured while running the command " + command + ": "
+                                    + pastebinStack(e));
                 }
             }
             return;
         }
         /*
-         * If we get here, then the text isn't a command. We'll check to see if
-         * it's a factoid.
+         * If we get here, then the text isn't a command. We'll check to see if it's a
+         * factoid.
          * 
          * Our first check will be for a channel-specific factoid.
          */
@@ -986,11 +951,22 @@ public class JZBot
                 if (f != null)
                 {
                     System.out.println("channel-specific factoid");
+                    if (f.isLibrary())
+                    {
+                        bot.sendMessage(pm ? sender : channel,
+                                "That factoid is a library factoid. It can only be run "
+                                        + "by importing it, by creating a regex "
+                                        + "that uses it, by using it as "
+                                        + "a trigger, and so on. Run \"factoid unlibrary "
+                                        + command
+                                        + "\" if you want to remove this factoid's "
+                                        + "library status.");
+                        return;
+                    }
                     incrementDirectRequests(f);
                     String factValue;
-                    factValue = safeRunFactoid(f, channel, sender,
-                            commandArguments.split(" "),
-                            isOp(channel, hostname),
+                    factValue = safeRunFactoid(f, channel, sender, commandArguments
+                            .split(" "), isOp(channel, hostname),
                             new HashMap<String, String>());
                     System.out.println("fact value: " + factValue);
                     if (factValue.trim().equals(""))
@@ -1011,23 +987,33 @@ public class JZBot
         if (f != null)
         {
             System.out.println("global factoid");
+            if (f.isLibrary())
+            {
+                bot.sendMessage(pm ? sender : channel,
+                        "That factoid is a library factoid. It can only be run "
+                                + "by importing it, by creating a regex "
+                                + "that uses it, by using it as "
+                                + "a trigger, and so on. Run \"factoid unlibrary "
+                                + command + "\" if you want to remove this factoid's "
+                                + "library status.");
+                return;
+            }
             incrementDirectRequests(f);
             System.out.println("requests incremented");
             String factValue;
             System.out.println("calculating fact value");
-            factValue = safeRunFactoid(f, channel, sender, commandArguments
-                    .split(" "), isOp(channel, hostname),
-                    new HashMap<String, String>());
+            factValue = safeRunFactoid(f, channel, sender, commandArguments.split(" "),
+                    isOp(channel, hostname), new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             if (factValue.trim().equals(""))
                 System.out.println("Empty value; doing nothing");
             else if (factValue.startsWith("<ACTION>"))
-                bot.sendAction((pm ? sender : channel), factValue
-                        .substring("<ACTION>".length()));
+                bot.sendAction((pm ? sender : channel), factValue.substring("<ACTION>"
+                        .length()));
             else
             {
-                System.out.println("sending global message " + channel + " to "
-                        + factValue);
+                System.out
+                        .println("sending global message " + channel + " to " + factValue);
                 bot.sendMessage((pm ? sender : channel), factValue);
             }
             return;
@@ -1037,11 +1023,10 @@ public class JZBot
     }
     
     /**
-     * Runs the specified factoid, returning its output. If an exception is
-     * thrown while running the factoid, the exception's stack trace, along with
-     * some additional information, is sent to pastebin.com, and an error
-     * message (including a url to the pastebin post) returned instead of the
-     * factoid's output.
+     * Runs the specified factoid, returning its output. If an exception is thrown while
+     * running the factoid, the exception's stack trace, along with some additional
+     * information, is sent to pastebin.com, and an error message (including a url to the
+     * pastebin post) returned instead of the factoid's output.
      * 
      * @param f
      *            The factoid to run
@@ -1054,30 +1039,27 @@ public class JZBot
      * @param allowRestricted
      *            True to allow restricted factoids
      * @param vars
-     *            The local variables to use. Extra variables will be added for
-     *            function arguments and stuff like %channel%.
-     * @return The output of the factoid, or an error message containing a
-     *         pastebin url if the factoid threw an exception while running
+     *            The local variables to use. Extra variables will be added for function
+     *            arguments and stuff like %channel%.
+     * @return The output of the factoid, or an error message containing a pastebin url if
+     *         the factoid threw an exception while running
      */
-    public static String safeRunFactoid(Factoid f, String channel,
-            String sender, String[] arguments, boolean allowRestricted,
-            Map<String, String> vars)
+    public static String safeRunFactoid(Factoid f, String channel, String sender,
+            String[] arguments, boolean allowRestricted, Map<String, String> vars)
     {
         String factValue;
         try
         {
-            factValue = runFactoid(f, channel, sender, arguments, vars,
-                    allowRestricted, null);
+            factValue = runFactoid(f, channel, sender, arguments, vars, allowRestricted,
+                    null);
         }
         catch (FactoidException e)
         {
-            factValue = "Syntax exception while running factoid: "
-                    + pastebinStack(e);
+            factValue = "Syntax exception while running factoid: " + pastebinStack(e);
         }
         catch (Exception e)
         {
-            factValue = "External exception while running factoid: "
-                    + pastebinStack(e);
+            factValue = "External exception while running factoid: " + pastebinStack(e);
         }
         catch (FactTimeExceededError e)
         {
@@ -1102,8 +1084,7 @@ public class JZBot
         try
         {
             return "http://pastebin.com/"
-                    + Pastebin.createPost("jzbot", eString,
-                            Pastebin.Duration.DAY, "");
+                    + Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY, "");
         }
         catch (Exception e2)
         {
@@ -1111,20 +1092,17 @@ public class JZBot
         }
     }
     
-    private static void doInvalidCommand(boolean pm, String channel,
-            String sender)
+    private static void doInvalidCommand(boolean pm, String channel, String sender)
     {
         Channel c = storage.getChannel(channel);
         String notfoundFact = ConfigVars.notfound.get();
         if (notfoundFact.trim().equals("") && c != null)
         {
-            bot.sendMessage(pm ? sender : channel,
-                    "Huh? (pm \"help\" for more info)");
+            bot.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
         }
         else if (notfoundFact.trim().equals(""))
         {
-            bot.sendMessage(pm ? sender : channel,
-                    "Huh? (pm \"help\" for more info)");
+            bot.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
         }
         else
         {
@@ -1138,23 +1116,21 @@ public class JZBot
                 if (f == null)
                     throw new RuntimeException("The factoid " + notfoundFact
                             + " does not exist.");
-                String factValue = safeRunFactoid(f, channel, sender,
-                        new String[0], true, new HashMap<String, String>());
+                String factValue = safeRunFactoid(f, channel, sender, new String[0], true,
+                        new HashMap<String, String>());
                 if (factValue.trim().equals(""))
                     bot.sendMessage(pm ? sender : channel,
                             "Notfound factoid didn't output anything");
                 else if (factValue.startsWith("<ACTION>"))
-                    bot.sendAction(pm ? sender : channel, factValue
-                            .substring("<ACTION>".length()));
+                    bot.sendAction(pm ? sender : channel, factValue.substring("<ACTION>"
+                            .length()));
                 else
                     bot.sendMessage(pm ? sender : channel, factValue);
             }
             catch (Throwable t)
             {
-                bot
-                        .sendMessage(pm ? sender : channel,
-                                "Syntax error in notfound factoid: "
-                                        + pastebinStack(t));
+                bot.sendMessage(pm ? sender : channel, "Syntax error in notfound factoid: "
+                        + pastebinStack(t));
             }
         }
     }
@@ -1265,8 +1241,8 @@ public class JZBot
         }.start();
     }
     
-    public static void onPrivateMessage(String sender, String login,
-            String hostname, String message)
+    public static void onPrivateMessage(String sender, String login, String hostname,
+            String message)
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
@@ -1281,15 +1257,13 @@ public class JZBot
             }
             try
             {
-                runMessageCommand(channel, true, sender, hostname, login,
-                        message, true);
+                runMessageCommand(channel, true, sender, hostname, login, message, true);
             }
             catch (Throwable e)
             {
                 e.printStackTrace();
-                bot.sendMessage(sender,
-                        "Internal upper-propegating pm exception: "
-                                + pastebinStack(e));
+                bot.sendMessage(sender, "Internal upper-propegating pm exception: "
+                        + pastebinStack(e));
             }
         }
         catch (FactTimeExceededError e)
@@ -1358,10 +1332,9 @@ public class JZBot
     }
     
     /**
-     * Gets the nickname for the specified user. If the url is a nickname url,
-     * then the nickname is simply taken from the url. If the url is an
-     * authenticated url, then the corresponding protocol is asked for the
-     * user's nickname.
+     * Gets the nickname for the specified user. If the url is a nickname url, then the
+     * nickname is simply taken from the url. If the url is an authenticated url, then the
+     * corresponding protocol is asked for the user's nickname.
      * 
      * @param user
      * @return
@@ -1372,22 +1345,21 @@ public class JZBot
     }
     
     /**
-     * Gets the authenticated name for the specified user. If the user is an
-     * authenticated url, then the authenticated name is simply taken from the
-     * url. If the url is a nickname url, then the protocol is asked for the
-     * user's authenticated name.<br/> <br/>
+     * Gets the authenticated name for the specified user. If the user is an authenticated
+     * url, then the authenticated name is simply taken from the url. If the url is a
+     * nickname url, then the protocol is asked for the user's authenticated name.<br/>
+     * <br/>
      * 
-     * Due to the fact that nicknames can change frequently while authenticated
-     * names generally won't, this should be called as soon after receiving a
-     * nickname as possible, to avoid the wrong authenticated name being
-     * obtained.<br/> <br/>
+     * Due to the fact that nicknames can change frequently while authenticated names
+     * generally won't, this should be called as soon after receiving a nickname as
+     * possible, to avoid the wrong authenticated name being obtained.<br/> <br/>
      * 
-     * It's possible that the user's authenticated name and the user's nickname
-     * are the same.
+     * It's possible that the user's authenticated name and the user's nickname are the
+     * same.
      * 
      * @param user
-     * @return The user's authenticated name, or null if their protocol reports
-     *         that the user is not authenticated
+     * @return The user's authenticated name, or null if their protocol reports that the
+     *         user is not authenticated
      */
     public static String getAuthname(URI user)
     {
@@ -1395,9 +1367,9 @@ public class JZBot
     }
     
     /**
-     * Converts the specified nickname url to an authenticated name url, or null
-     * if the user specified is not authenticated. If the url is already an
-     * authenticated url, then it is returned as-is.
+     * Converts the specified nickname url to an authenticated name url, or null if the
+     * user specified is not authenticated. If the url is already an authenticated url,
+     * then it is returned as-is.
      * 
      * @param user
      * @return
@@ -1423,8 +1395,7 @@ public class JZBot
         return evaluateEquation(toEval, channel, ConfigVars.evalengine.get());
     }
     
-    public static String evaluateEquation(String toEval, String channel,
-            String engineName)
+    public static String evaluateEquation(String toEval, String channel, String engineName)
     {
         try
         {
@@ -1439,8 +1410,8 @@ public class JZBot
     }
     
     /**
-     * Returns a string representing this double rounded to 8 decimal points,
-     * and with no decimal point if one is not needed.
+     * Returns a string representing this double rounded to 8 decimal points, and with no
+     * decimal point if one is not needed.
      * 
      * @param value
      *            The value to round
@@ -1458,8 +1429,7 @@ public class JZBot
         return d.toPlainString();
     }
     
-    public static void sendDelimited(String[] array, String delimiter,
-            String recipient)
+    public static void sendDelimited(String[] array, String delimiter, String recipient)
     {
         JZUtils.ircSendDelimited(array, delimiter, bot, recipient);
     }
@@ -1573,15 +1543,15 @@ public class JZBot
         return false;
     }
     
-    public static void logEvent(String channel, String event, String nick,
-            String details)
+    public static void logEvent(String channel, String event, String nick, String details)
     {
+        details = details.replace("\r", "").replace("\n", "");
         try
         {
             if (StringUtils.isMemberOf(channel, configNolog.split("\\|")))
                 return;
-            String data = event + " " + System.currentTimeMillis() + " " + nick
-                    + " " + details;
+            String data = event + " " + System.currentTimeMillis() + " " + nick + " "
+                    + details;
             File logFile = new File(logsFolder, channel);
             if (!logFile.exists())
                 if (!logFile.createNewFile())
