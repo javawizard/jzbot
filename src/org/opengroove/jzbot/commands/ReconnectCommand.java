@@ -15,19 +15,18 @@ public class ReconnectCommand implements Command
             String arguments)
     {
         JZBot.verifySuperop(hostname);
-        JZBot.bot.sendMessage(pm ? sender : channel,
-                "Reconnecting on request from " + sender);
+        JZBot.bot.sendMessage(sender,
+                "Ok, I'll reconnect." + sender);
         try
         {
             Thread.sleep(2000);
         }
         catch (InterruptedException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         JZBot.manualReconnect = true;
-        JZBot.bot.disconnect();
+        JZBot.bot.disconnect(arguments);
     }
     
 }

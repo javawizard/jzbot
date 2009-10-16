@@ -29,6 +29,10 @@ public class Factpack
          */
         public String restrict;
         /**
+         * A command to run to determine if this should be a library.
+         */
+        public String library;
+        /**
          * A command to run to determine the factpack's name.
          */
         public String rename;
@@ -37,9 +41,8 @@ public class Factpack
     public static class Dependency
     {
         /**
-         * One of exact, any, or global. Exact means exactly at the scope we're
-         * installing at. Any means either at the exact scope, or global. Global
-         * means global only.
+         * One of exact, any, or global. Exact means exactly at the scope we're installing
+         * at. Any means either at the exact scope, or global. Global means global only.
          */
         public String scope;
         public String name;
@@ -97,15 +100,16 @@ public class Factpack
         ArrayList<FactpackEntry> entries = new ArrayList<FactpackEntry>();
         for (String prop : names)
         {
-            if (!(prop.startsWith("g.") || prop.startsWith("c.") || prop
-                    .startsWith("t.")))
+            if (!(prop.startsWith("g.") || prop.startsWith("c.") || prop.startsWith("t.")))
                 continue;
             FactpackEntry entry = new FactpackEntry();
             entry.target = "" + prop.charAt(0);
             entry.name = prop.substring(2);
             entry.contents = props.getProperty(prop);
             entry.restrict = props.getProperty("restrict." + prop, "0");
-            entry.rename = props.getProperty("rename." + prop, EscapeFunction.escape(entry.name));
+            entry.rename = props.getProperty("rename." + prop, EscapeFunction
+                    .escape(entry.name));
+            entry.library = props.getProperty("library." + prop, "0");
             entries.add(entry);
         }
         pack.factoids = entries.toArray(new FactpackEntry[0]);

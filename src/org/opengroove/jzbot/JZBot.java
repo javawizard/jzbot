@@ -501,16 +501,17 @@ public class JZBot
         runNotificationFactoid(channel, null, sender, "_onpart", null, true);
     }
     
-    public static void onQuit(String sourceNick, String sourceLogin, String sourceHostname,
-            String reason)
+    public static void onBeforeQuit(String sourceNick, String sourceLogin,
+            String sourceHostname, String reason)
     {
-        // FIXME: log this and run a notification factoid. Probably change this
-        // to onBeforeQuit, and have protocols send that before they remove the
-        // user from the user list at this channel.
-        // runNotificationFactoid(channel, null, sender, "_onquit", new String[]
-        // {
-        // reason
-        // }, true);
+        for (String channel : bot.getChannels())
+        {
+            if (getUser(channel, sourceNick) != null)
+            {
+                logEvent(channel, "left", sourceNick, "Quit: " + reason);
+                runNotificationFactoid(channel, null, sourceNick, "_onquit", null, true);
+            }
+        }
     }
     
     public static void onTopic(String channel, String topic, String setBy, long date,

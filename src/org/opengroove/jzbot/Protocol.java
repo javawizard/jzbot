@@ -7,18 +7,16 @@ import org.jibble.pircbot.User;
 import org.jibble.pircbot.IrcException;
 
 /**
- * Represents a protocol that the bot can use to connect. Almost all of the
- * methods mirror their equivalents on the PircBot class, as the bot is
- * primarily intended to be an IRC bot. However, this interface exists so that
- * you can get the bot to connect to another protocol without having to modify
- * and recompile the bot's source code. You basically implement this class, then
- * edit the single row that's in the CONFIG table in the database, and change
- * the column "protocol" to be the fully-qualified class name of the
+ * Represents a protocol that the bot can use to connect. Almost all of the methods mirror
+ * their equivalents on the PircBot class, as the bot is primarily intended to be an IRC
+ * bot. However, this interface exists so that you can get the bot to connect to another
+ * protocol without having to modify and recompile the bot's source code. You basically
+ * implement this class, then edit the single row that's in the CONFIG table in the
+ * database, and change the column "protocol" to be the fully-qualified class name of the
  * implementation of this interface that you want to use. The default is
- * "org.opengroove.jzbot.protocols.IrcProtocol", which essentially wraps a
- * PircBot. There is another protocol,
- * "org.opengroove.jzbot.protocols.BZFlagProtocol", that comes with JZBot that
- * connects it to a BZFlag (http://bzflag.org) server. See that class for more
+ * "org.opengroove.jzbot.protocols.IrcProtocol", which essentially wraps a PircBot. There
+ * is another protocol, "org.opengroove.jzbot.protocols.BZFlagProtocol", that comes with
+ * JZBot that connects it to a BZFlag (http://bzflag.org) server. See that class for more
  * information about the protocol.
  * 
  * @author Alexander Boyd
@@ -43,8 +41,8 @@ public interface Protocol
     
     public void setEncoding(String string) throws UnsupportedEncodingException;
     
-    public void connect(String server, int port, String password)
-            throws IOException, IrcException;
+    public void connect(String server, int port, String password) throws IOException,
+            IrcException;
     
     public String getNick();
     
@@ -70,7 +68,7 @@ public interface Protocol
     
     public void partChannel(String channel, String string);
     
-    public void disconnect();
+    public void disconnect(String message);
     
     public int getOutgoingQueueSize();
 }

@@ -20,44 +20,41 @@ import java.util.*;
 /**
  * PircBot is a Java framework for writing IRC bots quickly and easily.
  * <p>
- * It provides an event-driven architecture to handle common IRC events, flood
- * protection, DCC support, ident support, and more. The comprehensive logfile
- * format is suitable for use with pisg to generate channel statistics.
+ * It provides an event-driven architecture to handle common IRC events, flood protection,
+ * DCC support, ident support, and more. The comprehensive logfile format is suitable for
+ * use with pisg to generate channel statistics.
  * <p>
- * Methods of the PircBot class can be called to send events to the IRC server
- * that it connects to. For example, calling the sendMessage method will send a
- * message to a channel or user on the IRC server. Multiple servers can be
- * supported using multiple instances of PircBot.
+ * Methods of the PircBot class can be called to send events to the IRC server that it
+ * connects to. For example, calling the sendMessage method will send a message to a
+ * channel or user on the IRC server. Multiple servers can be supported using multiple
+ * instances of PircBot.
  * <p>
- * To perform an action when the PircBot receives a normal message from the IRC
- * server, you would override the onMessage method defined in the PircBot class.
- * All on<i>XYZ</i> methods in the PircBot class are automatically called when
- * the event <i>XYZ</i> happens, so you would override these if you wish to do
- * something when it does happen.
+ * To perform an action when the PircBot receives a normal message from the IRC server,
+ * you would override the onMessage method defined in the PircBot class. All on<i>XYZ</i>
+ * methods in the PircBot class are automatically called when the event <i>XYZ</i>
+ * happens, so you would override these if you wish to do something when it does happen.
  * <p>
- * Some event methods, such as onPing, should only really perform a specific
- * function (i.e. respond to a PING from the server). For your convenience, such
- * methods are already correctly implemented in the PircBot and should not
- * normally need to be overridden. Please read the full documentation for each
- * method to see which ones are already implemented by the PircBot class.
+ * Some event methods, such as onPing, should only really perform a specific function
+ * (i.e. respond to a PING from the server). For your convenience, such methods are
+ * already correctly implemented in the PircBot and should not normally need to be
+ * overridden. Please read the full documentation for each method to see which ones are
+ * already implemented by the PircBot class.
  * <p>
- * Please visit the PircBot homepage at <a
- * href="http://www.jibble.org/pircbot.php"
- * >http://www.jibble.org/pircbot.php</a> for full revision history, a beginners
- * guide to creating your first PircBot and a list of some existing Java IRC
- * bots and clients that use the PircBot framework.
+ * Please visit the PircBot homepage at <a href="http://www.jibble.org/pircbot.php"
+ * >http://www.jibble.org/pircbot.php</a> for full revision history, a beginners guide to
+ * creating your first PircBot and a list of some existing Java IRC bots and clients that
+ * use the PircBot framework.
  * 
- * @author Paul James Mutton, <a
- *         href="http://www.jibble.org/">http://www.jibble.org/</a>, modified by
- *         Alexander Boyd for use with JZBot (http://jzbot.googlecode.com)
+ * @author Paul James Mutton, <a href="http://www.jibble.org/">http://www.jibble.org/</a>,
+ *         modified by Alexander Boyd for use with JZBot (http://jzbot.googlecode.com)
  * @version 1.4.6 (Build time: Wed Apr 11 19:20:59 2007)
  */
 public abstract class PircBot implements ReplyConstants
 {
     
     /**
-     * The definitive version number of this release of PircBot. (Note: Change
-     * this before automatically building releases)
+     * The definitive version number of this release of PircBot. (Note: Change this before
+     * automatically building releases)
      */
     public static final String VERSION = "1.4.6";
     
@@ -67,17 +64,17 @@ public abstract class PircBot implements ReplyConstants
     private static final int VOICE_REMOVE = 4;
     
     /**
-     * Constructs a PircBot with the default settings. Your own constructors in
-     * classes which extend the PircBot abstract class should be responsible for
-     * changing the default settings if required.
+     * Constructs a PircBot with the default settings. Your own constructors in classes
+     * which extend the PircBot abstract class should be responsible for changing the
+     * default settings if required.
      */
     public PircBot()
     {
     }
     
     /**
-     * Attempt to connect to the specified IRC server. The onConnect method is
-     * called upon success.
+     * Attempt to connect to the specified IRC server. The onConnect method is called upon
+     * success.
      * 
      * @param hostname
      *            The hostname of the server to connect to.
@@ -96,8 +93,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Attempt to connect to the specified IRC server and port number. The
-     * onConnect method is called upon success.
+     * Attempt to connect to the specified IRC server and port number. The onConnect
+     * method is called upon success.
      * 
      * @param hostname
      *            The hostname of the server to connect to.
@@ -111,15 +108,15 @@ public abstract class PircBot implements ReplyConstants
      * @throws NickAlreadyInUseException
      *             if our nick is already in use on the server.
      */
-    public final synchronized void connect(String hostname, int port)
-            throws IOException, IrcException, NickAlreadyInUseException
+    public final synchronized void connect(String hostname, int port) throws IOException,
+            IrcException, NickAlreadyInUseException
     {
         this.connect(hostname, port, null);
     }
     
     /**
-     * Attempt to connect to the specified IRC server using the supplied
-     * password. The onConnect method is called upon success.
+     * Attempt to connect to the specified IRC server using the supplied password. The
+     * onConnect method is called upon success.
      * 
      * @param hostname
      *            The hostname of the server to connect to.
@@ -135,9 +132,8 @@ public abstract class PircBot implements ReplyConstants
      * @throws NickAlreadyInUseException
      *             if our nick is already in use on the server.
      */
-    public final synchronized void connect(String hostname, int port,
-            String password) throws IOException, IrcException,
-            NickAlreadyInUseException
+    public final synchronized void connect(String hostname, int port, String password)
+            throws IOException, IrcException, NickAlreadyInUseException
     {
         
         _server = hostname;
@@ -161,12 +157,10 @@ public abstract class PircBot implements ReplyConstants
         if (netAddresses.length == 0)
             throw new RuntimeException("No addresses for host " + hostname);
         InetAddress netAddress = netAddresses[(int) (Math.random() * netAddresses.length)];
-        System.out.println("Connecting to server "
-                + netAddress.getHostAddress());
+        System.out.println("Connecting to server " + netAddress.getHostAddress());
         try
         {
-            System.out.println("Canonical host: "
-                    + netAddress.getCanonicalHostName());
+            System.out.println("Canonical host: " + netAddress.getCanonicalHostName());
         }
         catch (Exception e)
         {
@@ -184,15 +178,14 @@ public abstract class PircBot implements ReplyConstants
             // Assume the specified encoding is valid for this JVM.
             inputStreamReader = new InputStreamReader(socket.getInputStream(),
                     getEncoding());
-            outputStreamWriter = new OutputStreamWriter(socket
-                    .getOutputStream(), getEncoding());
+            outputStreamWriter = new OutputStreamWriter(socket.getOutputStream(),
+                    getEncoding());
         }
         else
         {
             // Otherwise, just use the JVM's default encoding.
             inputStreamReader = new InputStreamReader(socket.getInputStream());
-            outputStreamWriter = new OutputStreamWriter(socket
-                    .getOutputStream());
+            outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
         }
         
         BufferedReader breader = new BufferedReader(inputStreamReader);
@@ -205,8 +198,8 @@ public abstract class PircBot implements ReplyConstants
         }
         String nick = this.getName();
         OutputThread.sendRawLine(this, bwriter, "NICK " + nick);
-        OutputThread.sendRawLine(this, bwriter, "USER " + this.getLogin()
-                + " 8 * :" + this.getVersion());
+        OutputThread.sendRawLine(this, bwriter, "USER " + this.getLogin() + " 8 * :"
+                + this.getVersion());
         
         _inputThread = new InputThread(this, socket, breader, bwriter);
         
@@ -248,8 +241,7 @@ public abstract class PircBot implements ReplyConstants
                 {
                     socket.close();
                     _inputThread = null;
-                    throw new IrcException(
-                            "Could not log into the IRC server: " + line);
+                    throw new IrcException("Could not log into the IRC server: " + line);
                 }
             }
             this.setNick(nick);
@@ -278,10 +270,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Reconnects to the IRC server that we were previously connected to. If
-     * necessary, the appropriate port number and password will be used. This
-     * method will throw an IrcException if we have never connected to an IRC
-     * server previously.
+     * Reconnects to the IRC server that we were previously connected to. If necessary,
+     * the appropriate port number and password will be used. This method will throw an
+     * IrcException if we have never connected to an IRC server previously.
      * 
      * @since PircBot 0.9.9
      * 
@@ -292,8 +283,8 @@ public abstract class PircBot implements ReplyConstants
      * @throws NickAlreadyInUseException
      *             if our nick is already in use on the server.
      */
-    public final synchronized void reconnect() throws IOException,
-            IrcException, NickAlreadyInUseException
+    public final synchronized void reconnect() throws IOException, IrcException,
+            NickAlreadyInUseException
     {
         if (getServer() == null)
         {
@@ -304,10 +295,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method disconnects from the server cleanly by calling the
-     * quitServer() method. Providing the PircBot was connected to an IRC
-     * server, the onDisconnect() will be called as soon as the disconnection is
-     * made by the server.
+     * This method disconnects from the server cleanly by calling the quitServer() method.
+     * Providing the PircBot was connected to an IRC server, the onDisconnect() will be
+     * called as soon as the disconnection is made by the server.
      * 
      * @see #quitServer() quitServer
      * @see #quitServer(String) quitServer
@@ -318,13 +308,12 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * When you connect to a server and your nick is already in use and this is
-     * set to true, a new nick will be automatically chosen. This is done by
-     * adding numbers to the end of the nick until an available nick is found.
+     * When you connect to a server and your nick is already in use and this is set to
+     * true, a new nick will be automatically chosen. This is done by adding numbers to
+     * the end of the nick until an available nick is found.
      * 
      * @param autoNickChange
-     *            Set to true if you want automatic nick changes during
-     *            connection.
+     *            Set to true if you want automatic nick changes during connection.
      */
     public void setAutoNickChange(boolean autoNickChange)
     {
@@ -334,29 +323,28 @@ public abstract class PircBot implements ReplyConstants
     /**
      * Starts an ident server (Identification Protocol Server, RFC 1413).
      * <p>
-     * Most IRC servers attempt to contact the ident server on connecting hosts
-     * in order to determine the user's identity. A few IRC servers will not
-     * allow you to connect unless this information is provided.
+     * Most IRC servers attempt to contact the ident server on connecting hosts in order
+     * to determine the user's identity. A few IRC servers will not allow you to connect
+     * unless this information is provided.
      * <p>
-     * So when a PircBot is run on a machine that does not run an ident server,
-     * it may be necessary to call this method to start one up.
+     * So when a PircBot is run on a machine that does not run an ident server, it may be
+     * necessary to call this method to start one up.
      * <p>
-     * Calling this method starts up an ident server which will respond with the
-     * login provided by calling getLogin() and then shut down immediately. It
-     * will also be shut down if it has not been contacted within 60 seconds of
-     * creation.
+     * Calling this method starts up an ident server which will respond with the login
+     * provided by calling getLogin() and then shut down immediately. It will also be shut
+     * down if it has not been contacted within 60 seconds of creation.
      * <p>
-     * If you require an ident response, then the correct procedure is to start
-     * the ident server and then connect to the IRC server. The IRC server may
-     * then contact the ident server to get the information it needs.
+     * If you require an ident response, then the correct procedure is to start the ident
+     * server and then connect to the IRC server. The IRC server may then contact the
+     * ident server to get the information it needs.
      * <p>
-     * The ident server will fail to start if there is already an ident server
-     * running on port 113, or if you are running as an unprivileged user who is
-     * unable to create a server socket on that port number.
+     * The ident server will fail to start if there is already an ident server running on
+     * port 113, or if you are running as an unprivileged user who is unable to create a
+     * server socket on that port number.
      * <p>
-     * If it is essential for you to use an ident server when connecting to an
-     * IRC server, then make sure that port 113 on your machine is visible to
-     * the IRC server so that it may contact the ident server.
+     * If it is essential for you to use an ident server when connecting to an IRC server,
+     * then make sure that port 113 on your machine is visible to the IRC server so that
+     * it may contact the ident server.
      * 
      * @since PircBot 0.9c
      */
@@ -414,9 +402,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Quits from the IRC server. Providing we are actually connected to an IRC
-     * server, the onDisconnect() method will be called as soon as the IRC
-     * server disconnects us.
+     * Quits from the IRC server. Providing we are actually connected to an IRC server,
+     * the onDisconnect() method will be called as soon as the IRC server disconnects us.
      */
     public void quitServer()
     {
@@ -424,9 +411,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Quits from the IRC server with a reason. Providing we are actually
-     * connected to an IRC server, the onDisconnect() method will be called as
-     * soon as the IRC server disconnects us.
+     * Quits from the IRC server with a reason. Providing we are actually connected to an
+     * IRC server, the onDisconnect() method will be called as soon as the IRC server
+     * disconnects us.
      * 
      * @param reason
      *            The reason for quitting the server.
@@ -437,8 +424,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sends a raw line to the IRC server as soon as possible, bypassing the
-     * outgoing message queue.
+     * Sends a raw line to the IRC server as soon as possible, bypassing the outgoing
+     * message queue.
      * 
      * @param line
      *            The raw line to send to the IRC server.
@@ -461,8 +448,7 @@ public abstract class PircBot implements ReplyConstants
     {
         if (line == null)
         {
-            throw new NullPointerException(
-                    "Cannot send null messages to server");
+            throw new NullPointerException("Cannot send null messages to server");
         }
         if (isConnected())
         {
@@ -471,9 +457,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sends a message to a channel or a private message to a user. These
-     * messages are added to the outgoing message queue and sent at the earliest
-     * possible opportunity.
+     * Sends a message to a channel or a private message to a user. These messages are
+     * added to the outgoing message queue and sent at the earliest possible opportunity.
      * <p>
      * Some examples: -
      * 
@@ -485,8 +470,8 @@ public abstract class PircBot implements ReplyConstants
      * sendMessage(&quot;Paul&quot;, &quot;Hi&quot;);
      * </pre>
      * 
-     * You may optionally apply colours, boldness, underlining, etc to the
-     * message by using the <code>Colors</code> class.
+     * You may optionally apply colours, boldness, underlining, etc to the message by
+     * using the <code>Colors</code> class.
      * 
      * @param target
      *            The name of the channel or user nick to send to.
@@ -533,12 +518,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sends a CTCP command to a channel or user. (Client to client protocol).
-     * Examples of such commands are "PING <number>", "FINGER", "VERSION", etc.
-     * For example, if you wish to request the version of a user called "Dave",
-     * then you would call <code>sendCTCPCommand("Dave", "VERSION");</code>. The
-     * type of response to such commands is largely dependant on the target
-     * client software.
+     * Sends a CTCP command to a channel or user. (Client to client protocol). Examples of
+     * such commands are "PING <number>", "FINGER", "VERSION", etc. For example, if you
+     * wish to request the version of a user called "Dave", then you would call
+     * <code>sendCTCPCommand("Dave", "VERSION");</code>. The type of response to such
+     * commands is largely dependant on the target client software.
      * 
      * @since PircBot 0.9.5
      * 
@@ -553,9 +537,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Attempt to change the current nick (nickname) of the bot when it is
-     * connected to an IRC server. After confirmation of a successful nick
-     * change, the getNick method will return the new nick.
+     * Attempt to change the current nick (nickname) of the bot when it is connected to an
+     * IRC server. After confirmation of a successful nick change, the getNick method will
+     * return the new nick.
      * 
      * @param newNick
      *            The new nick to use.
@@ -566,25 +550,23 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Identify the bot with NickServ, supplying the appropriate password. Some
-     * IRC Networks (such as freenode) require users to <i>register</i> and
-     * <i>identify</i> with NickServ before they are able to send private
-     * messages to other users, thus reducing the amount of spam. If you are
-     * using an IRC network where this kind of policy is enforced, you will need
-     * to make your bot <i>identify</i> itself to NickServ before you can send
-     * private messages. Assuming you have already registered your bot's nick
-     * with NickServ, this method can be used to <i>identify</i> with the
-     * supplied password. It usually makes sense to identify with NickServ
-     * immediately after connecting to a server.
+     * Identify the bot with NickServ, supplying the appropriate password. Some IRC
+     * Networks (such as freenode) require users to <i>register</i> and <i>identify</i>
+     * with NickServ before they are able to send private messages to other users, thus
+     * reducing the amount of spam. If you are using an IRC network where this kind of
+     * policy is enforced, you will need to make your bot <i>identify</i> itself to
+     * NickServ before you can send private messages. Assuming you have already registered
+     * your bot's nick with NickServ, this method can be used to <i>identify</i> with the
+     * supplied password. It usually makes sense to identify with NickServ immediately
+     * after connecting to a server.
      * <p>
-     * This method issues a raw NICKSERV command to the server, and is therefore
-     * safer than the alternative approach of sending a private message to
-     * NickServ. The latter approach is considered dangerous, as it may cause
-     * you to inadvertently transmit your password to an untrusted party if you
-     * connect to a network which does not run a NickServ service and where the
-     * untrusted party has assumed the nick "NickServ". However, if your IRC
-     * network is only compatible with the private message approach, you may
-     * typically identify like so:
+     * This method issues a raw NICKSERV command to the server, and is therefore safer
+     * than the alternative approach of sending a private message to NickServ. The latter
+     * approach is considered dangerous, as it may cause you to inadvertently transmit
+     * your password to an untrusted party if you connect to a network which does not run
+     * a NickServ service and where the untrusted party has assumed the nick "NickServ".
+     * However, if your IRC network is only compatible with the private message approach,
+     * you may typically identify like so:
      * 
      * <pre>
      * sendMessage(&quot;NickServ&quot;, &quot;identify PASSWORD&quot;);
@@ -599,17 +581,17 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Set the mode of a channel. This method attempts to set the mode of a
-     * channel. This may require the bot to have operator status on the channel.
-     * For example, if the bot has operator status, we can grant operator status
-     * to "Dave" on the #cs channel by calling setMode("#cs", "+o Dave"); An
-     * alternative way of doing this would be to use the op method.
+     * Set the mode of a channel. This method attempts to set the mode of a channel. This
+     * may require the bot to have operator status on the channel. For example, if the bot
+     * has operator status, we can grant operator status to "Dave" on the #cs channel by
+     * calling setMode("#cs", "+o Dave"); An alternative way of doing this would be to use
+     * the op method.
      * 
      * @param channel
      *            The channel on which to perform the mode change.
      * @param mode
-     *            The new mode to apply to the channel. This may include zero or
-     *            more arguments if necessary.
+     *            The new mode to apply to the channel. This may include zero or more
+     *            arguments if necessary.
      * 
      * @see #op(String,String) op
      */
@@ -620,8 +602,7 @@ public abstract class PircBot implements ReplyConstants
     
     /**
      * Sends an invitation to join a channel. Some channels can be marked as
-     * "invite-only", so it may be useful to allow a bot to invite people into
-     * it.
+     * "invite-only", so it may be useful to allow a bot to invite people into it.
      * 
      * @param nick
      *            The nick of the user to invite
@@ -636,9 +617,9 @@ public abstract class PircBot implements ReplyConstants
     
     /**
      * Bans a user from a channel. An example of a valid hostmask is
-     * "*!*compu@*.18hp.net". This may be used in conjunction with the kick
-     * method to permanently remove a user from a channel. Successful use of
-     * this method may require the bot to have operator status itself.
+     * "*!*compu@*.18hp.net". This may be used in conjunction with the kick method to
+     * permanently remove a user from a channel. Successful use of this method may require
+     * the bot to have operator status itself.
      * 
      * @param channel
      *            The channel to ban the user from.
@@ -652,8 +633,8 @@ public abstract class PircBot implements ReplyConstants
     
     /**
      * Unbans a user from a channel. An example of a valid hostmask is
-     * "*!*compu@*.18hp.net". Successful use of this method may require the bot
-     * to have operator status itself.
+     * "*!*compu@*.18hp.net". Successful use of this method may require the bot to have
+     * operator status itself.
      * 
      * @param channel
      *            The channel to unban the user from.
@@ -666,8 +647,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Grants operator privilidges to a user on a channel. Successful use of
-     * this method may require the bot to have operator status itself.
+     * Grants operator privilidges to a user on a channel. Successful use of this method
+     * may require the bot to have operator status itself.
      * 
      * @param channel
      *            The channel we're opping the user on.
@@ -680,8 +661,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Removes operator privilidges from a user on a channel. Successful use of
-     * this method may require the bot to have operator status itself.
+     * Removes operator privilidges from a user on a channel. Successful use of this
+     * method may require the bot to have operator status itself.
      * 
      * @param channel
      *            The channel we're deopping the user on.
@@ -694,8 +675,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Grants voice privilidges to a user on a channel. Successful use of this
-     * method may require the bot to have operator status itself.
+     * Grants voice privilidges to a user on a channel. Successful use of this method may
+     * require the bot to have operator status itself.
      * 
      * @param channel
      *            The channel we're voicing the user on.
@@ -708,8 +689,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Removes voice privilidges from a user on a channel. Successful use of
-     * this method may require the bot to have operator status itself.
+     * Removes voice privilidges from a user on a channel. Successful use of this method
+     * may require the bot to have operator status itself.
      * 
      * @param channel
      *            The channel we're devoicing the user on.
@@ -722,9 +703,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Set the topic for a channel. This method attempts to set the topic of a
-     * channel. This may require the bot to have operator status if the topic is
-     * protected.
+     * Set the topic for a channel. This method attempts to set the topic of a channel.
+     * This may require the bot to have operator status if the topic is protected.
      * 
      * @param channel
      *            The channel on which to perform the mode change.
@@ -738,8 +718,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Kicks a user from a channel. This method attempts to kick a user from a
-     * channel and may require the bot to have operator status in the channel.
+     * Kicks a user from a channel. This method attempts to kick a user from a channel and
+     * may require the bot to have operator status in the channel.
      * 
      * @param channel
      *            The channel to kick the user from.
@@ -752,9 +732,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Kicks a user from a channel, giving a reason. This method attempts to
-     * kick a user from a channel and may require the bot to have operator
-     * status in the channel.
+     * Kicks a user from a channel, giving a reason. This method attempts to kick a user
+     * from a channel and may require the bot to have operator status in the channel.
      * 
      * @param channel
      *            The channel to kick the user from.
@@ -769,10 +748,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Issues a request for a list of all channels on the IRC server. When the
-     * PircBot receives information for each channel, it will call the
-     * onChannelInfo method, which you will need to override if you want it to
-     * do anything useful.
+     * Issues a request for a list of all channels on the IRC server. When the PircBot
+     * receives information for each channel, it will call the onChannelInfo method, which
+     * you will need to override if you want it to do anything useful.
      * 
      * @see #onChannelInfo(String,int,String) onChannelInfo
      */
@@ -782,15 +760,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Issues a request for a list of all channels on the IRC server. When the
-     * PircBot receives information for each channel, it will call the
-     * onChannelInfo method, which you will need to override if you want it to
-     * do anything useful.
+     * Issues a request for a list of all channels on the IRC server. When the PircBot
+     * receives information for each channel, it will call the onChannelInfo method, which
+     * you will need to override if you want it to do anything useful.
      * <p>
-     * Some IRC servers support certain parameters for LIST requests. One
-     * example is a parameter of ">10" to list only those channels that have
-     * more than 10 users in them. Whether these parameters are supported or not
-     * will depend on the IRC server software.
+     * Some IRC servers support certain parameters for LIST requests. One example is a
+     * parameter of ">10" to list only those channels that have more than 10 users in
+     * them. Whether these parameters are supported or not will depend on the IRC server
+     * software.
      * 
      * @param parameters
      *            The parameters to supply when requesting the list.
@@ -810,11 +787,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sends a file to another user. Resuming is supported. The other user must
-     * be able to connect directly to your bot to be able to receive the file.
+     * Sends a file to another user. Resuming is supported. The other user must be able to
+     * connect directly to your bot to be able to receive the file.
      * <p>
-     * You may throttle the speed of this file transfer by calling the
-     * setPacketDelay method on the DccFileTransfer that is returned.
+     * You may throttle the speed of this file transfer by calling the setPacketDelay
+     * method on the DccFileTransfer that is returned.
      * <p>
      * This method may not be overridden.
      * 
@@ -825,8 +802,8 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The user to whom the file is to be sent.
      * @param timeout
-     *            The number of milliseconds to wait for the recipient to
-     *            acccept the file (we recommend about 120000).
+     *            The number of milliseconds to wait for the recipient to acccept the file
+     *            (we recommend about 120000).
      * 
      * @return The DccFileTransfer that can be used to monitor this transfer.
      * 
@@ -835,35 +812,33 @@ public abstract class PircBot implements ReplyConstants
      */
     public DccFileTransfer dccSendFile(File file, String nick, int timeout)
     {
-        DccFileTransfer transfer = new DccFileTransfer(this, _dccManager, file,
-                nick, timeout);
+        DccFileTransfer transfer = new DccFileTransfer(this, _dccManager, file, nick,
+                timeout);
         transfer.doSend(true);
         return transfer;
     }
     
     /**
-     * Receives a file that is being sent to us by a DCC SEND request. Please
-     * use the onIncomingFileTransfer method to receive files.
+     * Receives a file that is being sent to us by a DCC SEND request. Please use the
+     * onIncomingFileTransfer method to receive files.
      * 
      * @deprecated As of PircBot 1.2.0, use
      *             {@link #onIncomingFileTransfer(DccFileTransfer)}
      */
-    protected final void dccReceiveFile(File file, long address, int port,
-            int size)
+    protected final void dccReceiveFile(File file, long address, int port, int size)
     {
-        throw new RuntimeException(
-                "dccReceiveFile is deprecated, please use sendFile");
+        throw new RuntimeException("dccReceiveFile is deprecated, please use sendFile");
     }
     
     /**
-     * Attempts to establish a DCC CHAT session with a client. This method
-     * issues the connection request to the client and then waits for the client
-     * to respond. If the connection is successfully made, then a DccChat object
-     * is returned by this method. If the connection is not made within the time
-     * limit specified by the timeout value, then null is returned.
+     * Attempts to establish a DCC CHAT session with a client. This method issues the
+     * connection request to the client and then waits for the client to respond. If the
+     * connection is successfully made, then a DccChat object is returned by this method.
+     * If the connection is not made within the time limit specified by the timeout value,
+     * then null is returned.
      * <p>
-     * It is <b>strongly recommended</b> that you call this method within a new
-     * Thread, as it may take a long time to return.
+     * It is <b>strongly recommended</b> that you call this method within a new Thread, as
+     * it may take a long time to return.
      * <p>
      * This method may not be overridden.
      * 
@@ -872,11 +847,11 @@ public abstract class PircBot implements ReplyConstants
      * @param nick
      *            The nick of the user we are trying to establish a chat with.
      * @param timeout
-     *            The number of milliseconds to wait for the recipient to accept
-     *            the chat connection (we recommend about 120000).
+     *            The number of milliseconds to wait for the recipient to accept the chat
+     *            connection (we recommend about 120000).
      * 
-     * @return a DccChat object that can be used to send and recieve lines of
-     *         text. Returns <b>null</b> if the connection could not be made.
+     * @return a DccChat object that can be used to send and recieve lines of text.
+     *         Returns <b>null</b> if the connection could not be made.
      * 
      * @see DccChat
      */
@@ -911,8 +886,7 @@ public abstract class PircBot implements ReplyConstants
                 if (ss == null)
                 {
                     // No ports could be used.
-                    throw new IOException(
-                            "All ports returned by getDccPorts() are in use.");
+                    throw new IOException("All ports returned by getDccPorts() are in use.");
                 }
             }
             
@@ -948,31 +922,27 @@ public abstract class PircBot implements ReplyConstants
      * Attempts to accept a DCC CHAT request by a client. Please use the
      * onIncomingChatRequest method to receive files.
      * 
-     * @deprecated As of PircBot 1.2.0, use
-     *             {@link #onIncomingChatRequest(DccChat)}
+     * @deprecated As of PircBot 1.2.0, use {@link #onIncomingChatRequest(DccChat)}
      */
-    protected final DccChat dccAcceptChatRequest(String sourceNick,
-            long address, int port)
+    protected final DccChat dccAcceptChatRequest(String sourceNick, long address, int port)
     {
         throw new RuntimeException(
                 "dccAcceptChatRequest is deprecated, please use onIncomingChatRequest");
     }
     
     /**
-     * Adds a line to the log. This log is currently output to the standard
-     * output and is in the correct format for use by tools such as pisg, the
-     * Perl IRC Statistics Generator. You may override this method if you wish
-     * to do something else with log entries. Each line in the log begins with a
-     * number which represents the logging time (as the number of milliseconds
-     * since the epoch). This timestamp and the following log entry are
-     * separated by a single space character, " ". Outgoing messages are
-     * distinguishable by a log entry that has ">>>" immediately following the
-     * space character after the timestamp. DCC events use "+++" and warnings
-     * about unhandled Exceptions and Errors use "###".
+     * Adds a line to the log. This log is currently output to the standard output and is
+     * in the correct format for use by tools such as pisg, the Perl IRC Statistics
+     * Generator. You may override this method if you wish to do something else with log
+     * entries. Each line in the log begins with a number which represents the logging
+     * time (as the number of milliseconds since the epoch). This timestamp and the
+     * following log entry are separated by a single space character, " ". Outgoing
+     * messages are distinguishable by a log entry that has ">>>" immediately following
+     * the space character after the timestamp. DCC events use "+++" and warnings about
+     * unhandled Exceptions and Errors use "###".
      * <p>
-     * This implementation of the method will only cause log entries to be
-     * output if the PircBot has had its verbose mode turned on by calling
-     * setVerbose(true);
+     * This implementation of the method will only cause log entries to be output if the
+     * PircBot has had its verbose mode turned on by calling setVerbose(true);
      * 
      * @param line
      *            The line to add to the log.
@@ -986,9 +956,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method handles events when any line of text arrives from the server,
-     * then calling the appropriate method in the PircBot. This method is
-     * protected and only called by the InputThread for this instance.
+     * This method handles events when any line of text arrives from the server, then
+     * calling the appropriate method in the PircBot. This method is protected and only
+     * called by the InputThread for this instance.
      * <p>
      * This method may not be overridden!
      * 
@@ -1046,8 +1016,8 @@ public abstract class PircBot implements ReplyConstants
                     if (code != -1)
                     {
                         String errorStr = token;
-                        String response = line.substring(line.indexOf(errorStr,
-                                senderInfo.length()) + 4, line.length());
+                        String response = line.substring(line.indexOf(errorStr, senderInfo
+                                .length()) + 4, line.length());
                         this.processServerResponse(code, response);
                         // Return from the method.
                         return;
@@ -1090,8 +1060,7 @@ public abstract class PircBot implements ReplyConstants
         if (command.equals("PRIVMSG") && line.indexOf(":\u0001") > 0
                 && line.endsWith("\u0001"))
         {
-            String request = line.substring(line.indexOf(":\u0001") + 2, line
-                    .length() - 1);
+            String request = line.substring(line.indexOf(":\u0001") + 2, line.length() - 1);
             if (request.equals("VERSION"))
             {
                 // VERSION request
@@ -1100,14 +1069,14 @@ public abstract class PircBot implements ReplyConstants
             else if (request.startsWith("ACTION "))
             {
                 // ACTION request
-                this.onAction(sourceNick, sourceLogin, sourceHostname, target,
-                        request.substring(7));
+                this.onAction(sourceNick, sourceLogin, sourceHostname, target, request
+                        .substring(7));
             }
             else if (request.startsWith("PING "))
             {
                 // PING request
-                this.onPing(sourceNick, sourceLogin, sourceHostname, target,
-                        request.substring(5));
+                this.onPing(sourceNick, sourceLogin, sourceHostname, target, request
+                        .substring(5));
             }
             else if (request.equals("TIME"))
             {
@@ -1123,8 +1092,8 @@ public abstract class PircBot implements ReplyConstants
                     && tokenizer.nextToken().equals("DCC"))
             {
                 // This is a DCC request.
-                boolean success = _dccManager.processRequest(sourceNick,
-                        sourceLogin, sourceHostname, request);
+                boolean success = _dccManager.processRequest(sourceNick, sourceLogin,
+                        sourceHostname, request);
                 if (!success)
                 {
                     // The DccManager didn't know what to do with the line.
@@ -1141,8 +1110,8 @@ public abstract class PircBot implements ReplyConstants
                 && _channelPrefixes.indexOf(target.charAt(0)) >= 0)
         {
             // This is a normal message to a channel.
-            this.onMessage(target, sourceNick, sourceLogin, sourceHostname,
-                    line.substring(line.indexOf(" :") + 2));
+            this.onMessage(target, sourceNick, sourceLogin, sourceHostname, line
+                    .substring(line.indexOf(" :") + 2));
         }
         else if (command.equals("PRIVMSG"))
         {
@@ -1188,6 +1157,8 @@ public abstract class PircBot implements ReplyConstants
         else if (command.equals("QUIT"))
         {
             // Someone has quit from the IRC server.
+            this.onBeforeQuit(sourceNick, sourceLogin, sourceHostname, line.substring(line
+                    .indexOf(" :") + 2));
             if (sourceNick.equals(this.getNick()))
             {
                 this.removeAllChannels();
@@ -1196,8 +1167,8 @@ public abstract class PircBot implements ReplyConstants
             {
                 this.removeUser(sourceNick);
             }
-            this.onQuit(sourceNick, sourceLogin, sourceHostname, line
-                    .substring(line.indexOf(" :") + 2));
+            this.onQuit(sourceNick, sourceLogin, sourceHostname, line.substring(line
+                    .indexOf(" :") + 2));
         }
         else if (command.equals("KICK"))
         {
@@ -1208,26 +1179,24 @@ public abstract class PircBot implements ReplyConstants
                 this.removeChannel(target);
             }
             this.removeUser(target, recipient);
-            this.onKick(target, sourceNick, sourceLogin, sourceHostname,
-                    recipient, line.substring(line.indexOf(" :") + 2));
+            this.onKick(target, sourceNick, sourceLogin, sourceHostname, recipient, line
+                    .substring(line.indexOf(" :") + 2));
         }
         else if (command.equals("MODE"))
         {
             // Somebody is changing the mode on a channel or user.
-            String mode = line.substring(line.indexOf(target, 2)
-                    + target.length() + 1);
+            String mode = line.substring(line.indexOf(target, 2) + target.length() + 1);
             if (mode.startsWith(":"))
             {
                 mode = mode.substring(1);
             }
-            this.processMode(target, sourceNick, sourceLogin, sourceHostname,
-                    mode);
+            this.processMode(target, sourceNick, sourceLogin, sourceHostname, mode);
         }
         else if (command.equals("TOPIC"))
         {
             // Someone is changing the topic.
-            this.onTopic(target, line.substring(line.indexOf(" :") + 2),
-                    sourceNick, System.currentTimeMillis(), true);
+            this.onTopic(target, line.substring(line.indexOf(" :") + 2), sourceNick, System
+                    .currentTimeMillis(), true);
         }
         else if (command.equals("INVITE"))
         {
@@ -1246,11 +1215,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called once the PircBot has successfully connected to the
-     * IRC server.
+     * This method is called once the PircBot has successfully connected to the IRC
+     * server.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.6
      */
@@ -1260,34 +1229,32 @@ public abstract class PircBot implements ReplyConstants
     
     /**
      * This method carries out the actions to be performed when the PircBot gets
-     * disconnected. This may happen if the PircBot quits from the server, or if
-     * the connection is unexpectedly lost.
+     * disconnected. This may happen if the PircBot quits from the server, or if the
+     * connection is unexpectedly lost.
      * <p>
-     * Disconnection from the IRC server is detected immediately if either we or
-     * the server close the connection normally. If the connection to the server
-     * is lost, but neither we nor the server have explicitly closed the
-     * connection, then it may take a few minutes to detect (this is commonly
-     * referred to as a "ping timeout").
+     * Disconnection from the IRC server is detected immediately if either we or the
+     * server close the connection normally. If the connection to the server is lost, but
+     * neither we nor the server have explicitly closed the connection, then it may take a
+     * few minutes to detect (this is commonly referred to as a "ping timeout").
      * <p>
-     * If you wish to get your IRC bot to automatically rejoin a server after
-     * the connection has been lost, then this is probably the ideal method to
-     * override to implement such functionality.
+     * If you wish to get your IRC bot to automatically rejoin a server after the
+     * connection has been lost, then this is probably the ideal method to override to
+     * implement such functionality.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      */
     protected void onDisconnect()
     {
     }
     
     /**
-     * This method is called by the PircBot when a numeric response is received
-     * from the IRC server. We use this method to allow PircBot to process
-     * various responses from the server before then passing them on to the
-     * onServerResponse method.
+     * This method is called by the PircBot when a numeric response is received from the
+     * IRC server. We use this method to allow PircBot to process various responses from
+     * the server before then passing them on to the onServerResponse method.
      * <p>
-     * Note that this method is private and should not appear in any of the
-     * javadoc generated documenation.
+     * Note that this method is private and should not appear in any of the javadoc
+     * generated documenation.
      * 
      * @param code
      *            The three-digit numerical code for the response.
@@ -1308,8 +1275,8 @@ public abstract class PircBot implements ReplyConstants
             int userCount = 0;
             try
             {
-                userCount = Integer.parseInt(response.substring(
-                        secondSpace + 1, thirdSpace));
+                userCount = Integer.parseInt(response
+                        .substring(secondSpace + 1, thirdSpace));
             }
             catch (NumberFormatException e)
             {
@@ -1361,8 +1328,8 @@ public abstract class PircBot implements ReplyConstants
             String channel = response.substring(response.lastIndexOf(' ',
                     channelEndIndex - 1) + 1, channelEndIndex);
             
-            StringTokenizer tokenizer = new StringTokenizer(response
-                    .substring(response.indexOf(" :") + 2));
+            StringTokenizer tokenizer = new StringTokenizer(response.substring(response
+                    .indexOf(" :") + 2));
             while (tokenizer.hasMoreTokens())
             {
                 String nick = tokenizer.nextToken();
@@ -1390,8 +1357,8 @@ public abstract class PircBot implements ReplyConstants
         {
             // This is the end of a NAMES list, so we know that we've got
             // the full list of users in the channel that we just joined.
-            String channel = response.substring(response.indexOf(' ') + 1,
-                    response.indexOf(" :"));
+            String channel = response.substring(response.indexOf(' ') + 1, response
+                    .indexOf(" :"));
             User[] users = this.getUsers(channel);
             this.onUserList(channel, users);
         }
@@ -1400,28 +1367,26 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called when we receive a numeric response from the IRC
-     * server.
+     * This method is called when we receive a numeric response from the IRC server.
      * <p>
-     * Numerics in the range from 001 to 099 are used for client-server
-     * connections only and should never travel between servers. Replies
-     * generated in response to commands are found in the range from 200 to 399.
-     * Error replies are found in the range from 400 to 599.
+     * Numerics in the range from 001 to 099 are used for client-server connections only
+     * and should never travel between servers. Replies generated in response to commands
+     * are found in the range from 200 to 399. Error replies are found in the range from
+     * 400 to 599.
      * <p>
-     * For example, we can use this method to discover the topic of a channel
-     * when we join it. If we join the channel #test which has a topic of
-     * &quot;I am King of Test&quot; then the response will be &quot;
-     * <code>PircBot #test :I Am King of Test</code>&quot; with a code of 332 to
-     * signify that this is a topic. (This is just an example - note that
-     * overriding the <code>onTopic</code> method is an easier way of finding
-     * the topic for a channel). Check the IRC RFC for the full list of other
-     * command response codes.
+     * For example, we can use this method to discover the topic of a channel when we join
+     * it. If we join the channel #test which has a topic of &quot;I am King of Test&quot;
+     * then the response will be &quot; <code>PircBot #test :I Am King of Test</code>
+     * &quot; with a code of 332 to signify that this is a topic. (This is just an example
+     * - note that overriding the <code>onTopic</code> method is an easier way of finding
+     * the topic for a channel). Check the IRC RFC for the full list of other command
+     * response codes.
      * <p>
-     * PircBot implements the interface ReplyConstants, which contains
-     * contstants that you may find useful here.
+     * PircBot implements the interface ReplyConstants, which contains contstants that you
+     * may find useful here.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param code
      *            The three-digit numerical code for the response.
@@ -1435,21 +1400,21 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called when we receive a user list from the server after
-     * joining a channel.
+     * This method is called when we receive a user list from the server after joining a
+     * channel.
      * <p>
-     * Shortly after joining a channel, the IRC server sends a list of all users
-     * in that channel. The PircBot collects this information and calls this
-     * method as soon as it has the full list.
+     * Shortly after joining a channel, the IRC server sends a list of all users in that
+     * channel. The PircBot collects this information and calls this method as soon as it
+     * has the full list.
      * <p>
-     * To obtain the nick of each user in the channel, call the getNick() method
-     * on each User object in the array.
+     * To obtain the nick of each user in the channel, call the getNick() method on each
+     * User object in the array.
      * <p>
-     * At a later time, you may call the getUsers method to obtain an up to date
-     * list of the users in the channel.
+     * At a later time, you may call the getUsers method to obtain an up to date list of
+     * the users in the channel.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 1.0.0
      * 
@@ -1467,8 +1432,8 @@ public abstract class PircBot implements ReplyConstants
     /**
      * This method is called whenever a message is sent to a channel.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel to which the message was sent.
@@ -1481,16 +1446,16 @@ public abstract class PircBot implements ReplyConstants
      * @param message
      *            The actual message sent to the channel.
      */
-    protected void onMessage(String channel, String sender, String login,
-            String hostname, String message)
+    protected void onMessage(String channel, String sender, String login, String hostname,
+            String message)
     {
     }
     
     /**
      * This method is called whenever a private message is sent to the PircBot.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param sender
      *            The nick of the person who sent the private message.
@@ -1501,17 +1466,17 @@ public abstract class PircBot implements ReplyConstants
      * @param message
      *            The actual message.
      */
-    protected void onPrivateMessage(String sender, String login,
-            String hostname, String message)
+    protected void onPrivateMessage(String sender, String login, String hostname,
+            String message)
     {
     }
     
     /**
-     * This method is called whenever an ACTION is sent from a user. E.g. such
-     * events generated by typing "/me goes shopping" in most IRC clients.
+     * This method is called whenever an ACTION is sent from a user. E.g. such events
+     * generated by typing "/me goes shopping" in most IRC clients.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param sender
      *            The nick of the user that sent the action.
@@ -1524,16 +1489,16 @@ public abstract class PircBot implements ReplyConstants
      * @param action
      *            The action carried out by the user.
      */
-    protected void onAction(String sender, String login, String hostname,
-            String target, String action)
+    protected void onAction(String sender, String login, String hostname, String target,
+            String action)
     {
     }
     
     /**
      * This method is called whenever we receive a notice.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param sourceNick
      *            The nick of the user that sent the notice.
@@ -1546,17 +1511,17 @@ public abstract class PircBot implements ReplyConstants
      * @param notice
      *            The notice message.
      */
-    protected void onNotice(String sourceNick, String sourceLogin,
-            String sourceHostname, String target, String notice)
+    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname,
+            String target, String notice)
     {
     }
     
     /**
-     * This method is called whenever someone (possibly us) joins a channel
-     * which we are on.
+     * This method is called whenever someone (possibly us) joins a channel which we are
+     * on.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel which somebody joined.
@@ -1567,17 +1532,16 @@ public abstract class PircBot implements ReplyConstants
      * @param hostname
      *            The hostname of the user who joined the channel.
      */
-    protected void onJoin(String channel, String sender, String login,
-            String hostname)
+    protected void onJoin(String channel, String sender, String login, String hostname)
     {
     }
     
     /**
-     * This method is called whenever someone (possibly us) parts a channel
-     * which we are on.
+     * This method is called whenever someone (possibly us) parts a channel which we are
+     * on.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel which somebody parted from.
@@ -1588,17 +1552,16 @@ public abstract class PircBot implements ReplyConstants
      * @param hostname
      *            The hostname of the user who parted from the channel.
      */
-    protected void onPart(String channel, String sender, String login,
-            String hostname)
+    protected void onPart(String channel, String sender, String login, String hostname)
     {
     }
     
     /**
-     * This method is called whenever someone (possibly us) changes nick on any
-     * of the channels that we are on.
+     * This method is called whenever someone (possibly us) changes nick on any of the
+     * channels that we are on.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param oldNick
      *            The old nick.
@@ -1615,11 +1578,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called whenever someone (possibly us) is kicked from any
-     * of the channels that we are in.
+     * This method is called whenever someone (possibly us) is kicked from any of the
+     * channels that we are in.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel from which the recipient was kicked.
@@ -1634,19 +1597,17 @@ public abstract class PircBot implements ReplyConstants
      * @param reason
      *            The reason given by the user who performed the kick.
      */
-    protected void onKick(String channel, String kickerNick,
-            String kickerLogin, String kickerHostname, String recipientNick,
-            String reason)
+    protected void onKick(String channel, String kickerNick, String kickerLogin,
+            String kickerHostname, String recipientNick, String reason)
     {
     }
     
     /**
-     * This method is called whenever someone (possibly us) quits from the
-     * server. We will only observe this if the user was in one of the channels
-     * to which we are connected.
+     * This method is called whenever someone (possibly us) quits from the server. We will
+     * only observe this if the user was in one of the channels to which we are connected.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param sourceNick
      *            The nick of the user that quit from the server.
@@ -1657,17 +1618,22 @@ public abstract class PircBot implements ReplyConstants
      * @param reason
      *            The reason given for quitting the server.
      */
-    protected void onQuit(String sourceNick, String sourceLogin,
+    protected void onQuit(String sourceNick, String sourceLogin, String sourceHostname,
+            String reason)
+    {
+    }
+    
+    protected void onBeforeQuit(String sourceNick, String sourceLogin,
             String sourceHostname, String reason)
     {
     }
     
     /**
-     * This method is called whenever a user sets the topic, or when PircBot
-     * joins a new channel and discovers its topic.
+     * This method is called whenever a user sets the topic, or when PircBot joins a new
+     * channel and discovers its topic.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel that the topic belongs to.
@@ -1682,11 +1648,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called whenever a user sets the topic, or when PircBot
-     * joins a new channel and discovers its topic.
+     * This method is called whenever a user sets the topic, or when PircBot joins a new
+     * channel and discovers its topic.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel that the topic belongs to.
@@ -1697,26 +1663,25 @@ public abstract class PircBot implements ReplyConstants
      * @param date
      *            When the topic was set (milliseconds since the epoch).
      * @param changed
-     *            True if the topic has just been changed, false if the topic
-     *            was already there.
+     *            True if the topic has just been changed, false if the topic was already
+     *            there.
      * 
      */
-    protected void onTopic(String channel, String topic, String setBy,
-            long date, boolean changed)
+    protected void onTopic(String channel, String topic, String setBy, long date,
+            boolean changed)
     {
     }
     
     /**
-     * After calling the listChannels() method in PircBot, the server will start
-     * to send us information about each channel on the server. You may override
-     * this method in order to receive the information about each channel as
-     * soon as it is received.
+     * After calling the listChannels() method in PircBot, the server will start to send
+     * us information about each channel on the server. You may override this method in
+     * order to receive the information about each channel as soon as it is received.
      * <p>
-     * Note that certain channels, such as those marked as hidden, may not
-     * appear in channel listings.
+     * Note that certain channels, such as those marked as hidden, may not appear in
+     * channel listings.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The name of the channel.
@@ -1732,12 +1697,12 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when the mode of a channel is set. We process this in order to
-     * call the appropriate onOp, onDeop, etc method before finally calling the
-     * override-able onMode method.
+     * Called when the mode of a channel is set. We process this in order to call the
+     * appropriate onOp, onDeop, etc method before finally calling the override-able
+     * onMode method.
      * <p>
-     * Note that this method is private and is not intended to appear in the
-     * javadoc generated documentation.
+     * Note that this method is private and is not intended to appear in the javadoc
+     * generated documentation.
      * 
      * @param target
      *            The channel or nick that the mode operation applies to.
@@ -1750,8 +1715,8 @@ public abstract class PircBot implements ReplyConstants
      * @param mode
      *            The mode that has been set.
      */
-    private final void processMode(String target, String sourceNick,
-            String sourceLogin, String sourceHostname, String mode)
+    private final void processMode(String target, String sourceNick, String sourceLogin,
+            String sourceHostname, String mode)
     {
         
         if (_channelPrefixes.indexOf(target.charAt(0)) >= 0)
@@ -1787,14 +1752,12 @@ public abstract class PircBot implements ReplyConstants
                     if (pn == '+')
                     {
                         this.updateUser(channel, OP_ADD, params[p]);
-                        onOp(channel, sourceNick, sourceLogin, sourceHostname,
-                                params[p]);
+                        onOp(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
                     }
                     else
                     {
                         this.updateUser(channel, OP_REMOVE, params[p]);
-                        onDeop(channel, sourceNick, sourceLogin,
-                                sourceHostname, params[p]);
+                        onDeop(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
                     }
                     p++;
                 }
@@ -1803,14 +1766,13 @@ public abstract class PircBot implements ReplyConstants
                     if (pn == '+')
                     {
                         this.updateUser(channel, VOICE_ADD, params[p]);
-                        onVoice(channel, sourceNick, sourceLogin,
-                                sourceHostname, params[p]);
+                        onVoice(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
                     }
                     else
                     {
                         this.updateUser(channel, VOICE_REMOVE, params[p]);
-                        onDeVoice(channel, sourceNick, sourceLogin,
-                                sourceHostname, params[p]);
+                        onDeVoice(channel, sourceNick, sourceLogin, sourceHostname,
+                                params[p]);
                     }
                     p++;
                 }
@@ -1818,8 +1780,8 @@ public abstract class PircBot implements ReplyConstants
                 {
                     if (pn == '+')
                     {
-                        onSetChannelKey(channel, sourceNick, sourceLogin,
-                                sourceHostname, params[p]);
+                        onSetChannelKey(channel, sourceNick, sourceLogin, sourceHostname,
+                                params[p]);
                     }
                     else
                     {
@@ -1832,8 +1794,8 @@ public abstract class PircBot implements ReplyConstants
                 {
                     if (pn == '+')
                     {
-                        onSetChannelLimit(channel, sourceNick, sourceLogin,
-                                sourceHostname, Integer.parseInt(params[p]));
+                        onSetChannelLimit(channel, sourceNick, sourceLogin, sourceHostname,
+                                Integer.parseInt(params[p]));
                         p++;
                     }
                     else
@@ -1846,8 +1808,8 @@ public abstract class PircBot implements ReplyConstants
                 {
                     if (pn == '+')
                     {
-                        onSetChannelBan(channel, sourceNick, sourceLogin,
-                                sourceHostname, params[p]);
+                        onSetChannelBan(channel, sourceNick, sourceLogin, sourceHostname,
+                                params[p]);
                     }
                     else
                     {
@@ -1865,73 +1827,65 @@ public abstract class PircBot implements ReplyConstants
                     }
                     else
                     {
-                        onRemoveTopicProtection(channel, sourceNick,
-                                sourceLogin, sourceHostname);
+                        onRemoveTopicProtection(channel, sourceNick, sourceLogin,
+                                sourceHostname);
                     }
                 }
                 else if (atPos == 'n')
                 {
                     if (pn == '+')
                     {
-                        onSetNoExternalMessages(channel, sourceNick,
-                                sourceLogin, sourceHostname);
+                        onSetNoExternalMessages(channel, sourceNick, sourceLogin,
+                                sourceHostname);
                     }
                     else
                     {
-                        onRemoveNoExternalMessages(channel, sourceNick,
-                                sourceLogin, sourceHostname);
+                        onRemoveNoExternalMessages(channel, sourceNick, sourceLogin,
+                                sourceHostname);
                     }
                 }
                 else if (atPos == 'i')
                 {
                     if (pn == '+')
                     {
-                        onSetInviteOnly(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onSetInviteOnly(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                     else
                     {
-                        onRemoveInviteOnly(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onRemoveInviteOnly(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                 }
                 else if (atPos == 'm')
                 {
                     if (pn == '+')
                     {
-                        onSetModerated(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onSetModerated(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                     else
                     {
-                        onRemoveModerated(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onRemoveModerated(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                 }
                 else if (atPos == 'p')
                 {
                     if (pn == '+')
                     {
-                        onSetPrivate(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onSetPrivate(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                     else
                     {
-                        onRemovePrivate(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onRemovePrivate(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                 }
                 else if (atPos == 's')
                 {
                     if (pn == '+')
                     {
-                        onSetSecret(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onSetSecret(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                     else
                     {
-                        onRemoveSecret(channel, sourceNick, sourceLogin,
-                                sourceHostname);
+                        onRemoveSecret(channel, sourceNick, sourceLogin, sourceHostname);
                     }
                 }
             }
@@ -1942,22 +1896,20 @@ public abstract class PircBot implements ReplyConstants
         {
             // The mode of a user is being changed.
             String nick = target;
-            this
-                    .onUserMode(nick, sourceNick, sourceLogin, sourceHostname,
-                            mode);
+            this.onUserMode(nick, sourceNick, sourceLogin, sourceHostname, mode);
         }
     }
     
     /**
      * Called when the mode of a channel is set.
      * <p>
-     * You may find it more convenient to decode the meaning of the mode string
-     * by overriding the onOp, onDeOp, onVoice, onDeVoice, onChannelKey,
-     * onDeChannelKey, onChannelLimit, onDeChannelLimit, onChannelBan or
-     * onDeChannelBan methods as appropriate.
+     * You may find it more convenient to decode the meaning of the mode string by
+     * overriding the onOp, onDeOp, onVoice, onDeVoice, onChannelKey, onDeChannelKey,
+     * onChannelLimit, onDeChannelLimit, onChannelBan or onDeChannelBan methods as
+     * appropriate.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param channel
      *            The channel that the mode operation applies to.
@@ -1971,16 +1923,16 @@ public abstract class PircBot implements ReplyConstants
      *            The mode that has been set.
      * 
      */
-    protected void onMode(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String mode)
+    protected void onMode(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String mode)
     {
     }
     
     /**
      * Called when the mode of a user is set.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 1.2.0
      * 
@@ -1996,20 +1948,19 @@ public abstract class PircBot implements ReplyConstants
      *            The mode that has been set.
      * 
      */
-    protected void onUserMode(String targetNick, String sourceNick,
-            String sourceLogin, String sourceHostname, String mode)
+    protected void onUserMode(String targetNick, String sourceNick, String sourceLogin,
+            String sourceHostname, String mode)
     {
     }
     
     /**
-     * Called when a user (possibly us) gets granted operator status for a
-     * channel.
+     * Called when a user (possibly us) gets granted operator status for a channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2032,11 +1983,11 @@ public abstract class PircBot implements ReplyConstants
     /**
      * Called when a user (possibly us) gets operator status taken away.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2051,19 +2002,19 @@ public abstract class PircBot implements ReplyConstants
      * @param recipient
      *            The nick of the user that got 'deopped'.
      */
-    protected void onDeop(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String recipient)
+    protected void onDeop(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String recipient)
     {
     }
     
     /**
      * Called when a user (possibly us) gets voice status granted in a channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2078,19 +2029,19 @@ public abstract class PircBot implements ReplyConstants
      * @param recipient
      *            The nick of the user that got 'voiced'.
      */
-    protected void onVoice(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String recipient)
+    protected void onVoice(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String recipient)
     {
     }
     
     /**
      * Called when a user (possibly us) gets voice status removed.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2105,21 +2056,21 @@ public abstract class PircBot implements ReplyConstants
      * @param recipient
      *            The nick of the user that got 'devoiced'.
      */
-    protected void onDeVoice(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String recipient)
+    protected void onDeVoice(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String recipient)
     {
     }
     
     /**
-     * Called when a channel key is set. When the channel key has been set,
-     * other users may only join that channel if they know the key. Channel keys
-     * are sometimes referred to as passwords.
+     * Called when a channel key is set. When the channel key has been set, other users
+     * may only join that channel if they know the key. Channel keys are sometimes
+     * referred to as passwords.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2134,19 +2085,19 @@ public abstract class PircBot implements ReplyConstants
      * @param key
      *            The new key for the channel.
      */
-    protected void onSetChannelKey(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String key)
+    protected void onSetChannelKey(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String key)
     {
     }
     
     /**
      * Called when a channel key is removed.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2167,14 +2118,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when a user limit is set for a channel. The number of users in the
-     * channel cannot exceed this limit.
+     * Called when a user limit is set for a channel. The number of users in the channel
+     * cannot exceed this limit.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2187,22 +2138,22 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      * @param limit
-     *            The maximum number of users that may be in this channel at the
-     *            same time.
+     *            The maximum number of users that may be in this channel at the same
+     *            time.
      */
-    protected void onSetChannelLimit(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, int limit)
+    protected void onSetChannelLimit(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, int limit)
     {
     }
     
     /**
      * Called when the user limit is removed for a channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2221,16 +2172,15 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when a user (possibly us) gets banned from a channel. Being banned
-     * from a channel prevents any user with a matching hostmask from joining
-     * the channel. For this reason, most bans are usually directly followed by
-     * the user being kicked :-)
+     * Called when a user (possibly us) gets banned from a channel. Being banned from a
+     * channel prevents any user with a matching hostmask from joining the channel. For
+     * this reason, most bans are usually directly followed by the user being kicked :-)
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2245,19 +2195,19 @@ public abstract class PircBot implements ReplyConstants
      * @param hostmask
      *            The hostmask of the user that has been banned.
      */
-    protected void onSetChannelBan(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String hostmask)
+    protected void onSetChannelBan(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String hostmask)
     {
     }
     
     /**
      * Called when a hostmask ban is removed from a channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2277,14 +2227,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when topic protection is enabled for a channel. Topic protection
-     * means that only operators in a channel may change the topic.
+     * Called when topic protection is enabled for a channel. Topic protection means that
+     * only operators in a channel may change the topic.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2305,11 +2255,11 @@ public abstract class PircBot implements ReplyConstants
     /**
      * Called when topic protection is removed for a channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2328,14 +2278,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when a channel is set to only allow messages from users that are
-     * in the channel.
+     * Called when a channel is set to only allow messages from users that are in the
+     * channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2354,14 +2304,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when a channel is set to allow messages from any user, even if
-     * they are not actually in the channel.
+     * Called when a channel is set to allow messages from any user, even if they are not
+     * actually in the channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2374,20 +2324,20 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onRemoveNoExternalMessages(String channel,
-            String sourceNick, String sourceLogin, String sourceHostname)
+    protected void onRemoveNoExternalMessages(String channel, String sourceNick,
+            String sourceLogin, String sourceHostname)
     {
     }
     
     /**
-     * Called when a channel is set to 'invite only' mode. A user may only join
-     * the channel if they are invited by someone who is already in the channel.
+     * Called when a channel is set to 'invite only' mode. A user may only join the
+     * channel if they are invited by someone who is already in the channel.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2400,19 +2350,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onSetInviteOnly(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onSetInviteOnly(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when a channel has 'invite only' removed.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2431,15 +2381,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Called when a channel is set to 'moderated' mode. If a channel is
-     * moderated, then only users who have been 'voiced' or 'opped' may speak or
-     * change their nicks.
+     * Called when a channel is set to 'moderated' mode. If a channel is moderated, then
+     * only users who have been 'voiced' or 'opped' may speak or change their nicks.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2452,19 +2401,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onSetModerated(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onSetModerated(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when a channel has moderated mode removed.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2477,19 +2426,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onRemoveModerated(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onRemoveModerated(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when a channel is marked as being in private mode.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2502,19 +2451,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onSetPrivate(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onSetPrivate(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when a channel is marked as not being in private mode.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2527,20 +2476,20 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onRemovePrivate(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onRemovePrivate(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
-     * Called when a channel is set to be in 'secret' mode. Such channels
-     * typically do not appear on a server's channel listing.
+     * Called when a channel is set to be in 'secret' mode. Such channels typically do not
+     * appear on a server's channel listing.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2553,19 +2502,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onSetSecret(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onSetSecret(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when a channel has 'secret' mode removed.
      * <p>
-     * This is a type of mode change and is also passed to the onMode method in
-     * the PircBot class.
+     * This is a type of mode change and is also passed to the onMode method in the
+     * PircBot class.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2578,16 +2527,16 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that performed the mode change.
      */
-    protected void onRemoveSecret(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname)
+    protected void onRemoveSecret(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname)
     {
     }
     
     /**
      * Called when we are invited to a channel by a user.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 0.9.5
      * 
@@ -2602,32 +2551,30 @@ public abstract class PircBot implements ReplyConstants
      * @param channel
      *            The channel that we're being invited to.
      */
-    protected void onInvite(String targetNick, String sourceNick,
-            String sourceLogin, String sourceHostname, String channel)
+    protected void onInvite(String targetNick, String sourceNick, String sourceLogin,
+            String sourceHostname, String channel)
     {
     }
     
     /**
-     * This method used to be called when a DCC SEND request was sent to the
-     * PircBot. Please use the onIncomingFileTransfer method to receive files,
-     * as it has better functionality and supports resuming.
+     * This method used to be called when a DCC SEND request was sent to the PircBot.
+     * Please use the onIncomingFileTransfer method to receive files, as it has better
+     * functionality and supports resuming.
      * 
      * @deprecated As of PircBot 1.2.0, use
      *             {@link #onIncomingFileTransfer(DccFileTransfer)}
      */
     protected void onDccSendRequest(String sourceNick, String sourceLogin,
-            String sourceHostname, String filename, long address, int port,
-            int size)
+            String sourceHostname, String filename, long address, int port, int size)
     {
     }
     
     /**
-     * This method used to be called when a DCC CHAT request was sent to the
-     * PircBot. Please use the onIncomingChatRequest method to accept chats, as
-     * it has better functionality.
+     * This method used to be called when a DCC CHAT request was sent to the PircBot.
+     * Please use the onIncomingChatRequest method to accept chats, as it has better
+     * functionality.
      * 
-     * @deprecated As of PircBot 1.2.0, use
-     *             {@link #onIncomingChatRequest(DccChat)}
+     * @deprecated As of PircBot 1.2.0, use {@link #onIncomingChatRequest(DccChat)}
      */
     protected void onDccChatRequest(String sourceNick, String sourceLogin,
             String sourceHostname, long address, int port)
@@ -2635,13 +2582,12 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called whenever a DCC SEND request is sent to the PircBot.
-     * This means that a client has requested to send a file to us. This
-     * abstract implementation performs no action, which means that all DCC SEND
-     * requests will be ignored by default. If you wish to receive the file,
-     * then you may override this method and call the receive method on the
-     * DccFileTransfer object, which connects to the sender and downloads the
-     * file.
+     * This method is called whenever a DCC SEND request is sent to the PircBot. This
+     * means that a client has requested to send a file to us. This abstract
+     * implementation performs no action, which means that all DCC SEND requests will be
+     * ignored by default. If you wish to receive the file, then you may override this
+     * method and call the receive method on the DccFileTransfer object, which connects to
+     * the sender and downloads the file.
      * <p>
      * Example:
      * 
@@ -2655,23 +2601,23 @@ public abstract class PircBot implements ReplyConstants
      * }
      * </pre>
      * <p>
-     * <b>Warning:</b> Receiving an incoming file transfer will cause a file to
-     * be written to disk. Please ensure that you make adequate security checks
-     * so that this file does not overwrite anything important!
+     * <b>Warning:</b> Receiving an incoming file transfer will cause a file to be written
+     * to disk. Please ensure that you make adequate security checks so that this file
+     * does not overwrite anything important!
      * <p>
-     * Each time a file is received, it happens within a new Thread in order to
-     * allow multiple files to be downloaded by the PircBot at the same time.
+     * Each time a file is received, it happens within a new Thread in order to allow
+     * multiple files to be downloaded by the PircBot at the same time.
      * <p>
-     * If you allow resuming and the file already partly exists, it will be
-     * appended to instead of overwritten. If resuming is not enabled, the file
-     * will be overwritten if it already exists.
+     * If you allow resuming and the file already partly exists, it will be appended to
+     * instead of overwritten. If resuming is not enabled, the file will be overwritten if
+     * it already exists.
      * <p>
-     * You can throttle the speed of the transfer by calling the setPacketDelay
-     * method on the DccFileTransfer object, either before you receive the file
-     * or at any moment during the transfer.
+     * You can throttle the speed of the transfer by calling the setPacketDelay method on
+     * the DccFileTransfer object, either before you receive the file or at any moment
+     * during the transfer.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 1.2.0
      * 
@@ -2686,21 +2632,21 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method gets called when a DccFileTransfer has finished. If there was
-     * a problem, the Exception will say what went wrong. If the file was sent
-     * successfully, the Exception will be null.
+     * This method gets called when a DccFileTransfer has finished. If there was a
+     * problem, the Exception will say what went wrong. If the file was sent successfully,
+     * the Exception will be null.
      * <p>
-     * Both incoming and outgoing file transfers are passed to this method. You
-     * can determine the type by calling the isIncoming or isOutgoing methods on
-     * the DccFileTransfer object.
+     * Both incoming and outgoing file transfers are passed to this method. You can
+     * determine the type by calling the isIncoming or isOutgoing methods on the
+     * DccFileTransfer object.
      * 
      * @since PircBot 1.2.0
      * 
      * @param transfer
      *            The DccFileTransfer that has finished.
      * @param e
-     *            null if the file was transfered successfully, otherwise this
-     *            will report what went wrong.
+     *            null if the file was transfered successfully, otherwise this will report
+     *            what went wrong.
      * 
      * @see DccFileTransfer
      * 
@@ -2710,21 +2656,18 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method will be called whenever a DCC Chat request is received. This
-     * means that a client has requested to chat to us directly rather than via
-     * the IRC server. This is useful for sending many lines of text to and from
-     * the bot without having to worry about flooding the server or any
-     * operators of the server being able to "spy" on what is being said. This
-     * abstract implementation performs no action, which means that all DCC CHAT
-     * requests will be ignored by default.
+     * This method will be called whenever a DCC Chat request is received. This means that
+     * a client has requested to chat to us directly rather than via the IRC server. This
+     * is useful for sending many lines of text to and from the bot without having to
+     * worry about flooding the server or any operators of the server being able to "spy"
+     * on what is being said. This abstract implementation performs no action, which means
+     * that all DCC CHAT requests will be ignored by default.
      * <p>
-     * If you wish to accept the connection, then you may override this method
-     * and call the accept() method on the DccChat object, which connects to the
-     * sender of the chat request and allows lines to be sent to and from the
-     * bot.
+     * If you wish to accept the connection, then you may override this method and call
+     * the accept() method on the DccChat object, which connects to the sender of the chat
+     * request and allows lines to be sent to and from the bot.
      * <p>
-     * Your bot must be able to connect directly to the user that sent the
-     * request.
+     * Your bot must be able to connect directly to the user that sent the request.
      * <p>
      * Example:
      * 
@@ -2745,11 +2688,11 @@ public abstract class PircBot implements ReplyConstants
      * }
      * </pre>
      * 
-     * Each time this method is called, it is called from within a new Thread so
-     * that multiple DCC CHAT sessions can run concurrently.
+     * Each time this method is called, it is called from within a new Thread so that
+     * multiple DCC CHAT sessions can run concurrently.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @since PircBot 1.2.0
      * 
@@ -2764,10 +2707,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * This method is called whenever we receive a VERSION request. This
-     * abstract implementation responds with the PircBot's _version string, so
-     * if you override this method, be sure to either mimic its functionality or
-     * to call super.onVersion(...);
+     * This method is called whenever we receive a VERSION request. This abstract
+     * implementation responds with the PircBot's _version string, so if you override this
+     * method, be sure to either mimic its functionality or to call super.onVersion(...);
      * 
      * @param sourceNick
      *            The nick of the user that sent the VERSION request.
@@ -2776,23 +2718,19 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that sent the VERSION request.
      * @param target
-     *            The target of the VERSION request, be it our nick or a channel
-     *            name.
+     *            The target of the VERSION request, be it our nick or a channel name.
      */
-    protected void onVersion(String sourceNick, String sourceLogin,
-            String sourceHostname, String target)
+    protected void onVersion(String sourceNick, String sourceLogin, String sourceHostname,
+            String target)
     {
-        this.sendRawLine("NOTICE " + sourceNick + " :\u0001VERSION " + _version
-                + "\u0001");
+        this.sendRawLine("NOTICE " + sourceNick + " :\u0001VERSION " + _version + "\u0001");
     }
     
     /**
-     * This method is called whenever we receive a PING request from another
-     * user.
+     * This method is called whenever we receive a PING request from another user.
      * <p>
-     * This abstract implementation responds correctly, so if you override this
-     * method, be sure to either mimic its functionality or to call
-     * super.onPing(...);
+     * This abstract implementation responds correctly, so if you override this method, be
+     * sure to either mimic its functionality or to call super.onPing(...);
      * 
      * @param sourceNick
      *            The nick of the user that sent the PING request.
@@ -2801,25 +2739,21 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that sent the PING request.
      * @param target
-     *            The target of the PING request, be it our nick or a channel
-     *            name.
+     *            The target of the PING request, be it our nick or a channel name.
      * @param pingValue
-     *            The value that was supplied as an argument to the PING
-     *            command.
+     *            The value that was supplied as an argument to the PING command.
      */
-    protected void onPing(String sourceNick, String sourceLogin,
-            String sourceHostname, String target, String pingValue)
+    protected void onPing(String sourceNick, String sourceLogin, String sourceHostname,
+            String target, String pingValue)
     {
-        this.sendRawLine("NOTICE " + sourceNick + " :\u0001PING " + pingValue
-                + "\u0001");
+        this.sendRawLine("NOTICE " + sourceNick + " :\u0001PING " + pingValue + "\u0001");
     }
     
     /**
      * The actions to perform when a PING request comes from the server.
      * <p>
-     * This sends back a correct response, so if you override this method, be
-     * sure to either mimic its functionality or to call
-     * super.onServerPing(response);
+     * This sends back a correct response, so if you override this method, be sure to
+     * either mimic its functionality or to call super.onServerPing(response);
      * 
      * @param response
      *            The response that should be given back in your PONG.
@@ -2832,9 +2766,8 @@ public abstract class PircBot implements ReplyConstants
     /**
      * This method is called whenever we receive a TIME request.
      * <p>
-     * This abstract implementation responds correctly, so if you override this
-     * method, be sure to either mimic its functionality or to call
-     * super.onTime(...);
+     * This abstract implementation responds correctly, so if you override this method, be
+     * sure to either mimic its functionality or to call super.onTime(...);
      * 
      * @param sourceNick
      *            The nick of the user that sent the TIME request.
@@ -2843,22 +2776,20 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that sent the TIME request.
      * @param target
-     *            The target of the TIME request, be it our nick or a channel
-     *            name.
+     *            The target of the TIME request, be it our nick or a channel name.
      */
-    protected void onTime(String sourceNick, String sourceLogin,
-            String sourceHostname, String target)
+    protected void onTime(String sourceNick, String sourceLogin, String sourceHostname,
+            String target)
     {
-        this.sendRawLine("NOTICE " + sourceNick + " :\u0001TIME "
-                + new Date().toString() + "\u0001");
+        this.sendRawLine("NOTICE " + sourceNick + " :\u0001TIME " + new Date().toString()
+                + "\u0001");
     }
     
     /**
      * This method is called whenever we receive a FINGER request.
      * <p>
-     * This abstract implementation responds correctly, so if you override this
-     * method, be sure to either mimic its functionality or to call
-     * super.onFinger(...);
+     * This abstract implementation responds correctly, so if you override this method, be
+     * sure to either mimic its functionality or to call super.onFinger(...);
      * 
      * @param sourceNick
      *            The nick of the user that sent the FINGER request.
@@ -2867,22 +2798,20 @@ public abstract class PircBot implements ReplyConstants
      * @param sourceHostname
      *            The hostname of the user that sent the FINGER request.
      * @param target
-     *            The target of the FINGER request, be it our nick or a channel
-     *            name.
+     *            The target of the FINGER request, be it our nick or a channel name.
      */
-    protected void onFinger(String sourceNick, String sourceLogin,
-            String sourceHostname, String target)
+    protected void onFinger(String sourceNick, String sourceLogin, String sourceHostname,
+            String target)
     {
-        this.sendRawLine("NOTICE " + sourceNick + " :\u0001FINGER " + _finger
-                + "\u0001");
+        this.sendRawLine("NOTICE " + sourceNick + " :\u0001FINGER " + _finger + "\u0001");
     }
     
     /**
-     * This method is called whenever we receive a line from the server that the
-     * PircBot has not been programmed to recognise.
+     * This method is called whenever we receive a line from the server that the PircBot
+     * has not been programmed to recognise.
      * <p>
-     * The implementation of this method in the PircBot abstract class performs
-     * no actions and may be overridden as required.
+     * The implementation of this method in the PircBot abstract class performs no actions
+     * and may be overridden as required.
      * 
      * @param line
      *            The raw line that was received from the server.
@@ -2893,10 +2822,10 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the verbose mode. If verbose mode is set to true, then log entries
-     * will be printed to the standard output. The default value is false and
-     * will result in no output. For general development, we strongly recommend
-     * setting the verbose mode to true.
+     * Sets the verbose mode. If verbose mode is set to true, then log entries will be
+     * printed to the standard output. The default value is false and will result in no
+     * output. For general development, we strongly recommend setting the verbose mode to
+     * true.
      * 
      * @param verbose
      *            true if verbose mode is to be used. Default is false.
@@ -2907,13 +2836,13 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the name of the bot, which will be used as its nick when it tries to
-     * join an IRC server. This should be set before joining any servers,
-     * otherwise the default nick will be used. You would typically call this
-     * method from the constructor of the class that extends PircBot.
+     * Sets the name of the bot, which will be used as its nick when it tries to join an
+     * IRC server. This should be set before joining any servers, otherwise the default
+     * nick will be used. You would typically call this method from the constructor of the
+     * class that extends PircBot.
      * <p>
-     * The changeNick method should be used if you wish to change your nick when
-     * you are connected to a server.
+     * The changeNick method should be used if you wish to change your nick when you are
+     * connected to a server.
      * 
      * @param name
      *            The new name of the Bot.
@@ -2924,9 +2853,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the internal nick of the bot. This is only to be called by the
-     * PircBot class in response to notification of nick changes that apply to
-     * us.
+     * Sets the internal nick of the bot. This is only to be called by the PircBot class
+     * in response to notification of nick changes that apply to us.
      * 
      * @param nick
      *            The new nick.
@@ -2937,8 +2865,7 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the internal login of the Bot. This should be set before joining any
-     * servers.
+     * Sets the internal login of the Bot. This should be set before joining any servers.
      * 
      * @param login
      *            The new login of the Bot.
@@ -2949,8 +2876,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the internal version of the Bot. This should be set before joining
-     * any servers.
+     * Sets the internal version of the Bot. This should be set before joining any
+     * servers.
      * 
      * @param version
      *            The new version of the Bot.
@@ -2961,8 +2888,7 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the interal finger message. This should be set before joining any
-     * servers.
+     * Sets the interal finger message. This should be set before joining any servers.
      * 
      * @param finger
      *            The new finger message for the Bot.
@@ -2973,8 +2899,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Gets the name of the PircBot. This is the name that will be used as as a
-     * nick when we try to join servers.
+     * Gets the name of the PircBot. This is the name that will be used as as a nick when
+     * we try to join servers.
      * 
      * @return The name of the PircBot.
      */
@@ -2984,12 +2910,12 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the current nick of the bot. Note that if you have just changed
-     * your nick, this method will still return the old nick until confirmation
-     * of the nick change is received from the server.
+     * Returns the current nick of the bot. Note that if you have just changed your nick,
+     * this method will still return the old nick until confirmation of the nick change is
+     * received from the server.
      * <p>
-     * The nick returned by this method is maintained only by the PircBot class
-     * and is guaranteed to be correct in the context of the IRC server.
+     * The nick returned by this method is maintained only by the PircBot class and is
+     * guaranteed to be correct in the context of the IRC server.
      * 
      * @since PircBot 1.0.0
      * 
@@ -3031,12 +2957,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns whether or not the PircBot is currently connected to a server.
-     * The result of this method should only act as a rough guide, as the result
-     * may not be valid by the time you act upon it.
+     * Returns whether or not the PircBot is currently connected to a server. The result
+     * of this method should only act as a rough guide, as the result may not be valid by
+     * the time you act upon it.
      * 
-     * @return True if and only if the PircBot is currently connected to a
-     *         server.
+     * @return True if and only if the PircBot is currently connected to a server.
      */
     public final synchronized boolean isConnected()
     {
@@ -3044,12 +2969,12 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the number of milliseconds to delay between consecutive messages
-     * when there are multiple messages waiting in the outgoing message queue.
-     * This has a default value of 1000ms. It is a good idea to stick to this
-     * default value, as it will prevent your bot from spamming servers and
-     * facing the subsequent wrath! However, if you do need to change this delay
-     * value (<b>not recommended</b>), then this is the method to use.
+     * Sets the number of milliseconds to delay between consecutive messages when there
+     * are multiple messages waiting in the outgoing message queue. This has a default
+     * value of 1000ms. It is a good idea to stick to this default value, as it will
+     * prevent your bot from spamming servers and facing the subsequent wrath! However, if
+     * you do need to change this delay value (<b>not recommended</b>), then this is the
+     * method to use.
      * 
      * @param delay
      *            The number of milliseconds between each outgoing message.
@@ -3065,8 +2990,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the number of milliseconds that will be used to separate
-     * consecutive messages to the server from the outgoing message queue.
+     * Returns the number of milliseconds that will be used to separate consecutive
+     * messages to the server from the outgoing message queue.
      * 
      * @return Number of milliseconds.
      */
@@ -3076,11 +3001,10 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Gets the maximum length of any line that is sent via the IRC protocol.
-     * The IRC RFC specifies that line lengths, including the trailing \r\n must
-     * not exceed 512 bytes. Hence, there is currently no option to change this
-     * value in PircBot. All lines greater than this length will be truncated
-     * before being sent to the IRC server.
+     * Gets the maximum length of any line that is sent via the IRC protocol. The IRC RFC
+     * specifies that line lengths, including the trailing \r\n must not exceed 512 bytes.
+     * Hence, there is currently no option to change this value in PircBot. All lines
+     * greater than this length will be truncated before being sent to the IRC server.
      * 
      * @return The maximum line length (currently fixed at 512)
      */
@@ -3090,9 +3014,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Gets the number of lines currently waiting in the outgoing message Queue.
-     * If this returns 0, then the Queue is empty and any new message is likely
-     * to be sent to the IRC server immediately.
+     * Gets the number of lines currently waiting in the outgoing message Queue. If this
+     * returns 0, then the Queue is empty and any new message is likely to be sent to the
+     * IRC server immediately.
      * 
      * @since PircBot 0.9.9
      * 
@@ -3104,13 +3028,13 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the name of the last IRC server the PircBot tried to connect to.
-     * This does not imply that the connection attempt to the server was
-     * successful (we suggest you look at the onConnect method). A value of null
-     * is returned if the PircBot has never tried to connect to a server.
+     * Returns the name of the last IRC server the PircBot tried to connect to. This does
+     * not imply that the connection attempt to the server was successful (we suggest you
+     * look at the onConnect method). A value of null is returned if the PircBot has never
+     * tried to connect to a server.
      * 
-     * @return The name of the last machine we tried to connect to. Returns null
-     *         if no connection attempts have ever been made.
+     * @return The name of the last machine we tried to connect to. Returns null if no
+     *         connection attempts have ever been made.
      */
     public final String getServer()
     {
@@ -3118,15 +3042,15 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the port number of the last IRC server that the PircBot tried to
-     * connect to. This does not imply that the connection attempt to the server
-     * was successful (we suggest you look at the onConnect method). A value of
-     * -1 is returned if the PircBot has never tried to connect to a server.
+     * Returns the port number of the last IRC server that the PircBot tried to connect
+     * to. This does not imply that the connection attempt to the server was successful
+     * (we suggest you look at the onConnect method). A value of -1 is returned if the
+     * PircBot has never tried to connect to a server.
      * 
      * @since PircBot 0.9.9
      * 
-     * @return The port number of the last IRC server we connected to. Returns
-     *         -1 if no connection attempts have ever been made.
+     * @return The port number of the last IRC server we connected to. Returns -1 if no
+     *         connection attempts have ever been made.
      */
     public final int getPort()
     {
@@ -3134,17 +3058,15 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the last password that we used when connecting to an IRC server.
-     * This does not imply that the connection attempt to the server was
-     * successful (we suggest you look at the onConnect method). A value of null
-     * is returned if the PircBot has never tried to connect to a server using a
-     * password.
+     * Returns the last password that we used when connecting to an IRC server. This does
+     * not imply that the connection attempt to the server was successful (we suggest you
+     * look at the onConnect method). A value of null is returned if the PircBot has never
+     * tried to connect to a server using a password.
      * 
      * @since PircBot 0.9.9
      * 
-     * @return The last password that we used when connecting to an IRC server.
-     *         Returns null if we have not previously connected using a
-     *         password.
+     * @return The last password that we used when connecting to an IRC server. Returns
+     *         null if we have not previously connected using a password.
      */
     public final String getPassword()
     {
@@ -3152,8 +3074,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * A convenient method that accepts an IP address represented as a long and
-     * returns an integer array of size 4 representing the same IP address.
+     * A convenient method that accepts an IP address represented as a long and returns an
+     * integer array of size 4 representing the same IP address.
      * 
      * @since PircBot 0.9.4
      * 
@@ -3174,8 +3096,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * A convenient method that accepts an IP address represented by a byte[] of
-     * size 4 and returns this as a long representation of the same IP address.
+     * A convenient method that accepts an IP address represented by a byte[] of size 4
+     * and returns this as a long representation of the same IP address.
      * 
      * @since PircBot 0.9.4
      * 
@@ -3202,12 +3124,11 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the encoding charset to be used when sending or receiving lines from
-     * the IRC server. If set to null, then the platform's default charset is
-     * used. You should only use this method if you are trying to send text to
-     * an IRC server in a different charset, e.g. "GB2312" for Chinese encoding.
-     * If a PircBot is currently connected to a server, then it must reconnect
-     * before this change takes effect.
+     * Sets the encoding charset to be used when sending or receiving lines from the IRC
+     * server. If set to null, then the platform's default charset is used. You should
+     * only use this method if you are trying to send text to an IRC server in a different
+     * charset, e.g. "GB2312" for Chinese encoding. If a PircBot is currently connected to
+     * a server, then it must reconnect before this change takes effect.
      * 
      * @since PircBot 1.0.4
      * 
@@ -3226,9 +3147,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the encoding used to send and receive lines from the IRC server,
-     * or null if not set. Use the setEncoding method to change the encoding
-     * charset.
+     * Returns the encoding used to send and receive lines from the IRC server, or null if
+     * not set. Use the setEncoding method to change the encoding charset.
      * 
      * @since PircBot 1.0.4
      * 
@@ -3240,8 +3160,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the InetAddress used by the PircBot. This can be used to find the
-     * I.P. address from which the PircBot is connected to a server.
+     * Returns the InetAddress used by the PircBot. This can be used to find the I.P.
+     * address from which the PircBot is connected to a server.
      * 
      * @since PircBot 1.4.4
      * 
@@ -3253,10 +3173,10 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the InetAddress to be used when sending DCC chat or file transfers.
-     * This can be very useful when you are running a bot on a machine which is
-     * behind a firewall and you need to tell receiving clients to connect to a
-     * NAT/router, which then forwards the connection.
+     * Sets the InetAddress to be used when sending DCC chat or file transfers. This can
+     * be very useful when you are running a bot on a machine which is behind a firewall
+     * and you need to tell receiving clients to connect to a NAT/router, which then
+     * forwards the connection.
      * 
      * @since PircBot 1.4.4
      * 
@@ -3269,8 +3189,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the InetAddress used when sending DCC chat or file transfers. If
-     * this is null, the default InetAddress will be used.
+     * Returns the InetAddress used when sending DCC chat or file transfers. If this is
+     * null, the default InetAddress will be used.
      * 
      * @since PircBot 1.4.4
      * 
@@ -3282,17 +3202,16 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns the set of port numbers to be used when sending a DCC chat or
-     * file transfer. This is useful when you are behind a firewall and need to
-     * set up port forwarding. The array of port numbers is traversed in
-     * sequence until a free port is found to listen on. A DCC tranfer will fail
-     * if all ports are already in use. If set to null, <i>any</i> free port
-     * number will be used.
+     * Returns the set of port numbers to be used when sending a DCC chat or file
+     * transfer. This is useful when you are behind a firewall and need to set up port
+     * forwarding. The array of port numbers is traversed in sequence until a free port is
+     * found to listen on. A DCC tranfer will fail if all ports are already in use. If set
+     * to null, <i>any</i> free port number will be used.
      * 
      * @since PircBot 1.4.4
      * 
-     * @return An array of port numbers that PircBot can use to send DCC
-     *         transfers, or null if any port is allowed.
+     * @return An array of port numbers that PircBot can use to send DCC transfers, or
+     *         null if any port is allowed.
      */
     public int[] getDccPorts()
     {
@@ -3305,18 +3224,17 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Sets the choice of port numbers that can be used when sending a DCC chat
-     * or file transfer. This is useful when you are behind a firewall and need
-     * to set up port forwarding. The array of port numbers is traversed in
-     * sequence until a free port is found to listen on. A DCC tranfer will fail
-     * if all ports are already in use. If set to null, <i>any</i> free port
-     * number will be used.
+     * Sets the choice of port numbers that can be used when sending a DCC chat or file
+     * transfer. This is useful when you are behind a firewall and need to set up port
+     * forwarding. The array of port numbers is traversed in sequence until a free port is
+     * found to listen on. A DCC tranfer will fail if all ports are already in use. If set
+     * to null, <i>any</i> free port number will be used.
      * 
      * @since PircBot 1.4.4
      * 
      * @param ports
-     *            The set of port numbers that PircBot may use for DCC
-     *            transfers, or null to let it use any free port (default).
+     *            The set of port numbers that PircBot may use for DCC transfers, or null
+     *            to let it use any free port (default).
      * 
      */
     public void setDccPorts(int[] ports)
@@ -3333,9 +3251,9 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns true if and only if the object being compared is the exact same
-     * instance as this PircBot. This may be useful if you are writing a
-     * multiple server IRC bot that uses more than one instance of PircBot.
+     * Returns true if and only if the object being compared is the exact same instance as
+     * this PircBot. This may be useful if you are writing a multiple server IRC bot that
+     * uses more than one instance of PircBot.
      * 
      * @since PircBot 0.9.9
      * 
@@ -3355,8 +3273,8 @@ public abstract class PircBot implements ReplyConstants
     
     /**
      * Returns the hashCode of this PircBot. This method can be called by hashed
-     * collection classes and is useful for managing multiple instances of
-     * PircBots in such collections.
+     * collection classes and is useful for managing multiple instances of PircBots in
+     * such collections.
      * 
      * @since PircBot 0.9.9
      * 
@@ -3368,11 +3286,10 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns a String representation of this object. You may find this useful
-     * for debugging purposes, particularly if you are using more than one
-     * PircBot instance to achieve multiple server connectivity. The format of
-     * this String may change between different versions of PircBot but is
-     * currently something of the form <code>
+     * Returns a String representation of this object. You may find this useful for
+     * debugging purposes, particularly if you are using more than one PircBot instance to
+     * achieve multiple server connectivity. The format of this String may change between
+     * different versions of PircBot but is currently something of the form <code>
      *   Version{PircBot x.y.z Java IRC Bot - www.jibble.org}
      *   Connected{true}
      *   Server{irc.dal.net}
@@ -3386,9 +3303,9 @@ public abstract class PircBot implements ReplyConstants
      */
     public String toString()
     {
-        return "Version{" + _version + "}" + " Connected{" + isConnected()
-                + "}" + " Server{" + _server + "}" + " Port{" + _port + "}"
-                + " Password{" + _password + "}";
+        return "Version{" + _version + "}" + " Connected{" + isConnected() + "}"
+                + " Server{" + _server + "}" + " Port{" + _port + "}" + " Password{"
+                + _password + "}";
     }
     
     /**
@@ -3396,16 +3313,15 @@ public abstract class PircBot implements ReplyConstants
      * <p>
      * There are some important things to note about this method:-
      * <ul>
-     * <li>This method may not return a full list of users if you call it before
-     * the complete nick list has arrived from the IRC server.</li>
-     * <li>If you wish to find out which users are in a channel as soon as you
-     * join it, then you should override the onUserList method instead of
-     * calling this method, as the onUserList method is only called as soon as
-     * the full user list has been received.</li>
-     * <li>This method will return immediately, as it does not require any
-     * interaction with the IRC server.</li>
-     * <li>The bot must be in a channel to be able to know which users are in
-     * it.</li>
+     * <li>This method may not return a full list of users if you call it before the
+     * complete nick list has arrived from the IRC server.</li>
+     * <li>If you wish to find out which users are in a channel as soon as you join it,
+     * then you should override the onUserList method instead of calling this method, as
+     * the onUserList method is only called as soon as the full user list has been
+     * received.</li>
+     * <li>This method will return immediately, as it does not require any interaction
+     * with the IRC server.</li>
+     * <li>The bot must be in a channel to be able to know which users are in it.</li>
      * </ul>
      * 
      * @since PircBot 1.0.0
@@ -3413,8 +3329,7 @@ public abstract class PircBot implements ReplyConstants
      * @param channel
      *            The name of the channel to list.
      * 
-     * @return An array of User objects. This array is empty if we are not in
-     *         the channel.
+     * @return An array of User objects. This array is empty if we are not in the channel.
      * 
      * @see #onUserList(String,User[]) onUserList
      */
@@ -3440,15 +3355,14 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Returns an array of all channels that we are in. Note that if you call
-     * this method immediately after joining a new channel, the new channel may
-     * not appear in this array as it is not possible to tell if the join was
-     * successful until a response is received from the IRC server.
+     * Returns an array of all channels that we are in. Note that if you call this method
+     * immediately after joining a new channel, the new channel may not appear in this
+     * array as it is not possible to tell if the join was successful until a response is
+     * received from the IRC server.
      * 
      * @since PircBot 1.0.0
      * 
-     * @return A String array containing the names of all channels that we are
-     *         in.
+     * @return A String array containing the names of all channels that we are in.
      */
     public final String[] getChannels()
     {
@@ -3466,20 +3380,17 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Disposes of all thread resources used by this PircBot. This may be useful
-     * when writing bots or clients that use multiple servers (and therefore
-     * multiple PircBot instances) or when integrating a PircBot with an
-     * existing program.
+     * Disposes of all thread resources used by this PircBot. This may be useful when
+     * writing bots or clients that use multiple servers (and therefore multiple PircBot
+     * instances) or when integrating a PircBot with an existing program.
      * <p>
-     * Each PircBot runs its own threads for dispatching messages from its
-     * outgoing message queue and receiving messages from the server. Calling
-     * dispose() ensures that these threads are stopped, thus freeing up system
-     * resources and allowing the PircBot object to be garbage collected if
-     * there are no other references to it.
+     * Each PircBot runs its own threads for dispatching messages from its outgoing
+     * message queue and receiving messages from the server. Calling dispose() ensures
+     * that these threads are stopped, thus freeing up system resources and allowing the
+     * PircBot object to be garbage collected if there are no other references to it.
      * <p>
-     * Once a PircBot object has been disposed, it should not be used again.
-     * Attempting to use a PircBot that has been disposed may result in
-     * unpredictable behaviour.
+     * Once a PircBot object has been disposed, it should not be used again. Attempting to
+     * use a PircBot that has been disposed may result in unpredictable behaviour.
      * 
      * @since 1.2.2
      */
@@ -3491,8 +3402,8 @@ public abstract class PircBot implements ReplyConstants
     }
     
     /**
-     * Add a user to the specified channel in our memory. Overwrite the existing
-     * entry if it exists.
+     * Add a user to the specified channel in our memory. Overwrite the existing entry if
+     * it exists.
      */
     private final void addUser(String channel, User user)
     {
@@ -3696,8 +3607,7 @@ public abstract class PircBot implements ReplyConstants
     private String _name = "PircBot";
     private String _nick = _name;
     private String _login = "PircBot";
-    private String _version = "PircBot " + VERSION
-            + " Java IRC Bot - www.jibble.org";
+    private String _version = "PircBot " + VERSION + " Java IRC Bot - www.jibble.org";
     private String _finger = "You ought to be arrested for fingering a bot!";
     
     private String _channelPrefixes = "#&+!";

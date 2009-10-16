@@ -1,0 +1,9 @@
+name=local.library.dateformats
+author=Alexander Boyd
+scope=global
+description=This library contains a number of factoids that can be used to format \
+dates using particular date strings.
+# This is the format expected in HTTP headers
+g.library.dateformat-http=
+# This is the default format used by BZNetwork (http://bznetwork.googlecode.com)
+g.library.dateformat-bzn=\\%1\\$tY/\\%1\\$tm/\\%1\\$td \\%1\\$tI\:\\%1\\$tM.\\%1\\$tS \\%1\\$Tp

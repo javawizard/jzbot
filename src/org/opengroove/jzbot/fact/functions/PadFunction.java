@@ -13,13 +13,18 @@ public class PadFunction extends Function
         int number = Integer.parseInt(arguments.get(0));
         String c = arguments.get(1);
         String value = arguments.get(2);
-        while (value.length() < number)
+        return pad(number,c,value);
+    }
+    
+    public static String pad(int targetLength, String toPadWith, String value)
+    {
+        while (value.length() < targetLength)
         {
-            value = c + value;
+            value = toPadWith + value;
         }
         return value;
     }
-    
+
     @Override
     public String getHelp(String topic)
     {

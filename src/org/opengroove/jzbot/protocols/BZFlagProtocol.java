@@ -82,7 +82,7 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void disconnect()
+    public void disconnect(String message)
     {
         // TODO Auto-generated method stub
         

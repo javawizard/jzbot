@@ -1,0 +1,13 @@
+name=local.help.webhelp
+author=Alexander Boyd
+scope=global
+description=Webhelp makes the bot's built-in help pages (accessible by sending "help" to \
+the bot) available via a browser. A tree of help pages is generated, and you can click on any \
+help topic within that tree.\n\
+Webhelp is a segserver plugin, so you'll need to install local.com.segserver before you \
+can install Webhelp. Webhelp will register itself under the url "/webhelp" within segserver.
+depends=global:local.com.segserver,Webhelp requires local.com.segserver to serve up help pages.
+g.webhelp-serve=
+library.g.webhelp-serve=1
+g.webhelp-postuninstall=
+postinstall=

@@ -12,6 +12,11 @@ public class IrcProtocol extends PircBot implements Protocol
         super.changeNick(newNick);
     }
     
+    public void disconnect(String message)
+    {
+        super.quitServer(message);
+    }
+    
     @Override
     public void kick(String channel, String nick, String reason)
     {
@@ -153,10 +158,10 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onQuit(String sourceNick, String sourceLogin,
+    protected void onBeforeQuit(String sourceNick, String sourceLogin,
             String sourceHostname, String reason)
     {
-        JZBot.onQuit(sourceNick, sourceLogin, sourceHostname, reason);
+        JZBot.onBeforeQuit(sourceNick, sourceLogin, sourceHostname, reason);
     }
     
     @Override
