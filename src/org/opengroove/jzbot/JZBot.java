@@ -299,6 +299,31 @@ public class JZBot
             System.out.println("");
             System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
+            System.out.println("");
+            System.out.println("For advanced users, you can configure a protocol ");
+            System.out.println("implementation to use by running \"jzbot protocol ");
+            System.out.println("<class>\", where <class> is the name of a class ");
+            System.out.println("that implements org.opengroove.jzbot.Protocol.");
+            System.out.println("Most users will not need to do this.");
+        }
+        else if (args[0].equals("protocol"))
+        {
+            initProxyStorage();
+            if (config == null)
+            {
+                System.out.println("You need to run \"jzbot protocol\" *after* you");
+                System.out.println("run \"jzbot setup\".");
+                return;
+            }
+            if (args.length <= 1)
+            {
+                System.out.println("You need to specify the protocol to use. Try ");
+                System.out.println("\"jzbot protocol <class>\", or \"jzbot help\".");
+                return;
+            }
+            config.setProtocol(args[1]);
+            System.out.println("The protocol has been successfully set to \""
+                    + config.getProtocol() + "\".");
         }
         else if (args[0].equals("setup"))
         {
@@ -514,7 +539,7 @@ public class JZBot
         }
     }
     
-    public static HashMap<String,String> channelTopics = new HashMap<String,String>();
+    public static HashMap<String, String> channelTopics = new HashMap<String, String>();
     
     public static void onTopic(String channel, String topic, String setBy, long date,
             boolean changed)
