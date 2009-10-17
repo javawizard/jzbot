@@ -59,8 +59,8 @@ public class DefaultHelpProvider implements HelpProvider
             {
                     "The following people have contributed to "
                             + "the development of JZBot:  "
-                            + "Alexander Boyd (javawizard2539/jcp/jpc)",
-                    "MrDudle", "Maximilian Dirkmann (schrottplatz)"
+                            + "Alexander Boyd (javawizard2539/jcp/jpc)", "MrDudle",
+                    "Maximilian Dirkmann (schrottplatz)"
             };
             String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
             return StringUtils.delimited(messageList, "\n")
@@ -74,8 +74,9 @@ public class DefaultHelpProvider implements HelpProvider
                     "The following people have either directly provided factoids "
                             + "for the bot's factpacks, or have provided significant inspiration "
                             + "for the bot's factpacks or other functionality:  "
-                            + "blast007", "Bambino",
-                    "Argooon (blast007's bot)", "ibot (TimRiker's bot)"
+                            + "Scott Wichser (blast007)", "Sam Townshend (Bambino)",
+                    "Daniel Outmin (a_meteorite)", "Maximilian Dirkmann (schrottplatz)",
+                    "MrDudle", "Joshua Bodine (Constitution)"
             };
             String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
             return StringUtils.delimited(messageList, "\n");
