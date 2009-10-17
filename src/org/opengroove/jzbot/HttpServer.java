@@ -11,8 +11,8 @@ import org.opengroove.jzbot.storage.Factoid;
  * A simple, tiny, nicely embeddable HTTP 1.0 server in Java
  * 
  * <p>
- * NanoHTTPD version 1.11, Copyright &copy; 2001,2005-2008 Jarno Elonen
- * (elonen@iki.fi, http://iki.fi/elonen/)
+ * NanoHTTPD version 1.11, Copyright &copy; 2001,2005-2008 Jarno Elonen (elonen@iki.fi,
+ * http://iki.fi/elonen/)
  * 
  * <p>
  * <b>Features + limitations: </b>
@@ -21,8 +21,8 @@ import org.opengroove.jzbot.storage.Factoid;
  * <li>Only one Java file</li>
  * <li>Java 1.1 compatible</li>
  * <li>Released as open source, Modified BSD licence</li>
- * <li>No fixed config files, logging, authorization etc. (Implement yourself if
- * you need them.)</li>
+ * <li>No fixed config files, logging, authorization etc. (Implement yourself if you need
+ * them.)</li>
  * <li>Supports parameter parsing of GET and POST methods</li>
  * <li>Supports both dynamic content and file serving</li>
  * <li>Never caches anything</li>
@@ -43,15 +43,17 @@ import org.opengroove.jzbot.storage.Factoid;
  * <b>Ways to use: </b>
  * <ul>
  * 
- * <li>Run as a standalone app, serves files from current directory and shows
- * requests</li>
+ * <li>Run as a standalone app, serves files from current directory and shows requests</li>
  * <li>Subclass serve() and embed to your own program</li>
  * <li>Call serveFile() from serve() with your own base directory</li>
  * 
  * </ul>
  * 
- * See the end of the source file for distribution license (Modified BSD
- * licence)
+ * See the end of the source file for distribution license (Modified BSD licence)
+ * 
+ * ----- END ORIGINAL DOCUMENTATION -----
+ * 
+ * This class has been modified to work as JZBot's main HTTP server.
  */
 public class HttpServer
 {
@@ -66,26 +68,23 @@ public class HttpServer
      * 
      * (By default, this delegates to serveFile() and allows directory listing.)
      * 
-     * @parm uri Percent-decoded URI without parameters, for example
-     *       "/index.cgi"
+     * @parm uri Percent-decoded URI without parameters, for example "/index.cgi"
      * @parm method "GET", "POST" etc.
-     * @parm parms Parsed, percent decoded parameters from URI and, in case of
-     *       POST, data.
+     * @parm parms Parsed, percent decoded parameters from URI and, in case of POST, data.
      * @parm header Header entries, percent decoded
      * @return HTTP response, see class Response for details
      */
-    public Response serve(String uri, String method, Properties header,
-            Properties parms)
+    public Response serve(String uri, String method, Properties header, Properties parms)
     {
         try
         {
             Factoid factoid = JZBot.storage.getFactoid(serverFactoidName);
             if (factoid == null)
-                throw new IllegalStateException("The server factoid \""
-                        + serverFactoidName + "\" does not exist.");
+                throw new IllegalStateException("The server factoid \"" + serverFactoidName
+                        + "\" does not exist.");
             /*
-             * The factoid does exist. We'll create a vars map and put the
-             * default variables into it.
+             * The factoid does exist. We'll create a vars map and put the default
+             * variables into it.
              */
             Map<String, String> vars = new HashMap<String, String>();
             vars.put("http-url", uri);
@@ -99,8 +98,8 @@ public class HttpServer
                 vars.put("http-param-" + e.getKey(), "" + e.getValue());
             }
             /*
-             * We've created all the default variables. Now we'll actually serve
-             * the request.
+             * We've created all the default variables. Now we'll actually serve the
+             * request.
              */
             FactQuota quota = new FactQuota();
             quota.setMaxImportCount(1000);
@@ -109,22 +108,21 @@ public class HttpServer
             String factoidResult;
             try
             {
-                factoidResult = JZBot.runFactoid(factoid, "none", "",
-                        new String[0], vars, true, quota);
+                factoidResult = JZBot.runFactoid(factoid, "none", "", new String[0], vars,
+                        true, quota);
             }
             catch (FactTimeExceededError e)
             {
-                throw new RuntimeException(
-                        "The web server factoid took too long to run.", e);
+                throw new RuntimeException("The web server factoid took too long to run.",
+                        e);
             }
             finally
             {
                 tkt.active = false;
             }
             /*
-             * We've run the factoid. Now we'll check out the vars it may have
-             * set, and deal with them accordingly. First up is the response
-             * code variable.
+             * We've run the factoid. Now we'll check out the vars it may have set, and
+             * deal with them accordingly. First up is the response code variable.
              */
             String responseCode = HTTP_OK;
             String responseCodeVar = vars.get("http-status");
@@ -144,8 +142,7 @@ public class HttpServer
              */
             String resourceName = vars.get("http-resource");
             if (resourceName != null
-                    && (resourceName.contains("..")
-                            || resourceName.contains("/") || resourceName
+                    && (resourceName.contains("..") || resourceName.contains("/") || resourceName
                             .contains("\\")))
                 throw new RuntimeException(
                         "Invalid resource name (contains invalid characters) "
@@ -155,14 +152,12 @@ public class HttpServer
              */
             Response response;
             if (resourceName == null)
-                response = new Response(responseCode, contentType,
-                        factoidResult);
+                response = new Response(responseCode, contentType, factoidResult);
             else
-                response = new Response(
-                        responseCode,
-                        contentType,
-                        new FileInputStream(new File("resources", resourceName)));
-            response.header.setProperty("Server", "JZBot/HttpServer/starthttp, http://jzbot.googlecode.com");
+                response = new Response(responseCode, contentType, new FileInputStream(
+                        new File("resources", resourceName)));
+            response.header.setProperty("Server",
+                    "JZBot/HttpServer/starthttp, http://jzbot.googlecode.com");
             /*
              * Now we add any headers that may have been set.
              */
@@ -170,8 +165,8 @@ public class HttpServer
             {
                 if (s.startsWith("http-res-header-"))
                 {
-                    response.header.setProperty(s.substring("http-res-header-"
-                            .length()), vars.get(s));
+                    response.header.setProperty(s.substring("http-res-header-".length()),
+                            vars.get(s));
                 }
             }
             /*
@@ -183,11 +178,8 @@ public class HttpServer
         {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw, true));
-            Response response = new Response(
-                    HTTP_INTERNALERROR,
-                    "text/plain",
-                    "Internal server exception:\n\n"
-                            + sw.toString()
+            Response response = new Response(HTTP_INTERNALERROR, "text/plain",
+                    "Internal server exception:\n\n" + sw.toString()
                             + "\n\nYou might want to connect to the IRC server "
                             + JZBot.bot.getServer() + " and join "
                             + ConfigVars.primary.get() + " and ask for help.");
@@ -261,9 +253,8 @@ public class HttpServer
      * Some HTTP response status codes
      */
     public static final String HTTP_OK = "200 OK",
-            HTTP_REDIRECT = "307 Temporary Redirect",
-            HTTP_FORBIDDEN = "403 Forbidden", HTTP_NOTFOUND = "404 Not Found",
-            HTTP_BADREQUEST = "400 Bad Request",
+            HTTP_REDIRECT = "307 Temporary Redirect", HTTP_FORBIDDEN = "403 Forbidden",
+            HTTP_NOTFOUND = "404 Not Found", HTTP_BADREQUEST = "400 Bad Request",
             HTTP_INTERNALERROR = "500 Internal Server Error",
             HTTP_NOTIMPLEMENTED = "501 Not Implemented";
     public static HashMap<String, String> responseCodeMap = new HashMap<String, String>();
@@ -280,8 +271,7 @@ public class HttpServer
     /**
      * Common mime types for dynamic content
      */
-    public static final String MIME_PLAINTEXT = "text/plain",
-            MIME_HTML = "text/html",
+    public static final String MIME_PLAINTEXT = "text/plain", MIME_HTML = "text/html",
             MIME_DEFAULT_BINARY = "application/octet-stream";
     
     // ==================================================
@@ -396,8 +386,7 @@ public class HttpServer
     }
     
     /**
-     * Handles one session, i.e. parses the HTTP request and returns the
-     * response.
+     * Handles one session, i.e. parses the HTTP request and returns the response.
      */
     private class HTTPSession implements Runnable
     {
@@ -416,8 +405,7 @@ public class HttpServer
                 InputStream is = mySocket.getInputStream();
                 if (is == null)
                     return;
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(is));
+                BufferedReader in = new BufferedReader(new InputStreamReader(is));
                 
                 // Read the request line
                 StringTokenizer st = new StringTokenizer(in.readLine());
@@ -455,8 +443,8 @@ public class HttpServer
                     while (line.trim().length() > 0)
                     {
                         int p = line.indexOf(':');
-                        header.put(line.substring(0, p).trim().toLowerCase(),
-                                line.substring(p + 1).trim());
+                        header.put(line.substring(0, p).trim().toLowerCase(), line
+                                .substring(p + 1).trim());
                         line = in.readLine();
                     }
                 }
@@ -505,9 +493,8 @@ public class HttpServer
             {
                 try
                 {
-                    sendError(HTTP_INTERNALERROR,
-                            "SERVER INTERNAL ERROR: IOException: "
-                                    + ioe.getMessage());
+                    sendError(HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: IOException: "
+                            + ioe.getMessage());
                 }
                 catch (Throwable t)
                 {
@@ -520,8 +507,8 @@ public class HttpServer
         }
         
         /**
-         * Decodes the percent encoding scheme. <br/> For example:
-         * "an+example%20string" -> "an example string"
+         * Decodes the percent encoding scheme. <br/> For example: "an+example%20string"
+         * -> "an example string"
          */
         private String decodePercent(String str) throws InterruptedException
         {
@@ -537,8 +524,8 @@ public class HttpServer
                             sb.append(' ');
                             break;
                         case '%':
-                            sb.append((char) Integer.parseInt(str.substring(
-                                    i + 1, i + 3), 16));
+                            sb.append((char) Integer.parseInt(str.substring(i + 1, i + 3),
+                                    16));
                             i += 2;
                             break;
                         default:
@@ -557,11 +544,9 @@ public class HttpServer
         
         /**
          * Decodes parameters in percent-encoded URI-format ( e.g.
-         * "name=Jack%20Daniels&pass=Single%20Malt" ) and adds them to given
-         * Properties.
+         * "name=Jack%20Daniels&pass=Single%20Malt" ) and adds them to given Properties.
          */
-        private void decodeParms(String parms, Properties p)
-                throws InterruptedException
+        private void decodeParms(String parms, Properties p) throws InterruptedException
         {
             if (parms == null)
                 return;
@@ -572,28 +557,27 @@ public class HttpServer
                 String e = st.nextToken();
                 int sep = e.indexOf('=');
                 if (sep >= 0)
-                    p.put(decodePercent(e.substring(0, sep)).trim(),
-                            decodePercent(e.substring(sep + 1)));
+                    p.put(decodePercent(e.substring(0, sep)).trim(), decodePercent(e
+                            .substring(sep + 1)));
             }
         }
         
         /**
-         * Returns an error message as a HTTP response and throws
-         * InterruptedException to stop further request processing.
+         * Returns an error message as a HTTP response and throws InterruptedException to
+         * stop further request processing.
          */
-        private void sendError(String status, String msg)
-                throws InterruptedException
+        private void sendError(String status, String msg) throws InterruptedException
         {
-            sendResponse(status, MIME_PLAINTEXT, null,
-                    new ByteArrayInputStream(msg.getBytes()));
+            sendResponse(status, MIME_PLAINTEXT, null, new ByteArrayInputStream(msg
+                    .getBytes()));
             throw new InterruptedException();
         }
         
         /**
          * Sends given response to the socket.
          */
-        private void sendResponse(String status, String mime,
-                Properties header, InputStream data)
+        private void sendResponse(String status, String mime, Properties header,
+                InputStream data)
         {
             try
             {
@@ -657,8 +641,8 @@ public class HttpServer
     };
     
     /**
-     * URL-encodes everything between "/"-characters. Encodes spaces as '%20'
-     * instead of '+'.
+     * URL-encodes everything between "/"-characters. Encodes spaces as '%20' instead of
+     * '+'.
      */
     private String encodeUri(String uri)
     {
@@ -690,8 +674,8 @@ public class HttpServer
     // ==================================================
     
     /**
-     * Serves file from homeDir and its' subdirectories (only). Uses only URI,
-     * ignores all headers and HTTP parameters.
+     * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all
+     * headers and HTTP parameters.
      */
     public Response serveFile(String uri, Properties header, File homeDir,
             boolean allowDirectoryListing)
@@ -707,15 +691,13 @@ public class HttpServer
             uri = uri.substring(0, uri.indexOf('?'));
         
         // Prohibit getting out of current directory
-        if (uri.startsWith("..") || uri.endsWith("..")
-                || uri.indexOf("../") >= 0)
+        if (uri.startsWith("..") || uri.endsWith("..") || uri.indexOf("../") >= 0)
             return new Response(HTTP_FORBIDDEN, MIME_PLAINTEXT,
                     "FORBIDDEN: Won't serve ../ for security reasons.");
         
         File f = new File(homeDir, uri);
         if (!f.exists())
-            return new Response(HTTP_NOTFOUND, MIME_PLAINTEXT,
-                    "Error 404, file not found.");
+            return new Response(HTTP_NOTFOUND, MIME_PLAINTEXT, "Error 404, file not found.");
         
         // List the directory, if necessary
         if (f.isDirectory())
@@ -726,8 +708,8 @@ public class HttpServer
             {
                 uri += "/";
                 Response r = new Response(HTTP_REDIRECT, MIME_HTML,
-                        "<html><body>Redirected: <a href=\"" + uri + "\">"
-                                + uri + "</a></body></html>");
+                        "<html><body>Redirected: <a href=\"" + uri + "\">" + uri
+                                + "</a></body></html>");
                 r.addHeader("Location", uri);
                 return r;
             }
@@ -763,8 +745,8 @@ public class HttpServer
                         files[i] += "/";
                     }
                     
-                    msg += "<a href=\"" + encodeUri(uri + files[i]) + "\">"
-                            + files[i] + "</a>";
+                    msg += "<a href=\"" + encodeUri(uri + files[i]) + "\">" + files[i]
+                            + "</a>";
                     
                     // Show file size
                     if (curFile.isFile())
@@ -775,12 +757,10 @@ public class HttpServer
                             msg += curFile.length() + " bytes";
                         else if (len < 1024 * 1024)
                             msg += curFile.length() / 1024 + "."
-                                    + (curFile.length() % 1024 / 10 % 100)
-                                    + " KB";
+                                    + (curFile.length() % 1024 / 10 % 100) + " KB";
                         else
                             msg += curFile.length() / (1024 * 1024) + "."
-                                    + curFile.length() % (1024 * 1024) / 10
-                                    % 100 + " MB";
+                                    + curFile.length() % (1024 * 1024) / 10 % 100 + " MB";
                         
                         msg += ")</font>";
                     }
@@ -803,8 +783,8 @@ public class HttpServer
             String mime = null;
             int dot = f.getCanonicalPath().lastIndexOf('.');
             if (dot >= 0)
-                mime = (String) theMimeTypes.get(f.getCanonicalPath()
-                        .substring(dot + 1).toLowerCase());
+                mime = (String) theMimeTypes.get(f.getCanonicalPath().substring(dot + 1)
+                        .toLowerCase());
             if (mime == null)
                 mime = MIME_DEFAULT_BINARY;
             
@@ -833,8 +813,8 @@ public class HttpServer
             fis.skip(startFrom);
             Response r = new Response(HTTP_OK, mime, fis);
             r.addHeader("Content-length", "" + (f.length() - startFrom));
-            r.addHeader("Content-range", "" + startFrom + "-"
-                    + (f.length() - 1) + "/" + f.length());
+            r.addHeader("Content-range", "" + startFrom + "-" + (f.length() - 1) + "/"
+                    + f.length());
             return r;
         }
         catch (IOException ioe)
@@ -856,8 +836,7 @@ public class HttpServer
                 + "jpg        image/jpeg " + "jpeg       image/jpeg "
                 + "png        image/png " + "mp3        audio/mpeg "
                 + "m3u        audio/mpeg-url " + "pdf        application/pdf "
-                + "doc        application/msword "
-                + "ogg        application/x-ogg "
+                + "doc        application/msword " + "ogg        application/x-ogg "
                 + "zip        application/octet-stream "
                 + "exe        application/octet-stream "
                 + "class      application/octet-stream ");
@@ -871,8 +850,7 @@ public class HttpServer
     private static java.text.SimpleDateFormat gmtFrmt;
     static
     {
-        gmtFrmt = new java.text.SimpleDateFormat(
-                "E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+        gmtFrmt = new java.text.SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
         gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
     

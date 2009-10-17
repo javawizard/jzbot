@@ -514,9 +514,12 @@ public class JZBot
         }
     }
     
+    public static HashMap<String,String> channelTopics = new HashMap<String,String>();
+    
     public static void onTopic(String channel, String topic, String setBy, long date,
             boolean changed)
     {
+        channelTopics.put(channel, topic);
         if (changed)
         {
             logEvent(channel, "topic", setBy, topic);
@@ -1182,6 +1185,7 @@ public class JZBot
         {
             elevatedOpMap.clear();
             elevatedSuperopList.clear();
+            channelTopics.clear();
             proxyStorage.close();
             synchronized (httpServers)
             {

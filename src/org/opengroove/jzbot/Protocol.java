@@ -71,4 +71,6 @@ public interface Protocol
     public void disconnect(String message);
     
     public int getOutgoingQueueSize();
+    
+    public void setTopic(String channel, String topic);
 }
