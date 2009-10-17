@@ -26,7 +26,7 @@ public interface Factoid
     @Property
     public boolean isLibrary();
     
-    public boolean setLibrary(boolean library);
+    public void setLibrary(boolean library);
     
     @Property
     @Length(32768)
@@ -35,9 +35,8 @@ public interface Factoid
     public void setValue(String value);
     
     /**
-     * Gets the hostname of the creator of this factoid. Factoids can be deleted
-     * only by their creator and by ops (for channel-specific factoids) and
-     * superops.
+     * Gets the hostname of the creator of this factoid. Factoids can be deleted only by
+     * their creator and by ops (for channel-specific factoids) and superops.
      * 
      * @return The hostname of the creator of this factoid
      */
@@ -75,10 +74,9 @@ public interface Factoid
     
     /**
      * Gets the factpack for this factoid. The factpack is in the format of
-     * "<scope>:<name>", where <scope> is either the empty string for global
-     * factpacks or the name of a channel for channel-specific factpacks, and
-     * <name> is the canonical name of the factpack that caused this factoid to
-     * be created.
+     * "<scope>:<name>", where <scope> is either the empty string for global factpacks or
+     * the name of a channel for channel-specific factpacks, and <name> is the canonical
+     * name of the factpack that caused this factoid to be created.
      * 
      * @return
      */
@@ -88,8 +86,8 @@ public interface Factoid
     public void setFactpack(String factpack);
     
     /**
-     * True if this factoid is an uninstall factoid for its factpack. Uninstall
-     * factoids will be run after a factpack has been uninstalled.
+     * True if this factoid is an uninstall factoid for its factpack. Uninstall factoids
+     * will be run after a factpack has been uninstalled.
      * 
      * @return
      */

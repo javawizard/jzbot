@@ -696,7 +696,10 @@ public class JZBot
         boolean channelSpecific = false;
         if (channel != null)
         {
-            f = JZBot.storage.getChannel(channel).getFactoid(arguments.get(0));
+            Channel cn = JZBot.storage.getChannel(channel);
+            String factname = arguments.get(0);
+            if (cn != null)
+                f = cn.getFactoid(factname);
             if (f != null)
                 channelSpecific = true;
         }
@@ -1196,6 +1199,7 @@ public class JZBot
         {
             e.printStackTrace();
         }
+        System.out.println("starting reconnect thread");
         new Thread()
         {
             

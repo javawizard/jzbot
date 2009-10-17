@@ -162,6 +162,7 @@ public class HttpServer
                         responseCode,
                         contentType,
                         new FileInputStream(new File("resources", resourceName)));
+            response.header.setProperty("Server", "JZBot/HttpServer/starthttp, http://jzbot.googlecode.com");
             /*
              * Now we add any headers that may have been set.
              */

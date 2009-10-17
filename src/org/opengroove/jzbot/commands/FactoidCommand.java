@@ -179,8 +179,9 @@ public class FactoidCommand implements Command
             {
                 String currentList = "";
                 for (Factoid f : list.isolate())
-                {
-                    currentList += (f.isRestricted() ? "@" : "") + f.getName() + "  ";
+                { 
+                    currentList += (f.isLibrary() ? "%" : "")
+                            + (f.isRestricted() ? "@" : "") + f.getName() + "  ";
                     if (currentList.length() > 400)
                     {
                         JZBot.bot.sendMessage(pm ? sender : channel, currentList);
@@ -729,8 +730,10 @@ public class FactoidCommand implements Command
             System.out.println("factpack is " + fact.getFactpack());
             fact.setIndirectRequests(0);
             fact.setName(realNameMap.get(entry.name));
-            fact.setRestricted(restrictedMap.get(entry.name));
+            System.out.println("library map is " + libraryMap.get(entry.name));
+            System.out.println("restricted map is " + restrictedMap.get(entry.name));
             fact.setLibrary(libraryMap.get(entry.name));
+            fact.setRestricted(restrictedMap.get(entry.name));
             fact.setValue(entry.contents);
             HasFactoids container = entry.target.equals("g") ? JZBot.storage : entry.target
                     .equals("c") ? storedChannel : isGlobal ? JZBot.storage : storedChannel;

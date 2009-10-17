@@ -1,10 +1,10 @@
-name=localcom.segserver
+name=local.com.segserver
 author=Alexander Boyd
 scope=global
-description=Provides a utility that starts an HTTP server on a certain port. This HTTP server \
+description=SegServer is a utility that starts an HTTP server on a certain port. This HTTP server \
 then delegates to other factoids based on the URL used. A factoid can be registered to \
 handle a certain URL path by running "~segserver-config register <url> <factoid>", where <url> is the \
-URL to trigger on and <factoid> is the factoid to run. There is one difference that \n\
+URL to trigger on (which does not contain spaces or slashes) and <factoid> is the factoid to run. There is one difference that \n\
 these factoids must account for, which is that http-* headers that are to be set by \
 the factoid should be set as chain variables instead of as local variables. http-* headers \
 that are created by the bot's web server functionality, however, will still be present as \
@@ -60,9 +60,9 @@ g.segserver-notfound={{cset||http-status||notfound}}\
 library.g.segserver-notfound=1
 g.segserver-config={{switch||%1%\
 ||register||\
-{{if||{{match||\
+{{pset||segserver-page-%2%||%3%}}The page has been added under the URL "/%2%". This will take effect immediately.\
 ||port||\
-{{if||{{isinrange||%2%||1||65535}}||{{pset||segserver-server-port||%2%}}||You need to specify a port number, and it needs to be between 1 and 65535.}}\
+{{if||{{isinrange||%2%||1||65535}}||{{pset||segserver-server-port||%2%}}The port was set successfully. Reconnect your bot (with "reconnect") for this change to take effect.||You need to specify a port number, and it needs to be between 1 and 65535.||Invalid range specified for the port.}}\
 ||Invalid command. Use "segserver-config register <url> <factoid>" to register a factoid, \
 or "segserver-config port <portnumber>" to set the server's port.}}
 restrict.g.segserver-config=1
@@ -71,4 +71,5 @@ library.g._onready_segserver=1
 g.segserver-uninstall=Segserver has been uninstalled. Registrations have not, however, been removed. \
 To remove them, use "\\{{trigger\\}}exec \\{{split\\|| \\||\\{{lpvars\\||^segserver-page-.*\\\\\\$\\}}\\||v\\||\\{{pdelete\\||%v%\\}}\\}}".
 library.g.segserver-uninstall=1
+postinstall=Your bot now has SegServer functionality. Before SegServer can work, you need to specify a port to listen on. Use "{{trigger}}segserver-config port <portnumber>" to do so. Then add pages with "{{trigger}}segserver-config register <url> <factoid>". 
 postuninstall=segserver-uninstall

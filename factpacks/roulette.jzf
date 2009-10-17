@@ -7,7 +7,10 @@ roulette. When a user issues "~roulette", they will either get a response such a
 unloaded. This is indicated by "Chamber 6 of 6: *click*" followed by "The gun was unloaded. \n\
 Luckster". Also, if ~roulette is not used for 5 minutes, the game will be reset, and if the bot \
 is opped at a channel and a user loses at roulette, that user will be kicked off of the channel. \
-In a future release, there will be a mechanism to disable this kick functionality.
+In a future release, there will be a mechanism to disable this kick functionality.\n\
+Also, Roulette can install a SegServer page that serves up statistics on which players \
+die what percentage of the time. To get this page to work, install SegServer and \
+run "roulette-config register-web".
 t.roulette={{exact||roulette-create}}{{exact||roulette-next}}{{ifeq||{{get||roulette-loaded}}||{{get||roulette-current}}||{{exact||roulette-die||%0%}}||{{sendmessage||%channel%||%0%: (Chamber {{get||roulette-current}} of 6) *click*}}{{ifeq||{{get||roulette-current}}||6||{{exact||roulette-unloaded}}}}}}
 t.roulette-create={{ifeq||{{get||roulette-loaded}}||||{{set||roulette-loaded||{{eval||{{randomint||7}}+1}}}}}}{{ifeq||{{get||roulette-current}}||||{{set||roulette-current||0}}}}{{future||roulette-delete-key||300||roulette-delete}}
 restrict.t.roulette-create=1
