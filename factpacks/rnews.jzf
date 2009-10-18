@@ -62,26 +62,30 @@ bot if it isn't opped when news is added.
 # If it's not, then it generates a topic for the channel, sets it, and then sends a message
 # to the channel telling the user that they should use ~addnews instead to add a news item.
 # 
+g.newsprefix={{pset||rotatingnews-prefix-%channel%||%1-%}}The channel's prefix has been successfully set.\
+{{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}
+restrict.g.newsprefix=1
 g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item.||\
 {{lset||count||0}}{{lset||items||%0% {{timems}} %1-%}}\
 {{split||-----||\{{pget||rotatingnews-items-%channel%}}||item||\
 {{lset||count||{{eval||%count%+1}}}}\
-{{if||{{eval||%count%<20}}||{{lset||items||%items%-----%item%}}}}\
+{{if||{{eval||%count%<25}}||{{lset||items||%items%-----%item%}}}}\
 }}\
 {{pset||rotatingnews-items-%channel%||%items%}}\
 {{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
 The news has been successfully added to this channel.\
 }}
 restrict.g.addnews=1
-g.morenews={{if||{{exact||rotatingnews-in-use}}||This channel doesn't use RotatingNews.||\
-{{pastebin||\
-{{split||-----||{{pget||rotatingnews-items-%channel%}}||item||\
-{{dateformat||{{splitindex|| ||%l%||3||1}}}} \
-{{splitindex|| ||%l%||3||0}}\: \
-{{splitindex|| ||%l%||3||2}}}}\
-||\\n}}\
-}}\
-}}
+g.morenews=\
+{{if||{{exact||rotatingnews-in-use}}||\
+\\ {{pastebin||\
+\\ \\ {{split||-----||{{pget||rotatingnews-items-%channel%}}||item||\
+\\ \\ \\ {{dateformat||{{splitindex|| ||%item%||3||1}}}}, by "\
+\\ \\ \\ {{splitindex|| ||%item%||3||0}}"\: \
+\\ \\ \\ {{splitindex|| ||%item%||3||2}}\
+\\ \\ ||\\n}}\
+\\ }}\
+||This channel doesn't use RotatingNews.}}
 g.rotatingnews-generate-topic=\
 {{ife||{{pget||rotatingnews-channel-%channel%}}||{{error||That channel isn't controlled \
 by RotatingNews.}}}}\
@@ -91,17 +95,24 @@ by RotatingNews.}}}}\
 {{lset||continue||1}}\
 {{split||-----||%c-items%||item||\
 \\ {{if||%continue%||\
-\\ \\ {{lset||potential||%newtopic% \\|| {{splitindex|| ||%item%||3||2}}}}}}\
+\\ \\ {{lset||potential||%newtopic% \\|| {{splitindex|| ||%item%||3||2}}}}\
 \\ \\ {{if||{{eval||{{length||%potential%}}<420}}||\
 \\ \\ \\ {{lset||newtopic||%potential%}}\
 \\ \\ \\ ||{{lset||continue||0}}\
 \\ \\ }}\
 \\ }}\
 }}\
-{{if{{match||^ \\\\\\|\\\\\\| .*||%newtopic%}}||\
-\\ {{lset||newtopic||{{substring||4||1000||%newtopic%}}\
+{{if||{{match||^ \\\\\\|\\\\\\| .*||%newtopic%}}||\
+\\ {{lset||newtopic||{{substring||4||1000||%newtopic%}}}}\
 }}\
-{{sendmessage||%channel%||topic: %newtopic%}}
+{{lset||wasop||{{isop||%self%}}}}\
+{{sendmessage||ChanServ||op %channel% %self%}}\
+{{wait||1000}}\
+{{topic||%newtopic%}}\
+{{if||%wasop%||||\
+\\ {{wait||1000}}\
+\\ {{mode||-o %self%}}\
+}}
 library.g.rotatingnews-generate-topic=1
 g.rotatingnews-in-use={{ife||{{pget||rotatingnews-channel-%channel%}}||0||1}}
 library.g.rotatingnews-in-use=1
@@ -121,15 +132,15 @@ your current news will be remembered if you activate it in the future.\
 "{{trigger}}rotatingnews-config deactivate".\
 }}
 restrict.g.rotatingnews-config=1
-g._chan_ontopic_rotatingnews-trigger={{ifne||{{pget||rotatingnews-channel-%channel%}}||\
-{{ifneq||%0%||%self%||\
-\
-{{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
-{{sendmessage||%channel%||This channel uses RotatingNews, so you can't change the topic. \
-To add a news item to the topic, try "{{trigger}}addnews <text>".\
-}}\
+g._chan_ontopic_rotatingnews-trigger=\
+{{ifne||{{pget||rotatingnews-channel-%channel%}}||\
+\\ {{ifneq||%0%||%self%||\
+\\ \\ {{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
+\\ \\ {{sendmessage||%channel%||This channel uses RotatingNews, so you can't change the topic. \
+\\ \\ To add a news item to the topic, try "{{trigger}}addnews <text>".}}\
+\\ }}\
 }}
-library.g._chan_ontopic_rotatingnews-trigger=
+library.g._chan_ontopic_rotatingnews-trigger=1
 postinstall=Rotating news is now installed but not active. To activate it at a particular \
 channel, send "{{trigger}}rotatingnews-config activate" at that channel.
 
