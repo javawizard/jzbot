@@ -1678,4 +1678,9 @@ public class JZBot
         }
         return null;
     }
+    
+    public static String pastebin(String text)
+    {
+        return Pastebin.createPost("jzbot", text, Pastebin.Duration.DAY, null);
+    }
 }

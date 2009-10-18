@@ -25,6 +25,7 @@ import org.opengroove.jzbot.storage.HasFactoids;
 import org.opengroove.jzbot.utils.JZUtils;
 import org.opengroove.jzbot.utils.Pastebin;
 import org.opengroove.jzbot.utils.Pastebin.Duration;
+import org.opengroove.utils.English;
 
 public class FactoidCommand implements Command
 {
@@ -179,7 +180,7 @@ public class FactoidCommand implements Command
             {
                 String currentList = "";
                 for (Factoid f : list.isolate())
-                { 
+                {
                     currentList += (f.isLibrary() ? "%" : "")
                             + (f.isRestricted() ? "@" : "") + f.getName() + "  ";
                     if (currentList.length() > 400)
@@ -356,7 +357,8 @@ public class FactoidCommand implements Command
         }
         else if (command.equals("details"))
         {
-            
+            doFactpackDetails(pm, sender, hostname, isGlobal, channel, storedChannel,
+                    force, absolute, afterCommand);
         }
         else if (command.equals("info"))
         {
@@ -368,6 +370,67 @@ public class FactoidCommand implements Command
                     "Invalid pack command. Try \"factoid pack\" for a list "
                             + "of available pack commands.");
         }
+    }
+    
+    private void doFactpackDetails(boolean pm, String sender, String hostname,
+            boolean isGlobal, String channel, Channel storedChannel, boolean force,
+            boolean absolute, String afterCommand)
+    {
+        String location = afterCommand;
+        String packContents;
+        if (location.startsWith("http://pastebin.com/"))
+            packContents = Pastebin.readPost(location);
+        else
+        {
+            File file = JZBot.getLocalFactpackFile(location);
+            if (file == null)
+                throw new ResponseException("Invalid factpack \"" + location
+                        + "\", must be either a known factpack "
+                        + "or a url at http://pastebin.com");
+            packContents = StringUtils.readFile(file);
+        }
+        Factpack factpack = Factpack.parse(packContents);
+        String s = factpack.name + ": ";
+        String[] strings = new String[]
+        {
+                "Written by \"" + factpack.author + "\"",
+                factpack.scope + " scope",
+                "" + factpack.factoids.length + " factoid"
+                        + (factpack.factoids.length == 1 ? "" : "s"),
+                generateDependencyString(factpack.depends)
+                        + (factpack.description.equals("") ? "No description"
+                                : "Description:")
+        };
+        JZUtils.ircSendDelimited(s, strings, ", ", JZBot.bot, pm ? sender : channel);
+        if (!factpack.description.equals(""))
+        {
+            String[] descStrings = factpack.description.split("\n");
+            if (descStrings.length > 2)
+            {
+                descStrings = new String[]
+                {
+                    "See " + JZBot.pastebin(factpack.description)
+                            + " for the full description"
+                };
+            }
+            for (String l : descStrings)
+                JZBot.bot.sendMessage(pm ? sender : channel, l);
+        }
+    }
+    
+    private String generateDependencyString(Dependency[] deps)
+    {
+        if (deps.length == 0)
+            return "No dependencies, ";
+        String[] depNames = new String[Math.max(deps.length, 6)];
+        for (int i = 0; i < depNames.length; i++)
+        {
+            depNames[i] = deps[i].name;
+        }
+        if (depNames.length < deps.length)
+            depNames[depNames.length - 1] = "" + ((deps.length - depNames.length) + 1)
+                    + " others";
+        return "Depends on " + English.and(depNames) + "; ";
     }
     
     private void doFactpackRemove(boolean pm, String sender, String hostname,
@@ -709,6 +772,18 @@ public class FactoidCommand implements Command
                                     + "override this with \"+install\" instead "
                                     + "of \"install\" if you want.");
                 
+            }
+            /*
+             * Now we'll check the factoid for syntax errors.
+             */
+            try
+            {
+                FactParser.parse(entry.contents, "__factpack_install_parse_" + entry.name);
+            }
+            catch (Exception e)
+            {
+                throw new ResponseException("There is a syntax error in the factoid \""
+                        + entry.name + "\" in the factpack: " + JZBot.pastebinStack(e));
             }
         }
         /*

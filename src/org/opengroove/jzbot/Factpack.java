@@ -72,9 +72,12 @@ public class Factpack
         }
         String name = props.getProperty("name");
         verify(name, "No name was present.");
+        verifyMatch(name, "^[0-9a-z\\-\\.]$", "Invalid factpack name \"" + name
+                + "\". The name can consist only of digits, "
+                + "lower-case letters, hyphens, and periods.");
         pack.name = name;
         pack.author = props.getProperty("author");
-        pack.description = props.getProperty("description");
+        pack.description = props.getProperty("description", "");
         ArrayList<Dependency> depends = new ArrayList<Dependency>();
         String dependencies = props.getProperty("depends");
         if (dependencies != null && !dependencies.equals(""))
@@ -114,6 +117,12 @@ public class Factpack
         }
         pack.factoids = entries.toArray(new FactpackEntry[0]);
         return pack;
+    }
+    
+    private static void verifyMatch(String s, String regex, String message)
+    {
+        if (!s.matches(regex))
+            throw new IllegalArgumentException(message);
     }
     
     private static Properties createDefaults()
