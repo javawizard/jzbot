@@ -44,9 +44,9 @@ public enum ConfigVars
             return "This config variable is the charset used to read and write characters "
                     + "from and to the IRC server. Available charsets are, separated "
                     + "by spaces: http://pastebin.com/"
-                    + Pastebin.createPost("jzbot", StringUtils.delimited(
-                            Charset.availableCharsets().keySet().toArray(
-                                    new String[0]), "   "), Duration.DAY, null);
+                    + Pastebin.createPost("jzbot", StringUtils.delimited(Charset
+                            .availableCharsets().keySet().toArray(new String[0]), "   "),
+                            Duration.DAY, null);
         }
         
         public void set(String value)
@@ -79,13 +79,21 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    logsize(
-            "0",
-            "This config variable is the maximum size, in bytes, of the logs to "
-                    + "keep for each channel on a per-channel basis. Use the {{logs}} function "
-                    + "to actually read these logs. 0 disables logging. This doesn't take effect "
-                    + "until the bot is reconnected."), nolog(
-            "",
+    openstatus("1", "This config variable specifies whether everyone can run \"~status\". " +
+    		"If this is 1, then everyone can. If this is 0, only superops can.")
+    {
+        public void set(String value)
+        {
+            if (!(value.equals("0") || value.equals("1")))
+                throw new ResponseException(
+                        "Invalid value; must be 0 or 1, see \"~config openstatus\" for help");
+            super.set(value);
+        }
+    },
+    logsize("0", "This config variable is the maximum size, in bytes, of the logs to "
+            + "keep for each channel on a per-channel basis. Use the {{logs}} function "
+            + "to actually read these logs. 0 disables logging. This doesn't take effect "
+            + "until the bot is reconnected."), nolog("",
             "This config variable is a pipe-separated list of channels that should "
                     + "not be logged, even if the logsize variable is set to a "
                     + "non-zero value. This doesn't take effect until the bot "

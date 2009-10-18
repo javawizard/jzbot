@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.opengroove.jzbot.Command;
+import org.opengroove.jzbot.ConfigVars;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.Channel;
@@ -23,6 +24,8 @@ public class StatusCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
+        if (ConfigVars.openstatus.get().equals("0"))
+            JZBot.verifySuperop(hostname);
         if (arguments.equals(""))
         {
             String s = "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
