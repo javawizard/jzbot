@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -195,7 +197,7 @@ public class JZBot
         return getEvalEngine(ConfigVars.evalengine.get());
     }
     
-    public static class FutureFactoid extends Thread
+    public static class FutureFactoid implements Runnable
     {
         private int delay;
         private String channel;
@@ -208,6 +210,10 @@ public class JZBot
         public FutureFactoid(int delay, String channel, ArgumentList arguments,
                 String sender, String key, FactQuota quota)
         {
+            if (delay > (86400 * 2))
+                throw new RuntimeException("Futures can't be scheduled more than 2 days ("
+                        + (86400 * 2) + " seconds) into the future. You're "
+                        + "trying to schedule " + "a future to run sooner than that.");
             if (channel == null)
                 throw new RuntimeException("Can't schedule future factoids in pm. "
                         + "Run this factoid at a channel.");
@@ -218,25 +224,45 @@ public class JZBot
             this.key = key;
             this.quota = quota;
             startTime = System.currentTimeMillis() + (delay * 1000);
+            /*
+             * We want to force the arguments to be evaluated now, instead of when the
+             * future is run
+             */
+            for (int i = 0; i < arguments.length(); i++)
+                arguments.get(i);
         }
         
         public void run()
         {
-            try
-            {
-                startTime = System.currentTimeMillis() + (delay * 1000);
-                Thread.sleep(delay * 1000);
-            }
-            catch (InterruptedException e)
-            {
-            }
+            // try
+            // {
+            // startTime = System.currentTimeMillis() + (delay * 1000);
+            // Thread.sleep(delay * 1000);
+            // }
+            // catch (InterruptedException e)
+            // {
+            // }
             synchronized (futureFactoidLock)
             {
                 if (futureFactoids.get(key) != this)
                     return;
                 futureFactoids.remove(key);
-                String result = doFactImport(channel, arguments, sender, true, quota,
-                        ImportLevel.any);
+                TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
+                tkt.start();
+                String result;
+                try
+                {
+                    result = doFactImport(channel, arguments, sender, true, quota,
+                            ImportLevel.any);
+                }
+                catch (Throwable t)
+                {
+                    result = "A future error occured: " + pastebinStack(t);
+                }
+                finally
+                {
+                    tkt.active = false;
+                }
                 if (result.trim().equals(""))
                     return;
                 if (result.startsWith("<ACTION>"))
@@ -245,10 +271,17 @@ public class JZBot
                     bot.sendMessage(channel, result);
             }
         }
+        
+        public void start()
+        {
+            futureFactoidPool.schedule(this, delay, TimeUnit.SECONDS);
+        }
     }
     
     public static HashMap<String, FutureFactoid> futureFactoids = new HashMap<String, FutureFactoid>();
     public static final Object futureFactoidLock = new Object();
+    public static ScheduledThreadPoolExecutor futureFactoidPool = new ScheduledThreadPoolExecutor(
+            1);
     public static boolean manualReconnect = false;
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
     // numeric 320: is signed on as account
