@@ -69,7 +69,7 @@ g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item
 {{lset||count||0}}{{lset||items||%0% {{timems}} %1-%}}\
 {{split||-----||\{{pget||rotatingnews-items-%channel%}}||item||\
 {{lset||count||{{eval||%count%+1}}}}\
-{{if||{{eval||%count%<25}}||{{lset||items||%items%-----%item%}}}}\
+{{if||{{eval||%count%<50}}||{{lset||items||%items%-----%item%}}}}\
 }}\
 {{pset||rotatingnews-items-%channel%||%items%}}\
 {{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
