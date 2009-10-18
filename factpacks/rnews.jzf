@@ -63,7 +63,7 @@ bot if it isn't opped when news is added.
 # to the channel telling the user that they should use ~addnews instead to add a news item.
 # 
 g.newsprefix={{pset||rotatingnews-prefix-%channel%||%1-%}}The channel's prefix has been successfully set.\
-{{future||rotatingnews-key-%channel%||5||}}
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}
 restrict.g.newsprefix=1
 g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item.||\
 {{lset||count||0}}{{lset||items||%0% {{timems}} %1-%}}\
@@ -72,7 +72,7 @@ g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item
 {{if||{{eval||%count%<25}}||{{lset||items||%items%-----%item%}}}}\
 }}\
 {{pset||rotatingnews-items-%channel%||%items%}}\
-{{future||rotatingnews-key-%channel%||5||}}\
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
 The news has been successfully added to this channel.\
 }}
 restrict.g.addnews=1
@@ -123,7 +123,7 @@ g.rotatingnews-config={{switch||%1%\
 "{{trigger}}newsprefix <text>" to set a prefix for your channel.}}}}\
 RotatingNews has been activated. If you want to deactivate it at a later date, use \
 "{{trigger}}rotatingnews-config deactivate".\
-{{future||rotatingnews-key-%channel%||5||}}\
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
 ||deactivate||\
 {{pdelete||rotatingnews-channel-%channel%}}RotatingNews has been deactivated. All of \
 your current news will be remembered if you activate it in the future.\
@@ -135,7 +135,7 @@ restrict.g.rotatingnews-config=1
 g._chan_ontopic_rotatingnews-trigger=\
 {{ifne||{{pget||rotatingnews-channel-%channel%}}||\
 \\ {{ifneq||%0%||%self%||\
-\\ \\ {{future||rotatingnews-key-%channel%||5||}}\
+\\ \\ {{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
 \\ \\ {{sendmessage||%channel%||This channel uses RotatingNews, so you can't change the topic. \
 \\ \\ To add a news item to the topic, try "{{trigger}}addnews <text>".}}\
 \\ }}\
