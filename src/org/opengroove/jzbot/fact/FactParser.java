@@ -242,6 +242,7 @@ public class FactParser
             case 'c':
                 return '\u0003';
             case 'x':
+            case ' ':
                 return 0;
         }
         return c;

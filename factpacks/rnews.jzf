@@ -61,6 +61,7 @@ bot if it isn't opped when news is added.
 # is one under rn control. If it is, it checks to see if the topic changer is the bot itself.
 # If it's not, then it generates a topic for the channel, sets it, and then sends a message
 # to the channel telling the user that they should use ~addnews instead to add a news item.
+# 
 g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item.||\
 {{lset||count||0}}{{lset||items||%0% {{timems}} %1-%}}\
 {{split||-----||\{{pget||rotatingnews-items-%channel%}}||item||\
@@ -68,7 +69,8 @@ g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item
 {{if||{{eval||%count%<20}}||{{lset||items||%items%-----%item%}}}}\
 }}\
 {{pset||rotatingnews-items-%channel%||%items%}}\
-{{exact||rotatingnews-generate-topic}}\
+{{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
+The news has been successfully added to this channel.\
 }}
 restrict.g.addnews=1
 g.morenews={{if||{{exact||rotatingnews-in-use}}||This channel doesn't use RotatingNews.||\
@@ -80,24 +82,54 @@ g.morenews={{if||{{exact||rotatingnews-in-use}}||This channel doesn't use Rotati
 ||\\n}}\
 }}\
 }}
-g.rotatingnews-generate-topic=
+g.rotatingnews-generate-topic=\
+{{ife||{{pget||rotatingnews-channel-%channel%}}||{{error||That channel isn't controlled \
+by RotatingNews.}}}}\
+{{lset||prefix||{{pget||rotatingnews-prefix-%channel%}}}}\
+{{lset||c-items||{{pget||rotatingnews-items-%channel%}}}}\
+{{lset||newtopic||%prefix%}}\
+{{lset||continue||1}}\
+{{split||-----||%c-items%||item||\
+\\ {{if||%continue%||\
+\\ \\ {{lset||potential||%newtopic% \\|| {{splitindex|| ||%item%||3||2}}}}}}\
+\\ \\ {{if||{{eval||{{length||%potential%}}<420}}||\
+\\ \\ \\ {{lset||newtopic||%potential%}}\
+\\ \\ \\ ||{{lset||continue||0}}\
+\\ \\ }}\
+\\ }}\
+}}\
+{{if{{match||^ \\\\\\|\\\\\\| .*||%newtopic%}}||\
+\\ {{lset||newtopic||{{substring||4||1000||%newtopic%}}\
+}}\
+{{sendmessage||%channel%||topic: %newtopic%}}
 library.g.rotatingnews-generate-topic=1
 g.rotatingnews-in-use={{ife||{{pget||rotatingnews-channel-%channel%}}||0||1}}
 library.g.rotatingnews-in-use=1
 g.rotatingnews-config={{switch||%1%\
 ||activate||\
 {{pset||rotatingnews-channel-%channel%||1}}{{ife||{{pget||rotatingnews-prefix-%channel%}}\
-||{{pset||rotatingnews-channel-%channel%||RotatingNews has been activated. Use \
+||{{pset||rotatingnews-prefix-%channel%||RotatingNews has been activated. Use \
 "{{trigger}}newsprefix <text>" to set a prefix for your channel.}}}}\
 RotatingNews has been activated. If you want to deactivate it at a later date, use \
 "{{trigger}}rotatingnews-config deactivate".\
+{{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
 ||deactivate||\
 {{pdelete||rotatingnews-channel-%channel%}}RotatingNews has been deactivated. All of \
 your current news will be remembered if you activate it in the future.\
 \
 ||Invalid command. Use "{{trigger}}rotatingnews-config activate" or \
-"{{trigger}}rotatingnews-config deactivate".
-restrict.g.rotatingnews-config
+"{{trigger}}rotatingnews-config deactivate".\
+}}
+restrict.g.rotatingnews-config=1
+g._chan_ontopic_rotatingnews-trigger={{ifne||{{pget||rotatingnews-channel-%channel%}}||\
+{{ifneq||%0%||%self%||\
+\
+{{future||rotatingnews-key-%channel%||3||rotatingnews-generate-topic}}\
+{{sendmessage||%channel%||This channel uses RotatingNews, so you can't change the topic. \
+To add a news item to the topic, try "{{trigger}}addnews <text>".\
+}}\
+}}
+library.g._chan_ontopic_rotatingnews-trigger=
 postinstall=Rotating news is now installed but not active. To activate it at a particular \
 channel, send "{{trigger}}rotatingnews-config activate" at that channel.
 
