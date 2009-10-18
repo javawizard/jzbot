@@ -1,0 +1,16 @@
+name=local.admin.rotatingnews
+author=Alexander Boyd
+scope=global
+description=RotatingNews allows a channel's topic to be continuously in motion. It allows \
+each channel that it is to control to specify a prefix, which will always be present \
+at the beginning of the channel's topic. Then, each channel can add news with "~addnews". \
+When this is run, news items will be "rotated" through the channel's topic, always keeping \n\
+the length of the topic below 420 characters. News items that have been rotated out of the \
+channel's topic can be accessed with "~morenews", which pastebins all news (including news \
+in the topic) back 20 news items, along with the dates that each item was posted and the \
+authors of each item. If someone tries to change the topic of a channel that RotatingNews \n\
+is controlling, RotatingNews will change the topic back and issue a message to the channel \
+telling the user that they should use ~addnews instead. RotatingNews requires ChanServ's \
+"+o" flag at every channel that RotatingNews should control. It will use this to op the \
+bot if it isn't opped when news is added.
+# As expected, rn (RotatingNews) stores everything as persistent variables. 
