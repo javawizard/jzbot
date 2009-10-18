@@ -35,18 +35,16 @@ public class StatusCommand implements Command
             JZBot.bot.sendMessage(pm ? sender : channel, s);
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "For more info, try \"status gc\", \"status threads\", "
-                            + "\"status facts\", or \"status logging\".");
+                            + "\"status facts\". \"status storage\", "
+                            + "\"status mx\", or \"status logging\".");
         }
         else if (arguments.equals("gc"))
         {
-            if (arguments.equals("gc"))
-            {
-                long t = System.currentTimeMillis();
-                System.gc();
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "Garbage-collected successfully in "
-                                + (System.currentTimeMillis() - t) + " milliseconds.");
-            }
+            long t = System.currentTimeMillis();
+            System.gc();
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "Garbage-collected successfully in " + (System.currentTimeMillis() - t)
+                            + " milliseconds.");
         }
         else if (arguments.equals("threads"))
         {
@@ -97,9 +95,9 @@ public class StatusCommand implements Command
                     + (strings.size() > 0 ? ", per-channel: " : ""), strings
                     .toArray(new String[0]), ", ", JZBot.bot, pm ? sender : channel);
         }
-        else if(arguments.equals("facts"))
+        else if (arguments.equals("facts"))
         {
-            JZBot.bot.sendMessage(pm?sender:channel, "Fact status coming soon.");
+            JZBot.bot.sendMessage(pm ? sender : channel, "Fact status coming soon.");
         }
         else
         {
