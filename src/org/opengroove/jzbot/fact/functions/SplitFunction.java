@@ -17,6 +17,8 @@ public class SplitFunction extends Function
         if (arguments.length() > 4)
             delimiter = arguments.get(4);
         String[] split = string.split(regex);
+        if (split.length == 1 && split[0].equals(""))
+            split = new String[0];
         StringBuffer result = new StringBuffer();
         boolean first = true;
         String previousValue = context.getLocalVars().get(varname);
@@ -55,7 +57,7 @@ public class SplitFunction extends Function
                 + "means that in the above example, if \"first.second.third\" were replaced "
                 + "with \"first.second.third...\", the output would still be the same. {{split}} "
                 + "can be used with <string> being the {{numberlist}} function to effectively "
-                + "create a for loop.";
+                + "create a for loop. Also, if <string> is empty, <action> is not evaluated.";
     }
     
     public String getName()

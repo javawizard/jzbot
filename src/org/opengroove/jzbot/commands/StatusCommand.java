@@ -2,6 +2,7 @@ package org.opengroove.jzbot.commands;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.ConfigVars;
@@ -10,6 +11,8 @@ import org.opengroove.jzbot.fact.FactParser;
 import org.opengroove.jzbot.storage.Channel;
 import org.opengroove.jzbot.storage.Factoid;
 import org.opengroove.jzbot.utils.JZUtils;
+import org.opengroove.jzbot.utils.Pastebin;
+import org.opengroove.jzbot.utils.Pastebin.Duration;
 
 public class StatusCommand implements Command
 {
@@ -39,7 +42,8 @@ public class StatusCommand implements Command
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "For more info, try \"status gc\", \"status threads\", "
                             + "\"status facts\". \"status storage\", "
-                            + "\"status mx\", or \"status logging\".");
+                            + "\"status mx\", \"status stack\", "
+                            + "or \"status logging\".");
         }
         else if (arguments.equals("gc"))
         {
@@ -101,6 +105,24 @@ public class StatusCommand implements Command
         else if (arguments.equals("facts"))
         {
             JZBot.bot.sendMessage(pm ? sender : channel, "Fact status coming soon.");
+        }
+        else if (arguments.equals("stack"))
+        {
+            StringBuffer b = new StringBuffer();
+            Map<Thread, StackTraceElement[]> stacks = Thread.getAllStackTraces();
+            for (Map.Entry<Thread, StackTraceElement[]> e : stacks.entrySet())
+            {
+                b.append("Thread: " + e.getKey().getName() + "\n");
+                for (StackTraceElement element : e.getValue())
+                {
+                    b.append("    at " + element.toString() + "\n");
+                }
+                b.append("\n");
+            }
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "Stack traces of all live threads: http://pastebin.com/"
+                            + Pastebin
+                                    .createPost("jzbot", b.toString(), Duration.DAY, null));
         }
         else
         {
