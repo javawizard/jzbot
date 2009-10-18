@@ -1,5 +1,6 @@
 package org.opengroove.jzbot.commands;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.opengroove.jzbot.Command;
@@ -80,6 +81,29 @@ public class StatusCommand implements Command
             JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", JZBot.bot,
                     pm ? sender : channel);
         }
+        else if (arguments.equals("logging"))
+        {
+            File logsFolder = new File("storage/logs");
+            long total = 0;
+            ArrayList<String> strings = new ArrayList<String>();
+            for (File f : logsFolder.listFiles())
+            {
+                if (!f.isFile())
+                    continue;
+                total += f.length();
+                strings.add("" + f.getName() + ":" + f.length());
+            }
+            JZUtils.ircSendDelimited("Total log size in bytes: " + total
+                    + (strings.size() > 0 ? ", per-channel: " : ""), strings
+                    .toArray(new String[0]), ", ", JZBot.bot, pm ? sender : channel);
+        }
+        else if(arguments.equals("facts"))
+        {
+            JZBot.bot.sendMessage(pm?sender:channel, "Fact status coming soon.");
+        }
+        else
+        {
+            JZBot.bot.sendMessage(pm ? sender : channel, "Invalid status command.");
+        }
     }
-    
 }

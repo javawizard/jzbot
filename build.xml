@@ -1,10 +1,12 @@
 <project name="jzbot2" default="archive">
 	<target name="archive">
-		<tar destfile="jzbot2-old.tar.gz" compression="gzip">
+		<!-- We're using a tar here instead of a tar.gz or a zip so 
+		that rsync uploads go really fast. -->
+		<tar destfile="jzbot2-old.tar">
 			<fileset dir=".">
 				<include name="**/*" />
 				<exclude name="**/.svn" />
-				<exclude name="jzbot2-old.tar.gz" />
+				<exclude name="jzbot2-old.tar" />
 				<exclude name="storage" />
 				<exclude name="storage/**" />
 			</fileset>
@@ -17,7 +19,7 @@
 				<include name="**/*" />
 				<exclude name="**/.svn" />
 				<exclude name="**/.*" />
-				<exclude name="jzbot2-old.tar.gz" />
+				<exclude name="jzbot2-old.tar" />
 				<exclude name="storage" />
 				<exclude name="storage/**" />
 			</fileset>
@@ -35,7 +37,7 @@
 			<arg value="-vvv" />
 			<arg value="-e" />
 			<arg value="ssh" />
-			<arg value="jzbot2-old.tar.gz" />
+			<arg value="jzbot2-old.tar" />
 			<arg value="root@trivergia.com:/jzbot2/jzbot2-old.tar.gz" />
 		</exec>
 	</target>

@@ -8,16 +8,17 @@ import org.opengroove.jzbot.Protocol;
 
 public class JZUtils
 {
-    public static String[] delimitedLengthRestricted(String[] items,
-            String delimiter, int length)
+    public static String[] delimitedLengthRestricted(String[] items, String delimiter,
+            int length)
     {
         ArrayList<String> strings = new ArrayList<String>();
         StringBuffer currentBuffer = new StringBuffer();
         for (int i = 0; i < items.length; i++)
         {
             String item = items[i];
-            int targetLength = (currentBuffer.length() == 0 ? item.length()
-                    : delimiter.length() + item.length());
+            int targetLength = (currentBuffer.length() == 0 ? item.length() : delimiter
+                    .length()
+                    + item.length());
             if ((currentBuffer.length() + targetLength) > length
                     && currentBuffer.length() > 0)
             {
@@ -39,9 +40,22 @@ public class JZUtils
                 .getProtocolDelimitedLength());
     }
     
-    public static void ircSendDelimited(String[] items, String delimiter,
+    public static void ircSendDelimited(String[] items, String delimiter, Protocol bot,
+            String recipient)
+    {
+        ircSendDelimited("", items, delimiter, bot, recipient);
+    }
+    
+    public static void ircSendDelimited(String prefix, String[] items, String delimiter,
             Protocol bot, String recipient)
     {
+        if (items.length > 0)
+            items[0] = prefix + items[0];
+        else
+            items = new String[]
+            {
+                prefix
+            };
         for (String s : ircDelimited(items, delimiter))
         {
             bot.sendMessage(recipient, s);
