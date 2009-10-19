@@ -106,7 +106,7 @@ by RotatingNews.}}}}\
 \\ {{lset||newtopic||{{substring||4||1000||%newtopic%}}}}\
 }}\
 {{lset||wasop||{{isop||%self%}}}}\
-{{sendmessage||ChanServ||op %channel% %self%}}\
+{{if||%wasop%||||{{sendmessage||ChanServ||op %channel% %self%}}}}\
 {{wait||1000}}\
 {{topic||%newtopic%}}\
 {{if||%wasop%||||\
@@ -141,6 +141,44 @@ g._chan_ontopic_rotatingnews-trigger=\
 \\ }}\
 }}
 library.g._chan_ontopic_rotatingnews-trigger=1
+# For deleting news, we need to make three passes over the list of news items. The first 
+# pass, we find the news item we want to delete by incrementing a local var. Each item
+# is prefixed with 1 if it's to be included or 0 if it's the item to delete. Then, we
+# make a second pass with {{filter}}, filtering out the item that starts with a 0. Then,
+# we make a third pass, this time removing the leading 1. We then set this back into
+# the channel's persistent variable.
+g.deletenews=\
+{{lset||items||{{pget||rotatingnews-items-%channel%}}}}\
+{{ife||%items%||This channel doesn't have any news items.||\
+\\ {{lset||current||0}}\
+\\ {{lset||items||\
+\\ \\ {{split||-----||%items%||item||\
+\\ \\ \\ {{lset||current||{{eval||%current%+1}}}}\
+\\ \\ \\ {{ifeq||%current%||%1%||0||1}}\
+\\ \\ \\ %item%\
+\\ \\ \\ ||-----\
+\\ \\ }}\
+\\ }}\
+\\ {{lset||items||\
+\\ \\ {{filter||-----||%items%||^1.*\\$||-----}}\
+\\ }}\
+\\ {{lset||items||\
+\\ \\ {{split||-----||%items%||item||\
+\\ \\ \\ {{substring||1||1000||%item%}}\
+\\ \\ \\ ||-----\
+\\ \\ }}\
+\\ }}\
+\\ {{ifeq||{{pget||rotatingnews-items-%channel%}}||%items%||\
+\\ \\ There isn't a news item with that index. Use "deletenews <index>", \
+\\ \\ where <index> is the line number of the news item you want to delete \
+\\ \\ as reported by "morenews".\
+\\ \\ ||\
+\\ \\ {{pset||rotatingnews-items-%channel%||%items%}}\
+\\ \\ {{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
+\\ \\ The news was successfully deleted.\
+\\ }}\
+}}
+restrict.g.deletenews=1
 postinstall=Rotating news is now installed but not active. To activate it at a particular \
 channel, send "{{trigger}}rotatingnews-config activate" at that channel.
 

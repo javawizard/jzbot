@@ -1,0 +1,3 @@
+I'm thinking it would be cool to write a factoid language debugger for marlen. The idea would be that you can set breakpoints at certain positions within any factoids. Then you'd open a page to 
+a particular port that marlen starts the debugger on. When something hits the breakpoint, a new
+window opens (from the main debugger window), showing that thread...

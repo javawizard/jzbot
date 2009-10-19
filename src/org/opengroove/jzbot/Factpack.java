@@ -72,7 +72,7 @@ public class Factpack
         }
         String name = props.getProperty("name");
         verify(name, "No name was present.");
-        verifyMatch(name, "^[0-9a-z\\-\\.]$", "Invalid factpack name \"" + name
+        verifyMatch(name, "^[0-9a-z\\-\\.]*$", "Invalid factpack name \"" + name
                 + "\". The name can consist only of digits, "
                 + "lower-case letters, hyphens, and periods.");
         pack.name = name;
