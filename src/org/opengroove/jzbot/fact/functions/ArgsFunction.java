@@ -7,7 +7,7 @@ import org.opengroove.jzbot.fact.FunctionReference;
 import org.opengroove.jzbot.fact.Literal;
 import org.opengroove.jzbot.fact.Sequence;
 
-public class Args extends Function
+public class ArgsFunction extends Function
 {
     
     @Override
