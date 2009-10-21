@@ -62,6 +62,12 @@ public abstract class PircBot implements ReplyConstants
     private static final int OP_REMOVE = 2;
     private static final int VOICE_ADD = 3;
     private static final int VOICE_REMOVE = 4;
+    private static final int HALFOP_ADD = 5;
+    private static final int HALFOP_REMOVE = 6;
+    private static final int FOUNDER_ADD = 7;
+    private static final int FOUNDER_REMOVE = 8;
+    
+    private boolean extensionsOn = true;
     
     /**
      * Constructs a PircBot with the default settings. Your own constructors in classes
@@ -1334,22 +1340,27 @@ public abstract class PircBot implements ReplyConstants
             {
                 String nick = tokenizer.nextToken();
                 String prefix = "";
-                if (nick.startsWith("@"))
+                while (!nick.equals(""))
                 {
-                    // User is an operator in this channel.
-                    prefix = "@";
+                    String c = null;
+                    if (nick.startsWith("@"))
+                        // User is an operator in this channel.
+                        c = "@";
+                    else if (nick.startsWith("+"))
+                        // User is voiced in this channel.
+                        c = "+";
+                    else if (nick.startsWith("."))
+                        // Some wibbly status I've never seen before...
+                        c = ".";
+                    else if (nick.startsWith("~"))
+                        c = "~";
+                    else if (nick.startsWith("%"))
+                        c = "%";
+                    else
+                        break;
+                    nick = nick.substring(prefix.length());
+                    prefix += c;
                 }
-                else if (nick.startsWith("+"))
-                {
-                    // User is voiced in this channel.
-                    prefix = "+";
-                }
-                else if (nick.startsWith("."))
-                {
-                    // Some wibbly status I've never seen before...
-                    prefix = ".";
-                }
-                nick = nick.substring(prefix.length());
                 this.addUser(channel, new User(prefix, nick));
             }
         }
@@ -1696,6 +1707,32 @@ public abstract class PircBot implements ReplyConstants
     {
     }
     
+    public static enum UserMode
+    {
+        o("@"), v("+"), h("%"), q("~"), a("&");
+        private String symbol;
+        
+        private UserMode(String symbol)
+        {
+            this.symbol = symbol;
+        }
+        
+        public String getSymbol()
+
+        {
+            return this.symbol;
+        }
+    }
+    
+    private static HashMap<String, UserMode> reverseUserModeMap = new HashMap<String, UserMode>();
+    static
+    {
+        for (UserMode mode : UserMode.values())
+        {
+            reverseUserModeMap.put(mode.getSymbol(), mode);
+        }
+    }
+    
     /**
      * Called when the mode of a channel is set. We process this in order to call the
      * appropriate onOp, onDeop, etc method before finally calling the override-able
@@ -1747,33 +1784,37 @@ public abstract class PircBot implements ReplyConstants
                 {
                     pn = atPos;
                 }
-                else if (atPos == 'o')
+                else if (isUserMode(atPos))
                 {
-                    if (pn == '+')
+                    /*
+                     * We'll update the user first
+                     */
+                    this.updateUser(channel, UserMode.valueOf("" + atPos).getSymbol(),
+                            pn == '+', params[p]);
+                    /*
+                     * Then we'll call the listener method if there is one
+                     */
+                    if (atPos == 'o')
                     {
-                        this.updateUser(channel, OP_ADD, params[p]);
-                        onOp(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
+                        if (pn == '+')
+                            onOp(channel, sourceNick, sourceLogin, sourceHostname,
+                                    params[p]);
+                        else
+                            onDeop(channel, sourceNick, sourceLogin, sourceHostname,
+                                    params[p]);
                     }
-                    else
+                    else if (atPos == 'v')
                     {
-                        this.updateUser(channel, OP_REMOVE, params[p]);
-                        onDeop(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
+                        if (pn == '+')
+                            onVoice(channel, sourceNick, sourceLogin, sourceHostname,
+                                    params[p]);
+                        else
+                            onDeVoice(channel, sourceNick, sourceLogin, sourceHostname,
+                                    params[p]);
                     }
-                    p++;
-                }
-                else if (atPos == 'v')
-                {
-                    if (pn == '+')
-                    {
-                        this.updateUser(channel, VOICE_ADD, params[p]);
-                        onVoice(channel, sourceNick, sourceLogin, sourceHostname, params[p]);
-                    }
-                    else
-                    {
-                        this.updateUser(channel, VOICE_REMOVE, params[p]);
-                        onDeVoice(channel, sourceNick, sourceLogin, sourceHostname,
-                                params[p]);
-                    }
+                    /*
+                     * Then we'll increment the parameter positions
+                     */
                     p++;
                 }
                 else if (atPos == 'k')
@@ -1897,6 +1938,18 @@ public abstract class PircBot implements ReplyConstants
             // The mode of a user is being changed.
             String nick = target;
             this.onUserMode(nick, sourceNick, sourceLogin, sourceHostname, mode);
+        }
+    }
+    
+    private boolean isUserMode(char atPos)
+    {
+        try
+        {
+            return UserMode.valueOf("" + atPos) != null;
+        }
+        catch (Exception e)
+        {
+            return false;
         }
     }
     
@@ -3498,7 +3551,19 @@ public abstract class PircBot implements ReplyConstants
         }
     }
     
-    private final void updateUser(String channel, int userMode, String nick)
+    public static String modifyPrefix(String current, String n, boolean add)
+    {
+        if (add)
+        {
+            if (current.contains(n))
+                return current;
+            return n + current;
+        }
+        else
+            return current.replace(n, "");
+    }
+    
+    private final void updateUser(String channel, String prefix, boolean add, String nick)
     {
         channel = channel.toLowerCase();
         synchronized (_channels)
@@ -3513,50 +3578,8 @@ public abstract class PircBot implements ReplyConstants
                     User userObj = (User) enumeration.nextElement();
                     if (userObj.getNick().equalsIgnoreCase(nick))
                     {
-                        if (userMode == OP_ADD)
-                        {
-                            if (userObj.hasVoice())
-                            {
-                                newUser = new User("@+", nick);
-                            }
-                            else
-                            {
-                                newUser = new User("@", nick);
-                            }
-                        }
-                        else if (userMode == OP_REMOVE)
-                        {
-                            if (userObj.hasVoice())
-                            {
-                                newUser = new User("+", nick);
-                            }
-                            else
-                            {
-                                newUser = new User("", nick);
-                            }
-                        }
-                        else if (userMode == VOICE_ADD)
-                        {
-                            if (userObj.isOp())
-                            {
-                                newUser = new User("@+", nick);
-                            }
-                            else
-                            {
-                                newUser = new User("+", nick);
-                            }
-                        }
-                        else if (userMode == VOICE_REMOVE)
-                        {
-                            if (userObj.isOp())
-                            {
-                                newUser = new User("@", nick);
-                            }
-                            else
-                            {
-                                newUser = new User("", nick);
-                            }
-                        }
+                        newUser = new User(modifyPrefix(userObj.getPrefix(), prefix, add),
+                                nick);
                     }
                 }
             }

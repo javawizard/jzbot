@@ -20,39 +20,36 @@ public class FactParser
     private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
     
     /**
-     * Parses the specified factoid into a FactEntity. This fact entity can then
-     * be {@link FactEntity#resolve(FactContext) resolved} at any point in the
-     * future (and, in fact, resolved multiple times) to actually run this
-     * factoid and get its output.<br/><br/>
+     * Parses the specified factoid into a FactEntity. This fact entity can then be
+     * {@link FactEntity#resolve(FactContext) resolved} at any point in the future (and,
+     * in fact, resolved multiple times) to actually run this factoid and get its
+     * output.<br/><br/>
      * 
-     * Currently, the resulting FactEntity is an instance of
-     * {@link FunctionReference} that points to the {@link IdentityFunction
-     * identity} function, although this behavior should not be relied upon as
-     * it may change in the future.<br/><br/>
+     * Currently, the resulting FactEntity is an instance of {@link FunctionReference}
+     * that points to the {@link IdentityFunction identity} function, although this
+     * behavior should not be relied upon as it may change in the future.<br/><br/>
      * 
-     * Parsing a factoid does not cause any side effects, such as changes to
-     * local or global variables, to occur. It's only when you actually resolve
-     * a factoid that these side effects would occur.
+     * Parsing a factoid does not cause any side effects, such as changes to local or
+     * global variables, to occur. It's only when you actually resolve a factoid that
+     * these side effects would occur.
      * 
      * @param factoid
      *            The factoid text to parse
      * @param name
-     *            The name of this factoid. This doesn't technically need to be
-     *            the actual name of the factoid. For that matter, it could even
-     *            be the empty string. It's used when constructing the factoid
-     *            stack trace if an exception gets thrown while running the
-     *            factoid.
+     *            The name of this factoid. This doesn't technically need to be the actual
+     *            name of the factoid. For that matter, it could even be the empty string.
+     *            It's used when constructing the factoid stack trace if an exception gets
+     *            thrown while running the factoid.
      * @return The parsed factoid
      */
     public static FactEntity parse(String factoid, String name)
     {
         CharStack stack = new CharStack("{{identity||" + factoid + "}}");
-        FunctionReference reference = parseFunction(stack, name, "{{identity||"
-                .length());
+        FunctionReference reference = parseFunction(stack, name, "{{identity||".length());
         if (stack.more())
             /*
-             * The only way we can have more here is if they closed the identity
-             * function accidentally
+             * The only way we can have more here is if they closed the identity function
+             * accidentally
              */
             throw new ParseException(stack.at(),
                     "There are more \"}}\" than there are \"{{\"");
@@ -65,19 +62,17 @@ public class FactParser
     }
     
     /**
-     * Parses a CharStack representing a function call into a function
-     * reference. Usually, if you're just trying to parse/run a factoid, you'll
-     * use {@link #parse(String)} instead. parse(String) interally calls this
-     * method with the argument "{{identity||" + factText + "}}" where factText
-     * is the text of the factoid.
+     * Parses a CharStack representing a function call into a function reference. Usually,
+     * if you're just trying to parse/run a factoid, you'll use {@link #parse(String)}
+     * instead. parse(String) interally calls this method with the argument "{{identity||"
+     * + factText + "}}" where factText is the text of the factoid.
      * 
      * 
      * @param stack
      *            The CharStack to parse
      * @param name
-     *            The name of the factoid that we're in. See the <tt>name</tt>
-     *            parameter of the <tt>parse</tt> method for more info on what
-     *            this is.
+     *            The name of the factoid that we're in. See the <tt>name</tt> parameter
+     *            of the <tt>parse</tt> method for more info on what this is.
      * @return The parsed function
      */
     public static FunctionReference parseFunction(CharStack stack, String name,
@@ -89,10 +84,8 @@ public class FactParser
             throw new ParseException(stack.at() - 2,
                     "Start of function reference must be two open braces but is not");
         int startFunctionIndex = stack.at() - 2;
-        Sequence argumentSequence = init(new Sequence(), name, stack.at()
-                - indexOffset);
-        Sequence currentArgument = init(new Sequence(), name, stack.at()
-                - indexOffset);
+        Sequence argumentSequence = init(new Sequence(), name, stack.at() - indexOffset);
+        Sequence currentArgument = init(new Sequence(), name, stack.at() - indexOffset);
         argumentSequence.add(currentArgument);
         Literal currentLiteral = null;
         // Now we parse until we hit one of "%", "{{", "||", or "}}". "%" means
@@ -117,16 +110,16 @@ public class FactParser
             {
                 if (currentLiteral == null)
                 {
-                    currentLiteral = init(new Literal(), name, stack.at()
-                            - indexOffset);
+                    currentLiteral = init(new Literal(), name, stack.at() - indexOffset);
                     currentArgument.add(currentLiteral);
                 }
                 char theChar = getEscapedChar(stack.next());
                 if (theChar != 0)
                     currentLiteral.append(theChar);
             }
-            else if (c == '%' || c == '$')
+            else if (c == '%'/* || c == '$' */)
             {
+                // The "$" sign for global variables is disabled for now.
                 int startIndex = stack.at();
                 currentLiteral = null;
                 StringBuffer l = new StringBuffer();
@@ -135,8 +128,12 @@ public class FactParser
                 {
                     l.append(v);
                 }
-                currentArgument.add(init(new VarReference(l.toString(),
-                        c == '$'), name, startIndex - indexOffset));
+                String varName = l.toString();
+                if (!varName.trim().equals(""))
+                {
+                    currentArgument.add(init(new VarReference(varName, c == '$'), name,
+                            startIndex - indexOffset));
+                }
             }
             else if (c == '{' && stack.peek() == '{')
             {
@@ -152,14 +149,13 @@ public class FactParser
                 if (currentArgument.length() == 1)
                 {
                     /*
-                     * If the current argument sequence only has one child,
-                     * we'll replace it with its child for efficiency reasons.
+                     * If the current argument sequence only has one child, we'll replace
+                     * it with its child for efficiency reasons.
                      */
                     argumentSequence.remove(argumentSequence.length() - 1);
                     argumentSequence.add(currentArgument.get(0));
                 }
-                currentArgument = init(new Sequence(), name, stack.at()
-                        - indexOffset);
+                currentArgument = init(new Sequence(), name, stack.at() - indexOffset);
                 argumentSequence.add(currentArgument);
             }
             else if (c == '}' && stack.peek() == '}')
@@ -169,8 +165,8 @@ public class FactParser
                 if (currentArgument.length() == 1)
                 {
                     /*
-                     * If the current argument sequence only has one child,
-                     * we'll replace it with its child for efficiency reasons.
+                     * If the current argument sequence only has one child, we'll replace
+                     * it with its child for efficiency reasons.
                      */
                     argumentSequence.remove(argumentSequence.length() - 1);
                     argumentSequence.add(currentArgument.get(0));
@@ -190,16 +186,14 @@ public class FactParser
             }
         }
         /*
-         * We shouldn't ever get here. If we do, then it means that a function
-         * call wasn't closed properly, so we'll throw an exception.
+         * We shouldn't ever get here. If we do, then it means that a function call wasn't
+         * closed properly, so we'll throw an exception.
          */
-        throw new ParseException(stack.at() - 1,
-                "Function call not closed (IE you have "
-                        + "more \"{{\" than you have \"}}\")");
+        throw new ParseException(stack.at() - 1, "Function call not closed (IE you have "
+                + "more \"{{\" than you have \"}}\")");
     }
     
-    private static <T extends FactEntity> T init(T entity, String factName,
-            int index)
+    private static <T extends FactEntity> T init(T entity, String factName, int index)
     {
         entity.setFactName(factName);
         entity.setCharIndex(index);
@@ -207,17 +201,16 @@ public class FactParser
     }
     
     /**
-     * Gets the character that corresponds to the escaped character
-     * <tt>char</tt>. This is called whenever there is a backslash followed by a
-     * character within the factoid parser, to see what the actual character
-     * that corresponds to the backslash-character pair should be. For example,
-     * passing 'n' into this method causes it to return a newline character. Any
-     * character that is not "special" according to this method will be returned
-     * as-is. For example, calling this with '|' causes the method to return
-     * '|'.<br/><br/>
+     * Gets the character that corresponds to the escaped character <tt>char</tt>. This is
+     * called whenever there is a backslash followed by a character within the factoid
+     * parser, to see what the actual character that corresponds to the
+     * backslash-character pair should be. For example, passing 'n' into this method
+     * causes it to return a newline character. Any character that is not "special"
+     * according to this method will be returned as-is. For example, calling this with '|'
+     * causes the method to return '|'.<br/><br/>
      * 
-     * If this method returns 0, then this indicates that no character is to be
-     * included. This is the case when 'x' is passed in.
+     * If this method returns 0, then this indicates that no character is to be included.
+     * This is the case when 'x' is passed in.
      * 
      * @param c
      *            The special character
@@ -254,10 +247,9 @@ public class FactParser
         reverseFunctionMap.put(function, name.toLowerCase());
         try
         {
-            if (function.getHelp(null) == null
-                    || function.getHelp(null).equals(""))
-                System.out.println("Warning: function " + name
-                        + " does not have help text");
+            if (function.getHelp(null) == null || function.getHelp(null).equals(""))
+                System.out
+                        .println("Warning: function " + name + " does not have help text");
         }
         catch (Exception e)
         {
@@ -285,8 +277,8 @@ public class FactParser
     {
         try
         {
-            File factFolder = new File(FactParser.class.getResource(
-                    "FactParser.class").toURI()).getParentFile();
+            File factFolder = new File(FactParser.class.getResource("FactParser.class")
+                    .toURI()).getParentFile();
             File functionsFolder = new File(factFolder, "functions");
             String[] files = functionsFolder.list();
             for (String file : files)
@@ -298,33 +290,28 @@ public class FactParser
                         String className = file.substring(0, file.length()
                                 - ".class".length());
                         String functionName = className.substring(0,
-                                className.length() - "Function".length())
-                                .toLowerCase();
+                                className.length() - "Function".length()).toLowerCase();
                         functionName = functionName.replace("_", ".");
                         System.out.println("Loading function " + functionName);
                         Class<? extends Function> c = (Class<? extends Function>) Class
-                                .forName("org.opengroove.jzbot.fact.functions."
-                                        + className);
+                                .forName("org.opengroove.jzbot.fact.functions." + className);
                         install(functionName, c.newInstance());
                     }
                     else
                     {
-                        System.out.println("Skipping non-function class "
-                                + file);
+                        System.out.println("Skipping non-function class " + file);
                     }
                 }
                 catch (Throwable t)
                 {
                     throw new RuntimeException(
-                            "Exception while loading function for class file "
-                                    + file, t);
+                            "Exception while loading function for class file " + file, t);
                 }
             }
         }
         catch (Throwable t)
         {
-            throw new RuntimeException(
-                    "Error while loading default function set", t);
+            throw new RuntimeException("Error while loading default function set", t);
         }
     }
     
@@ -386,15 +373,14 @@ public class FactParser
     }
     
     /**
-     * Parses the specified text and then explains it, omitting the default
-     * {{identity}} function.
+     * Parses the specified text and then explains it, omitting the default {{identity}}
+     * function.
      * 
      * @param factoid
      *            The text of the factoid to explain
      * @param name
-     *            The name of the factoid that we're in. See the <tt>name</tt>
-     *            parameter of the <tt>parse</tt> method for more info on what
-     *            this is.
+     *            The name of the factoid that we're in. See the <tt>name</tt> parameter
+     *            of the <tt>parse</tt> method for more info on what this is.
      * @return The explanation
      */
     public static String explain(String factoid, String name)

@@ -7,8 +7,8 @@ import org.opengroove.jzbot.ResponseException;
 import org.opengroove.jzbot.storage.Channel;
 
 /**
- * Leave instructs the bot to depart from a channel and not come back until a
- * superop requests that it come back. It can be run by superops only.
+ * Leave instructs the bot to depart from a channel and not come back until a superop
+ * requests that it come back. It can be run by superops only.
  * 
  * @author Alexander Boyd
  * 
@@ -42,11 +42,9 @@ public class LeaveCommand implements Command
         if (c.isSuspended())
             throw new ResponseException("I've already left that channel.");
         c.setSuspended(true);
-        JZBot.bot.sendMessage(pm ? sender : channel,
-                "Ok, I'll leave now. I'll remember this channel's "
-                        + "settings, though. Use /msg " + JZBot.bot.getNick()
-                        + " join " + channel
-                        + " to have me join the channel again.");
+        JZBot.bot.sendMessage(sender, "Ok, I'll leave now. I'll remember this channel's "
+                + "settings, though. Use /msg " + JZBot.bot.getNick() + " join " + channel
+                + " to have me join the channel again.");
         JZBot.bot.partChannel(channel, "Leaving on request from " + sender);
     }
     

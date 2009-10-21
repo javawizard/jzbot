@@ -19,5 +19,5 @@ g.karma-config={{switch||%1%\
 ||Invalid action. Use either "{{trigger}}karma-config add" (which adds karma support to the current channel) or "{{trigger}}karma-config register-web" (which registers a SegServer web page for the karma system).}}
 restrict.g.karma-config=1
 g.karma-segserver-serve=<html><body>TODO: actually get this page written</body></html>
-library.g.karma-segserver-serve=
+library.g.karma-segserver-serve=1
 postinstall=The karma system has been added. Now, at each channel you want karma to work at, run "{{trigger}}karma-config add".

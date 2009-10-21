@@ -7,7 +7,7 @@ import org.opengroove.jzbot.fact.FactContext;
 import org.opengroove.jzbot.fact.FactoidException;
 import org.opengroove.jzbot.fact.Function;
 
-public class IsopFunction extends Function
+public class IsvoicedFunction extends Function
 {
     
     @Override
@@ -31,15 +31,14 @@ public class IsopFunction extends Function
             System.out.println("Scanning for user " + userObject.getNick());
             if (userObject.getNick().equalsIgnoreCase(user))
             {
-                if (userObject.isOp())
+                if (userObject.hasVoice())
                     return "1";
                 else
                     return "0";
             }
         }
-        throw new FactoidException("Isop on user \"" + user + "\", channel \""
-                + channel
-                + "\": user is not connected, consider using {{ifjoined}} "
+        throw new FactoidException("Isvoiced on user \"" + user + "\", channel \""
+                + channel + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
     }
     
@@ -51,13 +50,9 @@ public class IsopFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isop||<channel>||<nick>}} -- Evaluates to \"1\" if the nick specified is "
-                + "a channel operator at this channel or \"0\" if the nick specified is not"
-                + " a channel operator at this channel. %self% can be used to get the bot's "
-                + "own nick, so {{isop||%self%}} would indicate whether the bot has operator "
-                + "privileges at this channel.\n"
-                + "<channel> means the channel to check at. If it's not present, then the "
-                + "channel that this factoid is being run at will be used.";
+        return "Syntax: {{isvoiced||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+                + "but checks to see if the user is voiced. On most servers, "
+                + "this is mode +v.";
     }
     
 }

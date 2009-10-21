@@ -8,6 +8,141 @@ whale named Hugh", "/me shoves avocados down jcp's throat until jcp dies", or "/
 /dev/urandom into jcp's ear".\n\
 A lot of the responses (such as the "rm -rf" one or the "/dev/urandom" one) are of a technical \
 nature, and all of them are sent as actions (IE as if they were prefixed with "/me").
-depends=global:local.library.randomresline
-preinstall={{if||{{isresource||lart.txt}}||||{{lset||fail||1}}This factpack depends on the resource "lart.txt" existing, but it doesn't seem to be present. Download a copy of JZBot and copy lart.txt in the resources folder in the copy you downloaded into the resources folder of your bot, then try again.}}
-t.lart={{action}}{{firstvar||p||%1-%||%0%}}{{global||library.randomresline||lart.txt||%p%}}
+depends=global:local.library.randomfromline
+#preinstall={{if||{{isresource||lart.txt}}||||{{lset||fail||1}}This factpack depends on the resource "lart.txt" existing, but it doesn't seem to be present. Download a copy of JZBot and copy lart.txt in the resources folder in the copy you downloaded into the resources folder of your bot, then try again.}}
+t.lart={{action}}{{firstvar||p||%1-%||%0%}}{{global||library.randomfromline||{{import||lart-generate-content}}||%p%}}
+t.lart-generate-content=\
+--purges WHO\\n\n\
+accelerates a free AOL cd to 50,000 rpm and lets WHO feel it\\n\n\
+acting on orders from an unspecified client drags WHO into court suing for $200 million\\n\n\
+#asks WHO politely to GT*O\\n\n\
+beats the living hamsterdung out of WHO\\n\n\
+beats WHO into protomatter with the andromeda galaxy\\n\n\
+beats WHO over the head with a microkernel\\n\n\
+beats WHO senseless with a 50lb Unix manual\\n\n\
+beats WHO severely about the head and shoulders with a rubber chicken\\n\n\
+beats WHO to within 2.54cm of his life\\n\n\
+blames WHO for all the evil in the world\\n\n\
+blasts WHO to oblivion with a kamehameha wave\\n\n\
+blasts WHO with a huge firehose then strangles WHO with it\\n\n\
+brandishes Excalibur! "With this sword, I vanquish thee, WHO!" and lops off WHO's head\\n\n\
+breaks out the Hoover and sucks up WHO\\n\n\
+burns WHO to a crisp with a laser\\n\n\
+calls WHO on the phone ... the lights are on but nobody's home\\n\n\
+cats /dev/urandom into WHO's ear\\n\n\
+changes WHO's permissions to 0777 and tells the world\\n\n\
+chops WHO in half with a free AOL CD\\n\n\
+chops WHO in half with a free Solaris 7 CD\\n\n\
+crushes WHO with a full height SCSI disk\\n\n\
+cuts off WHO's head with a halberd that could have been a little bit sharper\\n\n\
+cuts WHO into thin stripes\\n\n\
+decapitates WHO conan the destroyer style\\n\n\
+declares WHO a moron\\n\n\
+does a little 'dpkg -P WHO' action\\n\n\
+does a little 'renice 20 -u WHO'\\n\n\
+DoSes WHO\\n\n\
+#drags WHO, kicking and screaming, into the real world\\n\n\
+drops a baby grand on WHO\\n\n\
+drops a humongous exploding nuke on WHO\\n\n\
+drops a truckload of VAXen on WHO\\n\n\
+duct-tapes WHO to the floor and drools on him\\n\n\
+dumps 42 tons of dirt, manure, and fish heads on WHO\\n\n\
+eats WHO and falls over dead\\n\n\
+eats WHO's liver with some fava beans and a nice chianti\\n\n\
+#endeavors, unsuccessfully, to convince WHO that the world really is round\\n\n\
+executes killall -HUP WHO\\n\n\
+executes killall -KILL WHO\\n\n\
+executes killall -TERM WHO\\n\n\
+explains, ever so gently, that if WHO doesn't give the channel more information, they can't help\\n\n\
+passes wind in WHO's general direction\\n\n\
+flings dung at WHO\\n\n\
+#follows WHO with a gauntlet and ... scratch ... HUMILIATION\\n\n\
+forces avocados down WHO's throat until WHO dies\\n\n\
+forces WHO to use Outlook Express\\n\n\
+frags WHO with his BFG9000\\n\n\
+gets a hotmail account and SPAMs WHO\\n\n\
+gives WHO a "free" copy of Windows and then charges double for "Upgrades"\\n\n\
+gives WHO a good seeing to\\n\n\
+gives WHO an extra strength ACME sleeping pill, sending WHO to sleep for 150 years, and awakening to seven strange dwarfs and a large apple\\n\n\
+#grabs a large, mis-shapened log, with squirrels, and beats WHO until only the nuts remain ... which the squirrels run off with\\n\n\
+hauls WHO up by the scruff of the neck and spanks him until he waddles\\n\n\
+hereby declares WHO a troll\\n\n\
+hits WHO with an anvil and laughs with a contralto voice ... Haha Ha HA Ha\\n\n\
+holds WHO to the floor and spanks him with a cat-o-nine-tails\\n\n\
+hooks into a hydrant and hoses WHO down\\n\n\
+hurls dozens of incontinent, insomniac, hungry kittens with tiny little razor-sharp claws and a wide variety of contagious intestinal parasites at WHO\\n\n\
+installs a bad bootloader on WHO and turns WHO into a brick\\n\n\
+installs PocketPC on WHO's PDA\\n\n\
+judo chops WHO\\n\n\
+keeps mailing WHO free America Online CDs until he drowns\\n\n\
+lowers WHO's priority\\n\n\
+makes a balloon animal out of WHO\\n\n\
+moos at WHO\\n\n\
+nabs the moon and broadsides WHO with the sea of tranquility\\n\n\
+nukes WHO with a single large nuke\\n\n\
+offers WHO some herring\\n\n\
+overclocks WHO until WHO burns out\\n\n\
+plops WHO into a giant vat of herring\\n\n\
+pours gasoline all over WHO, ignites the fire, and then enjoys some toasty marshmallows with the glorious blaze\\n\n\
+#pours hot grits down the front of WHO's pants\\n\n\
+pries WHO's back open with a screwdriver and flashes a new bootldr to WHO\\n\n\
+pulls out a ClueBat (tm) and thwaps WHO\\n\n\
+pulls out his louisville slugger and uses WHO's head to break the homerun record\\n\n\
+pushes the wall down onto WHO whilst whistling innocently\\n\n\
+puts on a hockey mask and jumps out at WHO\\n\n\
+#puts on some milking gloves.  "All right, now, WHO, this won't hurt a bit...."\\n\n\
+puts WHO into a headlock and administers a mighty noogie, rubbing half of WHO's hair off\\n\n\
+puts WHO through a wood chipper\\n\n\
+#raises middle finger to WHO\\n\n\
+readies the nuke launcher and fires some rounds at WHO\\n\n\
+resizes WHO's terminal to 40x24\\n\n\
+rm -rf's WHO\\n\n\
+runs at WHO with an origami Swiss Army knife, and inflicts a nasty paper cut\\n\n\
+says "boot to the head" and knocks WHO over\\n\n\
+send killer squirrels to attack WHO\\n\n\
+sends a legion of lawyers after WHO's head\\n\n\
+sends WHO to /dev/null\\n\n\
+shoots WHO in his sleep\\n\n\
+shoots WHO in the head\\n\n\
+shoves a crumpet down WHO's throat, happy now?! Huh? Want some JAM with that?\\n\n\
+slams WHO against a large cement Tux\\n\n\
+slaps a compatible dib on WHO's head\\n\n\
+slaps WHO around with a large trout\\n\n\
+slaps WHO upside and over the head with one freakishly huge killer whale named Hugh\\n\n\
+slaps WHO upside the head with a wet fish\\n\n\
+smacks WHO up side the head with a clue-by-4\\n\n\
+squeezes WHO till WHO turns blue like papa smurf\\n\n\
+squishes WHO like a bug\\n\n\
+stabs WHO\\n\n\
+stamps WHO on the forehead with the official Troll marker\\n\n\
+steals WHO's mojo\\n\n\
+strangles WHO with a 9-pole serial cable\\n\n\
+strangles WHO with a doohicky mouse cord\\n\n\
+stuffs WHO into a shiny new tin can and vacuum seals it\\n\n\
+#takes a big bite out of WHO's jugular vein\\n\n\
+takes a large goose feather pillow and swings it wildly in WHO's direction, hitting WHO and sending WHO flying into the closet\\n\n\
+takes a rusty axe and swings it violently, taking WHO's head off\\n\n\
+takes large quantities of Banbury Cross donuts and stuffs them one after another down WHO's throat until WHO puts on 150lbs\\n\n\
+takes out a cattle prod and gives WHO a good jolt\\n\n\
+takes out a seltzer bottle and sprays WHO in the face. You know, one of those old-school seltzer bottles clowns have? Yeah those. Anyway, consider yourself spritzed.\\n\n\
+takes out WHO with the trash\\n\n\
+#takes WHO to the vet for a "special" visit\\n\n\
+teaches WHO that Microsoft Access is a database. No, really, a database. A real live multi-user... well, ok, not multi-user, but a database. Yeah, that sounds right.\\n\n\
+teaches WHO the basics, including how to RT*M\\n\n\
+throws a AN/M-8 smoke grenade at WHO\\n\n\
+#throws WHO's poor little doggy off a cliff\\n\n\
+tries to shut WHO up\\n\n\
+turns WHO into a lifesized tux doll\\n\n\
+#urinates on WHO\\n\n\
+vaporizes WHO with a flamethrower\\n\n\
+wallops WHO with a main rotation server that needs rehubbing.  It won't take long.\\n\n\
+watches a brainsucker carefully placed on WHO's head wither up and die from starvation\\n\n\
+whacks WHO upside the head\\n\n\
+whacks WHO with a giant beaver's tail\\n\n\
+whacks WHO with the cluebat\\n\n\
+whips out a hot clue gun and makes sure that WHO is stuck to the floor\\n\n\
+whips out a shotgun, trudges over to WHO, and goes postal\\n\n\
+whips out a sword and chops WHO in half\\n\n\
+whips out his power stapler and staples WHO's foot to the floor\\n\n\
+whips WHO with a wet and grimy noodle just because
+library.t.lart-generate-content=1

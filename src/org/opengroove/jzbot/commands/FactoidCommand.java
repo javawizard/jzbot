@@ -2,6 +2,7 @@ package org.opengroove.jzbot.commands;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -197,6 +198,14 @@ public class FactoidCommand implements Command
                             + " global factoids. These were not included "
                             + "in this list."));
         }
+        if (command.equals("restrict") || command.equals("unrestrict"))
+        {
+            
+        }
+        if (command.equals("isrestricted"))
+        {
+            
+        }
         if (command.equals("literal"))
         {
             processed = true;
@@ -272,7 +281,8 @@ public class FactoidCommand implements Command
         if (!processed)
         {
             throw new ResponseException("Invalid factoid command. Try 'factoid [global] "
-                    + "<list|create|replace|delete|literal|info|pack>'");
+                    + "<list|create|replace|delete|literal|info|pack"
+                    + "|restrict|unrestrict|isrestricted>'");
         }
     }
     
@@ -307,15 +317,42 @@ public class FactoidCommand implements Command
             // JZBot.verifyOp(channel, hostname);
             File[] files = JZBot.listLocalFactpackFiles();
             String[] items = new String[files.length + 1];
+            HashMap<String, Factpack> packMap = new HashMap<String, Factpack>();
             for (int i = 0; i < files.length; i++)
             {
                 Factpack pack = Factpack.parse(StringUtils.readFile(files[i]));
                 items[i + 1] = pack.name;
+                packMap.put(pack.name, pack);
             }
+            Arrays.sort(items, 1, items.length);
             items[0] = "" + files.length
                     + " factpacks (use \"factoid pack install <name>\" "
-                    + "to install one of these):";
-            JZUtils.ircSendDelimited(items, "  ", JZBot.bot, pm ? sender : channel);
+                    + "to install one of these, or \"factoid pack available "
+                    + "list\" to pastebin info about each one):";
+            if (afterCommand.equals(""))
+                JZUtils.ircSendDelimited(items, "  ", JZBot.bot, pm ? sender : channel);
+            else if (afterCommand.equals("list"))
+            {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 1; i < items.length; i++)
+                {
+                    Factpack pack = packMap.get(items[i]);
+                    buffer.append("@@").append(items[i]).append("\n\n");
+                    if (!pack.description.equals(""))
+                        buffer.append(pack.description).append("\n\n");
+                    buffer.append(StringUtils.delimited(generateDescriptionStrings(pack,
+                            true), ", "));
+                    buffer.append("\n\n");
+                }
+                JZBot.bot.sendMessage(pm ? sender : channel, "http://pastebin.com/"
+                        + JZBot.pastebin(buffer.toString()));
+            }
+            else
+            {
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "Invalid \"factoid pack available\" subcommand. "
+                                + "Try \"factoid pack available\" for help.");
+            }
         }
         else if (command.equals("list"))
         {
@@ -391,16 +428,7 @@ public class FactoidCommand implements Command
         }
         Factpack factpack = Factpack.parse(packContents);
         String s = factpack.name + ": ";
-        String[] strings = new String[]
-        {
-                "Written by \"" + factpack.author + "\"",
-                factpack.scope + " scope",
-                "" + factpack.factoids.length + " factoid"
-                        + (factpack.factoids.length == 1 ? "" : "s"),
-                generateDependencyString(factpack.depends)
-                        + (factpack.description.equals("") ? "No description"
-                                : "Description:")
-        };
+        String[] strings = generateDescriptionStrings(factpack, false);
         JZUtils.ircSendDelimited(s, strings, ", ", JZBot.bot, pm ? sender : channel);
         if (!factpack.description.equals(""))
         {
@@ -418,11 +446,32 @@ public class FactoidCommand implements Command
         }
     }
     
-    private String generateDependencyString(Dependency[] deps)
+    private String[] generateDescriptionStrings(Factpack factpack, boolean postDescription)
+    {
+        return new String[]
+        {
+                "Written by \"" + factpack.author + "\"",
+                factpack.scope + " scope",
+                "" + factpack.factoids.length + " factoid"
+                        + (factpack.factoids.length == 1 ? "" : "s"),
+                generateDependencyString(factpack.depends, postDescription)
+                        + (postDescription ? ""
+                                : factpack.description.equals("") ? "No description"
+                                        : "Description:")
+        };
+    }
+    
+    private String generateDependencyString(Dependency[] deps, boolean postDescription)
     {
         if (deps.length == 0)
-            return "No dependencies, ";
-        String[] depNames = new String[Math.max(deps.length, 6)];
+        {
+            if (postDescription)
+                return "No dependencies";
+            else
+                return "No dependencies, ";
+        }
+        String[] depNames = new String[Math.min(deps.length, 6)];
+        System.out.println("deps: " + deps.length + ",depNames: " + depNames.length);
         for (int i = 0; i < depNames.length; i++)
         {
             depNames[i] = deps[i].name;
@@ -430,7 +479,7 @@ public class FactoidCommand implements Command
         if (depNames.length < deps.length)
             depNames[depNames.length - 1] = "" + ((deps.length - depNames.length) + 1)
                     + " others";
-        return "Depends on " + English.and(depNames) + "; ";
+        return "Depends on " + English.and(depNames) + (postDescription ? "" : "; ");
     }
     
     private void doFactpackRemove(boolean pm, String sender, String hostname,

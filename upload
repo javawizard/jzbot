@@ -1,2 +1,5 @@
 #!/bin/bash
-rsync -vvv -e ssh jzbot2-old.tar jcp@bztraining.org:/jzbot2/jzbot2-old.tar
+echo About to upload. Enter your password when asked.
+rsync -vvv -e ssh jzbot2-old.tar jcp@bztraining.org:/home/jcp/jzbot2-old.tar
+echo About to extract. Enter your password when asked.
+ssh jcp@bztraining.org /home/jcp/jzbot-reload

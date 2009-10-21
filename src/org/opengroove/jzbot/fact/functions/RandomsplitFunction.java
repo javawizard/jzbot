@@ -16,14 +16,18 @@ public class RandomsplitFunction extends Function
         if (arguments.length() > 2)
         {
             String regex = arguments.get(2);
+            System.out.println("regex:");
             ArrayList<String> newStrings = new ArrayList<String>();
             for (String s : strings)
             {
-                if (s.matches(regex))
+                boolean matches = s.matches(regex);
+                System.out.println("matches \"" + s + "\"? " + matches);
+                if (matches)
                     newStrings.add(s);
             }
             strings = newStrings.toArray(new String[0]);
         }
+        System.out.println("" + strings.length + " strings");
         if (strings.length == 0)
             return "";
         return strings[(int) (Math.random() * strings.length)];
