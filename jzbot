@@ -1,2 +1,7 @@
 #!/bin/bash
-java -cp classes:lib/\* -Dsun.net.inetaddr.ttl=10 org.opengroove.jzbot.JZBot $*
+CMD=java -cp classes:lib/\* -Dsun.net.inetaddr.ttl=10 org.opengroove.jzbot.JZBot $*
+$CMD
+while [ $? == '17' ]
+do
+  $CMD
+done
