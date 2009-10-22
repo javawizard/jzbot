@@ -37,9 +37,9 @@ public class StatusCommand implements Command
         if (arguments.equals(""))
         {
             String s = "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
-                    + Runtime.getRuntime().freeMemory() + ","
-                    + Runtime.getRuntime().totalMemory() + ","
-                    + Runtime.getRuntime().maxMemory() + ";uptime(seconds):"
+                    + format(Runtime.getRuntime().freeMemory()) + ","
+                    + format(Runtime.getRuntime().totalMemory()) + ","
+                    + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
                     + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
                     + ",functions:" + FactParser.getFunctionNames().length + ",commands:"
                     + JZBot.commands.size() + ",queue:" + JZBot.bot.getOutgoingQueueSize();
@@ -101,9 +101,9 @@ public class StatusCommand implements Command
                 if (!f.isFile())
                     continue;
                 total += f.length();
-                strings.add("" + f.getName() + ":" + f.length());
+                strings.add("" + f.getName() + ":" + format(f.length()));
             }
-            JZUtils.ircSendDelimited("Total log size in bytes: " + total
+            JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
                     + (strings.size() > 0 ? ", per-channel: " : ""), strings
                     .toArray(new String[0]), ", ", JZBot.bot, pm ? sender : channel);
         }
@@ -153,14 +153,21 @@ public class StatusCommand implements Command
             long logsFolderSize = DataUtils.recursiveSizeScan(new File("storage/logs"));
             long resourcesSize = DataUtils.recursiveSizeScan(new File("resources"));
             long entireSize = DataUtils.recursiveSizeScan(new File("."));
-            JZBot.bot.sendMessage(pm ? sender : channel, "Overall storage size (bytes): "
-                    + totalStorageSize + ", database size: " + databaseSize
-                    + ", logs folder size: " + logsFolderSize + ", resources size: "
-                    + resourcesSize + ", entire installation size: " + entireSize);
+            JZBot.bot.sendMessage(pm ? sender : channel, "Overall storage size: "
+                    + format(totalStorageSize) + ", database size: " + format(databaseSize)
+                    + ", logs folder size: " + format(logsFolderSize)
+                    + ", resources size: " + format(resourcesSize)
+                    + ", entire installation size: " + format(entireSize));
         }
-        else if(arguments.equals("os"))
+        else if (arguments.equals("os"))
         {
-            JZBot.bot.sendMessage(pm?sender:channel, "");
+            JZBot.bot.sendMessage(pm ? sender : channel, "memory: "
+                    + format(getOsAttribute("TotalPhysicalMemorySize")) + ", free: "
+                    + format(getOsAttribute("FreePhysicalMemorySize")) + ", swap: "
+                    + format(getOsAttribute("TotalSwapSpaceSize")) + ", free: "
+                    + format(getOsAttribute("FreeSwapSpaceSize")) + ", open FDs: "
+                    + getOsAttribute("OpenFileDescriptorCount") + ", max FDs: "
+                    + getOsAttribute("MaxFileDescriptorCount"));
         }
         else
         {
@@ -180,6 +187,24 @@ public class StatusCommand implements Command
         {
             e.printStackTrace();
             return "?";
+        }
+    }
+    
+    public static String format(long v)
+    {
+        return JZBot.datasize(v);
+    }
+    
+    public static String format(String c)
+    {
+        try
+        {
+            return format(Long.parseLong(c));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "??";
         }
     }
     
