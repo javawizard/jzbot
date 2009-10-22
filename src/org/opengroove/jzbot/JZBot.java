@@ -50,6 +50,7 @@ import org.opengroove.jzbot.commands.OpCommand;
 import org.opengroove.jzbot.commands.ReconnectCommand;
 import org.opengroove.jzbot.commands.RedefineCommand;
 import org.opengroove.jzbot.commands.RegexCommand;
+import org.opengroove.jzbot.commands.RestartCommand;
 import org.opengroove.jzbot.commands.RestrictCommand;
 import org.opengroove.jzbot.commands.ShutdownCommand;
 import org.opengroove.jzbot.commands.StatusCommand;
@@ -434,6 +435,7 @@ public class JZBot
         loadCommand(new ReconnectCommand());
         loadCommand(new RedefineCommand());
         loadCommand(new RegexCommand());
+        loadCommand(new RestartCommand());
         loadCommand(new RestrictCommand());
         // loadCommand(new RouletteCommand());
         // loadCommand(new SayCommand());
