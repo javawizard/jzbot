@@ -234,4 +234,11 @@ public class BZFlagProtocol implements Protocol
         // TODO Auto-generated method stub
         
     }
+    
+    @Override
+    public void changeNick(String newnick)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

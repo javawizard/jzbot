@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
 
+import net.sf.opengroove.common.utils.DataUtils;
+
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.ConfigVars;
 import org.opengroove.jzbot.JZBot;
@@ -104,7 +106,24 @@ public class StatusCommand implements Command
         }
         else if (arguments.equals("facts"))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, "Fact status coming soon.");
+            int totalFacts = 0;
+            String highestChannel = null;
+            int highestChannelFacts = -1;
+            int globalFacts = JZBot.storage.getFactoids().size();
+            totalFacts += globalFacts;
+            for (Channel c : JZBot.storage.getChannels().isolate())
+            {
+                int factCount = c.getFactoids().size();
+                totalFacts += factCount;
+                if (factCount > highestChannelFacts)
+                {
+                    highestChannelFacts = factCount;
+                    highestChannel = c.getName();
+                }
+            }
+            JZBot.bot.sendMessage(pm ? sender : channel, "Total factoids: " + totalFacts
+                    + ", global factoids: " + globalFacts + ", " + highestChannel
+                    + " has the most factoids (" + highestChannelFacts + " factoids)");
         }
         else if (arguments.equals("stack"))
         {
@@ -123,6 +142,18 @@ public class StatusCommand implements Command
                     "Stack traces of all live threads: http://pastebin.com/"
                             + Pastebin
                                     .createPost("jzbot", b.toString(), Duration.DAY, null));
+        }
+        else if (arguments.equals("storage"))
+        {
+            long totalStorageSize = DataUtils.recursiveSizeScan(new File("storage"));
+            long databaseSize = new File("storage/db.data.db").length();
+            long logsFolderSize = DataUtils.recursiveSizeScan(new File("storage/logs"));
+            long resourcesSize = DataUtils.recursiveSizeScan(new File("resources"));
+            long entireSize = DataUtils.recursiveSizeScan(new File("."));
+            JZBot.bot.sendMessage(pm ? sender : channel, "Overall storage size (bytes): "
+                    + totalStorageSize + ", database size: " + databaseSize
+                    + ", logs folder size: " + logsFolderSize + ", resources size: "
+                    + resourcesSize + ", entire installation size: " + entireSize);
         }
         else
         {

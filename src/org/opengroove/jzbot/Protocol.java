@@ -73,4 +73,6 @@ public interface Protocol
     public int getOutgoingQueueSize();
     
     public void setTopic(String channel, String topic);
+    
+    public void changeNick(String newnick);
 }

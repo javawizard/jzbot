@@ -55,6 +55,7 @@ import org.opengroove.jzbot.commands.RestrictCommand;
 import org.opengroove.jzbot.commands.ShutdownCommand;
 import org.opengroove.jzbot.commands.StatusCommand;
 import org.opengroove.jzbot.commands.SuperopCommand;
+import org.opengroove.jzbot.commands.SwitchnickCommand;
 import org.opengroove.jzbot.commands.TriggerCommand;
 import org.opengroove.jzbot.commands.UnrestrictCommand;
 import org.opengroove.jzbot.eval.CaltechEvaluator;
@@ -442,6 +443,7 @@ public class JZBot
         loadCommand(new ShutdownCommand());
         loadCommand(new StatusCommand());
         loadCommand(new SuperopCommand());
+        loadCommand(new SwitchnickCommand());
         loadCommand(new TriggerCommand());
         // loadCommand(new TTTCommand());
         loadCommand(new UnrestrictCommand());
