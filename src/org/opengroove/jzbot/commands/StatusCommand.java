@@ -1,8 +1,11 @@
 package org.opengroove.jzbot.commands;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Map;
+
+import javax.management.ObjectName;
 
 import net.sf.opengroove.common.utils.DataUtils;
 
@@ -45,7 +48,7 @@ public class StatusCommand implements Command
                     "For more info, try \"status gc\", \"status threads\", "
                             + "\"status facts\". \"status storage\", "
                             + "\"status mx\", \"status stack\", "
-                            + "or \"status logging\".");
+                            + "\"status os\", or \"status logging\".");
         }
         else if (arguments.equals("gc"))
         {
@@ -155,9 +158,33 @@ public class StatusCommand implements Command
                     + ", logs folder size: " + logsFolderSize + ", resources size: "
                     + resourcesSize + ", entire installation size: " + entireSize);
         }
+        else if(arguments.equals("os"))
+        {
+            JZBot.bot.sendMessage(pm?sender:channel, "");
+        }
         else
         {
             JZBot.bot.sendMessage(pm ? sender : channel, "Invalid status command.");
         }
+    }
+    
+    public static String getAttribute(String object, String attribute)
+    {
+        try
+        {
+            return ""
+                    + ManagementFactory.getPlatformMBeanServer().getAttribute(
+                            new ObjectName(object), attribute);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "?";
+        }
+    }
+    
+    public static String getOsAttribute(String attribute)
+    {
+        return getAttribute("java.lang:type=OperatingSystem", attribute);
     }
 }

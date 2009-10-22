@@ -10,6 +10,8 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -1686,5 +1688,40 @@ public class JZBot
     public static String pastebin(String text)
     {
         return Pastebin.createPost("jzbot", text, Pastebin.Duration.DAY, null);
+    }
+    
+    public static MathContext datasizeContext = new MathContext(3);
+    
+    public static BigDecimal kilo = new BigDecimal("1024");
+    
+    public static BigDecimal one = new BigDecimal("1");
+    
+    /**
+     * Formats the specified data size, in bytes, to be suffixed with MB, GB, KB, etc.
+     * 
+     * @param size
+     * @return
+     */
+    public static String datasize(long size)
+    {
+        BigDecimal number = new BigDecimal("" + size);
+        String suffix = "B";
+        if (number.divide(kilo).compareTo(one) > 0)
+        {
+            suffix = "KB";
+            number = number.divide(kilo);
+            if (number.divide(kilo).compareTo(one) > 0)
+            {
+                suffix = "MB";
+                number = number.divide(kilo);
+                if (number.divide(kilo).compareTo(one) > 0)
+                {
+                    suffix = "GB";
+                    number = number.divide(kilo);
+                }
+            }
+        }
+        number = number.round(datasizeContext);
+        return "" + number + suffix;
     }
 }
