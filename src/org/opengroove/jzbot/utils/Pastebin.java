@@ -7,6 +7,14 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 /**
  * Contains methods for creating, reading, and deleting posts from <a
  * href="http://pastebin.com">pastebin.com</a>. JZBot uses this to provide error reports
@@ -18,7 +26,7 @@ import java.net.URLEncoder;
  */
 public class Pastebin
 {
-    private static final int MAX_READ_LENGTH = 1024 * 200;
+    private static final int MAX_READ_LENGTH = 1024 * 350;
     
     public static enum Duration
     {
@@ -47,30 +55,30 @@ public class Pastebin
         System.out.println("Creating pastebin post with text:");
         System.out.println(post);
         System.out.println("---------------------------------");
+        if (post.equals(""))
+            throw new IllegalArgumentException(
+                    "You can't create a pastebin post with no text in it");
         if (parent == null)
             parent = "";
         try
         {
-            URL url = new URL("http://pastebin.com/pastebin.php");
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setInstanceFollowRedirects(false);
-            con.addRequestProperty("Content-type", "application/x-www-form-urlencoded");
-            con.setRequestMethod("POST");
-            con.setDoOutput(true);
-            OutputStream out = con.getOutputStream();
-            out.write(("parent_pid=" + URLEncoder.encode(parent) + "&format=text&code2="
-                    + URLEncoder.encode(post, "US-ASCII") + "&poster="
-                    + URLEncoder.encode(poster) + "&paste=Send&remember=1&expiry="
-                    + duration.toString().substring(0, 1).toLowerCase() + "&email=")
-                    .getBytes());
-            out.flush();
-            out.close();
-            int responseCode = con.getResponseCode();
+            HttpClient client = new DefaultHttpClient();
+            client.getParams().setParameter("http.socket.timeout", 8000);
+            HttpPost request = new HttpPost("http://pastebin.com/pastebin.php");
+            request.addHeader("Content-type", "application/x-www-form-urlencoded");
+            request.setEntity(new StringEntity("parent_pid=" + URLEncoder.encode(parent)
+                    + "&format=text&code2=" + URLEncoder.encode(post, "US-ASCII")
+                    + "&poster=" + URLEncoder.encode(poster)
+                    + "&paste=Send&remember=1&expiry="
+                    + duration.toString().substring(0, 1).toLowerCase() + "&email="));
+            HttpResponse response = client.execute(request);
+            int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode != 302)
                 throw new RuntimeException("Received response code " + responseCode
-                        + " from pastebin: " + con.getResponseMessage() + " with content "
-                        + readContent(con));
-            String newUrl = con.getHeaderField("Location");
+                        + " from pastebin (302 should have been sent instead): "
+                        + response.getStatusLine().getReasonPhrase() + " with content "
+                        + readContent(response));
+            String newUrl = getResponseHeader(response, "Location");
             if (!newUrl.startsWith("http://pastebin.com/"))
                 throw new RuntimeException("Invalid url prefix: " + newUrl);
             return newUrl.substring("http://pastebin.com/".length());
@@ -81,18 +89,21 @@ public class Pastebin
         }
     }
     
-    private static String readContent(HttpURLConnection con)
+    private static String getResponseHeader(HttpResponse response, String string)
+    {
+        for (Header header : response.getAllHeaders())
+            if (header.getName().equals(string))
+                return header.getValue();
+        return null;
+    }
+    
+    private static String readContent(HttpResponse response)
     {
         try
         {
-            StringBuffer buffer = new StringBuffer();
-            InputStream in = con.getInputStream();
-            int i;
-            while ((i = in.read()) != -1)
-            {
-                buffer.append((char) i);
-            }
-            return "\"" + buffer.toString() + "\"";
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            response.getEntity().writeTo(baos);
+            return "\"" + new String(baos.toByteArray()) + "\"";
         }
         catch (Exception e)
         {
@@ -122,8 +133,11 @@ public class Pastebin
                                 + postUrl);
             postUrl = postUrl.substring("http://pastebin.com/".length());
             postUrl = "http://pastebin.com/pastebin.php?dl=" + postUrl;
-            URL url = new URL(postUrl);
-            InputStream stream = url.openStream();
+            HttpClient client = new DefaultHttpClient();
+            client.getParams().setParameter("http.socket.timeout", 8000);
+            HttpGet request = new HttpGet(postUrl);
+            HttpResponse response = client.execute(request);
+            InputStream stream = response.getEntity().getContent();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[512];
             int read = 0;

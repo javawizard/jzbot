@@ -1,0 +1,17 @@
+name=local.games.choicegraph
+author=Alexander Boyd
+scope=global
+description=Adds a command, "choice", which can be used to follow a choicegraph. A choicegraph \
+is a series of questions and answers inputted into ChoiceGraph. Each question has a list \
+of possible answers, and each of those answers redirects to another question. When a question \
+with no answers is encountered, the question itself is printed, and the choicegraph session \n\
+ends. The command "choice <name>" is used to start a choicegraph session of questions and \
+answers, and "choicegraph add <name> <pastebin-url>" is used to add an actual set of choicegraph \
+questions.
+#The choicegraph system works off of the idea that accessing a named global variable is
+#generally less computationally expensive than scanning through a list of items to find
+#a particular item, especially when there are a lot of items to scan through. Based on this
+#assumption, the choicegraph system actually builds a cache of global variables, where there
+#is one global variable for each row in the choiceset. Each choiceset, in its entire text,
+#is stored as a persistent variable named choicegraph-choiceset-<name>. The choicegraph
+#system then installs a global factoid called _onready_choicegraphcache which 
