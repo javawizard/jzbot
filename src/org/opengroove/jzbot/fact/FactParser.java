@@ -247,7 +247,8 @@ public class FactParser
         reverseFunctionMap.put(function, name.toLowerCase());
         try
         {
-            if (function.getHelp(null) == null || function.getHelp(null).equals(""))
+            String helpString = function.getHelp(null);
+            if (helpString == null || helpString.equals(""))
                 System.out
                         .println("Warning: function " + name + " does not have help text");
         }
