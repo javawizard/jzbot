@@ -311,7 +311,17 @@ public class FactParser
         }
         catch (Throwable t)
         {
-            throw new RuntimeException("Error while loading default function set", t);
+            if (!new File("classes/org/opengroove/jzbot").exists())
+            {
+                System.err.println("Couldn't load functions because the function "
+                        + "class folder doesn't exist. This could mean "
+                        + "you've compiled JZBot with gcj, which means that "
+                        + "JZBot won't have any support for functions.");
+            }
+            else
+            {
+                throw new RuntimeException("Error while loading default function set", t);
+            }
         }
     }
     

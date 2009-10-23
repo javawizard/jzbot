@@ -167,7 +167,8 @@ public class StatusCommand implements Command
                     + format(getOsAttribute("TotalSwapSpaceSize")) + ", free: "
                     + format(getOsAttribute("FreeSwapSpaceSize")) + ", open FDs: "
                     + getOsAttribute("OpenFileDescriptorCount") + ", max FDs: "
-                    + getOsAttribute("MaxFileDescriptorCount"));
+                    + getOsAttribute("MaxFileDescriptorCount") + ", load average: "
+                    + getOsAttribute("SystemLoadAverage") + ", bot CPU time: " +  getOsAttribute("ProcessCpuTime"));
         }
         else
         {

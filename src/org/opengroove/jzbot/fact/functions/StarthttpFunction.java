@@ -22,9 +22,10 @@ public class StarthttpFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        String url = "http://pastebin.com/"
-                + Pastebin.createPost("jzbot-help", getExtendedHelp(),
-                        Duration.DAY, null);
+        // String url = "http://pastebin.com/"
+        // + Pastebin.createPost("jzbot-help", getExtendedHelp(),
+        // Duration.DAY, null);
+        String url = "(TODO, add into StarthttpFunction.java)";
         return "Syntax: {{starthttp||<port>||<factoid>}} -- Starts an HTTP server on the "
                 + "specified port. See " + url + " for more info.";
     }

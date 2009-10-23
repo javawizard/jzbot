@@ -55,8 +55,10 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    keys("", "More info coming on this soon, but it's pipe-separated."), notfound(
-            "",
+    keys("", "A pipe-separated list of hashes (as obtained from the {{hash}} function). "
+            + "If a user runs \"~op key <text>\", and then has of <text> is equal to " + ""), notfound(
+            "one of the hashes in this list, the user will be made a superop. Note that " +
+            "keys cannot contain spaces.",
             "This config variable is the name of a factoid to run when users "
                     + "send a message that isn't recognized. If this is blank, then the text \""
                     + "Huh? (pm \"help\" for more info)\" will be sent instead."), primary(
@@ -79,8 +81,8 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    openstatus("1", "This config variable specifies whether everyone can run \"~status\". " +
-    		"If this is 1, then everyone can. If this is 0, only superops can.")
+    openstatus("1", "This config variable specifies whether everyone can run \"~status\". "
+            + "If this is 1, then everyone can. If this is 0, only superops can.")
     {
         public void set(String value)
         {

@@ -1,0 +1,6 @@
+name=local.stats.sysinfo
+author=Alexander Boyd
+scope=global
+description=Installs a command, sysinfo, which reports various statistical information about \
+the bot and the computer on which it is running. This heavily uses the {{mbean}} function.
+g.sysinfo=Coming soon.

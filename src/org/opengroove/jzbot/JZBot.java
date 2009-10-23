@@ -32,6 +32,7 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.utils.StringUtils;
+import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 import org.cheffo.jeplite.JEP;
 import org.jibble.pircbot.IrcException;
@@ -413,6 +414,35 @@ public class JZBot
             System.out.println("");
             System.out.println("JZBot has been successfully set up. Run \"jzbot\"");
             System.out.println("to start your bot.");
+        }
+        else if (args[0].equals("config"))
+        {
+            initProxyStorage();
+            if (args.length == 1)
+            {
+                System.out.println("All config var names: "
+                        + StringUtils.delimited(ConfigVars.values(),
+                                new ToString<ConfigVars>()
+                                {
+                                    
+                                    @Override
+                                    public String toString(ConfigVars object)
+                                    {
+                                        return object.name();
+                                    }
+                                }, ", "));
+            }
+            else if (args.length == 2)
+            {
+                System.out.println("Config variable \"" + args[1]
+                        + "\" is currently set to \"" + ConfigVars.valueOf(args[1]).get());
+            }
+            else
+            {
+                ConfigVars.valueOf(args[1]).set(args[2]);
+                System.out.println("Successfully set the var \"" + args[1]
+                        + "\" to the value \"" + args[2] + "\".");
+            }
         }
         else
         {
@@ -971,6 +1001,7 @@ public class JZBot
     private static void runMessageCommand(String channel, boolean pm, String sender,
             String hostname, String username, String message, boolean processFactoids)
     {
+        System.out.println("Starting command run for message " + message);
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
         String commandArguments = (commandSplit.length == 1 ? "" : commandSplit[1]);
@@ -1003,6 +1034,7 @@ public class JZBot
                                     + pastebinStack(e));
                 }
             }
+            System.out.println("Finishing command run #1");
             return;
         }
         /*
@@ -1012,7 +1044,10 @@ public class JZBot
          * Our first check will be for a channel-specific factoid.
          */
         if (!processFactoids)
+        {
+            System.out.println("Finishing command run #2");
             return;
+        }
         if (channel != null)
         {
             Channel cn = storage.getChannel(channel);
@@ -1032,6 +1067,7 @@ public class JZBot
                                         + command
                                         + "\" if you want to remove this factoid's "
                                         + "library status.");
+                        System.out.println("Finishing command run #3");
                         return;
                     }
                     incrementDirectRequests(f);
@@ -1047,6 +1083,7 @@ public class JZBot
                                 .substring("<ACTION>".length()));
                     else
                         bot.sendMessage((pm ? sender : channel), factValue);
+                    System.out.println("Finishing command run #4");
                     return;
                 }
             }
@@ -1067,6 +1104,7 @@ public class JZBot
                                 + "a trigger, and so on. Run \"factoid unlibrary "
                                 + command + "\" if you want to remove this factoid's "
                                 + "library status.");
+                System.out.println("Finishing command run #5");
                 return;
             }
             incrementDirectRequests(f);
@@ -1087,10 +1125,12 @@ public class JZBot
                         .println("sending global message " + channel + " to " + factValue);
                 bot.sendMessage((pm ? sender : channel), factValue);
             }
+            System.out.println("Finishing command run #6");
             return;
         }
         System.out.println("invalid command");
         doInvalidCommand(pm, channel, sender);
+        System.out.println("Finishing command run #7");
     }
     
     /**

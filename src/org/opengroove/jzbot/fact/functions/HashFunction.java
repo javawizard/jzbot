@@ -12,7 +12,11 @@ public class HashFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        String s = arguments.get(0);
+        return doHash(arguments.get(0));
+    }
+    
+    public static String doHash(String s)
+    {
         String hash = Hash.hash(s);
         hash = hash.replace("-", "").replace(".", "");
         hash = PadFunction.pad(32, "0", hash);
