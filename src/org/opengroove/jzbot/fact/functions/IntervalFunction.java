@@ -23,7 +23,7 @@ public class IntervalFunction extends Function
         duration /= 60;
         add(strings, "hour", duration % 24);
         duration /= 24;
-        add(strings, "day", duration % 30);
+        add(strings, "day", duration % 365);
         duration /= 365;
         add(strings, "year", duration);
         if (strings.size() == 0)
@@ -35,9 +35,7 @@ public class IntervalFunction extends Function
     private void add(ArrayList<String> strings, String unit, long duration)
     {
         if (duration != 0)
-            strings
-                    .add("" + duration + " " + unit
-                            + (duration == 1 ? "" : "s"));
+            strings.add("" + duration + " " + unit + (duration == 1 ? "" : "s"));
     }
     
     @Override
@@ -45,7 +43,7 @@ public class IntervalFunction extends Function
     {
         return "Syntax: {{interval||<seconds>}} -- Formats the specified number of seconds "
                 + "as an interval. For example, {{interval||137}} would evaluate to "
-                + "\"1 minute 17 seconds\". This function supports all the way up to "
+                + "\"2 minutes 17 seconds\". This function supports all the way up to "
                 + "years (meaning {{interval||31536000}} evaluates to \"1 year\").";
     }
     

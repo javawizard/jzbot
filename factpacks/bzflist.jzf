@@ -12,7 +12,7 @@ t.bzflist=\
 \\ \\ {{ifeq||%count%||6||\
 \\ \\ \\ {{lset||bz-quit||1}}\
 \\ \\ }}\
-\\ \\ %bz-hostname%\: \
+\\ \\ \\b%bz-hostname%\\p\: \
 \\ \\ "{{restrict||%bz-description%||43}}" \
 \\ \\ (%bz-playercount%) \
 \\ \\ \\c04%bz-redcount% \
