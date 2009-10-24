@@ -12,7 +12,14 @@ public class SplitindexFunction extends Function
     {
         String[] tokens = arguments.get(1).split(arguments.get(0),
                 Integer.parseInt(arguments.get(2)));
-        return tokens[Integer.parseInt(arguments.get(3))];
+        try
+        {
+            return tokens[Integer.parseInt(arguments.get(3))];
+        }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            return "";
+        }
     }
     
     @Override
@@ -26,7 +33,8 @@ public class SplitindexFunction extends Function
                 + "second_third_fourth\".\n"
                 + "In other words, all tokens after (and including) the <max>th token are "
                 + "concatenated (split by the delimiter that <regex> matched) and used as "
-                + "the last token.";
+                + "the last token. If <index> is greater than the number of items that there"
+                + " are in the list, splitindex evaluates to the empty string.";
     }
     
 }
