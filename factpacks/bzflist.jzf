@@ -4,4 +4,4 @@ scope=any
 description=Adds a command, bzflist, that prints out the current top 5 bzflag servers (ordered \
 by number of players), and the number of players on each server and the number of players on \
 each team on those servers.
-t.bzflist={{lset||count||0}}{{bzflist||bz||{{lset||count||{{eval||%count%+1}}}}{{ifeq||%count%||5||{{lset||bz-quit||1}}}}%bz-hostname%\: (%bz-playercount%) \\c04%bz-redcount% \\c08%bz-roguecount% \\c03%bz-greencount% \\c02%bz-bluecount% \\c06%bz-purplecount%\\p %bz-observercount%|| \\| }}
+t.bzflist={{lset||count||0}}{{bzflist||bz||{{lset||count||{{eval||%count%+1}}}}{{ifeq||%count%||4||{{lset||bz-quit||1}}}}%bz-hostname%\: "{{restrict||%bz-description%||25}}" (%bz-playercount%) \\c04%bz-redcount% \\c08%bz-roguecount% \\c03%bz-greencount% \\c02%bz-bluecount% \\c06%bz-purplecount%\\p %bz-observercount%|| \\| }}
