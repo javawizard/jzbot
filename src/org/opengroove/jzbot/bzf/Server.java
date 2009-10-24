@@ -106,16 +106,16 @@ public class Server
     private void doLoadVars()
     {
         var("bluecount", blueCount);
-        var("bluemax", blueCount);
-        var("description", blueCount);
-        var("gamestyle", blueCount);
-        var("greencount", blueCount);
+        var("bluemax", blueMax);
+        var("description", description);
+        var("gamestyle", gameStyle);
+        var("greencount", greenCount);
         var("greenmax", greenMax);
         var("hostname", hostname);
         var("ip", ip);
         var("joinedcount", joinedCount);
         var("maxplayers", maxPlayers);
-        var("maxplayerScore", maxPlayerScore);
+        var("maxplayerscore", maxPlayerScore);
         var("maxshots", maxShots);
         var("maxteamscore", maxTeamScore);
         var("maxtime", maxTime);
