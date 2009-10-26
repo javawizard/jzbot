@@ -23,5 +23,40 @@ questions.
 #
 #The value of each global variable is of the format 
 #"<key>:<text>:<answer1>-><key1>#<answer2>-><key2>#...". 
+#
+#When a user runs ~choice <name>, a global variable called choicegraph-current-<user> is 
+#created, and it holds the name of the choicegraph the user is using. A global variable 
+#called choicegraph-userchoice-<name> is also created, which holds the key of the row that
+#the user is currently on.
+#
+#When a user runs ~choice <number>, the value of the row that they are currently on is
+#looked up. The particular numbered choice is then looked up. If it's valid, then the user's
+#current choicegraph stuff is set to that number. Then they are presented with the question 
+#referenced by that item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #    wx:Do you like seafood?:yes->wn#no->wy#maybe->wx

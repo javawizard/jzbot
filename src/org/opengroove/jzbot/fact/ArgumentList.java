@@ -16,8 +16,7 @@ public class ArgumentList
         this.resolved = new String[sequence.length()];
     }
     
-    private ArgumentList(ArgumentList delegate, int offset, int length,
-            FactContext context)
+    private ArgumentList(ArgumentList delegate, int offset, int length, FactContext context)
     {
         this.context = context;
         this.delegate = delegate;
@@ -26,10 +25,9 @@ public class ArgumentList
     }
     
     /**
-     * Same as <tt>get()</tt>, but the argument is "run" again even if it has
-     * already been run before. Functions like {{split}} use this for the
-     * <action> argument to cause it to be run once for each substring in the
-     * string to split.
+     * Same as <tt>get()</tt>, but the argument is "run" again even if it has already been
+     * run before. Functions like {{split}} use this for the <action> argument to cause it
+     * to be run once for each substring in the string to split.
      * 
      * @param index
      * @return
@@ -47,10 +45,24 @@ public class ArgumentList
     }
     
     /**
-     * Gets the argument at the specified index. If this argument has not
-     * actually been "run" to find out what its value should be, it is run, and
-     * the value is stored so that future calls to <tt>get()</tt> will not
-     * result in the argument being "run" again.
+     * Returns a Deferred object representing the value at the specified index. This does
+     * not cause the value to be resolved immediately; the value will only be resolved
+     * once a method is called on the returned Deferred object.
+     * 
+     * @param index
+     *            The index to get a Deferred for
+     * @return A new Deferred object for the specified index
+     */
+    public Deferred getDeferred(int index)
+    {
+        return new Deferred(this, index);
+    }
+    
+    /**
+     * Gets the argument at the specified index. If this argument has not actually been
+     * "run" to find out what its value should be, it is run, and the value is stored so
+     * that future calls to <tt>get()</tt> will not result in the argument being "run"
+     * again.
      * 
      * @param index
      *            The index of the argument. Indexes start at 0.
@@ -86,8 +98,8 @@ public class ArgumentList
     }
     
     /**
-     * Returns a "sub"-list that views a portion of this list. This could be
-     * compared to <tt>String.substring()</tt>.
+     * Returns a "sub"-list that views a portion of this list. This could be compared to
+     * <tt>String.substring()</tt>.
      * 
      * @param offset
      *            The offset at which the sublist is supposed to start
@@ -104,8 +116,8 @@ public class ArgumentList
     }
     
     /**
-     * Gets (with a call to <tt>get()</tt>) all arguments in this argument list,
-     * puts them into a new String array, and returns the array.
+     * Gets (with a call to <tt>get()</tt>) all arguments in this argument list, puts them
+     * into a new String array, and returns the array.
      * 
      * @return
      */

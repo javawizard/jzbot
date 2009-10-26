@@ -28,6 +28,12 @@ public abstract class FactEntity
             addStackFrame(e);
             throw e;
         }
+        catch(AssertionError ae)
+        {
+            FactoidException e = new FactoidException("Assertion failed", ae);
+            addStackFrame(e);
+            throw e;
+        }
     }
     
     /**
