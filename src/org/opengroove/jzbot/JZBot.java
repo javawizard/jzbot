@@ -1308,6 +1308,19 @@ public class JZBot
                 }
                 runNotificationFactoid(null, null, bot.getNick(), "_onready",
                         new String[0], true);
+                try
+                {
+                    Thread.sleep(3500);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                String umodes = ConfigVars.modes.get();
+                for (char c : umodes.toCharArray())
+                {
+                    bot.setMode(bot.getNick(), "+" + c);
+                }
             }
         }.start();
     }

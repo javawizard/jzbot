@@ -111,7 +111,10 @@ public enum ConfigVars
             "This config variable is a pipe-separated list of channels that should "
                     + "not be logged, even if the logsize variable is set to a "
                     + "non-zero value. This doesn't take effect until the bot "
-                    + "is reconnected.");
+                    + "is reconnected."), modes("",
+            "This config variable is a list of user modes that the bot "
+                    + "should set on itself whenever it connects. \"+\" and \"-\" "
+                    + "characters should not be included.");
     private String defaultValue;
     private String description;
     
