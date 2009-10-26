@@ -78,6 +78,31 @@ public class TransferFunction extends Function
         {
             namedMap = newMap;
         }
+        /*
+         * Third (and last) step is storing the new vars.
+         */
+        if (to.equals("p"))
+        {
+            for (Map.Entry<String, String> toAdd : namedMap.entrySet())
+            {
+                MapEntry entry = JZBot.storage.getPersistentVariable(toAdd.getKey());
+                if (entry == null)
+                {
+                    entry = JZBot.storage.createMapEntry();
+                    entry.setKey(toAdd.getKey());
+                    JZBot.storage.getPersistentVariables().add(entry);
+                }
+                entry.setValue(toAdd.getValue());
+            }
+        }
+        else
+        {
+            assert to.equals("g") || to.equals("l") || to.equals("c") : "To "
+                    + "(substring 0,1) was " + to;
+            Map<String, String> target = to.equals("g") ? context.getGlobalVars() : to
+                    .equals("l") ? context.getLocalVars() : context.getChainVars();
+            target.putAll(namedMap);
+        }
         return "";
     }
     

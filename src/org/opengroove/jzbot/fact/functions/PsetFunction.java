@@ -14,9 +14,9 @@ public class PsetFunction extends Function
     {
         String key = arguments.get(0);
         String value = arguments.get(1);
-        if (key.length() > 128 || value.length() > (50 * 1024))
+        if (key.length() > 256 || value.length() > (80 * 1024))
             throw new RuntimeException(
-                    "Key longer than 128 or value longer than " + (50 * 1024));
+                    "Key longer than 256 or value longer than " + (80 * 1024));
         MapEntry entry = JZBot.storage.getPersistentVariable(key);
         if (entry == null)
         {
