@@ -57,8 +57,8 @@ public enum ConfigVars
     },
     keys("", "A pipe-separated list of hashes (as obtained from the {{hash}} function). "
             + "If a user runs \"~op key <text>\", and then has of <text> is equal to " + ""), notfound(
-            "one of the hashes in this list, the user will be made a superop. Note that " +
-            "keys cannot contain spaces.",
+            "one of the hashes in this list, the user will be made a superop. Note that "
+                    + "keys cannot contain spaces.",
             "This config variable is the name of a factoid to run when users "
                     + "send a message that isn't recognized. If this is blank, then the text \""
                     + "Huh? (pm \"help\" for more info)\" will be sent instead."), primary(
@@ -89,6 +89,18 @@ public enum ConfigVars
             if (!(value.equals("0") || value.equals("1")))
                 throw new ResponseException(
                         "Invalid value; must be 0 or 1, see \"~config openstatus\" for help");
+            super.set(value);
+        }
+    },
+    servicemsg("0", "If this is 1, the bot will authenticate to NickServ by messaging "
+            + "it directly. If this is 0, the bot will authenticate to NickServ by using "
+            + "the IRC \"NICKSERV\" command.")
+    {
+        public void set(String value)
+        {
+            if (!(value.equals("0") || value.equals("1")))
+                throw new ResponseException(
+                        "Invalid value; must be 0 or 1, see \"~config servicemsg\" for help");
             super.set(value);
         }
     },

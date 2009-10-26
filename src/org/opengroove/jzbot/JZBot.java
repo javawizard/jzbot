@@ -1267,6 +1267,21 @@ public class JZBot
         {
             public void run()
             {
+                if (ConfigVars.servicemsg.get().equals("1"))
+                {
+                    System.out.println("Authenticating with NickServ via privmsg");
+                    String pwd = config.getPassword();
+                    if (pwd != null && !"".equals(pwd))
+                        bot.sendMessage("NickServ", "identify " + pwd);
+                }
+                try
+                {
+                    Thread.sleep(2500);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
                 for (Channel channel : storage.getChannels().isolate())
                 {
                     if (!channel.isSuspended())
