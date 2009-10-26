@@ -113,7 +113,7 @@ public class HelpCommand implements Command
                     if (possibleText != null)
                         subtext = possibleText;
                 }
-                buffer.append(subpage).append(":\n");
+                buffer.append("@@").append(subpage).append("\n");
                 buffer.append(subtext).append("\n\n");
             }
             JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \"" + page
