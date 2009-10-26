@@ -444,6 +444,21 @@ public class JZBot
                         + "\" to the value \"" + args[2] + "\".");
             }
         }
+        else if (args[0].equals("switchnick"))
+        {
+            if (args.length > 1)
+            {
+                initProxyStorage();
+                config.setNick(args[1]);
+                System.out.println("Successfully set the bot's nick to be \"" + args[1]
+                        + "\".");
+            }
+            else
+            {
+                System.out.println("You need to specify a new nickname for the "
+                        + "bot to use. Try \"jzbot switchnick <newnick>\".");
+            }
+        }
         else
         {
             System.out.println("That's an invalid command. Try \"jzbot help\".");
