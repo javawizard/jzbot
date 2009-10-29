@@ -2,7 +2,7 @@ package test;
 
 import org.opengroove.jzbot.utils.JZUtils;
 
-public class Test015
+public class Test15
 {
     
     /**

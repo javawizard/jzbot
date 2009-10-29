@@ -95,4 +95,9 @@ public interface Factoid
     public boolean isUninstall();
     
     public void setUninstall(boolean uninstall);
+    
+    @Property
+    public String getAttribution();
+    
+    public void setAttribution(String attribution);
 }

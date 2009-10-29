@@ -33,13 +33,31 @@ public class OpCommand implements Command
             doElevate(channel, pm, sender, hostname);
             return;
         }
+        String[] tokens = arguments.split(" ", 2);
+        String subcommand = tokens[0];
+        if (subcommand.equals("key"))
+        {
+            String theKey = tokens[1];
+            String theHash = HashFunction.doHash(theKey);
+            if (StringUtils.isMemberOf(theHash, ConfigVars.keys.get().split("\\|")))
+            {
+                JZBot.elevate(hostname, ConfigVars.primary.get());
+                JZBot.bot.sendMessage(pm ? sender : channel,
+                        "That key is correct. Your hostname has now been "
+                                + "added as a superop. This will persist until the "
+                                + "bot is reconnected or restarted.");
+                return;
+            }
+            else
+            {
+                throw new ResponseException("Incorrect key.");
+            }
+        }
         if (!JZBot.isOp(channel, hostname))
         {
             JZBot.bot.sendMessage(pm ? sender : channel, "You're not an op here.");
             return;
         }
-        String[] tokens = arguments.split(" ", 2);
-        String subcommand = tokens[0];
         Channel c = JZBot.storage.getChannel(channel);
         if (c == null)
         {
@@ -90,23 +108,6 @@ public class OpCommand implements Command
             }
             c.getOperators().remove(op);
             JZBot.bot.sendMessage(pm ? sender : channel, "Removed.");
-        }
-        else if (subcommand.equals("key"))
-        {
-            String theKey = tokens[1];
-            String theHash = HashFunction.doHash(theKey);
-            if (StringUtils.isMemberOf(theHash, ConfigVars.keys.get().split("\\|")))
-            {
-                JZBot.elevate(hostname, ConfigVars.primary.get());
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "That key is correct. Your hostname has now been "
-                                + "added as a superop. This will persist until the "
-                                + "bot is reconnected or restarted.");
-            }
-            else
-            {
-                throw new ResponseException("Incorrect key.");
-            }
         }
         else
         {

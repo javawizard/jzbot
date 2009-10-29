@@ -3,12 +3,14 @@ package org.opengroove.jzbot.fact;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jdom.Document;
 import org.opengroove.jzbot.JZBot;
 
 public class FactContext
 {
     private Map<String, String> localVars = new HashMap<String, String>();
     private Map<String, String> globalVars = JZBot.globalVariables;
+    private Map<String, Document> xmlDocuments = new HashMap<String, Document>();
     private boolean action;
     private String channel;
     private String sender;
@@ -23,6 +25,11 @@ public class FactContext
     public void setQuota(FactQuota quota)
     {
         this.quota = quota;
+    }
+    
+    public Map<String, Document> getXmlDocuments()
+    {
+        return xmlDocuments;
     }
     
     public String getSelf()
@@ -80,7 +87,7 @@ public class FactContext
         return globalVars;
     }
     
-    public Map<String,String> getChainVars()
+    public Map<String, String> getChainVars()
     {
         return quota.getChainVars();
     }

@@ -206,6 +206,50 @@ public class FactoidCommand implements Command
         {
             
         }
+        if (command.equals("attribute") || command.equals("unattribute"))
+        {
+            processed = true;
+            verifyOpSuperop(isGlobal, channel, hostname);
+            String[] argumentsTokenized2 = afterCommand.split(" ", 2);
+            if (argumentsTokenized2.length != 2)
+                throw new ResponseException("You need to specify the name of the factoid "
+                        + "and the person to attribute it to.");
+            String factoidName = argumentsTokenized2[0];
+            if (factoidName.equals(""))
+                throw new ResponseException("You need to specify the factoid");
+            Factoid f;
+            if (isGlobal)
+                f = JZBot.storage.getFactoid(factoidName);
+            else
+                f = c.getFactoid(factoidName);
+            if (f == null)
+            {
+                if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                    throw new ResponseException(
+                            "That factoid doesn't exist. However, there is a global "
+                                    + "factoid with that name. Use \"factoid global\" instead "
+                                    + "of \"factoid\" in the command to do stuff with "
+                                    + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist");
+            }
+            if (command.equals("attribute"))
+            {
+                f.setAttribution(argumentsTokenized2[1]);
+                JZBot.bot.sendMessage(pm ? sender : channel, "The factoid " + f.getName()
+                        + " has been attributed to \"" + f.getAttribution() + "\".");
+            }
+            else
+            {
+                String previousAttribution = f.getAttribution();
+                if (previousAttribution == null)
+                    throw new ResponseException(
+                            "This factoid does not currently have an attribution.");
+                f.setAttribution(null);
+                JZBot.bot.sendMessage(pm ? sender : channel, "The attribution for "
+                        + f.getName() + " (which was previously \"" + previousAttribution
+                        + "\" has been removed.");
+            }
+        }
         if (command.equals("literal"))
         {
             processed = true;
@@ -266,12 +310,19 @@ public class FactoidCommand implements Command
                 if (!"".equals(tokens[0]))
                     factpackMessage += " on " + tokens[0];
             }
+            String attribution = f.getAttribution();
+            String attributionMessage = "";
+            if (attribution != null)
+            {
+                attributionMessage = "; attributed to \"" + attribution + "\"";
+            }
             JZBot.bot.sendMessage(pm ? sender : channel, "" + f.getName()
                     + " -- created by " + f.getCreatorNick() + " <"
                     + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
                     + new Date(f.getCreationTime()).toString() + "; requested "
                     + totalRequests + " times (" + directRequests + " directly, "
-                    + indirectRequests + " indirectly)" + factpackMessage);
+                    + indirectRequests + " indirectly)" + attributionMessage
+                    + factpackMessage);
         }
         if (command.equals("pack"))
         {
@@ -282,7 +333,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException("Invalid factoid command. Try 'factoid [global] "
                     + "<list|create|replace|delete|literal|info|pack"
-                    + "|restrict|unrestrict|isrestricted>'");
+                    + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
         }
     }
     
@@ -340,8 +391,9 @@ public class FactoidCommand implements Command
                     buffer.append("@@").append(items[i]).append("\n");
                     if (!pack.description.equals(""))
                         buffer.append(pack.description).append("\n");
-                    buffer.append("\n").append(StringUtils.delimited(generateDescriptionStrings(pack,
-                            true), ", "));
+                    buffer.append("\n").append(
+                            StringUtils.delimited(generateDescriptionStrings(pack, true),
+                                    ", "));
                     buffer.append("\n\n");
                 }
                 JZBot.bot.sendMessage(pm ? sender : channel, "http://pastebin.com/"
