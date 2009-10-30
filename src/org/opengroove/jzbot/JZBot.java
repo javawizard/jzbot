@@ -153,14 +153,31 @@ public class JZBot
     
     protected static void notifyOnCron(String name)
     {
-        if (!bot.isConnected())
-            return;
-        for (String channel : bot.getChannels())
+        try
         {
-            runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
-                    new String[0], true);
+            if (!bot.isConnected())
+                return;
+            for (String channel : bot.getChannels())
+            {
+                runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
+                        new String[0], true);
+            }
+            runNotificationFactoid(null, null, bot.getNick(), "_on" + name, new String[0],
+                    true);
         }
-        runNotificationFactoid(null, null, bot.getNick(), "_on" + name, new String[0], true);
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+            try
+            {
+                bot.sendMessage(ConfigVars.primary.get(), "Cron task failure: "
+                        + pastebinStack(e));
+            }
+            catch (Throwable e2)
+            {
+                e2.printStackTrace();
+            }
+        }
     }
     
     public static void stopHttpServer(int port)
@@ -1259,6 +1276,7 @@ public class JZBot
         }
         catch (Exception e2)
         {
+            e2.printStackTrace();
             return "(pastebin service unavailable)";
         }
     }
