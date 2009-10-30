@@ -1,6 +1,7 @@
 package org.opengroove.jzbot.commands;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.opengroove.jzbot.Command;
 import org.opengroove.jzbot.JZBot;
@@ -29,7 +30,12 @@ public class ExecCommand implements Command
         context.setSender(sender);
         context.setSelf(JZBot.bot.getNick());
         context.setQuota(new FactQuota());
-        context.setLocalVars(new HashMap<String, String>());
+        Map<String, String> vars = new HashMap<String, String>();
+        vars.put("channel", channel);
+        vars.put("0", sender);
+        vars.put("who", sender);
+        vars.put("source", pm ? sender : channel);
+        context.setLocalVars(vars);
         context.setGlobalVars(JZBot.globalVariables);
         String result = entity.resolve(context);
         if (result.equals(""))
