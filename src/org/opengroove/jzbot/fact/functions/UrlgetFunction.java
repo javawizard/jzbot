@@ -25,12 +25,9 @@ public class UrlgetFunction extends Function
         try
         {
             URL url = new URL(urlSpec);
-            if (!(url.getProtocol().equals("http") || url.getProtocol().equals(
-                    "https")))
-                throw new RuntimeException(
-                        "Invalid protocol. Only \"http\" and "
-                                + "\"https\" are currently supported, "
-                                + "for security reasons.");
+            if (!(url.getProtocol().equals("http") || url.getProtocol().equals("https")))
+                throw new RuntimeException("Invalid protocol. Only \"http\" and "
+                        + "\"https\" are currently supported, " + "for security reasons.");
             File allowedHostsFile = new File("storage", "allowedhosts.txt");
             if (!allowedHostsFile.exists())
                 throw new RuntimeException(
@@ -38,8 +35,7 @@ public class UrlgetFunction extends Function
                                 + "a file called \"allowedhosts.txt\" under the bot's storage "
                                 + "folder, and setting its contents to be a regex that describes "
                                 + "the allowed hosts.");
-            String allowedHostsRegex = StringUtils.readFile(allowedHostsFile)
-                    .trim();
+            String allowedHostsRegex = StringUtils.readFile(allowedHostsFile).trim();
             if (!url.getHost().matches(allowedHostsRegex))
                 throw new RuntimeException("Host " + url.getHost()
                         + " is not allowed. Hosts must match the regex "
@@ -54,22 +50,19 @@ public class UrlgetFunction extends Function
             while ((read = stream.read(buffer)) != -1)
             {
                 if (read > MAX_READ_LENGTH)
-                    throw new RuntimeException(
-                            "Too many characters read (max is "
-                                    + MAX_READ_LENGTH + ")");
+                    throw new RuntimeException("Too many characters read (max is "
+                            + MAX_READ_LENGTH + ")");
                 out.write(buffer, 0, read);
             }
             stream.close();
             out.flush();
             out.close();
-            String result = new String(out.toByteArray(), ConfigVars.charset
-                    .get());
+            String result = new String(out.toByteArray(), ConfigVars.charset.get());
             return result;
         }
         catch (Exception e)
         {
-            throw new FactoidException(
-                    "Exception while getting URL " + urlSpec, e);
+            throw new FactoidException("Exception while getting URL \"" + urlSpec + "\"", e);
         }
     }
     
