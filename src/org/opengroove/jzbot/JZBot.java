@@ -93,6 +93,37 @@ public class JZBot
     
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
     
+    public static volatile int notificationSequence = 0;
+    
+    public static Thread notificationThread = new Thread()
+    {
+        public void run()
+        {
+            while (true)
+            {
+                try
+                {
+                    Thread.sleep(1000 * 60 * 5);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                notificationSequence += 1;
+                notificationSequence %= 12;
+                notifyOnCron("fiveminutes");
+                if ((notificationSequence % 6) == 0)
+                    notifyOnCron("halfhour");
+                if ((notificationSequence % 12) == 0)
+                    notifyOnCron("hour");
+            }
+        }
+    };
+    static
+    {
+        notificationThread.start();
+    }
+    
     public static void startHttpServer(int port, String factoid)
     {
         try
@@ -116,6 +147,18 @@ public class JZBot
                     "Exception occured while starting an http server on port " + port
                             + " with factoid " + factoid, e);
         }
+    }
+    
+    protected static void notifyOnCron(String name)
+    {
+        if (!bot.isConnected())
+            return;
+        for (String channel : bot.getChannels())
+        {
+            runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
+                    new String[0], true);
+        }
+        runNotificationFactoid(null, null, bot.getNick(), "_on" + name, new String[0], true);
     }
     
     public static void stopHttpServer(int port)
