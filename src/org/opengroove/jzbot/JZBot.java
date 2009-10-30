@@ -112,6 +112,8 @@ public class JZBot
                 notificationSequence += 1;
                 notificationSequence %= 12;
                 notifyOnCron("fiveminutes");
+                if ((notificationSequence % 2) == 0)
+                    notifyOnCron("tenminutes");
                 if ((notificationSequence % 6) == 0)
                     notifyOnCron("halfhour");
                 if ((notificationSequence % 12) == 0)
