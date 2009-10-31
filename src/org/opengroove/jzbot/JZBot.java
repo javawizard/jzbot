@@ -111,13 +111,13 @@ public class JZBot
                 }
                 notificationSequence += 1;
                 notificationSequence %= 12;
-                notifyOnCron("fiveminutes");
+                sendNotificationToAll("fiveminutes");
                 if ((notificationSequence % 2) == 0)
-                    notifyOnCron("tenminutes");
+                    sendNotificationToAll("tenminutes");
                 if ((notificationSequence % 6) == 0)
-                    notifyOnCron("halfhour");
+                    sendNotificationToAll("halfhour");
                 if ((notificationSequence % 12) == 0)
-                    notifyOnCron("hour");
+                    sendNotificationToAll("hour");
             }
         }
     };
@@ -151,7 +151,7 @@ public class JZBot
         }
     }
     
-    protected static void notifyOnCron(String name)
+    protected static void sendNotificationToAll(String name)
     {
         try
         {
@@ -170,7 +170,7 @@ public class JZBot
             e.printStackTrace();
             try
             {
-                bot.sendMessage(ConfigVars.primary.get(), "Cron task failure: "
+                bot.sendMessage(ConfigVars.primary.get(), "Global notification failure: "
                         + pastebinStack(e));
             }
             catch (Throwable e2)
@@ -1369,8 +1369,7 @@ public class JZBot
                 {
                     e.printStackTrace();
                 }
-                runNotificationFactoid(null, null, bot.getNick(), "_onready",
-                        new String[0], true);
+                sendNotificationToAll("ready");
                 try
                 {
                     Thread.sleep(3500);
