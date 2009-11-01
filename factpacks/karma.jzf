@@ -13,7 +13,7 @@ g.karma-get=%1%'s karma is{{lset||k||{{lower||%1%}}}}{{ifeq||%2%||changed|| now}
 library.g.karma-get=1
 g.karma-config={{switch||%1%\
 ||add||\
-{{addregex||^~([^ ]*)(\\\\+\\\\+|\\\\-\\\\-)\\$ regex.karma-plus}}The karma system was successfully activated at this channel. You can now use {{trigger}}<user>++ and {{trigger}}<user>-- to add and remove karma from a user.\
+{{addregex||^{{trigger}}([^ ]*)(\\\\+\\\\+|\\\\-\\\\-)\\$ regex.karma-plus}}The karma system was successfully activated at this channel. You can now use {{trigger}}<user>++ and {{trigger}}<user>-- to add and remove karma from a user.\
 ||register-web||\
 {{exact||segserver-config||register||karma||karma-segserver-serve}}\
 ||Invalid action. Use either "{{trigger}}karma-config add" (which adds karma support to the current channel) or "{{trigger}}karma-config register-web" (which registers a SegServer web page for the karma system).}}
