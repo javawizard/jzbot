@@ -41,7 +41,10 @@ public class IfjoinedFunction extends Function
         return "Syntax: {{ifjoined||<nick>||<trueaction>||<falseaction>}} -- Evaluates to "
                 + "<trueaction> if the user <nick> is currently a member of the channel that "
                 + "the factoid is being run on, and <falseaction> if the user is not currently "
-                + "a member of that channel or if the user is offline. <falseaction> is optional.";
+                + "a member of that channel or if the user is offline. <falseaction> is optional."
+                + " if <trueaction> and <falseaction> are bot missing, then this \n"
+                + "function evaluates to 1 if the user is joined to the channel "
+                + "and 0 if the user is not joined.";
     }
     
 }
