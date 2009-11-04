@@ -117,11 +117,10 @@ public class FactParser
                 if (theChar == '[')
                 {
                     char v;
-                    while (((v = stack.next()) != '\\') && stack.peek() != ']')
+                    while ((v = stack.next()) != ']')
                     {
                         currentLiteral.append(v);
                     }
-                    stack.next();// remove the trailing close bracket
                 }
                 else if (theChar != 0)
                     currentLiteral.append(theChar);
