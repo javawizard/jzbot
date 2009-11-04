@@ -114,7 +114,16 @@ public class FactParser
                     currentArgument.add(currentLiteral);
                 }
                 char theChar = getEscapedChar(stack.next());
-                if (theChar != 0)
+                if (theChar == '[')
+                {
+                    char v;
+                    while (((v = stack.next()) != '\\') && stack.peek() != ']')
+                    {
+                        currentLiteral.append(v);
+                    }
+                    stack.next();// remove the trailing close bracket
+                }
+                else if (theChar != 0)
                     currentLiteral.append(theChar);
             }
             else if (c == '%'/* || c == '$' */)
