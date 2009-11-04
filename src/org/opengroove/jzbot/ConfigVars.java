@@ -114,7 +114,20 @@ public enum ConfigVars
                     + "is reconnected."), modes("",
             "This config variable is a list of user modes that the bot "
                     + "should set on itself whenever it connects. \"+\" and \"-\" "
-                    + "characters should not be included.");
+                    + "characters should not be included."), helpinpm(
+            "0",
+            "If this is 0 (the default), then ~help can be run in channels. "
+                    + "If this is 1, then help can only be run in a pm to prevent needless "
+                    + "spamming of channels.")
+    {
+        public void set(String value)
+        {
+            if (!(value.equals("0") || value.equals("1")))
+                throw new ResponseException(
+                        "Invalid value; must be 0 or 1, see \"~config helpinpm\" for help");
+            super.set(value);
+        }
+    };
     private String defaultValue;
     private String description;
     

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.opengroove.jzbot.Command;
+import org.opengroove.jzbot.ConfigVars;
 import org.opengroove.jzbot.HelpProvider;
 import org.opengroove.jzbot.JZBot;
 import org.opengroove.jzbot.ResponseException;
@@ -24,6 +25,10 @@ public class HelpCommand implements Command
     public void run(String channel, boolean pm, String sender, String hostname,
             String arguments)
     {
+        if (ConfigVars.helpinpm.get().equals("1") && !pm)
+            throw new ResponseException(
+                    "You're not allowed to run the help command at a channel. "
+                            + "Try sending \"help\" in a pm to the bot instead.");
         ArrayList<String> subpages = new ArrayList<String>();
         String page = arguments;
         String text = null;

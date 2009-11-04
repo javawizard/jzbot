@@ -123,6 +123,7 @@ public class JZBot
     };
     static
     {
+        notificationThread.setDaemon(true);
         notificationThread.start();
     }
     

@@ -14,7 +14,7 @@ public class FactContext
     private boolean action;
     private String channel;
     private String sender;
-    private String self = JZBot.bot.getNick();
+    private String self = (JZBot.bot == null ? null : JZBot.bot.getNick());
     private FactQuota quota = new FactQuota();
     
     public FactQuota getQuota()
