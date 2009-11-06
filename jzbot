@@ -1,5 +1,5 @@
 #!/bin/bash
-CMD="java -ea -cp classes:lib/* -Dsun.net.inetaddr.ttl=10 org.opengroove.jzbot.JZBot $*"
+CMD="java -ea -cp classes:lib/* -Dsun.net.inetaddr.ttl=10 jw.jzbot.JZBot $*"
 echo Running with command $CMD
 $CMD
 while [ $? == '17' ]

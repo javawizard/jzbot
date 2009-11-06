@@ -19,7 +19,7 @@ That command will print out info on how to set up the bot.
 
 If you want to write your own functions (see "~help functions"
 for info on what functions are), all you need to do is create
-a subclass of org.opengroove.jzbot.fact.Function and add a 
+a subclass of jw.jzbot.fact.Function and add a 
 line to storage/custom-functions.props with the key being the
 name of the function and the value being the fully-qualified
 name of your class that extends Function. If 

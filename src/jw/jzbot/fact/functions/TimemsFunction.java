@@ -1,0 +1,28 @@
+package jw.jzbot.fact.functions;
+
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Function;
+
+public class TimemsFunction extends Function
+{
+    
+    @Override
+    public String evaluate(ArgumentList arguments, FactContext context)
+    {
+        return "" + System.currentTimeMillis();
+    }
+    
+    public String getName()
+    {
+        return "timems";
+    }
+    
+    @Override
+    public String getHelp(String topic)
+    {
+        return "Syntax: {{timems}} -- Returns the server's current time in milliseconds since "
+                + "January 1, 1970 Midnight UTC.";
+    }
+    
+}

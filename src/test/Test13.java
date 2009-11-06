@@ -2,6 +2,8 @@ package test;
 
 import java.net.URLEncoder;
 
+import jw.jzbot.utils.Pastebin;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -9,7 +11,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.opengroove.jzbot.utils.Pastebin;
 
 public class Test13
 {

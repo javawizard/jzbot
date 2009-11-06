@@ -2,12 +2,13 @@ package test;
 
 import java.io.StringReader;
 
+import jw.jzbot.utils.XMLUtils;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.opengroove.jzbot.utils.XMLUtils;
 
 public class Test17
 {

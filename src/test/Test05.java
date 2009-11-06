@@ -1,7 +1,7 @@
 package test;
 
-import org.opengroove.jzbot.fact.FactEntity;
-import org.opengroove.jzbot.fact.FactParser;
+import jw.jzbot.fact.FactEntity;
+import jw.jzbot.fact.FactParser;
 
 public class Test05
 {

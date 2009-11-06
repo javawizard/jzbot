@@ -1,6 +1,6 @@
 package test;
 
-import org.opengroove.jzbot.fact.functions.RestrictFunction;
+import jw.jzbot.fact.functions.RestrictFunction;
 
 public class Test14
 {

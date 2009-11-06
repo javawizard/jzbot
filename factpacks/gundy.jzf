@@ -1,0 +1,12 @@
+name=local.misc.gundy
+author=Alexander Boyd
+scope=any
+description=A collection of quotes from my choir teacher, Jay Gunderson. Running the ~gundy \
+command randomly picks a quote.
+t.gundy={{random\
+||Sing now, flirt later\
+||Yeah, you guys are loaded up on cough drops, and it isn't because you're sick\
+||Memorize your crap!\
+||"Yeah, well, I wasn't listening." "I'm used to that."\
+||Troubadours [Men's choir], do \bnot\p show up at the Highlites' [Girls' choir] party tonight!\
+}}

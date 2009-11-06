@@ -1,5 +1,15 @@
 #!/bin/bash
+if [ -n $1 ]; then
+	targethost=$1
+else
+	targethost=bztraining.org
+fi
+if [ -n $2 ]; then
+    targetportstring=" -p $2"
+else
+    targetportstring=""
+fi
 echo About to upload. Enter your password when asked.
-rsync -vvv -e ssh jzbot2-old.tar jcp@bztraining.org:/home/jcp/jzbot2-old.tar
+rsync -vvv -e "ssh${targetportstring}" jzbot2-old.tar jcp@${targethost}:/home/jcp/jzbot2-old.tar
 echo About to extract. Enter your password when asked.
-ssh jcp@bztraining.org /home/jcp/jzbot-reload
+ssh${targetportstring} jcp@${targethost} /home/jcp/jzbot-reload

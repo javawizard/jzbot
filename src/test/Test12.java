@@ -1,6 +1,6 @@
 package test;
 
-import org.opengroove.jzbot.JZBot;
+import jw.jzbot.JZBot;
 
 public class Test12
 {
