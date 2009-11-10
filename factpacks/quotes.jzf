@@ -1,0 +1,9 @@
+name=local.misc.quotes
+author=Alexander Boyd
+scope=any
+description=A collection of random quotes that are generally humorous. Use ~quotes to get \
+a random quote.
+# "Mooses hold grudges. " may have been "Mooses hold grudges :)" in the previous version, can't remember
+t.quotes={{random\
+||<meanburrito920_> Mooses hold grudges. Mooses are big. If you hit a Moose in your car, you die. Dont hit mooses in cars. Especially if the moose is driving the car.\
+}}
