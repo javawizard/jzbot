@@ -4,8 +4,9 @@ you have questions.
 To set up JZBot, make sure you have java. If you don't, 
 install it by running "sudo apt-get install sun-java6-jdk".
 I haven't tested JZBot with OpenJDK, so if you install that
-instead of sun-java6-jdk, your mileage will vary. Then, 
-run this command:
+instead of sun-java6-jdk, your mileage may vary. I also 
+haven't tested JZBot on Windows, but it should work without
+a problem. Then, run this command:
 
 chmod +x jzbot
 
@@ -19,11 +20,14 @@ That command will print out info on how to set up the bot.
 
 If you want to write your own functions (see "~help functions"
 for info on what functions are), all you need to do is create
-a subclass of jw.jzbot.fact.Function and add a 
-line to storage/custom-functions.props with the key being the
-name of the function and the value being the fully-qualified
-name of your class that extends Function. If 
-custom-functions.props does not exist, create it. TODO: make this work
+a subclass of jw.jzbot.fact.Function in the package 
+jw.jzbot.fact.functions, and place its .class files in 
+classes/jw/jzbot/fact/functions. I know this fixed-package
+naming is less than intuitive, and I plan to add a configuration
+file in the future that can be used to register functions in 
+other classes or folders. I'm also thinking of making a plugins
+folder where groups of functions can be registered at a time
+by including jar files.
 
 If you've created a function that does something useful, 
 and you wouldn't mind making it open-source, visit 
