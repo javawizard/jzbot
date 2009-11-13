@@ -37,6 +37,7 @@ t.roulette-config={{switch||%1%\
 \\ \\ \\ ||on||{{pset||roulette-kick-%channel%||1}}Roulette kicks have been turned on.\
 \\ \\ \\ ||off||{{pdelete||roulette-kick-%channel%}}Roulette kicks have been turned off.\
 \\ \\ \\ ||Invalid kick value, must be either "on" or "off", not "%2%"\
+\\ \\ \\ }}
 \\ }}\
 ||Invalid command. The only valid command right now is {{trigger}}roulette-config kick on/off.\
 }}
