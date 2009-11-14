@@ -19,9 +19,9 @@ public class TwiliocallFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        String account = StringUtils.readFile(new File("storage/twilio-account"));
-        String secret = StringUtils.readFile(new File("storage/twilio-secret"));
-        String from = StringUtils.readFile(new File("storage/twilio-from"));
+        String account = StringUtils.readFile(new File("storage/twilio-account")).trim();
+        String secret = StringUtils.readFile(new File("storage/twilio-secret")).trim();
+        String from = StringUtils.readFile(new File("storage/twilio-from")).trim();
         TwilioRestClient client = new TwilioRestClient(account, secret, null);
         Map<String, String> map = new HashMap<String, String>();
         map.put("Caller", from);
