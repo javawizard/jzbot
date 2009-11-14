@@ -25,9 +25,16 @@ public class StarthttpFunction extends Function
         // String url = "http://pastebin.com/"
         // + Pastebin.createPost("jzbot-help", getExtendedHelp(),
         // Duration.DAY, null);
-        String url = "(TODO, add into StarthttpFunction.java)";
-        return "Syntax: {{starthttp||<port>||<factoid>}} -- Starts an HTTP server on the "
-                + "specified port. See " + url + " for more info.";
+        // String url = "(TODO, add into StarthttpFunction.java)";
+        if (topic == null || "".equals(topic))
+            return "Syntax: {{starthttp||<port>||<factoid>}} -- Starts an HTTP server on the "
+                    + "specified port. Use \"%HELPCMD% functions starthttp details\" "
+                    + "for more info.";
+        else if (topic.equals("details"))
+            return "See http://pastebin.com/"
+                    + Pastebin.createPost("jzbot-help", getExtendedHelp(), Duration.DAY,
+                            null) + " for more info.";
+        return null;
     }
     
     private String getExtendedHelp()

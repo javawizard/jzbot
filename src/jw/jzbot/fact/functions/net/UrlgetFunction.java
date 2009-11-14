@@ -13,7 +13,6 @@ import jw.jzbot.fact.Function;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class UrlgetFunction extends Function
 {
     
@@ -70,10 +69,15 @@ public class UrlgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{urlget||<url>||<mode>||<prefix>}} -- Gets the page at the specified "
+        return "Syntax: {{urlget||<url>||<method>||<data>}} -- Gets the page at the specified "
                 + "url. <url> is the url to get. This currently must only be an http or https "
-                + "url. <mode> is the mode to use, which is either \"text\" or \"binary\". "
-                + "TODO: binary hexcodes bytes separated by pipes";
+                + "url. <method> and <data> are both optional, but <method> is required "
+                + "if <data> is to be used. <method> is the HTTP method to use, which "
+                + "defaults to GET. <data> is the request data to send to the server.\n"
+                + "Currently, if <method> is POST and <data> is not empty, an additional "
+                + "header, \"Content-Type\", will be sent along with the request with a "
+                + "value of \"application/x-www-form-urlencoded\". This will most "
+                + "likely changed in the future.";
     }
     
 }
