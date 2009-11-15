@@ -33,7 +33,8 @@ public class TwiliocallFunction extends Function
                     + client.getAccountSid() + "/Calls", "POST", map);
             if (response.isError())
                 throw new RuntimeException(response.getHttpStatus()
-                        + ": Rest client reported back an error");
+                        + ": Rest client reported back an error:\n\n"
+                        + response.getResponseText());
             return response.getResponseText();
         }
         catch (Exception e)

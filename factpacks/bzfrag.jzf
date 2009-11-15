@@ -3,3 +3,4 @@ author=Alexander Boyd
 scope=any
 description=Coming soon.
 depends=global:local.library.randomresline
+t.bzfrag={{action}}{{firstvar||p||%1%||%0%}}{{import||library.randomresline||bzfrag.txt||%p%}}
