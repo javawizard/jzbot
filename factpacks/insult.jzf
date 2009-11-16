@@ -1,0 +1,12 @@
+name=local.misc.insult
+author=Alexander Boyd
+scope=any
+description=Adds a factoid, ~insult, that says a random insult of the form "Hey <person>, \
+you <adjective> <noun> of <adjective> <noun>". For example, "~insult someperson" might \
+respond with "Hey someperson, you decrepit piece of moldy filth". Right now, this factpack \
+refuses to insult jcp, the creator of the bot.
+t.insult={{firstvar||person||%1%||%0%}}{{lset||person||{{ifeq||%person%||jcp||%0%||%person%}}}}Hey %person%, you {{exact||insult1}} {{exact||insult2}} of {{exact||insult3}} {{exact||insult4}}
+t.insult1={{random||stupid||idiotic||infuriating||distended||rat-faced||driveling||decrepit||incompetent||dumb||pathetic}}
+t.insult2={{random||piece||chunk||bag||pile||mountain||vat||blob}}
+t.insult3={{random||moldy||grimey||cute||sloshy||foul||spoiled||contaminated||cheesy||soppy||wormy}}
+t.insult4={{random||armpit hairs||filth||mold||parrot droppings||rat bogies||shark snot||pustulence||sinus clots||whale waste}}
