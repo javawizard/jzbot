@@ -1,10 +1,10 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.text;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 
-public class AfterpadFunction extends Function
+public class PadFunction extends Function
 {
     
     @Override
@@ -20,7 +20,7 @@ public class AfterpadFunction extends Function
     {
         while (value.length() < targetLength)
         {
-            value = value + toPadWith;
+            value = toPadWith + value;
         }
         return value;
     }
@@ -28,10 +28,10 @@ public class AfterpadFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{afterpad||<number>||<char>||<value>}} -- Evaluates to <value>, but "
-                + "with <char> (which must be a single character) appended until the "
+        return "Syntax: {{pad||<number>||<char>||<value>}} -- Evaluates to <value>, but "
+                + "with <char> (which must be a single character) prepended until the "
                 + "resulting length is at least equal to <number>. For example, "
-                + "{{pad||7||0||1234}} would evaluate to \"1234000\".";
+                + "{{pad||7||0||1234}} would evaluate to \"0001234\".";
     }
     
     public String getName()

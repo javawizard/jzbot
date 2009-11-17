@@ -1,22 +1,22 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.text;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 
-public class UpperFunction extends Function
+public class LowerFunction extends Function
 {
     
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        return arguments.get(0).toUpperCase();
+        return arguments.get(0).toLowerCase();
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{upper||<value>}} -- Converts the specified value to upper case.";
+        return "Syntax: {{lower||<value>}} -- Converts the specified value to lower case.";
     }
     
 }

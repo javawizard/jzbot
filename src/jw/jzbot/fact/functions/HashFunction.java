@@ -3,6 +3,7 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.functions.text.PadFunction;
 import net.sf.opengroove.common.security.Hash;
 
 
