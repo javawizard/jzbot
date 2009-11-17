@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -8,7 +8,7 @@ import jw.jzbot.fact.Function;
 
 import org.jibble.pircbot.User;
 
-public class IsadminFunction extends Function
+public class IsfounderFunction extends Function
 {
     
     @Override
@@ -32,24 +32,23 @@ public class IsadminFunction extends Function
             System.out.println("Scanning for user " + userObject.getNick());
             if (userObject.getNick().equalsIgnoreCase(user))
             {
-                if (userObject.isAdmin())
+                if (userObject.isFounder())
                     return "1";
                 else
                     return "0";
             }
         }
-        throw new FactoidException("Isadmin on user \"" + user + "\", channel \""
-                + channel
-                + "\": user is not connected, consider using {{ifjoined}} "
+        throw new FactoidException("Isfounder on user \"" + user + "\", channel \""
+                + channel + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isadmin||<channel>||<nick>}} -- Exactly the same as {{isop}}, " +
-        		"but checks to see if the user is a channel admin. On most servers, " +
-        		"this is mode +a.";
+        return "Syntax: {{isfounder||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+                + "but checks to see if the user is a channel founder. On most servers, "
+                + "this is mode +q.";
     }
     
 }

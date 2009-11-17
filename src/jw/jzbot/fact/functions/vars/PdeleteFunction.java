@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.vars;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -6,22 +6,23 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.storage.MapEntry;
 
-public class PgetFunction extends Function
+public class PdeleteFunction extends Function
 {
     
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
         MapEntry entry = JZBot.storage.getPersistentVariable(arguments.get(0));
-        if (entry == null)
-            return "";
-        return entry.getValue();
+        if (entry != null)
+            JZBot.storage.getPersistentVariables().remove(entry);
+        return "";
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{pget||<varname>}} -- Same as {{get||<varname>}}, but gets the specified "
+        return "Syntax: {{pdelete||<varname>}} -- Same as {{delete||<varname>}}, but deletes "
+                + "the specified "
                 + "persistent variable instead of the specified global variable. See \"%HELPCMD% "
                 + "functions pset\" for information on the difference between persistent variables "
                 + "and global variables.";

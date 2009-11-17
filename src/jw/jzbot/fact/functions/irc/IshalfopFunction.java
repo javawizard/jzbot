@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -8,7 +8,7 @@ import jw.jzbot.fact.Function;
 
 import org.jibble.pircbot.User;
 
-public class IsvoicedFunction extends Function
+public class IshalfopFunction extends Function
 {
     
     @Override
@@ -32,13 +32,13 @@ public class IsvoicedFunction extends Function
             System.out.println("Scanning for user " + userObject.getNick());
             if (userObject.getNick().equalsIgnoreCase(user))
             {
-                if (userObject.hasVoice())
+                if (userObject.isHalfop())
                     return "1";
                 else
                     return "0";
             }
         }
-        throw new FactoidException("Isvoiced on user \"" + user + "\", channel \""
+        throw new FactoidException("Ishalfop on user \"" + user + "\", channel \""
                 + channel + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
     }
@@ -51,9 +51,9 @@ public class IsvoicedFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isvoiced||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
-                + "but checks to see if the user is voiced. On most servers, "
-                + "this is mode +v.";
+        return "Syntax: {{ishalfop||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+                + "but checks to see if the user is a channel halfop. On most servers, "
+                + "this is mode +h.";
     }
     
 }

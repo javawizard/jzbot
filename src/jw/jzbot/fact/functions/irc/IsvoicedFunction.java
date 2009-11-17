@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -8,7 +8,7 @@ import jw.jzbot.fact.Function;
 
 import org.jibble.pircbot.User;
 
-public class IsfounderFunction extends Function
+public class IsvoicedFunction extends Function
 {
     
     @Override
@@ -32,23 +32,28 @@ public class IsfounderFunction extends Function
             System.out.println("Scanning for user " + userObject.getNick());
             if (userObject.getNick().equalsIgnoreCase(user))
             {
-                if (userObject.isFounder())
+                if (userObject.hasVoice())
                     return "1";
                 else
                     return "0";
             }
         }
-        throw new FactoidException("Isfounder on user \"" + user + "\", channel \""
+        throw new FactoidException("Isvoiced on user \"" + user + "\", channel \""
                 + channel + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
+    }
+    
+    public String getName()
+    {
+        return "isop";
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isfounder||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
-                + "but checks to see if the user is a channel founder. On most servers, "
-                + "this is mode +q.";
+        return "Syntax: {{isvoiced||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+                + "but checks to see if the user is voiced. On most servers, "
+                + "this is mode +v.";
     }
     
 }

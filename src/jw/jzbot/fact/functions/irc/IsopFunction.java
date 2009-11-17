@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -8,7 +8,7 @@ import jw.jzbot.fact.Function;
 
 import org.jibble.pircbot.User;
 
-public class IshalfopFunction extends Function
+public class IsopFunction extends Function
 {
     
     @Override
@@ -32,14 +32,15 @@ public class IshalfopFunction extends Function
             System.out.println("Scanning for user " + userObject.getNick());
             if (userObject.getNick().equalsIgnoreCase(user))
             {
-                if (userObject.isHalfop())
+                if (userObject.isOp())
                     return "1";
                 else
                     return "0";
             }
         }
-        throw new FactoidException("Ishalfop on user \"" + user + "\", channel \""
-                + channel + "\": user is not connected, consider using {{ifjoined}} "
+        throw new FactoidException("Isop on user \"" + user + "\", channel \""
+                + channel
+                + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
     }
     
@@ -51,9 +52,13 @@ public class IshalfopFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{ishalfop||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
-                + "but checks to see if the user is a channel halfop. On most servers, "
-                + "this is mode +h.";
+        return "Syntax: {{isop||<channel>||<nick>}} -- Evaluates to \"1\" if the nick specified is "
+                + "a channel operator at this channel or \"0\" if the nick specified is not"
+                + " a channel operator at this channel. %self% can be used to get the bot's "
+                + "own nick, so {{isop||%self%}} would indicate whether the bot has operator "
+                + "privileges at this channel.\n"
+                + "<channel> means the channel to check at. If it's not present, then the "
+                + "channel that this factoid is being run at will be used.";
     }
     
 }

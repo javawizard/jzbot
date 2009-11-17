@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
