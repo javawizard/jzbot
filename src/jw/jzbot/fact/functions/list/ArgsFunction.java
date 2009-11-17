@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.list;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -30,7 +30,8 @@ public class ArgsFunction extends Function
                 + "expression <regex>, then runs the function named by the first string "
                 + "in this sublist, passing the rest of the strings as arguments. For "
                 + "example, \"{{args||,||sendmessage,%0%,Hello}}\" would function exactly "
-                + "the same as \"{{sendmessage||%0%||Hello}}\".";
+                + "the same as \"{{sendmessage||%0%||Hello}}\", assuming %0% does not "
+                + "contain any commas.";
     }
     
 }
