@@ -13,5 +13,5 @@ g.library.conditional-op=\
 {{cset||library.conditional-op.wasop||%wasop%}}
 library.g.library.conditional-op=1
 g.library.conditional-deop=\
-{{ifeq||{{cget||library.conditional-op.wasop}}||1||{{wait||1000}}{{mode||-o %self%}}}}
+{{ifeq||{{cget||library.conditional-op.wasop}}||0||{{wait||1000}}{{mode||-o %self%}}}}
 library.g.library.conditional-deop=1
