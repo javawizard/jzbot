@@ -96,7 +96,7 @@ public class JZBot
     
     public static volatile int notificationSequence = 0;
     
-    public static Thread notificationThread = new Thread()
+    public static Thread notificationThread = new Thread("bot-internal-notification-thread")
     {
         public void run()
         {
@@ -105,20 +105,20 @@ public class JZBot
                 try
                 {
                     Thread.sleep(1000 * 60 * 5);
+                    notificationSequence += 1;
+                    notificationSequence %= 12;
+                    sendNotificationToAll("fiveminutes");
+                    if ((notificationSequence % 2) == 0)
+                        sendNotificationToAll("tenminutes");
+                    if ((notificationSequence % 6) == 0)
+                        sendNotificationToAll("halfhour");
+                    if ((notificationSequence % 12) == 0)
+                        sendNotificationToAll("hour");
                 }
-                catch (InterruptedException e)
+                catch (Exception e)
                 {
                     e.printStackTrace();
                 }
-                notificationSequence += 1;
-                notificationSequence %= 12;
-                sendNotificationToAll("fiveminutes");
-                if ((notificationSequence % 2) == 0)
-                    sendNotificationToAll("tenminutes");
-                if ((notificationSequence % 6) == 0)
-                    sendNotificationToAll("halfhour");
-                if ((notificationSequence % 12) == 0)
-                    sendNotificationToAll("hour");
             }
         }
     };

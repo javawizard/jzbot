@@ -1,0 +1,17 @@
+name=local.library.conditional-op
+author=Alexander Boyd
+scope=global
+description=Provides two factoids, library.conditional-op and library.conditional-deop. These \
+will ask ChanServ to op/deop the bot if it's not already opped. In essence, you use \
+library.conditional-op just before the action that needs operator status, and \
+library.conditional-deop just after the action that needs operator status. \n\
+library.conditional-deop will only deop the bot if it was not already opped when \
+library.conditional-op was run.
+g.library.conditional-op=\
+{{lset||wasop||{{isop||%self%}}}}\
+{{if||%wasop%||||{{sendmessage||ChanServ||op %channel% %self%}}{{wait||1000}}}}\
+{{cset||library.conditional-op.wasop||%wasop%}}
+library.g.library.conditional-op=1
+g.library.conditional-deop=\
+{{ifeq||{{cget||library.conditional-op.wasop}}||1||{{wait||1000}}{{mode||-o %self%}}}}
+library.g.library.conditional-deop=1 
