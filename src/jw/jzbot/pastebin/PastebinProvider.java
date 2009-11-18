@@ -62,10 +62,21 @@ public interface PastebinProvider
      * such post, null should be returned. This method will only be called for a
      * particular URL if {@link #understands(String)} returns true for the URL.
      * 
-     * @param url The URL to read
+     * @param url
+     *            The URL to read
      * @return The post, or null if there is no such post
      */
     public Post read(String url);
     
+    /**
+     * Returns true if this pastebin provider can read URLs of the specified format. When
+     * the pastebin service is asked to read a pastebin post, it will call this method on
+     * all providers it knows about until it finds a provider that can read the post in
+     * question.
+     * 
+     * @param url
+     *            The URL to read
+     * @return True if this provider knows how to read the post
+     */
     public boolean understands(String url);
 }

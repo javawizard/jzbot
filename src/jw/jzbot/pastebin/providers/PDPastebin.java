@@ -3,7 +3,7 @@ package jw.jzbot.pastebin.providers;
 import jw.jzbot.pastebin.PastebinProvider;
 import jw.jzbot.pastebin.Post;
 
-public class PastebinDotCom implements PastebinProvider
+public class PDPastebin implements PastebinProvider
 {
     
     @Override
