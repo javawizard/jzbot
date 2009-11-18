@@ -328,7 +328,8 @@ public class FactParser
         }
         catch (Throwable t)
         {
-            if (!new File("classes/org/opengroove/jzbot").exists())
+            t.printStackTrace();
+            if (!new File("classes/jw/jzbot").exists())
             {
                 System.err.println("Couldn't load functions because the function "
                         + "class folder doesn't exist. This could mean "
