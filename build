@@ -1,0 +1,5 @@
+#!/bin/bash
+export ANT_HOME=`pwd`/includes/ant
+chmod +x includes/ant/bin/ant
+chmod +x includes/ant/bin/antRun
+includes/ant/bin/ant compile

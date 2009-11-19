@@ -1,4 +1,12 @@
 <project name="jzbot2" default="archive">
+	<target name="compile">
+		<mkdir dir="classes"/>
+		<javac srcdir="src" destdir="classes">
+			<classpath>
+				<fileset dir="lib"></fileset>
+			</classpath>
+		</javac>
+	</target>
 	<target name="archive">
 		<!-- We're using a tar here instead of a tar.gz or a zip so 
 		that rsync uploads go really fast. -->
