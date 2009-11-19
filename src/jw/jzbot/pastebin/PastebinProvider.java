@@ -31,7 +31,12 @@ public interface PastebinProvider
         /**
          * Indicates that posts can have tags associated with them.
          */
-        tags
+        tags,
+        /**
+         * Indicates that lines within a post that start with two at-signs will be
+         * highlighted by the pastebin service, and removed when reading posts.
+         */
+        highlight
     }
     
     /**

@@ -5,40 +5,39 @@ import jw.jzbot.pastebin.Post;
 
 public class PastebinDotCa implements PastebinProvider
 {
-
+    
     @Override
     public Feature[] getReceiveFeatures()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Feature[]
+        {};
     }
-
+    
     @Override
     public Feature[] getSendFeatures()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Feature[]
+        {
+                Feature.author, Feature.forever, Feature.info, Feature.tags
+        };
     }
-
+    
     @Override
     public Post read(String url)
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
-
+    
     @Override
     public String send(Post post)
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
-
+    
     @Override
     public boolean understands(String url)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return url.startsWith("http://pastebin.ca");
     }
     
 }

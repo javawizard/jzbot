@@ -89,7 +89,7 @@ public class Pastebin
         }
     }
     
-    private static String getResponseHeader(HttpResponse response, String string)
+    public static String getResponseHeader(HttpResponse response, String string)
     {
         for (Header header : response.getAllHeaders())
             if (header.getName().equals(string))
@@ -97,7 +97,7 @@ public class Pastebin
         return null;
     }
     
-    private static String readContent(HttpResponse response)
+    public static String readContent(HttpResponse response)
     {
         try
         {
