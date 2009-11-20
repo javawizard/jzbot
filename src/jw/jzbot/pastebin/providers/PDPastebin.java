@@ -85,7 +85,7 @@ public class PDPastebin implements PastebinProvider
         Matcher m = p.matcher(url);
         m.find();
         String value = m.group(1);
-        if (value.equals("/") || value.equals(""))
+        if (value == null || value.equals("/") || value.equals(""))
             return "";
         return value;
     }
