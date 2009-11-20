@@ -1839,7 +1839,7 @@ public class JZBot
         return Pastebin.createPost("jzbot", text
                 + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
                 + "post, or its creator (JZBot), send an email to alex"
-                + " AT opengroove DOT org.", Pastebin.Duration.DAY, null, features);
+                + " AT opengroove DOT org.\n ", Pastebin.Duration.DAY, null, features);
     }
     
     public static MathContext datasizeContext = new MathContext(3);

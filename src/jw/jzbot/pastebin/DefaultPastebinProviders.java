@@ -9,6 +9,8 @@ public class DefaultPastebinProviders
     {
         PastebinService
                 .installProvider(new PDPastebin("pastebin.com", true, "pastebin.php"));
+        PastebinService.installProvider(new PDPastebin("p.baf.cc", false,
+                "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("pastebin.flamingspork.com", false,
                 "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
@@ -17,7 +19,8 @@ public class DefaultPastebinProviders
                 .installProvider(new PDPastebin("ampaste.net", true, "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php"));
         // pastebin.flamingspork.com
-        //paste.amahi.org
+        // paste.amahi.org
+        // p.baf.cc
         // PastebinService.installProvider(new PastebinDotCa());
     }
 }
