@@ -399,7 +399,7 @@ public class FactoidCommand implements Command
                                     ", "));
                     buffer.append("\n\n");
                 }
-                JZBot.bot.sendMessage(pm ? sender : channel, JZBot.pastebin(buffer
+                JZBot.bot.sendMessage(pm ? sender : channel, JZBot.pastebinNotice(buffer
                         .toString(), new Feature[]
                 {
                     Feature.highlight
@@ -495,7 +495,7 @@ public class FactoidCommand implements Command
             {
                 descStrings = new String[]
                 {
-                    "See " + JZBot.pastebin(factpack.description, null)
+                    "See " + JZBot.pastebinNotice(factpack.description, null)
                             + " for the full description"
                 };
             }

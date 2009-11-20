@@ -1276,7 +1276,7 @@ public class JZBot
                     + "\n\nJava stack trace:\n\n" + eString;
         try
         {
-            return Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY, null, null);
+            return pastebinNotice(eString, null);
         }
         catch (Exception e2)
         {
@@ -1834,9 +1834,12 @@ public class JZBot
         return null;
     }
     
-    public static String pastebin(String text, Feature[] features)
+    public static String pastebinNotice(String text, Feature[] features)
     {
-        return Pastebin.createPost("jzbot", text, Pastebin.Duration.DAY, null, features);
+        return Pastebin.createPost("jzbot", text
+                + "\n\n\n\nPASTEBIN OWNER: If you have questions about this "
+                + "post, or its creator (JZBot), send an email to alex"
+                + " AT opengroove DOT org.", Pastebin.Duration.DAY, null, features);
     }
     
     public static MathContext datasizeContext = new MathContext(3);
