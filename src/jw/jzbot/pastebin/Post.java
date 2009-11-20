@@ -4,12 +4,12 @@ import jw.jzbot.utils.Pastebin.Duration;
 
 public class Post
 {
-    public String name = "";
-    public String parent;
-    public Duration duration = Duration.DAY;
-    public String data;
-    public String description = "";
-    public String[] tags = new String[0];
+    private String name = "";
+    private String parent;
+    private Duration duration = Duration.DAY;
+    private String data;
+    private String description = "";
+    private String[] tags = new String[0];
     
     public Post()
     {

@@ -65,6 +65,8 @@ import jw.jzbot.help.DefaultHelpProvider;
 import jw.jzbot.help.FunctionHelpProvider;
 import jw.jzbot.help.PropsHelpProvider;
 import jw.jzbot.help.XMLHelpProvider;
+import jw.jzbot.pastebin.DefaultPastebinProviders;
+import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -568,6 +570,7 @@ public class JZBot
     
     private static void start() throws Throwable
     {
+        DefaultPastebinProviders.installDefaultSet();
         logsFolder.mkdirs();
         initProxyStorage();
         if (config.getNick() == null || config.getPassword() == null
@@ -1273,8 +1276,7 @@ public class JZBot
                     + "\n\nJava stack trace:\n\n" + eString;
         try
         {
-            return "http://pastebin.com/"
-                    + Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY, "");
+            return Pastebin.createPost("jzbot", eString, Pastebin.Duration.DAY, null, null);
         }
         catch (Exception e2)
         {
@@ -1832,9 +1834,9 @@ public class JZBot
         return null;
     }
     
-    public static String pastebin(String text)
+    public static String pastebin(String text, Feature[] features)
     {
-        return Pastebin.createPost("jzbot", text, Pastebin.Duration.DAY, null);
+        return Pastebin.createPost("jzbot", text, Pastebin.Duration.DAY, null, features);
     }
     
     public static MathContext datasizeContext = new MathContext(3);

@@ -47,7 +47,7 @@ public enum ConfigVars
                     + "by spaces: http://pastebin.com/"
                     + Pastebin.createPost("jzbot", StringUtils.delimited(Charset
                             .availableCharsets().keySet().toArray(new String[0]), "   "),
-                            Duration.DAY, null);
+                            Duration.DAY, null, null);
         }
         
         public void set(String value)

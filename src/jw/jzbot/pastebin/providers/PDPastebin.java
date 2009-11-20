@@ -6,6 +6,8 @@ import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +20,13 @@ import jw.jzbot.pastebin.Post;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
+/**
+ * A provider that can interface to Paul Dixon's pastebin software. This is what
+ * pastebin.com and pastebin.im run.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public class PDPastebin implements PastebinProvider
 {
     private String location;
@@ -52,23 +61,15 @@ public class PDPastebin implements PastebinProvider
     {
         try
         {
-            url = "http://" + extractSubdomainPrefix(url) + location + "/" + downloadFile + "?dl="
-                    + extractId(url);
+            url = "http://" + extractSubdomainPrefix(url) + location + "/" + downloadFile
+                    + "?dl=" + extractId(url);
             HttpClient client = new DefaultHttpClient();
             client.getParams().setParameter("http.socket.timeout", 8000);
             HttpGet request = new HttpGet(url);
             HttpResponse response = client.execute(request);
             InputStream stream = response.getEntity().getContent();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buffer = new byte[512];
-            int read = 0;
-            while ((read = stream.read(buffer)) != -1)
-            {
-                out.write(buffer, 0, read);
-            }
-            stream.close();
-            out.flush();
-            out.close();
+            StringUtils.copy(stream,out);
             String result = new String(out.toByteArray(), "US-ASCII");
             return new Post(null, null, null, null, null, result);
         }

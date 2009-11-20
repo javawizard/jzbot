@@ -31,9 +31,9 @@ public class StarthttpFunction extends Function
                     + "specified port. Use \"%HELPCMD% functions starthttp details\" "
                     + "for more info.";
         else if (topic.equals("details"))
-            return "See http://pastebin.com/"
+            return "See "
                     + Pastebin.createPost("jzbot-help", getExtendedHelp(), Duration.DAY,
-                            null) + " for more info.";
+                            null,null) + " for more info.";
         return null;
     }
     

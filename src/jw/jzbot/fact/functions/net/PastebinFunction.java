@@ -4,6 +4,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -13,15 +14,20 @@ public class PastebinFunction extends Function
     @Override
     public String evaluate(ArgumentList arguments, FactContext context)
     {
-        if (arguments.length() > 1
-                && arguments.get(1).toLowerCase().contains("forever"))
-            throw new FactoidException(
-                    "Forever pastebins are not allowed at this time.");
+        if (arguments.length() > 1 && arguments.get(1).toLowerCase().contains("forever"))
+            throw new FactoidException("Forever pastebins are not allowed at this time.");
         context.incrementMessageCount();
-        return "http://pastebin.com/"
-                + Pastebin.createPost("jzbot-fact", arguments.get(0),
-                        (arguments.length() > 1 ? Duration.valueOf(arguments
-                                .get(1)) : Duration.DAY), null);
+        Duration duration = (arguments.length() > 1 ? Duration.valueOf(arguments.get(1))
+                : Duration.DAY);
+        Feature[] features;
+        if (duration == Duration.FOREVER)
+            features = new Feature[]
+            {
+                Feature.forever
+            };
+        else
+            features = new Feature[0];
+        return Pastebin.createPost("jzbot-fact", arguments.get(0), duration, null, null);
     }
     
     @Override

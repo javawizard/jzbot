@@ -107,9 +107,9 @@ public class RegexCommand implements Command
             {
                 if (reply)
                     JZBot.bot.sendMessage(pm ? sender : channel,
-                            "Regex list: http://pastebin.com/"
+                            "Regex list: "
                                     + Pastebin.createPost("jzbot", buffer
-                                            .toString(), Duration.DAY, ""));
+                                            .toString(), Duration.DAY, null,null));
             }
             else
             {

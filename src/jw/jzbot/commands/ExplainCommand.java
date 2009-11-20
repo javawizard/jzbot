@@ -39,8 +39,8 @@ public class ExplainCommand implements Command
         buffer.append("\n\nExplanation for this factoid:\n\n");
         buffer.append(explanation);
         JZBot.bot.sendMessage(pm ? sender : channel,
-                "Explanation of this factoid: http://pastebin.com/"
+                "Explanation of this factoid: "
                         + Pastebin.createPost("jzbot", buffer.toString(),
-                                Duration.DAY, ""));
+                                Duration.DAY, null, null));
     }
 }

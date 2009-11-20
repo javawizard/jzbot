@@ -14,7 +14,6 @@ import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
-
 public class HelpCommand implements Command
 {
     
@@ -122,9 +121,11 @@ public class HelpCommand implements Command
                 buffer.append(subpage).append(":\n");
                 buffer.append(subtext).append("\n\n");
             }
-            JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \"" + page
+            JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \""
+                    + page
                     + "\": http://pastebin.com/"
-                    + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null));
+                    + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,
+                            null));
         }
     }
 }

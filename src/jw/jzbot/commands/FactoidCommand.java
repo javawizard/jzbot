@@ -17,6 +17,8 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.functions.conditional.IfFunction;
+import jw.jzbot.pastebin.PastebinService;
+import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.storage.HasFactoids;
@@ -31,7 +33,6 @@ import org.opengroove.utils.English;
 
 public class FactoidCommand implements Command
 {
-    public static String PASTEBIN_REGEX = "^http\\://pastebin\\.com/.{6,12}$";
     
     public String getName()
     {
@@ -126,7 +127,9 @@ public class FactoidCommand implements Command
             else if (c == null && JZBot.storage.getFactoid(factoidName) != null)
                 throw new ResponseException(
                         "That factoid already exists as a global factoid");
-            factoidContents = scanForPastebin(factoidContents);
+            boolean fromPastebin = PastebinService.understands(factoidContents);
+            if (fromPastebin)
+                factoidContents = PastebinService.readPost(factoidContents).getData();
             /*
              * The factoid does not exist. Let's create it. First, we'll try parsing it to
              * make sure we don't have syntax errors.
@@ -273,9 +276,8 @@ public class FactoidCommand implements Command
             }
             String value = f.getValue();
             if (value.contains("\n") || value.contains("\r") || value.length() > 400
-                    || value.matches(PASTEBIN_REGEX))
-                value = "http://pastebin.com/"
-                        + Pastebin.createPost("jzbot", value, Duration.DAY, null);
+                    || PastebinService.understands(value))
+                value = Pastebin.createPost("jzbot", value, Duration.DAY, null, null);
             JZBot.bot.sendMessage(pm ? sender : channel, value);
         }
         if (command.equals("info"))
@@ -397,8 +399,11 @@ public class FactoidCommand implements Command
                                     ", "));
                     buffer.append("\n\n");
                 }
-                JZBot.bot.sendMessage(pm ? sender : channel, "http://pastebin.com/"
-                        + JZBot.pastebin(buffer.toString()));
+                JZBot.bot.sendMessage(pm ? sender : channel, JZBot.pastebin(buffer
+                        .toString(), new Feature[]
+                {
+                    Feature.highlight
+                }));
             }
             else
             {
@@ -468,15 +473,15 @@ public class FactoidCommand implements Command
     {
         String location = afterCommand;
         String packContents;
-        if (location.startsWith("http://pastebin.com/"))
-            packContents = Pastebin.readPost(location);
+        boolean fromPastebin;
+        if (PastebinService.understands(location))
+            packContents = PastebinService.readPost(location).getData();
         else
         {
             File file = JZBot.getLocalFactpackFile(location);
             if (file == null)
                 throw new ResponseException("Invalid factpack \"" + location
-                        + "\", must be either a known factpack "
-                        + "or a url at http://pastebin.com");
+                        + "\", must be either a known factpack " + "or a pastebin url");
             packContents = StringUtils.readFile(file);
         }
         Factpack factpack = Factpack.parse(packContents);
@@ -490,7 +495,7 @@ public class FactoidCommand implements Command
             {
                 descStrings = new String[]
                 {
-                    "See " + JZBot.pastebin(factpack.description)
+                    "See " + JZBot.pastebin(factpack.description, null)
                             + " for the full description"
                 };
             }
@@ -657,8 +662,8 @@ public class FactoidCommand implements Command
         System.out.println("target scope name is " + targetScopeName);
         String location = afterCommand;
         String packContents;
-        if (location.startsWith("http://pastebin.com/"))
-            packContents = Pastebin.readPost(location);
+        if (PastebinService.understands(location))
+            packContents = PastebinService.readPost(location).getData();
         else
         {
             File file = JZBot.getLocalFactpackFile(location);
@@ -972,15 +977,6 @@ public class FactoidCommand implements Command
     {
         if (!JZBot.isOp(channel, hostname))
             throw new ResponseException(string);
-    }
-    
-    private String scanForPastebin(String factoidContents)
-    {
-        if (factoidContents.matches(PASTEBIN_REGEX))
-        {
-            factoidContents = Pastebin.readPost(factoidContents.trim());
-        }
-        return factoidContents;
     }
     
     private void recreate(Factoid oldFact, boolean isGlobal, Channel c)

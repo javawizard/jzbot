@@ -143,9 +143,9 @@ public class StatusCommand implements Command
                 b.append("\n");
             }
             JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Stack traces of all live threads: http://pastebin.com/"
+                    "Stack traces of all live threads: "
                             + Pastebin
-                                    .createPost("jzbot", b.toString(), Duration.DAY, null));
+                                    .createPost("jzbot", b.toString(), Duration.DAY, null,null));
         }
         else if (arguments.equals("storage"))
         {

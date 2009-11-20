@@ -28,6 +28,8 @@ public class PastebinService
      */
     public static String createPost(Post post, Feature[] requiredFeatures)
     {
+        if(requiredFeatures == null)
+            requiredFeatures = new Feature[0];
         if (post == null)
             throw new NullPointerException("Can't create a null post");
         if (post.getData() == null || post.getData().isEmpty())
@@ -74,5 +76,15 @@ public class PastebinService
         }
         throw new PastebinException("That pastebin URL (\"" + url
                 + "\") is not a valid url.");
+    }
+    
+    public static boolean understands(String url)
+    {
+        for(PastebinProvider provider : providers)
+        {
+            if(provider.understands(url))
+                return true;
+        }
+        return false;
     }
 }

@@ -5,6 +5,7 @@ import jw.jzbot.pastebin.Post;
 
 public class PastebinDotCa implements PastebinProvider
 {
+    public static final String API_KEY = "Tfp0JjFZhgr7VN81MvcVhVLEr3sI7nlT";
     
     @Override
     public Feature[] getReceiveFeatures()
@@ -18,7 +19,7 @@ public class PastebinDotCa implements PastebinProvider
     {
         return new Feature[]
         {
-                Feature.author, Feature.forever, Feature.info, Feature.tags
+                Feature.author, Feature.forever, Feature.info
         };
     }
     
@@ -37,7 +38,7 @@ public class PastebinDotCa implements PastebinProvider
     @Override
     public boolean understands(String url)
     {
-        return url.startsWith("http://pastebin.ca");
+        return url.startsWith("http://pastebin.ca/");
     }
     
 }
