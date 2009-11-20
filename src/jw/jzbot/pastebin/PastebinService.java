@@ -87,4 +87,9 @@ public class PastebinService
         }
         return false;
     }
+
+    public static int getProviderCount()
+    {
+        return providers.size();
+    }
 }

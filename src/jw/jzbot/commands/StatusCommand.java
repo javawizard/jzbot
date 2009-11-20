@@ -11,6 +11,7 @@ import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.JZUtils;
@@ -43,7 +44,7 @@ public class StatusCommand implements Command
                     + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
                     + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
                     + ",functions:" + FactParser.getFunctionNames().length + ",commands:"
-                    + JZBot.commands.size() + ",queue:" + JZBot.bot.getOutgoingQueueSize();
+                    + JZBot.commands.size() + ",queue:" + JZBot.bot.getOutgoingQueueSize() + ",pastebins:" + PastebinService.getProviderCount();
             JZBot.bot.sendMessage(pm ? sender : channel, s);
             JZBot.bot.sendMessage(pm ? sender : channel,
                     "For more info, try \"status gc\", \"status threads\", "
