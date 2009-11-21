@@ -13,7 +13,9 @@ public class DefaultPastebinProviders
         PastebinService.installProvider(new PDPastebin("pastebin.flamingspork.com", false,
                 "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
-                "pastebin.php"));
+        "pastebin.php"));
+        PastebinService.installProvider(new PDPastebin("pastebin.hu", false,
+        "pastebin.php"));
         PastebinService
                 .installProvider(new PDPastebin("ampaste.net", true, "pastebin.php"));
         PastebinService
@@ -26,6 +28,7 @@ public class DefaultPastebinProviders
         // p.baf.cc
         // paste.uberdragon.net
         // paste.liquidswords.org
+        //pastebin.hu
         // PastebinService.installProvider(new PastebinDotCa());
     }
 }
