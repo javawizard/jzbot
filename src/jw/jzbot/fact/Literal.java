@@ -36,17 +36,20 @@ public class Literal extends FactEntity
      * Returns the value passed to {@link #Literal(String)}.
      */
     @Override
-    public String execute(FactContext context)
+    public void execute(Sink sink, FactContext context)
     {
         if (finalized == null)
             finalize();
-        return finalized;
+        sink.add(finalized);
     }
     
     @Override
-    public String explain(int indentation, int increment)
+    public void explain(Sink sink, int indentation, int increment)
     {
-        return spaces(indentation) + "literal: \"" + resolve(null) + "\"\n";
+        sink.add(spaces(indentation));
+        sink.add("literal: \"");
+        resolve(sink, null);
+        sink.add("\"\n");
     }
     
 }

@@ -99,23 +99,24 @@ public class ArgumentList
     }
     
     /**
-     * Same as <tt>get()</tt>, but the argument is resolved again even if it has already
-     * been resolved before. Functions like {{split}} use this for the <action> argument
-     * to cause it to be resolved once for each substring in the string to split.
+     * Resolves the specified argument. Regardless of whether this method (or
+     * {@link #get(int)}) has been called before, this forces a re-evaluation of the
+     * specified argument.
      * 
      * @param index
      *            The index of the item to resolve
-     * @return The value that the newly-resolved item evaluated to
+     * @param sink
+     *            The sink to resolve into
      */
-    public String resolve(int index)
+    public void resolve(int index, Sink sink)
     {
         if (delegate != null)
         {
-            return delegate.resolve(index + offset);
+            delegate.resolve(index + offset, sink);
         }
         else
         {
-            return sequence.get(index).resolve(context);
+            sequence.get(index).resolve(sink, context);
         }
     }
     
@@ -134,28 +135,35 @@ public class ArgumentList
     }
     
     /**
-     * Gets the argument at the specified index. If this argument has not actually been
-     * "run" to find out what its value should be, it is run, and the value is stored so
-     * that future calls to <tt>get()</tt> will not result in the argument being "run"
-     * again.
+     * Gets the argument at the specified index. If the argument's value has already been
+     * retrieved by a call to this method, this method does <b>not<b/> cause the argument
+     * to be resolved again. A ForkedSink is used to actually resolve the argument in
+     * question. If the argument has already been resolved, then the string version saved
+     * by the ForkedSink is written to the sink instead.
      * 
      * @param index
      *            The index of the argument. Indexes start at 0.
      * @return The result of running the argument at the specified index
      */
-    public String get(int index)
+    public void get(int index, Sink sink)
     {
         if (delegate != null)
         {
-            return delegate.get(index + offset);
+            delegate.get(index + offset, sink);
         }
         else
         {
             if (resolved[index] == null)
             {
-                resolved[index] = sequence.get(index).resolve(context);
+                StringSink cache = new StringSink();
+                ForkedSink fork = new ForkedSink(sink, cache);
+                sequence.get(index).resolve(fork, context);
+                resolved[index] = cache.toString();
             }
-            return resolved[index];
+            else
+            {
+                sink.add(resolved[index]);
+            }
         }
     }
     
@@ -201,7 +209,9 @@ public class ArgumentList
         String[] s = new String[length()];
         for (int i = 0; i < s.length; i++)
         {
-            s[i] = get(i);
+            StringSink sink = new StringSink();
+            get(i,sink);
+            s[i] = sink.toString();
         }
         return s;
     }

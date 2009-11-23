@@ -12,24 +12,33 @@ public class VarReference extends FactEntity
     }
     
     @Override
-    public String explain(int indentation, int increment)
+    public void explain(Sink sink, int indentation, int increment)
     {
         if (global)
-            return spaces(indentation) + "global variable: \"" + name + "\"\n";
+        {
+            sink.add(spaces(indentation));
+            sink.add("global variable: \"");
+            sink.add(name);
+            sink.add("\"\n");
+        }
         else
-            return spaces(indentation) + "variable: \"" + name + "\"\n";
+        {
+            sink.add(spaces(indentation));
+            sink.add("variable: \"");
+            sink.add(name);
+            sink.add("\"\n");
+        }
     }
     
     @Override
-    public String execute(FactContext context)
+    public void execute(Sink sink, FactContext context)
     {
         String var;
         if (global)
             var = context.getGlobalVars().get(name);
         else
             var = context.getLocalVars().get(name);
-        if (var == null)
-            return "";
-        return var;
+        if (var != null)
+            sink.add(var);
     }
 }
