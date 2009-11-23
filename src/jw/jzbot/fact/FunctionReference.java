@@ -24,17 +24,17 @@ public class FunctionReference extends FactEntity
     }
     
     @Override
-    public String execute(FactContext context)
+    public void execute(Sink sink, FactContext context)
     {
         ArgumentList list = new ArgumentList(arguments, context);
-        functionName = list.get(0);
+        functionName = list.getString(0);
         Function function = FactParser.getFunction(functionName);
         if (function == null)
             throw new FactoidException("No such function: " + functionName);
         ArgumentList sublist = list.subList(1);
         try
         {
-            return function.evaluate(sublist, context);
+            function.evaluate(sink, sublist, context);
         }
         catch (FactoidException e)
         {
@@ -42,8 +42,7 @@ public class FunctionReference extends FactEntity
         }
         catch (Exception e)
         {
-            throw new FactoidException("Internal error while running "
-                    + functionName, e);
+            throw new FactoidException("Internal error while running " + functionName, e);
         }
     }
     
@@ -56,17 +55,16 @@ public class FunctionReference extends FactEntity
         String functionName = this.functionName;
         if (functionName == null || functionName.equals(""))
             functionName = "(blank function reference)";
-        e.addFrame(new FactoidStackFrame(super.getCharIndex(), super
-                .getFactName(), functionName));
+        e.addFrame(new FactoidStackFrame(super.getCharIndex(), super.getFactName(),
+                functionName));
     }
     
     @Override
-    public String explain(int indentation, int increment)
+    public void explain(Sink sink, int indentation, int increment)
     {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(spaces(indentation) + "function:\n");
-        buffer.append(arguments.explain(indentation, increment, false));
-        return buffer.toString();
+        sink.add(spaces(indentation));
+        sink.add("function:\n");
+        arguments.explain(sink, indentation, increment, false);
     }
     
     public Sequence getArgumentSequence()

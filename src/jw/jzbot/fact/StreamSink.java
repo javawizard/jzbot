@@ -20,18 +20,32 @@ public class StreamSink implements Sink
     @Override
     public void add(String s)
     {
-        out.write(s.getBytes());
-        out.flush();
+        try
+        {
+            out.write(s.getBytes());
+            out.flush();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     @Override
     public void add(char c)
     {
-        out.write(new String(new char[]
+        try
         {
-            c
-        }).getBytes());
-        out.flush();
+            out.write(new String(new char[]
+            {
+                c
+            }).getBytes());
+            out.flush();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     @Override

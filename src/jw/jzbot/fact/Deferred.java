@@ -20,13 +20,13 @@ public class Deferred
         this.index = index;
     }
     
-    public String get()
+    public void get(Sink sink)
     {
-        return list.get(index);
+        list.get(index, sink);
     }
     
-    public String resolve()
+    public void resolve(Sink sink)
     {
-        return list.resolve(index);
+        list.resolve(index, sink);
     }
 }

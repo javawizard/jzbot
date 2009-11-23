@@ -168,6 +168,20 @@ public class ArgumentList
     }
     
     /**
+     * Creates a {@link StringSink}, calls {@link #get(int, Sink)}, and returns the value
+     * in the string sink.
+     * 
+     * @param index
+     * @return
+     */
+    public String getString(int index)
+    {
+        StringSink sink = new StringSink();
+        get(index, sink);
+        return sink.toString();
+    }
+    
+    /**
      * Returns the number of arguments in this argument list.
      * 
      * @return
@@ -210,7 +224,7 @@ public class ArgumentList
         for (int i = 0; i < s.length; i++)
         {
             StringSink sink = new StringSink();
-            get(i,sink);
+            get(i, sink);
             s[i] = sink.toString();
         }
         return s;

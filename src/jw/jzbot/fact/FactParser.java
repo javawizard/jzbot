@@ -454,6 +454,8 @@ public class FactParser
     {
         FunctionReference ref = (FunctionReference) parse(factoid, name);
         FactEntity entity = ref.getArgumentSequence().get(1);
-        return entity.explain(0, 4);
+        StringSink sink = new StringSink();
+        entity.explain(sink,0, 4);
+        return sink.toString();
     }
 }
