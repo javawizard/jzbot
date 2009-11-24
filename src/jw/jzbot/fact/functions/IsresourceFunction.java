@@ -8,19 +8,18 @@ import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class IsresourceFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String name = arguments.get(0);
+        String name = arguments.resolveString(0);
         if (name.contains("..") || name.contains("\\") || name.contains("/"))
             throw new FactoidException("The resource name \"" + name
                     + "\" contains invalid characters.");
         File file = new File("resources", name);
-        return file.exists() ? "1" : "0";
+        sink.write(file.exists() ? '1' : '0');
     }
     
     @Override

@@ -12,7 +12,6 @@ public class OverrideFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.getLocalVars().put("__internal_override", "true");
-        return "";
     }
     
     @Override

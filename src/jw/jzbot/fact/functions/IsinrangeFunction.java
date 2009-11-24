@@ -7,7 +7,6 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class IsinrangeFunction extends Function
 {
     
@@ -16,23 +15,21 @@ public class IsinrangeFunction extends Function
     {
         try
         {
-            BigInteger number = new BigInteger(arguments.get(0));
-            BigInteger min = new BigInteger(arguments.get(1));
-            BigInteger max = new BigInteger(arguments.get(2));
+            BigInteger number = new BigInteger(arguments.resolveString(0));
+            BigInteger min = new BigInteger(arguments.resolveString(1));
+            BigInteger max = new BigInteger(arguments.resolveString(2));
             if (number.compareTo(min) < 0)// <number> is less than <min>
-                return "0";
+                sink.write('0');
             else if (number.compareTo(max) > 0)// <number> is greater than <max>
-                return "0";
+                sink.write('0');
             // <number> is between <min> and <max>, inclusive
-            return "1";
+            else
+                sink.write('1');
         }
         catch (Exception e)
         {
-            /*
-             * This will happen if the number isn't a number at all, and so can't be
-             * parsed to a BigInteger
-             */
-            return "0";
+            e.printStackTrace();
+            sink.write('0');
         }
     }
     

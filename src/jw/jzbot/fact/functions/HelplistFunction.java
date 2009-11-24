@@ -6,12 +6,12 @@ import java.util.Arrays;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
-
 
 public class HelplistFunction extends Function
 {
@@ -19,15 +19,20 @@ public class HelplistFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        ArrayList<String> list = new ArrayList<String>();
-        String pagename = arguments.get(0);
+        String pagename = arguments.resolveString(0);
+        DelimitedSink result = new DelimitedSink(sink, " ");
         for (HelpProvider provider : JZBot.helpProviders)
         {
             String[] possible = provider.listPages(pagename);
             if (possible != null)
-                list.addAll(Arrays.asList(possible));
+            {
+                for (String s : possible)
+                {
+                    result.next();
+                    result.write(s);
+                }
+            }
         }
-        return StringUtils.delimited(list.toArray(new String[0]), " ");
     }
     
     @Override

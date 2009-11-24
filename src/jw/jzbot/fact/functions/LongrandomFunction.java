@@ -11,8 +11,7 @@ public class LongrandomFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return ("" + Math.random() + "" + Math.random()).replaceAll("[^0-9]",
-                "");
+        sink.write(("" + Math.random() + "" + Math.random()).replaceAll("[^0-9]", ""));
     }
     
     @Override

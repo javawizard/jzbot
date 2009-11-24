@@ -13,14 +13,16 @@ public class HelpFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String pagename = arguments.get(0);
+        String pagename = arguments.resolveString(0);
         for (HelpProvider provider : JZBot.helpProviders)
         {
             String possible = provider.getPage(pagename);
             if (possible != null)
-                return possible;
+            {
+                sink.write(possible);
+                break;
+            }
         }
-        return "";
     }
     
     @Override

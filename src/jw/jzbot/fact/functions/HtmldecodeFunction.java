@@ -13,7 +13,7 @@ public class HtmldecodeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return StringEscapeUtils.unescapeHtml(arguments.get(0));
+        sink.write(StringEscapeUtils.unescapeHtml(arguments.resolveString(0)));
     }
     
     @Override

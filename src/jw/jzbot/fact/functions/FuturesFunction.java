@@ -11,7 +11,7 @@ public class FuturesFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("The futures function isn't yet supported.");
     }
     
     @Override

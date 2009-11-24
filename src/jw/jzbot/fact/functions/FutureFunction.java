@@ -14,8 +14,8 @@ public class FutureFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         ArgumentList newArgs = arguments.subList(2);
-        String key = arguments.get(0);
-        int delay = Integer.parseInt(arguments.get(1));
+        String key = arguments.getString(0);
+        int delay = Integer.parseInt(arguments.getString(1));
         FutureFactoid future = new FutureFactoid(delay, context.getChannel(),
                 newArgs, context.getSender(), key, context.getQuota());
         synchronized (JZBot.futureFactoidLock)
@@ -23,7 +23,6 @@ public class FutureFunction extends Function
             JZBot.futureFactoids.put(key, future);
             future.start();
         }
-        return "";
     }
     
     public String getName()

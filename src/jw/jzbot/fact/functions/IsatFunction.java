@@ -8,15 +8,16 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class IsatFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return Arrays.asList(JZBot.bot.getChannels()).contains(arguments.get(0)) ? "1"
-                : "0";
+        if (Arrays.asList(JZBot.bot.getChannels()).contains(arguments.resolveString(0)))
+            sink.write('1');
+        else
+            sink.write('0');
     }
     
     @Override

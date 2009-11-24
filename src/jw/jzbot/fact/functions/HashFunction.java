@@ -7,14 +7,13 @@ import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.functions.text.PadFunction;
 import net.sf.opengroove.common.security.Hash;
 
-
 public class HashFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return doHash(arguments.get(0));
+        sink.write(doHash(arguments.resolveString(0)));
     }
     
     public static String doHash(String s)

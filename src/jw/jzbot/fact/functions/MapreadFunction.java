@@ -11,21 +11,23 @@ public class MapreadFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] strings = arguments.get(2).split(arguments.get(0));
+        String[] strings = arguments.resolveString(2).split(arguments.resolveString(0));
         if (strings.length == 1 && strings[0].equals(""))
-            return "";
+            return;
         for (String s : strings)
         {
-            String[] tokens = s.split(arguments.get(1), 2);
+            String[] tokens = s.split(arguments.getString(1), 2);
             if (tokens.length == 1)
                 tokens = new String[]
                 {
                         tokens[0], ""
                 };
-            if (tokens[0].equals(arguments.get(3)))
-                return tokens[1];
+            if (tokens[0].equals(arguments.getString(3)))
+            {
+                sink.write(tokens[1]);
+                return;
+            }
         }
-        return "";
     }
     
     @Override

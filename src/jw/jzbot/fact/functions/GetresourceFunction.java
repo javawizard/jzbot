@@ -10,26 +10,26 @@ import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class GetresourceFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String name = arguments.get(0);
+        String name = arguments.resolveString(0);
         if (name.contains("..") || name.contains("\\") || name.contains("/"))
             throw new FactoidException("The resource name \"" + name
                     + "\" contains invalid characters.");
         File file = new File("resources", name);
         if (!file.exists())
             throw new FactoidException("No such resource: " + name);
-        if (file.length() > (100 * 1024))
-            throw new FactoidException("Resource \"" + name
-                    + "\" is too long (" + file.length() + " bytes, max is "
-                    + (100 * 1024) + " bytes)");
+        if (file.length() > (500 * 1024))
+            throw new FactoidException("Resource \"" + name + "\" is too long ("
+                    + file.length() + " bytes, max is " + (500 * 1024) + " bytes)");
         String s = StringUtils.readFile(file);
-        return s;
+        // TODO: change this into opening a file reader, reading chars from the file, and
+        // writing those (probably buffered into a string) to the sink
+        sink.write(s);
     }
     
     @Override

@@ -7,11 +7,11 @@ package jw.jzbot.fact;
  * @author Alexander Boyd
  * 
  */
-public abstract class FilterSink implements Sink
+public abstract class CharFilterSink implements FilteredSink
 {
     protected Sink delegate;
     
-    public FilterSink(Sink delegate)
+    public CharFilterSink(Sink delegate)
     {
         this.delegate = delegate;
     }
@@ -44,4 +44,9 @@ public abstract class FilterSink implements Sink
      * @param c
      */
     public abstract void process(char c);
+    
+    public Sink getTarget()
+    {
+        return delegate;
+    }
 }

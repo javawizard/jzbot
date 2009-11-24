@@ -300,7 +300,7 @@ public class JZBot
              * future is run
              */
             for (int i = 0; i < arguments.length(); i++)
-                arguments.get(i);
+                arguments.getString(i);
         }
         
         public void run()

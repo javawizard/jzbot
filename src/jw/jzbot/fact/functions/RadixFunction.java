@@ -7,17 +7,16 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class RadixFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        int from = Integer.parseInt(arguments.get(0));
-        int to = Integer.parseInt(arguments.get(1));
-        long value = Long.parseLong(arguments.get(2), from);
-        return Long.toString(value, to);
+        int from = Integer.parseInt(arguments.resolveString(0));
+        int to = Integer.parseInt(arguments.resolveString(1));
+        long value = Long.parseLong(arguments.resolveString(2), from);
+        sink.write(Long.toString(value, to));
         
     }
     

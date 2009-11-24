@@ -13,7 +13,7 @@ public class HtmlencodeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return StringEscapeUtils.escapeHtml(arguments.get(0));
+        sink.write(StringEscapeUtils.escapeHtml(arguments.resolveString(0)));
     }
     
     @Override

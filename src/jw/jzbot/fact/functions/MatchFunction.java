@@ -11,7 +11,8 @@ public class MatchFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return arguments.get(1).matches(arguments.get(0)) ? "1" : "0";
+        sink.write(arguments.resolveString(1).matches(arguments.resolveString(0)) ? '1'
+                : '0');
     }
     
     public String getName()

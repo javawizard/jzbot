@@ -8,6 +8,11 @@ package jw.jzbot.fact;
  */
 public class NullSink implements ObservableSink
 {
+    /**
+     * A singleton instance of NullSink that can be used when it doesn't matter that a
+     * single instance is being used.
+     */
+    public static final NullSink sink = new NullSink();
     
     @Override
     public void write(String s)
@@ -23,7 +28,7 @@ public class NullSink implements ObservableSink
     public void write(int i)
     {
     }
-
+    
     @Override
     public String getCurrentValue()
     {

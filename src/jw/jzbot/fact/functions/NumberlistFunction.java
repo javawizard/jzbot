@@ -1,6 +1,8 @@
 package jw.jzbot.fact.functions;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.BufferedSink;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
@@ -12,29 +14,26 @@ public class NumberlistFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        int start = Integer.parseInt(arguments.get(0));
-        int end = Integer.parseInt(arguments.get(1));
+        int start = Integer.parseInt(arguments.resolveString(0));
+        int end = Integer.parseInt(arguments.resolveString(1));
         int step = 1;
         if (arguments.length() > 2)
-            step = Math.abs(Integer.parseInt(arguments.get(2)));
+            step = Math.abs(Integer.parseInt(arguments.resolveString(2)));
         if (end < start)
             step *= -1;
-        StringBuffer buffer = new StringBuffer();
-        boolean first = true;
+        DelimitedSink result = new DelimitedSink(sink, " ");
         if (step == 0)
             throw new FactoidException("A <step> of 0 is not allowed.");
         if (start == end)
-            return "" + start;
+        {
+            sink.write(start);
+            return;
+        }
         while ((start <= end && step > 0) || (start >= end && step < 0))
         {
-            if (first)
-                first = false;
-            else
-                buffer.append(" ");
-            buffer.append(start);
+            result.write(start);
             start += step;
         }
-        return buffer.toString();
     }
     
     @Override

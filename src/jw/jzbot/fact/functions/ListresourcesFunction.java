@@ -3,12 +3,12 @@ package jw.jzbot.fact.functions;
 import java.io.File;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
-
 
 public class ListresourcesFunction extends Function
 {
@@ -16,7 +16,12 @@ public class ListresourcesFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return StringUtils.delimited(new File("resources").list(), "/");
+        DelimitedSink result = new DelimitedSink(sink, "/");
+        for (String s : new File("resources").list())
+        {
+            result.next();
+            result.write(s);
+        }
     }
     
     @Override

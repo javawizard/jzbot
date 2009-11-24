@@ -12,7 +12,10 @@ public class HasfactdbFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return JZBot.storage.getChannel(arguments.get(0)) == null ? "0" : "1";
+        if(JZBot.storage.getChannel(arguments.resolveString(0)) == null)
+            sink.write('0');
+        else
+            sink.write('1');
     }
     
     @Override

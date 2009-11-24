@@ -10,7 +10,6 @@ import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class IntervalFunction extends Function
 {
     
@@ -18,7 +17,7 @@ public class IntervalFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         ArrayList<String> strings = new ArrayList<String>();
-        long duration = Long.parseLong(arguments.get(0));
+        long duration = Long.parseLong(arguments.resolveString(0));
         add(strings, "second", duration % 60);
         duration /= 60;
         add(strings, "minute", duration % 60);
@@ -29,9 +28,12 @@ public class IntervalFunction extends Function
         duration /= 365;
         add(strings, "year", duration);
         if (strings.size() == 0)
-            return "0 seconds";
+        {
+            sink.write("0 seconds");
+            return;
+        }
         Collections.reverse(strings);
-        return StringUtils.delimited(strings.toArray(new String[0]), " ");
+        sink.write(StringUtils.delimited(strings.toArray(new String[0]), " "));
     }
     
     private void add(ArrayList<String> strings, String unit, long duration)

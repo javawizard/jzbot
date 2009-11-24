@@ -10,7 +10,6 @@ import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class LogsFunction extends Function
 {
     
@@ -19,8 +18,8 @@ public class LogsFunction extends Function
     {
         File file = new File(JZBot.logsFolder, context.getChannel());
         if (!file.exists())
-            return "";
-        return StringUtils.readFile(file);
+            return;
+        sink.write(StringUtils.readFile(file));
     }
     
     @Override

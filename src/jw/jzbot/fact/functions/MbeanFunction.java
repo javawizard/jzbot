@@ -6,9 +6,9 @@ import javax.management.ObjectName;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
-
 
 public class MbeanFunction extends Function
 {
@@ -19,14 +19,13 @@ public class MbeanFunction extends Function
         
         try
         {
-            return ""
-                    + ManagementFactory.getPlatformMBeanServer().getAttribute(
-                            new ObjectName(arguments.get(0)), arguments.get(1));
+            sink.write(ManagementFactory.getPlatformMBeanServer().getAttribute(
+                    new ObjectName(arguments.resolveString(0)), arguments.resolveString(1))
+                    .toString());
         }
         catch (Exception e)
         {
-            e.printStackTrace();
-            return "?";
+            throw new FactoidException(e);
         }
     }
     
@@ -40,7 +39,8 @@ public class MbeanFunction extends Function
                 + "in the tree that has children named \"attributes\" or \"operations\"\n"
                 + "is an object that can be used, and you can hover your mouse over it to "
                 + "see the name that <object> needs to be. Each item under \"attributes\" "
-                + "is an attribute that can be used as <attributes>.";
+                + "is an attribute that can be used as <attributes>. If there is no "
+                + "such attribute, an exception will be thrown.";
     }
     
 }

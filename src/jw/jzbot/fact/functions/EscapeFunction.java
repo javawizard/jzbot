@@ -5,7 +5,7 @@ import java.io.UnsupportedEncodingException;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
-import jw.jzbot.fact.FilterSink;
+import jw.jzbot.fact.CharFilterSink;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.StringSink;
@@ -19,7 +19,7 @@ public class EscapeFunction extends Function
      * @author Alexander Boyd
      * 
      */
-    public static class EscapedSink extends FilterSink
+    public static class EscapedSink extends CharFilterSink
     {
         
         public EscapedSink(Sink delegate)

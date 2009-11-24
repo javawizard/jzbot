@@ -13,10 +13,13 @@ public class IsautojoinFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        Channel c = JZBot.storage.getChannel(arguments.get(0));
+        Channel c = JZBot.storage.getChannel(arguments.resolveString(0));
         if (c == null)
-            return "0";
-        return c.isSuspended() ? "0" : "1";
+            sink.write('0');
+        else if (c.isSuspended())
+            sink.write('0');
+        else
+            sink.write('1');
     }
     
     @Override

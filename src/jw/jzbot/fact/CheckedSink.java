@@ -7,7 +7,7 @@ package jw.jzbot.fact;
  * @author Alexander Boyd
  * 
  */
-public class CheckedSink implements Sink
+public class CheckedSink implements FilteredSink
 {
     private boolean written;
     
@@ -54,6 +54,12 @@ public class CheckedSink implements Sink
     public boolean hasWritten()
     {
         return isWritten();
+    }
+    
+    @Override
+    public Sink getTarget()
+    {
+        return sink;
     }
     
 }
