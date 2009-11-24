@@ -6,7 +6,7 @@ package jw.jzbot.fact;
  * @author Alexander Boyd
  * 
  */
-public class NullSink implements Sink
+public class NullSink implements ObservableSink
 {
     
     @Override
@@ -22,6 +22,12 @@ public class NullSink implements Sink
     @Override
     public void write(int i)
     {
+    }
+
+    @Override
+    public String getCurrentValue()
+    {
+        return "";
     }
     
 }

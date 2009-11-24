@@ -1,9 +1,12 @@
 package jw.jzbot.fact.functions;
 
+import java.util.Formatter;
+
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.SinkAppendable;
 
 public class FormatFunction extends Function
 {
@@ -12,10 +15,10 @@ public class FormatFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         Object[] objects = new Object[arguments.length() - 1];
-        String format = arguments.get(0);
+        String format = arguments.resolveString(0);
         for (int i = 0; i < objects.length; i++)
         {
-            String s = arguments.get(i + 1);
+            String s = arguments.resolveString(i + 1);
             Object o = null;
             try
             {
@@ -37,7 +40,9 @@ public class FormatFunction extends Function
                 o = s;
             objects[i] = o;
         }
-        return String.format(format, objects);
+        SinkAppendable output = new SinkAppendable(sink);
+        Formatter formatter = new Formatter(output);
+        formatter.format(format, objects);
     }
     
     @Override

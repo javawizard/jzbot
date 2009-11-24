@@ -7,7 +7,7 @@ package jw.jzbot.fact;
  * @author Alexander Boyd
  * 
  */
-public class StringSink implements Sink
+public class StringSink implements ObservableSink
 {
     private StringBuffer buffer = new StringBuffer();
     
@@ -30,6 +30,12 @@ public class StringSink implements Sink
     }
     
     public String toString()
+    {
+        return getCurrentValue();
+    }
+
+    @Override
+    public String getCurrentValue()
     {
         return buffer.toString();
     }
