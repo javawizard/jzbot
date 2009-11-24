@@ -4,6 +4,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import org.jibble.pircbot.PircBot;
 
@@ -11,7 +12,7 @@ public class TopicFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() == 0)// getting channel topic
         {

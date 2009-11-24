@@ -3,12 +3,13 @@ package jw.jzbot.fact.functions.text;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class SplitindexFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String[] tokens = arguments.get(1).split(arguments.get(0),
                 Integer.parseInt(arguments.get(2)));

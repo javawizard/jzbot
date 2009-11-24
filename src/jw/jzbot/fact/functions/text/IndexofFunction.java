@@ -3,12 +3,13 @@ package jw.jzbot.fact.functions.text;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class IndexofFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() == 2)
             return "" + arguments.get(1).indexOf(arguments.get(0));

@@ -4,13 +4,14 @@ import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.utils.JZUtils;
 
 public class SendsplitFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String[] tokens = JZUtils.ircDelimited(arguments.get(3).split(
                 arguments.get(1)), arguments.get(2));

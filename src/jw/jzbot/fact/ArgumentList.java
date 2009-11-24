@@ -120,6 +120,13 @@ public class ArgumentList
         }
     }
     
+    public String resolveString(int index)
+    {
+        StringSink sink = new StringSink();
+        resolve(index, sink);
+        return sink.toString();
+    }
+    
     /**
      * Returns a Deferred object representing the value at the specified index. This does
      * not cause the value to be resolved immediately; the value will only be resolved
@@ -139,7 +146,11 @@ public class ArgumentList
      * retrieved by a call to this method, this method does <b>not<b/> cause the argument
      * to be resolved again. A ForkedSink is used to actually resolve the argument in
      * question. If the argument has already been resolved, then the string version saved
-     * by the ForkedSink is written to the sink instead.
+     * by the ForkedSink is written to the sink instead.<br/><br/>
+     * 
+     * If this caching behavior is not needed, then {@link #resolve(int, Sink)} should be
+     * used instead, as <tt>resolve</tt> tends to be more efficient than this method since
+     * it doesn't store the result for later use.
      * 
      * @param index
      *            The index of the argument. Indexes start at 0.

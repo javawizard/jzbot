@@ -3,12 +3,13 @@ package jw.jzbot.fact.functions.vars;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class GetFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String var = context.getGlobalVars().get(arguments.get(0));
         if (var == null)

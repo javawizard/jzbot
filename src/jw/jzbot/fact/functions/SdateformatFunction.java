@@ -7,13 +7,14 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 
 public class SdateformatFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         SimpleDateFormat format = new SimpleDateFormat(arguments.get(0));
         try

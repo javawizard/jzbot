@@ -4,16 +4,16 @@ import jw.jzbot.commands.RegexCommand;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class AddregexFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        RegexCommand.doRegexCommand(context.getChannel(), false, context
-                .getSender(), "add " + arguments.get(0), false);
-        return "";
+        RegexCommand.doRegexCommand(context.getChannel(), false, context.getSender(),
+                "add " + arguments.getString(0), false);
     }
     
     @Override

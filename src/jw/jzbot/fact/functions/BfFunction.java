@@ -1,45 +1,39 @@
 package jw.jzbot.fact.functions;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.AsciiSinkStream;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.bf.Bfi;
-
 
 public class BfFunction extends Function
 {
     public static final int MAX_MEMORY_SIZE = 256 * 1024;
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String code = arguments.get(0);
+        String code = arguments.getString(0);
         String input = "";
         int size = 1024;
         if (arguments.length() > 1)
         {
-            input = arguments.get(1);
+            input = arguments.getString(1);
             if (arguments.length() > 2)
-                size = Integer.parseInt(arguments.get(2));
+                size = Integer.parseInt(arguments.getString(2));
         }
         if (size > MAX_MEMORY_SIZE)
             throw new FactoidException("Requested memory size " + size
                     + ", but maximum is " + MAX_MEMORY_SIZE);
         Bfi interpreter = new Bfi();
-        ByteArrayInputStream inputstream = new ByteArrayInputStream(input
-                .getBytes());
-        ByteArrayOutputStream outputstream = new ByteArrayOutputStream();
-        interpreter.setInputStream(inputstream, outputstream);
+        ByteArrayInputStream inputstream = new ByteArrayInputStream(input.getBytes());
+        interpreter.setInputStream(inputstream, new AsciiSinkStream(sink));
         interpreter.setProgram(code);
         interpreter.start();
-        if (outputstream.size() > (256 * 1024))
-            throw new FactoidException(
-                    "Program output was more than 256KB, which is not allowed");
-        return new String(outputstream.toByteArray());
     }
     
     @Override

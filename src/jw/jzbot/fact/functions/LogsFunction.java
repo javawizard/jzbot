@@ -6,6 +6,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -14,7 +15,7 @@ public class LogsFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         File file = new File(JZBot.logsFolder, context.getChannel());
         if (!file.exists())

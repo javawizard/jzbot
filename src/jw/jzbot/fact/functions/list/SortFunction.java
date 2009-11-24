@@ -6,6 +6,7 @@ import java.util.Comparator;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 
 
@@ -13,7 +14,7 @@ public class SortFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String regex = arguments.get(0);
         String string = arguments.get(1);

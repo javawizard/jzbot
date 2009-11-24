@@ -3,12 +3,13 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class MapinlineFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String[] strings = arguments.get(2).split(arguments.get(0));
         if (strings.length == 1 && strings[0].equals(""))

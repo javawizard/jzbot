@@ -3,6 +3,7 @@ package jw.jzbot.fact.functions.text;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import net.sf.opengroove.common.utils.StringUtils;
 
 
@@ -10,7 +11,7 @@ public class SplitcharsFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.get(0).equals(""))
             return "";

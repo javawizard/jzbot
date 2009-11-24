@@ -4,6 +4,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -12,7 +13,7 @@ public class PastebinFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() > 1 && arguments.get(1).toLowerCase().contains("forever"))
             throw new FactoidException("Forever pastebins are not allowed at this time.");

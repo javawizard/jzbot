@@ -3,13 +3,14 @@ package jw.jzbot.fact.functions.list;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.utils.JZUtils;
 
 public class LengthtoFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String[] strings = JZUtils.delimitedLengthRestricted(arguments.get(1).split(
                 arguments.get(0)), arguments.get(3), Integer.parseInt(arguments.get(2)));

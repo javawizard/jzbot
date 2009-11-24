@@ -6,13 +6,14 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 
 public class IsresourceFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String name = arguments.get(0);
         if (name.contains("..") || name.contains("\\") || name.contains("/"))

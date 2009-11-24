@@ -3,33 +3,31 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class CatchFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         try
         {
-            return arguments.get(0);
+            arguments.resolve(0, sink);
         }
         catch (Exception e)
         {
-            String prefix = arguments.get(1);
+            String prefix = arguments.getString(1);
             Throwable root = e;
             while (root.getCause() != null)
             {
                 root = root.getCause();
             }
-            context.getLocalVars().put(prefix + "-class",
-                    e.getClass().getName());
+            context.getLocalVars().put(prefix + "-class", e.getClass().getName());
             context.getLocalVars().put(prefix + "-message", e.getMessage());
-            context.getLocalVars().put(prefix + "-root-class",
-                    root.getClass().getName());
-            context.getLocalVars().put(prefix + "-root-message",
-                    root.getMessage());
-            return arguments.get(2);
+            context.getLocalVars().put(prefix + "-root-class", root.getClass().getName());
+            context.getLocalVars().put(prefix + "-root-message", root.getMessage());
+            arguments.resolve(2,sink);
         }
     }
     

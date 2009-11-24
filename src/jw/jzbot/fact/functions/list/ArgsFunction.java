@@ -6,12 +6,13 @@ import jw.jzbot.fact.Function;
 import jw.jzbot.fact.FunctionReference;
 import jw.jzbot.fact.Literal;
 import jw.jzbot.fact.Sequence;
+import jw.jzbot.fact.Sink;
 
 public class ArgsFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String regex = arguments.get(0);
         String text = arguments.get(1);

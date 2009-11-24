@@ -4,6 +4,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.StringUtils.ToString;
 
@@ -13,7 +14,7 @@ public class MembersFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         return StringUtils.delimited(JZBot.bot.getUsers(arguments.get(0)),
                 new ToString<User>()

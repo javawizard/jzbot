@@ -3,6 +3,7 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 /**
  * A function that takes as many arguments as are desired, and returns a string
@@ -17,7 +18,7 @@ public class IdentityFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < arguments.length(); i++)

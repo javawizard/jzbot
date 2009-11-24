@@ -3,13 +3,14 @@ package jw.jzbot.fact.functions.list;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 
 public class CompareFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String first = arguments.get(0);
         String second = arguments.get(1);

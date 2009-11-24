@@ -6,6 +6,7 @@ import java.util.Comparator;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -14,8 +15,8 @@ public class ComparesortFunction extends Function
 {
     
     @Override
-    public String evaluate(final ArgumentList arguments,
-            final FactContext context)
+    public void evaluate(Sink sink,
+            final ArgumentList arguments, final FactContext context)
     {
         String regex = arguments.get(0);
         String stringToSplit = arguments.get(1);

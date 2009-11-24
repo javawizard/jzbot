@@ -8,6 +8,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -18,14 +19,14 @@ public class EvalFunction extends Function
     public static DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() == 1)
-            return JZBot.evaluateEquation(arguments.get(0), context
-                    .getChannel());
+            sink.add(JZBot.evaluateEquation(arguments.resolveString(0), context
+                    .getChannel()));
         else
-            return JZBot.evaluateEquation(arguments.get(1), context
-                    .getChannel(), arguments.get(0));
+            sink.add(JZBot.evaluateEquation(arguments.resolveString(1), context
+                    .getChannel(), arguments.resolveString(0)));
     }
     
     public String getName()
@@ -41,7 +42,7 @@ public class EvalFunction extends Function
                 + "the engine to use. Each engine exhibits different properties "
                 + "and equation syntax.\n"
                 + "Allowed engines are (separated by a space): "
-                + StringUtils.delimited(JZBot.evalEngines.keySet().toArray(
-                        new String[0]), " ");
+                + StringUtils.delimited(JZBot.evalEngines.keySet().toArray(new String[0]),
+                        " ");
     }
 }

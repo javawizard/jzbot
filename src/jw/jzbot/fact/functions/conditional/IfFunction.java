@@ -5,6 +5,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class IfFunction extends Function
 {
@@ -12,7 +13,7 @@ public class IfFunction extends Function
     private static final String noValues = "|n|no|f|false|0|0.0|";
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         Boolean result = findValueOrNull(arguments.get(0));
         if (result == null)

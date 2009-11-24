@@ -1,0 +1,12 @@
+name=local.misc.randomquote
+author=Alexander Boyd
+scope=any
+description=Chooses a random, humorous, quote and displays it along with its author. Quotes are \
+generally taken from people Javawizard knows personally or on the internet. Quotes from \
+Jay Gunderson got so numerous that I split them into their own factpack, local.misc.gundy.
+t.randomquote={{random\
+||"It's not that I don't trust you, it's just that... I don't trust you." -- Sam Martineau\
+||"Thanks... jerk." -- Sam Martineau\
+||"You eat avocados, they kill you instantly." -- Mark Boyd\
+||"Mooses hold grudges :) Mooses are big. If you hit a Moose in your car, you die. Don't hit mooses in cars. Especially if the moose is driving the car." -- meanburrito920_\
+}}

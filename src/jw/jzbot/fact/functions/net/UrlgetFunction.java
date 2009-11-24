@@ -10,6 +10,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -19,7 +20,7 @@ public class UrlgetFunction extends Function
     private static final int MAX_READ_LENGTH = 200 * 1024;
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String urlSpec = arguments.get(0);
         try

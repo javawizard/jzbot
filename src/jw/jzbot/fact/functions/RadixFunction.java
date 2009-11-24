@@ -5,13 +5,14 @@ import java.math.BigDecimal;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 
 public class RadixFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         int from = Integer.parseInt(arguments.get(0));
         int to = Integer.parseInt(arguments.get(1));

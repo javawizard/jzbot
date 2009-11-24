@@ -3,6 +3,7 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -10,7 +11,7 @@ public class HtmlencodeFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         return StringEscapeUtils.escapeHtml(arguments.get(0));
     }

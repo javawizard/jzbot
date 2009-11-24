@@ -5,6 +5,7 @@ import java.util.Random;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 
 public class RandomintFunction extends Function
@@ -12,7 +13,7 @@ public class RandomintFunction extends Function
     private static Random random = new Random();
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         return "" + random.nextInt(Integer.parseInt(arguments.get(0)));
     }

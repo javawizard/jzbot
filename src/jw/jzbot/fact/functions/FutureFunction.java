@@ -5,12 +5,13 @@ import jw.jzbot.JZBot.FutureFactoid;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class FutureFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         ArgumentList newArgs = arguments.subList(2);
         String key = arguments.get(0);

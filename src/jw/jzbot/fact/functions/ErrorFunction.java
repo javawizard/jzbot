@@ -5,14 +5,15 @@ import jw.jzbot.fact.CustomFactoidException;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class ErrorFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        throw new CustomFactoidException(arguments.get(0));
+        throw new CustomFactoidException(arguments.getString(0));
     }
     
     @Override

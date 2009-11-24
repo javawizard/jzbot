@@ -8,6 +8,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.Deferred;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.storage.MapEntry;
 
 
@@ -15,7 +16,7 @@ public class TransferFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         Map<String, String> newMap = new HashMap<String, String>();
         String from = arguments.get(0);

@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 
 public class RandomsplitFunction extends Function
 {
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String[] strings = arguments.get(0).split(arguments.get(1));
         if (arguments.length() > 2)

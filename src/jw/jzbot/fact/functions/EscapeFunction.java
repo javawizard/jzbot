@@ -5,17 +5,54 @@ import java.io.UnsupportedEncodingException;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
+import jw.jzbot.fact.FilterSink;
 import jw.jzbot.fact.Function;
-
+import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.StringSink;
 
 public class EscapeFunction extends Function
 {
+    /**
+     * A sink that escapes all characters considered "special" in the factoid language
+     * with appropriate escapes or calls to the char function.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
+    public static class EscapedSink extends FilterSink
+    {
+        
+        public EscapedSink(Sink delegate)
+        {
+            super(delegate);
+        }
+        
+        @Override
+        public void process(char c)
+        {
+            if ("$%{}|\\".indexOf(c) != -1)
+            {
+                delegate.add('\\');
+                delegate.add(c);
+            }
+            else if (c == '\n')
+                delegate.add("\\n");
+            else if (c < 32 || c > 126)
+            {
+                delegate.add("{{char||");
+                delegate.add((int) c);
+                delegate.add("}}");
+            }
+            else
+                delegate.add(c);
+        }
+        
+    }
     
     @Override
-    public String evaluate(ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String text = arguments.get(0);
-        return escape(text);
+        arguments.resolve(0, new EscapedSink(sink));
     }
     
     @Override
@@ -31,36 +68,17 @@ public class EscapeFunction extends Function
     }
     
     /**
-     * Returns the specified text, escaped so that all special constructs
-     * according to the factoid language are properly escaped.
+     * Returns the specified text, escaped so that all special constructs according to the
+     * factoid language are properly escaped.
      * 
      * @param text
      * @return
      */
     public static String escape(String text)
     {
-        StringBuffer buffer = new StringBuffer();
-        try
-        {
-            for (byte b : text.getBytes("US-ASCII"))
-            {
-                char c = (char) b;
-                c = (char) (c % 256);
-                if (".$.%.{.}.|.\\.".contains("." + c + "."))
-                    buffer.append("\\").append(c);
-                else if (c == '\n')
-                    buffer.append("\\n");
-                else if (c < 32 || c > 126)
-                    buffer.append("{{char||" + ((int) c) + "}}");
-                else
-                    buffer.append(c);
-            }
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new FactoidException("Charset error", e);
-        }
-        return buffer.toString();
+        StringSink sink = new StringSink();
+        new EscapedSink(sink).add(text);
+        return sink.toString();
     }
     
 }
