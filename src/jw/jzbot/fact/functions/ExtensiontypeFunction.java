@@ -12,15 +12,14 @@ public class ExtensiontypeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String s = arguments.get(0);
+        String s = arguments.resolveString(0);
         int lastDotIndex = s.lastIndexOf(".");
         if (lastDotIndex != -1)
             s = s.substring(lastDotIndex + 1);
         s = s.toLowerCase();
         String r = HttpServer.theMimeTypes.get(s);
-        if (r == null)
-            return "";
-        return r;
+        if(r != null)
+            sink.add(r);
     }
     
     @Override
