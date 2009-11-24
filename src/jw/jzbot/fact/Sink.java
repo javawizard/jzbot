@@ -13,19 +13,19 @@ public interface Sink
      * 
      * @param s
      */
-    public void add(String s);
+    public void write(String s);
     
     /**
      * Writes a single character to this sink.
      * 
      * @param c
      */
-    public void add(char c);
+    public void write(char c);
     
     /**
      * Writes a base-10 representation of an int to this sink.
      * 
      * @param i
      */
-    public void add(int i);
+    public void write(int i);
 }

@@ -19,7 +19,7 @@ public class ExtensiontypeFunction extends Function
         s = s.toLowerCase();
         String r = HttpServer.theMimeTypes.get(s);
         if(r != null)
-            sink.add(r);
+            sink.write(r);
     }
     
     @Override

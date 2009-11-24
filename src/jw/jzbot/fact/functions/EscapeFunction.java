@@ -32,19 +32,19 @@ public class EscapeFunction extends Function
         {
             if ("$%{}|\\".indexOf(c) != -1)
             {
-                delegate.add('\\');
-                delegate.add(c);
+                delegate.write('\\');
+                delegate.write(c);
             }
             else if (c == '\n')
-                delegate.add("\\n");
+                delegate.write("\\n");
             else if (c < 32 || c > 126)
             {
-                delegate.add("{{char||");
-                delegate.add((int) c);
-                delegate.add("}}");
+                delegate.write("{{char||");
+                delegate.write((int) c);
+                delegate.write("}}");
             }
             else
-                delegate.add(c);
+                delegate.write(c);
         }
         
     }
@@ -77,7 +77,7 @@ public class EscapeFunction extends Function
     public static String escape(String text)
     {
         StringSink sink = new StringSink();
-        new EscapedSink(sink).add(text);
+        new EscapedSink(sink).write(text);
         return sink.toString();
     }
     

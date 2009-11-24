@@ -12,7 +12,6 @@ public class FactoverrideFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.getLocalVars().put("__fact_override", "true");
-        return "";
     }
     
     @Override

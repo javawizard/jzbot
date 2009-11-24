@@ -48,8 +48,8 @@ public class Sequence extends FactEntity
     public void explain(Sink sink, int indentation, int increment, boolean prefix)
     {
         if (prefix)
-            sink.add(spaces(indentation));
-        sink.add("sequence:\n");
+            sink.write(spaces(indentation));
+        sink.write("sequence:\n");
         for (FactEntity entity : list)
         {
             entity.explain(sink, indentation + increment, increment);

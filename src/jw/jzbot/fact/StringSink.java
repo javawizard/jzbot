@@ -12,19 +12,19 @@ public class StringSink implements Sink
     private StringBuffer buffer = new StringBuffer();
     
     @Override
-    public void add(String s)
+    public void write(String s)
     {
         buffer.append(s);
     }
     
     @Override
-    public void add(char c)
+    public void write(char c)
     {
         buffer.append(c);
     }
     
     @Override
-    public void add(int i)
+    public void write(int i)
     {
         buffer.append(i);
     }

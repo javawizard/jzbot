@@ -22,10 +22,10 @@ public class EvalFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() == 1)
-            sink.add(JZBot.evaluateEquation(arguments.resolveString(0), context
+            sink.write(JZBot.evaluateEquation(arguments.resolveString(0), context
                     .getChannel()));
         else
-            sink.add(JZBot.evaluateEquation(arguments.resolveString(1), context
+            sink.write(JZBot.evaluateEquation(arguments.resolveString(1), context
                     .getChannel(), arguments.resolveString(0)));
     }
     

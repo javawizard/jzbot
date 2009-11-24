@@ -16,17 +16,17 @@ public class VarReference extends FactEntity
     {
         if (global)
         {
-            sink.add(spaces(indentation));
-            sink.add("global variable: \"");
-            sink.add(name);
-            sink.add("\"\n");
+            sink.write(spaces(indentation));
+            sink.write("global variable: \"");
+            sink.write(name);
+            sink.write("\"\n");
         }
         else
         {
-            sink.add(spaces(indentation));
-            sink.add("variable: \"");
-            sink.add(name);
-            sink.add("\"\n");
+            sink.write(spaces(indentation));
+            sink.write("variable: \"");
+            sink.write(name);
+            sink.write("\"\n");
         }
     }
     
@@ -39,6 +39,6 @@ public class VarReference extends FactEntity
         else
             var = context.getLocalVars().get(name);
         if (var != null)
-            sink.add(var);
+            sink.write(var);
     }
 }

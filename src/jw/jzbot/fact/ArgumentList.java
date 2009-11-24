@@ -173,7 +173,7 @@ public class ArgumentList
             }
             else
             {
-                sink.add(resolved[index]);
+                sink.write(resolved[index]);
             }
         }
     }

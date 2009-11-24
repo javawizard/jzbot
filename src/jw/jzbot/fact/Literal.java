@@ -40,16 +40,16 @@ public class Literal extends FactEntity
     {
         if (finalized == null)
             finalize();
-        sink.add(finalized);
+        sink.write(finalized);
     }
     
     @Override
     public void explain(Sink sink, int indentation, int increment)
     {
-        sink.add(spaces(indentation));
-        sink.add("literal: \"");
+        sink.write(spaces(indentation));
+        sink.write("literal: \"");
         resolve(sink, null);
-        sink.add("\"\n");
+        sink.write("\"\n");
     }
     
 }

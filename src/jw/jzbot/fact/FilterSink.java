@@ -17,7 +17,7 @@ public abstract class FilterSink implements Sink
     }
     
     @Override
-    public void add(String s)
+    public void write(String s)
     {
         for (int i = 0; i < s.length(); i++)
         {
@@ -26,15 +26,15 @@ public abstract class FilterSink implements Sink
     }
     
     @Override
-    public void add(char c)
+    public void write(char c)
     {
         process(c);
     }
     
     @Override
-    public void add(int i)
+    public void write(int i)
     {
-        add(Integer.toString(i));
+        write(Integer.toString(i));
     }
     
     /**

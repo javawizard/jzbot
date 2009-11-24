@@ -18,7 +18,7 @@ public class StreamSink implements Sink
     }
     
     @Override
-    public void add(String s)
+    public void write(String s)
     {
         try
         {
@@ -32,7 +32,7 @@ public class StreamSink implements Sink
     }
     
     @Override
-    public void add(char c)
+    public void write(char c)
     {
         try
         {
@@ -49,9 +49,9 @@ public class StreamSink implements Sink
     }
     
     @Override
-    public void add(int i)
+    public void write(int i)
     {
-        add(Integer.toString(i));
+        write(Integer.toString(i));
     }
     
 }

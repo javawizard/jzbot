@@ -31,7 +31,7 @@ public class BzflistFunction extends Function
             for (Server server : servers)
             {
                 setVars(context.getLocalVars(), server, prefix);
-                results.add(arguments.resolve(1));
+                results.write(arguments.resolve(1));
                 if ("1".equals(context.getLocalVars().get(prefix + "-quit")))
                     break;
             }

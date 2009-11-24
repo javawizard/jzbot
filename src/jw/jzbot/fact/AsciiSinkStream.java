@@ -22,7 +22,7 @@ public class AsciiSinkStream extends OutputStream
     @Override
     public void write(int value) throws IOException
     {
-        sink.add((value + 256) % 256);
+        sink.write((value + 256) % 256);
     }
     
 }

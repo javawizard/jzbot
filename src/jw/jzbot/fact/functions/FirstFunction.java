@@ -1,6 +1,7 @@
 package jw.jzbot.fact.functions;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.CheckedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
@@ -13,10 +14,11 @@ public class FirstFunction extends Function
     {
         for (int i = 0; i < arguments.length(); i++)
         {
-            if (!"".equals(arguments.get(i)))
-                return arguments.get(i);
+            CheckedSink checked = new CheckedSink(sink);
+            arguments.resolve(i,checked);
+            if(checked.hasWritten())
+                return;
         }
-        return "";
     }
     
     @Override

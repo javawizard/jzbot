@@ -13,7 +13,7 @@ public class DateformatFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        sink.add(new Date(Long.parseLong(arguments.getString(0))).toString());
+        sink.write(new Date(Long.parseLong(arguments.getString(0))).toString());
     }
     
     @Override

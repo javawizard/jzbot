@@ -19,24 +19,24 @@ public class ForkedSink implements Sink
     }
     
     @Override
-    public void add(String s)
+    public void write(String s)
     {
-        first.add(s);
-        second.add(s);
+        first.write(s);
+        second.write(s);
     }
     
     @Override
-    public void add(char c)
+    public void write(char c)
     {
-        first.add(c);
-        second.add(c);
+        first.write(c);
+        second.write(c);
     }
     
     @Override
-    public void add(int i)
+    public void write(int i)
     {
-        first.add(i);
-        second.add(i);
+        first.write(i);
+        second.write(i);
     }
     
 }

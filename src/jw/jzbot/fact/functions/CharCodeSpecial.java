@@ -21,7 +21,7 @@ public class CharCodeSpecial extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        sink.add(v);
+        sink.write(v);
     }
     
     @Override

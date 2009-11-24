@@ -12,7 +12,7 @@ public class DatasizeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        sink.add(JZBot.datasize(Long.parseLong(arguments.getString(0))));
+        sink.write(JZBot.datasize(Long.parseLong(arguments.getString(0))));
     }
     
     @Override

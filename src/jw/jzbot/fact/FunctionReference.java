@@ -62,8 +62,8 @@ public class FunctionReference extends FactEntity
     @Override
     public void explain(Sink sink, int indentation, int increment)
     {
-        sink.add(spaces(indentation));
-        sink.add("function:\n");
+        sink.write(spaces(indentation));
+        sink.write("function:\n");
         arguments.explain(sink, indentation, increment, false);
     }
     

@@ -10,17 +10,17 @@ public class NullSink implements Sink
 {
     
     @Override
-    public void add(String s)
+    public void write(String s)
     {
     }
     
     @Override
-    public void add(char c)
+    public void write(char c)
     {
     }
     
     @Override
-    public void add(int i)
+    public void write(int i)
     {
     }
     
