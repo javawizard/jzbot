@@ -14,10 +14,9 @@ public class SendactionFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (!JZBot.bot.isConnected())
-            throw new FactoidException(
-                    "Can't send messages when the bot is disconnected");
-        String to = arguments.get(0);
-        String message = arguments.get(1);
+            throw new FactoidException("Can't send messages when the bot is disconnected");
+        String to = arguments.resolveString(0);
+        String message = arguments.resolveString(1);
         context.incrementMessageCount();
         JZBot.bot.sendAction(to, message);
         try
@@ -28,7 +27,6 @@ public class SendactionFunction extends Function
         {
             e.printStackTrace();
         }
-        return "";
     }
     
     public String getName()

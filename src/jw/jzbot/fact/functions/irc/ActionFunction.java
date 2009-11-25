@@ -12,7 +12,6 @@ public class ActionFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.setAction(true);
-        return "";
     }
     
     public String getName()

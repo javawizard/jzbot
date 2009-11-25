@@ -13,12 +13,12 @@ public class SendsplitFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] tokens = JZUtils.ircDelimited(arguments.get(3).split(
-                arguments.get(1)), arguments.get(2));
+        String[] tokens = JZUtils.ircDelimited(arguments.resolveString(3).split(
+                arguments.resolveString(1)), arguments.resolveString(2));
         for (String s : tokens)
         {
             context.incrementMessageCount();
-            JZBot.bot.sendMessage(arguments.get(0), s);
+            JZBot.bot.sendMessage(arguments.getString(0), s);
             try
             {
                 Thread.sleep(500);
@@ -28,7 +28,6 @@ public class SendsplitFunction extends Function
                 e.printStackTrace();
             }
         }
-        return "";
     }
     
     @Override

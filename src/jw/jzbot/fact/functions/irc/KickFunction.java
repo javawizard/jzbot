@@ -13,9 +13,8 @@ public class KickFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.incrementMessageCount();
-        JZBot.bot.kick(context.getChannel(), arguments.get(0), arguments
-                .length() > 1 ? arguments.get(1) : context.getSelf());
-        return "";
+        JZBot.bot.kick(context.getChannel(), arguments.resolveString(0),
+                arguments.length() > 1 ? arguments.resolveString(1) : context.getSelf());
     }
     
     public String getName()

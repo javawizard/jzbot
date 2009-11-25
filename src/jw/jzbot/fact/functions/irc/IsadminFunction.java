@@ -20,12 +20,12 @@ public class IsadminFunction extends Function
         if (arguments.length() == 1)
         {
             channel = context.getChannel();
-            user = arguments.get(0);
+            user = arguments.getString(0);
         }
         else
         {
-            channel = arguments.get(0);
-            user = arguments.get(1);
+            channel = arguments.getString(0);
+            user = arguments.getString(1);
         }
         User[] users = JZBot.bot.getUsers(channel);
         for (User userObject : users)
@@ -34,13 +34,13 @@ public class IsadminFunction extends Function
             if (userObject.getNick().equalsIgnoreCase(user))
             {
                 if (userObject.isAdmin())
-                    return "1";
+                    sink.write('1');
                 else
-                    return "0";
+                    sink.write('0');
+                return;
             }
         }
-        throw new FactoidException("Isadmin on user \"" + user + "\", channel \""
-                + channel
+        throw new FactoidException("Isadmin on user \"" + user + "\", channel \"" + channel
                 + "\": user is not connected, consider using {{ifjoined}} "
                 + "to see if the user is joined");
     }
@@ -48,9 +48,9 @@ public class IsadminFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isadmin||<channel>||<nick>}} -- Exactly the same as {{isop}}, " +
-        		"but checks to see if the user is a channel admin. On most servers, " +
-        		"this is mode +a.";
+        return "Syntax: {{isadmin||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+                + "but checks to see if the user is a channel admin. On most servers, "
+                + "this is mode +a.";
     }
     
 }

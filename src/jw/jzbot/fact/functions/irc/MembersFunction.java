@@ -16,7 +16,8 @@ public class MembersFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return StringUtils.delimited(JZBot.bot.getUsers(arguments.get(0)),
+        // TODO: change this to use a delimited sink
+        sink.write(StringUtils.delimited(JZBot.bot.getUsers(arguments.resolveString(0)),
                 new ToString<User>()
                 {
                     
@@ -25,7 +26,7 @@ public class MembersFunction extends Function
                     {
                         return object.getNick();
                     }
-                }, " ");
+                }, " "));
     }
     
     @Override

@@ -19,13 +19,12 @@ public class TopicFunction extends Function
             String topic = JZBot.channelTopics.get(context.getChannel());
             if (topic == null)
                 topic = "";
-            return topic;
+            sink.write(topic);
         }
         else
         // setting channel topic
         {
-            JZBot.bot.setTopic(context.getChannel(), arguments.get(0));
-            return "";
+            JZBot.bot.setTopic(context.getChannel(), arguments.resolveString(0));
         }
     }
     

@@ -20,12 +20,12 @@ public class IsfounderFunction extends Function
         if (arguments.length() == 1)
         {
             channel = context.getChannel();
-            user = arguments.get(0);
+            user = arguments.getString(0);
         }
         else
         {
-            channel = arguments.get(0);
-            user = arguments.get(1);
+            channel = arguments.getString(0);
+            user = arguments.getString(1);
         }
         User[] users = JZBot.bot.getUsers(channel);
         for (User userObject : users)
@@ -34,9 +34,10 @@ public class IsfounderFunction extends Function
             if (userObject.getNick().equalsIgnoreCase(user))
             {
                 if (userObject.isFounder())
-                    return "1";
+                    sink.write('1');
                 else
-                    return "0";
+                    sink.write('0');
+                return;
             }
         }
         throw new FactoidException("Isfounder on user \"" + user + "\", channel \""
