@@ -7,7 +7,6 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class RandomintFunction extends Function
 {
     private static Random random = new Random();
@@ -15,7 +14,7 @@ public class RandomintFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return "" + random.nextInt(Integer.parseInt(arguments.get(0)));
+        sink.write(random.nextInt(Integer.parseInt(arguments.resolveString(0))));
     }
     
     public String getName()

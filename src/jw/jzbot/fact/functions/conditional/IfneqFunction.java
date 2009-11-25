@@ -11,12 +11,10 @@ public class IfneqFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (!arguments.get(0).equalsIgnoreCase(arguments.get(1)))
-            return arguments.get(2);
+        if (!arguments.resolveString(0).equalsIgnoreCase(arguments.resolveString(1)))
+            arguments.resolve(2, sink);
         else if (arguments.length() > 3)
-            return arguments.get(3);
-        else
-            return "";
+            arguments.resolve(3, sink);
     }
     
     public String getName()

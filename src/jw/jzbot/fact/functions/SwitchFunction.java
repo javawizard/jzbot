@@ -11,24 +11,23 @@ public class SwitchFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String value = arguments.get(0);
+        String value = arguments.resolveString(0);
         arguments = arguments.subList(1);
         int cases = arguments.length() / 2;
         System.out.println("" + cases + " cases in {{switch}}");
         for (int i = 0; i < cases; i++)
         {
-            if (value.equals(arguments.get(i * 2)))
-                return arguments.get((i * 2) + 1);
+            if (value.equals(arguments.resolveString(i * 2)))
+            {
+                sink.write(arguments.resolveString((i * 2) + 1));
+                return;
+            }
         }
         if ((arguments.length() % 2) == 1)
             // This means there's an odd number of arguments, not including
             // <value>, which means that a default was specified, so we'll
-            // return it.
-            return arguments.get(arguments.length() - 1);
-        // This means there's an even number of arguments, not including
-        // <value>, so there wasn't a default. Since there's not a default,
-        // we'll return the empty string.
-        return "";
+            // return it. If there wasn't a default, then we won't do anything.
+            sink.write(arguments.resolveString(arguments.length() - 1));
     }
     
     @Override

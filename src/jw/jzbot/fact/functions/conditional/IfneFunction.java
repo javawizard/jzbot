@@ -10,12 +10,10 @@ public class IfneFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (!arguments.get(0).trim().equals(""))
-            return arguments.get(1);
+        if (!arguments.resolveString(0).trim().equals(""))
+            arguments.resolve(1, sink);
         else if (arguments.length() > 2)
-            return arguments.get(2);
-        else
-            return "";
+            arguments.resolve(2, sink);
     }
     
     @Override

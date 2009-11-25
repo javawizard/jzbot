@@ -11,11 +11,13 @@ public class RestrictFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String text = arguments.get(0);
-        int length = Integer.parseInt(arguments.get(1));
+        String text = arguments.resolveString(0);
+        int length = Integer.parseInt(arguments.resolveString(1));
         if (text.length() <= length || length <= 3)
-            return text;
-        return text.substring(0, length - 3) + "...";
+            sink.write(text);
+        else
+            sink.write(text.substring(0, length - 3));
+        sink.write("...");
     }
     
     @Override

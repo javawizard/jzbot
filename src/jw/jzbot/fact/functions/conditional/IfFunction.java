@@ -15,21 +15,16 @@ public class IfFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        Boolean result = findValueOrNull(arguments.get(0));
+        Boolean result = findValueOrNull(arguments.getString(0));
         if (result == null)
         {
-            result = findValue(JZBot.evaluateEquation(arguments.get(0), context
+            result = findValue(JZBot.evaluateEquation(arguments.getString(0), context
                     .getChannel()));
         }
         if (result)
-            return arguments.get(1);
-        else
-        {
-            if (arguments.length() > 2)
-                return arguments.get(2);
-            else
-                return "";
-        }
+            arguments.resolve(1, sink);
+        else if (arguments.length() > 2)
+            arguments.resolve(2, sink);
     }
     
     public static boolean findValue(String value)

@@ -15,11 +15,11 @@ public class TriggerFunction extends Function
     {
         Channel c = JZBot.storage.getChannel(context.getChannel());
         if (c == null)
-            return "";
+            return;
         if (arguments.length() == 0)
-            return c.getTrigger();
-        c.setTrigger(arguments.get(0));
-        return "";
+            sink.write(c.getTrigger());
+        else
+            c.setTrigger(arguments.resolveString(0));
     }
     
     @Override

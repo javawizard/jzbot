@@ -11,8 +11,7 @@ public class SetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        context.getGlobalVars().put(arguments.get(0), arguments.get(1));
-        return "";
+        context.getGlobalVars().put(arguments.resolveString(0), arguments.resolveString(1));
     }
     
     public String getName()

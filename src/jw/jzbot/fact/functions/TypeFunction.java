@@ -14,7 +14,7 @@ public class TypeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String factname = arguments.get(0);
+        String factname = arguments.resolveString(0);
         boolean isGlobal = JZBot.storage.getFactoid(factname) != null;
         boolean isChannel = false;
         if (context.getChannel() != null)
@@ -27,12 +27,13 @@ public class TypeFunction extends Function
             }
         }
         if (isGlobal && isChannel)
-            return "both";
-        if (isGlobal && !isChannel)
-            return "global";
-        if (isChannel && !isGlobal)
-            return "channel";
-        return "none";
+            sink.write("both");
+        else if (isGlobal && !isChannel)
+            sink.write("global");
+        else if (isChannel && !isGlobal)
+            sink.write("channel");
+        else
+            sink.write("none");
     }
     
     @Override

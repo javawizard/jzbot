@@ -9,8 +9,8 @@ public class FactQuota
     private int importCount = 0;
     private int maxMessageCount = MAX_MESSAGE_COUNT;
     private int maxImportCount = MAX_IMPORT_COUNT;
-    public static final int MAX_IMPORT_COUNT = 5000;
-    public static final int MAX_MESSAGE_COUNT = 7;
+    public static final int MAX_IMPORT_COUNT = 500000;
+    public static final int MAX_MESSAGE_COUNT = 8;
     private Map<String, String> chainVars = new HashMap<String, String>();
     
     public Map<String, String> getChainVars()
@@ -27,7 +27,7 @@ public class FactQuota
     {
         messageCount += 1;
         if (messageCount > maxMessageCount)
-            throw new FactoidException("Maximum limit of " + MAX_MESSAGE_COUNT
+            throw new FactoidException("Maximum limit of " + maxMessageCount
                     + " messages per factoid invocation exceeded.");
     }
     

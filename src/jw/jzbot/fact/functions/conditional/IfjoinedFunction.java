@@ -18,18 +18,16 @@ public class IfjoinedFunction extends Function
         boolean isJoined = false;
         for (User user : users)
         {
-            if (user.getNick().equalsIgnoreCase(arguments.get(0)))
+            if (user.getNick().equalsIgnoreCase(arguments.getString(0)))
             {
                 isJoined = true;
                 break;
             }
         }
         if (isJoined)
-            return arguments.get(1);
+            arguments.resolve(1, sink);
         else if (arguments.length() > 2)
-            return arguments.get(2);
-        else
-            return "";
+            arguments.resolve(2, sink);
     }
     
     public String getName()

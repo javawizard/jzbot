@@ -3,6 +3,7 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.NullSink;
 import jw.jzbot.fact.Sink;
 
 public class WhileFunction extends Function
@@ -11,9 +12,8 @@ public class WhileFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        while ("1".equals(arguments.resolve(0)))
-            arguments.resolve(1);
-        return "";
+        while ("1".equals(arguments.resolveString(0)))
+            arguments.resolve(1, NullSink.sink);
     }
     
     @Override

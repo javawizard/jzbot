@@ -11,7 +11,6 @@ import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.storage.MapEntry;
 
-
 public class TransferFunction extends Function
 {
     
@@ -19,14 +18,14 @@ public class TransferFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         Map<String, String> newMap = new HashMap<String, String>();
-        String from = arguments.get(0);
-        String to = arguments.get(1);
-        String regex = arguments.get(2);
+        String from = arguments.resolveString(0);
+        String to = arguments.resolveString(1);
+        String regex = arguments.resolveString(2);
         String varname = null;
         Deferred namegen = null;
         if (arguments.length() > 4)
         {
-            varname = arguments.get(3);
+            varname = arguments.resolveString(3);
             namegen = arguments.getDeferred(4);
         }
         from = from.substring(0, 1).toLowerCase();
@@ -67,7 +66,7 @@ public class TransferFunction extends Function
             for (Map.Entry<String, String> entry : newMap.entrySet())
             {
                 context.getLocalVars().put(varname, entry.getKey());
-                String newName = namegen.resolve();
+                String newName = namegen.resolveString();
                 if (!newName.equals(""))
                     namedMap.put(newName, entry.getValue());
             }
@@ -105,7 +104,6 @@ public class TransferFunction extends Function
                     .equals("l") ? context.getLocalVars() : context.getChainVars();
             target.putAll(namedMap);
         }
-        return "";
     }
     
     @Override

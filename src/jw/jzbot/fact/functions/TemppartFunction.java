@@ -13,9 +13,8 @@ public class TemppartFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         // FIXME: increment sent message count
-        JZBot.bot.partChannel(arguments.get(0), (arguments.length() > 1 ? arguments.get(1)
-                : "Leaving"));
-        return "";
+        JZBot.bot.partChannel(arguments.resolveString(0),
+                (arguments.length() > 1 ? arguments.resolveString(1) : "Leaving"));
     }
     
     @Override

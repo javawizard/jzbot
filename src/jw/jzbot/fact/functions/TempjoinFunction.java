@@ -13,8 +13,8 @@ public class TempjoinFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         // FIXME: increment sent message count
-        JZBot.bot.joinChannel(arguments.get(0));
-        return "";
+        context.incrementMessageCount();
+        JZBot.bot.joinChannel(arguments.resolveString(0));
     }
     
     @Override

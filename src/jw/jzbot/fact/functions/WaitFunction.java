@@ -14,12 +14,11 @@ public class WaitFunction extends Function
     {
         try
         {
-            Thread.sleep(Integer.parseInt(arguments.get(0)));
+            Thread.sleep(Integer.parseInt(arguments.resolveString(0)));
         }
         catch (InterruptedException e)
         {
         }
-        return "";
     }
     
     @Override

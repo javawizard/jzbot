@@ -12,7 +12,7 @@ public class UptimeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return "" + JZBot.startedAtTime;
+        sink.write(Long.toString(JZBot.startedAtTime));
     }
     
     @Override

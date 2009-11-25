@@ -8,22 +8,22 @@ import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class SdateparseFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        SimpleDateFormat format = new SimpleDateFormat(arguments.get(0));
+        SimpleDateFormat format = new SimpleDateFormat(arguments.getString(0));
         try
         {
-            return "" + format.parse(arguments.get(1)).getTime();
+            sink.write(Long.toString(format.parse(arguments.getString(1)).getTime()));
         }
         catch (Exception e)
         {
             throw new FactoidException("Exception occured while parsing date \""
-                    + arguments.get(1) + "\" with format \"" + arguments.get(0) + "\"", e);
+                    + arguments.getString(1) + "\" with format \"" + arguments.getString(0)
+                    + "\"", e);
         }
     }
     

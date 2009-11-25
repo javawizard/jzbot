@@ -15,21 +15,22 @@ public class ReplaceFunction extends Function
         String mode = "regex";
         if (arguments.length() == 4)
         {
-            mode = arguments.get(0);
+            mode = arguments.resolveString(0);
             arguments = arguments.subList(1);
         }
         if (mode.equals("regex"))
         {
-            return arguments.get(0).replaceAll(arguments.get(1),
-                    arguments.get(2));
+            sink.write(arguments.resolveString(0).replaceAll(arguments.resolveString(1),
+                    arguments.resolveString(2)));
         }
         else if (mode.equals("text"))
         {
-            return arguments.get(0).replace(arguments.get(1), arguments.get(2));
+            sink.write(arguments.resolveString(0).replace(arguments.resolveString(1),
+                    arguments.resolveString(2)));
         }
         else
             throw new FactoidException("Mode to {{replace}} was " + mode
-                    + ", not regex or text");
+                    + ", not \"regex\" or \"text\"");
     }
     
     public String getName()

@@ -11,7 +11,7 @@ public class TimemsFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return "" + System.currentTimeMillis();
+        sink.write(Long.toString(System.currentTimeMillis()));
     }
     
     public String getName()

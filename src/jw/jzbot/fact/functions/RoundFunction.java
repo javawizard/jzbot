@@ -15,9 +15,8 @@ public class RoundFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return ""
-                + new BigDecimal(arguments.get(0)).round(new MathContext(Integer
-                        .parseInt(arguments.get(1))));
+        sink.write(new BigDecimal(arguments.resolveString(0)).round(new MathContext(Integer
+                        .parseInt(arguments.resolveString(1)))).toString());
     }
     
     @Override
