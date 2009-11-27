@@ -11,8 +11,7 @@ public class DeleteFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        context.getGlobalVars().remove(arguments.get(0));
-        return "";
+        context.getGlobalVars().remove(arguments.resolveString(0));
     }
     
     public String getName()

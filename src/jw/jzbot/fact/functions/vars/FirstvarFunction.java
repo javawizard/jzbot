@@ -13,13 +13,12 @@ public class FirstvarFunction extends Function
     {
         for (int i = 1; i < arguments.length(); i++)
         {
-            if (!arguments.get(i).trim().equals(""))
+            if (!arguments.getString(i).trim().equals(""))
             {
-                context.getLocalVars().put(arguments.get(0), arguments.get(i));
+                context.getLocalVars().put(arguments.getString(0), arguments.getString(i));
                 break;
             }
         }
-        return "";
     }
     
     public String getName()

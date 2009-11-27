@@ -13,10 +13,9 @@ public class PdeleteFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        MapEntry entry = JZBot.storage.getPersistentVariable(arguments.get(0));
+        MapEntry entry = JZBot.storage.getPersistentVariable(arguments.resolveString(0));
         if (entry != null)
             JZBot.storage.getPersistentVariables().remove(entry);
-        return "";
     }
     
     @Override

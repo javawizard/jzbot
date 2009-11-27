@@ -11,10 +11,9 @@ public class LgetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String var = context.getLocalVars().get(arguments.get(0));
-        if (var == null)
-            return "";
-        return var;
+        String var = context.getLocalVars().get(arguments.resolveString(0));
+        if (var != null)
+            sink.write(var);
     }
     
     public String getName()

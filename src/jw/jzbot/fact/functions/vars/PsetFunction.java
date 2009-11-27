@@ -13,11 +13,11 @@ public class PsetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String key = arguments.get(0);
-        String value = arguments.get(1);
+        String key = arguments.resolveString(0);
+        String value = arguments.resolveString(1);
         if (key.length() > 256 || value.length() > (80 * 1024))
-            throw new RuntimeException(
-                    "Key longer than 256 or value longer than " + (80 * 1024));
+            throw new RuntimeException("Key longer than 256 or value longer than "
+                    + (80 * 1024));
         MapEntry entry = JZBot.storage.getPersistentVariable(key);
         if (entry == null)
         {
@@ -26,7 +26,6 @@ public class PsetFunction extends Function
             JZBot.storage.getPersistentVariables().add(entry);
         }
         entry.setValue(value);
-        return "";
     }
     
     @Override

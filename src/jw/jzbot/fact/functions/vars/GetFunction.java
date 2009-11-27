@@ -11,10 +11,9 @@ public class GetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String var = context.getGlobalVars().get(arguments.get(0));
-        if (var == null)
-            return "";
-        return var;
+        String var = context.getGlobalVars().get(arguments.resolveString(0));
+        if (var != null)
+            sink.write(var);
     }
     
     public String getName()

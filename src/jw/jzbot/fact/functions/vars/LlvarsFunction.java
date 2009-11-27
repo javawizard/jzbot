@@ -14,12 +14,11 @@ public class LlvarsFunction extends Function
         StringBuffer b = new StringBuffer();
         for (String s : context.getLocalVars().keySet())
         {
-            if ((arguments.length() == 0) || s.matches(arguments.get(0)))
-            b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
+            if ((arguments.length() == 0) || s.matches(arguments.getString(0)))
+                b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
         }
-        if (b.length() == 0)
-            return "";
-        return b.substring(1);
+        if (b.length() != 0)
+            sink.write(b.substring(1));
     }
     
     @Override

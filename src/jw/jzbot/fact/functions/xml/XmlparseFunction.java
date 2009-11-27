@@ -18,14 +18,13 @@ public class XmlparseFunction extends Function
     {
         try
         {
-            context.getXmlDocuments().put(arguments.get(0),
-                    new SAXBuilder().build(new StringReader(arguments.get(1))));
+            context.getXmlDocuments().put(arguments.resolveString(0),
+                    new SAXBuilder().build(new StringReader(arguments.resolveString(1))));
         }
         catch (Exception e)
         {
             throw new FactoidException(e);
         }
-        return "";
     }
     
     @Override

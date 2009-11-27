@@ -22,15 +22,16 @@ public class XmlsearchFunction extends Function
     {
         try
         {
-            Document doc = context.getXmlDocuments().get(arguments.get(0));
-            String path = arguments.get(1);
+            Document doc = context.getXmlDocuments().get(arguments.resolveString(0));
+            String path = arguments.resolveString(1);
             List list = XPath.selectNodes(doc.getRootElement(), path);
             String[] strings = new String[list.size()];
             for (int i = 0; i < strings.length; i++)
             {
                 strings[i] = XMLUtils.xpath(list.get(i));
             }
-            return StringUtils.delimited(strings, "\n");
+            // TODO: change this to use a DelimitedSink
+            sink.write(StringUtils.delimited(strings, "\n"));
         }
         catch (Exception e)
         {

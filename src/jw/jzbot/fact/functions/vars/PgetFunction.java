@@ -13,10 +13,9 @@ public class PgetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        MapEntry entry = JZBot.storage.getPersistentVariable(arguments.get(0));
-        if (entry == null)
-            return "";
-        return entry.getValue();
+        MapEntry entry = JZBot.storage.getPersistentVariable(arguments.resolveString(0));
+        if (entry != null)
+            sink.write(entry.getValue());
     }
     
     @Override

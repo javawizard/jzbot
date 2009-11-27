@@ -24,18 +24,19 @@ public class XmltextFunction extends Function
     {
         try
         {
-            Document doc = context.getXmlDocuments().get(arguments.get(0));
+            Document doc = context.getXmlDocuments().get(arguments.getString(0));
             if (doc == null)
-                throw new FactoidException("No document by the name " + arguments.get(0));
-            String path = arguments.get(1);
+                throw new FactoidException("No document by the name "
+                        + arguments.getString(0));
+            String path = arguments.resolveString(1);
             Object o = XPath.selectSingleNode(doc.getRootElement(), path);
             if (o == null)
                 throw new FactoidException("No xpath match for statement \"" + path
                         + "\", document is " + doc.toString());
             if (o instanceof Element)
-                return ((Element) o).getText();
+                sink.write(((Element) o).getText());
             else
-                return ((Attribute) o).getValue();
+                sink.write(((Attribute) o).getValue());
         }
         catch (Exception e)
         {
