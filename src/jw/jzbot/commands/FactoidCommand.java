@@ -16,6 +16,7 @@ import jw.jzbot.Factpack.FactpackEntry;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.StringSink;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
@@ -756,7 +757,9 @@ public class FactoidCommand implements Command
             context.setChannel(channel);
             context.getLocalVars().putAll(localVars);
             context.setSender(sender);
-            String response = preinstallScript.resolve(context);
+            StringSink sink = new StringSink();
+            preinstallScript.resolve(sink, context);
+            String response = sink.toString();
             if (!response.equals(""))
                 JZBot.bot.sendMessage(pm ? sender : channel, response);
             if ("1".equals(context.getLocalVars().get("fail")))
@@ -956,7 +959,9 @@ public class FactoidCommand implements Command
             context.setChannel(channel);
             context.getLocalVars().putAll(localVars);
             context.setSender(sender);
-            String response = renameScript.resolve(context);
+            StringSink sink = new StringSink();
+            renameScript.resolve(sink, context);
+            String response = sink.toString();
             return response;
         }
         catch (Exception e)

@@ -9,7 +9,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.FactQuota;
-
+import jw.jzbot.fact.StringSink;
 
 public class ExecCommand implements Command
 {
@@ -38,7 +38,9 @@ public class ExecCommand implements Command
         vars.put("source", pm ? sender : channel);
         context.setLocalVars(vars);
         context.setGlobalVars(JZBot.globalVariables);
-        String result = entity.resolve(context);
+        StringSink sink = new StringSink();
+        entity.resolve(sink, context);
+        String result = sink.toString();
         if (result.equals(""))
             result = "(no result)";
         JZBot.bot.sendMessage(pm ? sender : channel, result);

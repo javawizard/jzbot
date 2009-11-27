@@ -61,6 +61,7 @@ import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.FactQuota;
 import jw.jzbot.fact.FactoidException;
+import jw.jzbot.fact.StringSink;
 import jw.jzbot.help.DefaultHelpProvider;
 import jw.jzbot.help.FunctionHelpProvider;
 import jw.jzbot.help.PropsHelpProvider;
@@ -850,7 +851,9 @@ public class JZBot
         context.setLocalVars(vars);
         context.setSelf(bot.getNick());
         // Now we actually run the factoid.
-        String result = parsedFactoid.resolve(context);
+        StringSink resultSink = new StringSink();
+        parsedFactoid.resolve(resultSink, context);
+        String result = resultSink.toString();
         // The factoid has been run. Now we return the value.
         boolean isAction = context.isAction();
         return (isAction ? "<ACTION>" : "") + result.toString();
@@ -876,7 +879,7 @@ public class JZBot
         if (channel != null)
         {
             Channel cn = JZBot.storage.getChannel(channel);
-            String factname = arguments.get(0);
+            String factname = arguments.getString(0);
             if (cn != null)
                 f = cn.getFactoid(factname);
             if (f != null)
@@ -884,10 +887,10 @@ public class JZBot
         }
         if (f == null)
         {
-            f = JZBot.storage.getFactoid(arguments.get(0));
+            f = JZBot.storage.getFactoid(arguments.getString(0));
         }
         if (f == null)
-            throw new RuntimeException("Invalid import factoid " + arguments.get(0));
+            throw new RuntimeException("Invalid import factoid " + arguments.getString(0));
         Map<String, String> varMap = new HashMap<String, String>();
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
