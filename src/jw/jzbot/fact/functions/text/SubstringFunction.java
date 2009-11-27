@@ -11,14 +11,14 @@ public class SubstringFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String s = arguments.get(2);
-        int start = Integer.parseInt(arguments.get(0));
-        int end = Integer.parseInt(arguments.get(1));
+        String s = arguments.resolveString(2);
+        int start = Integer.parseInt(arguments.resolveString(0));
+        int end = Integer.parseInt(arguments.resolveString(1));
         if (start < 0)
             start = 0;
         if (end > s.length())
             end = s.length();
-        return s.substring(start, end);
+        sink.write(s.substring(start, end));
     }
     
     @Override

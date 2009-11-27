@@ -12,11 +12,10 @@ public class LastindexofFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         if (arguments.length() == 2)
-            return "" + arguments.get(1).lastIndexOf(arguments.get(0));
+            sink.write(arguments.getString(1).lastIndexOf(arguments.getString(0)));
         else
-            return ""
-                    + arguments.get(1).lastIndexOf(arguments.get(0),
-                            Integer.parseInt(arguments.get(2)));
+            sink.write(arguments.getString(1).lastIndexOf(arguments.getString(0),
+                    Integer.parseInt(arguments.getString(2))));
     }
     
     @Override

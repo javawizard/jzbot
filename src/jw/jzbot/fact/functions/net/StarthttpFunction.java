@@ -14,10 +14,9 @@ public class StarthttpFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        int port = Integer.parseInt(arguments.get(0));
-        String factoid = arguments.get(1);
+        int port = Integer.parseInt(arguments.resolveString(0));
+        String factoid = arguments.resolveString(1);
         JZBot.startHttpServer(port, factoid);
-        return "";
     }
     
     @Override
@@ -34,7 +33,7 @@ public class StarthttpFunction extends Function
         else if (topic.equals("details"))
             return "See "
                     + Pastebin.createPost("jzbot-help", getExtendedHelp(), Duration.DAY,
-                            null,null) + " for more info.";
+                            null, null) + " for more info.";
         return null;
     }
     

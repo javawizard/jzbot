@@ -1,23 +1,24 @@
-package jw.jzbot.fact.functions.text;
+package jw.jzbot.fact.functions.vars;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-public class LowerFunction extends Function
+public class LdeleteFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        sink.write(arguments.resolveString(0).toLowerCase());
+        context.getLocalVars().remove(arguments.resolveString(0));
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lower||<value>}} -- Converts the specified value to lower case.";
+        return "Syntax: {{ldelete||<varname>}} -- Deletes the local variable with "
+                + "the specified name.";
     }
     
 }

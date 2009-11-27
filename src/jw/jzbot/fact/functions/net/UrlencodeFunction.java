@@ -9,7 +9,6 @@ import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class UrlencodeFunction extends Function
 {
     
@@ -18,13 +17,12 @@ public class UrlencodeFunction extends Function
     {
         try
         {
-            return URLEncoder
-                    .encode(arguments.get(0), ConfigVars.charset.get());
+            sink.write(URLEncoder.encode(arguments.getString(0), ConfigVars.charset.get()));
         }
         catch (Exception e)
         {
-            throw new FactoidException("Exception while encoding URL fragment",
-                    e);
+            throw new FactoidException("Exception while encoding URL fragment "
+                    + arguments.getString(0), e);
         }
     }
     

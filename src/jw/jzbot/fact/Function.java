@@ -4,7 +4,12 @@ public abstract class Function
 {
     // public abstract String getName();
     /**
-     * Runs this function.
+     * Runs this function. The Fact interpreter calls this when a function is to be run to
+     * actually run the function. The arguments to the function can be accessed via
+     * <tt>arguments</tt>and the context in which the factoid is running (which includes
+     * stuff like the factoid's local variables, factoid name, etc) is available via
+     * <tt>context</tt>. The function should write its output to <tt>sink</tt> via one or
+     * more of the sink's <tt>write</tt> methods.
      * 
      * @param sink
      *            The sink to which this function's output should be written

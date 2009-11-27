@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
-
 
 public class RandomizeFunction extends Function
 {
@@ -17,12 +17,17 @@ public class RandomizeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String regex = arguments.get(0);
-        String string = arguments.get(1);
-        String delimiter = arguments.get(2);
+        String regex = arguments.resolveString(0);
+        String string = arguments.resolveString(1);
+        String delimiter = arguments.resolveString(2);
         String[] tokens = string.split(regex);
         Collections.shuffle(Arrays.asList(tokens));
-        return StringUtils.delimited(tokens, delimiter);
+        DelimitedSink result = new DelimitedSink(sink, delimiter);
+        for (String s : tokens)
+        {
+            result.next();
+            result.write(s);
+        }
     }
     
     @Override

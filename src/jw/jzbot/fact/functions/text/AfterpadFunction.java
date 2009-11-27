@@ -11,10 +11,10 @@ public class AfterpadFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        int number = Integer.parseInt(arguments.get(0));
-        String c = arguments.get(1);
-        String value = arguments.get(2);
-        return pad(number,c,value);
+        int number = Integer.parseInt(arguments.resolveString(0));
+        String c = arguments.resolveString(1);
+        String value = arguments.resolveString(2);
+        sink.write(pad(number, c, value));
     }
     
     public static String pad(int targetLength, String toPadWith, String value)
@@ -25,7 +25,7 @@ public class AfterpadFunction extends Function
         }
         return value;
     }
-
+    
     @Override
     public String getHelp(String topic)
     {

@@ -11,7 +11,10 @@ public class ContainsFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return arguments.get(1).contains(arguments.get(0)) ? "1" : "0";
+        if (arguments.resolveString(1).contains(arguments.resolveString(0)))
+            sink.write('1');
+        else
+            sink.write('0');
     }
     
     @Override

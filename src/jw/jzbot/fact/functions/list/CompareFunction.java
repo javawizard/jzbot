@@ -12,16 +12,16 @@ public class CompareFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String first = arguments.get(0);
-        String second = arguments.get(1);
+        String first = arguments.resolveString(0);
+        String second = arguments.resolveString(1);
         boolean caseSensitive = true;
         boolean forIf = false;
         if (arguments.length() > 2)
         {
-            caseSensitive = IfFunction.findValue(arguments.get(2));
+            caseSensitive = IfFunction.findValue(arguments.resolveString(2));
             if (arguments.length() > 3)
             {
-                forIf = IfFunction.findValue(arguments.get(3));
+                forIf = IfFunction.findValue(arguments.resolveString(3));
             }
         }
         int result;
@@ -34,7 +34,7 @@ public class CompareFunction extends Function
             result = (int) Math.signum(first.compareToIgnoreCase(second));
         if (forIf && result == -1)
             result = 0;
-        return "" + result;
+        sink.write(result);
     }
     
     @Override

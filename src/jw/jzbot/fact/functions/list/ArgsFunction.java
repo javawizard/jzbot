@@ -14,14 +14,14 @@ public class ArgsFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String regex = arguments.get(0);
-        String text = arguments.get(1);
+        String regex = arguments.resolveString(0);
+        String text = arguments.resolveString(1);
         String[] tokens = (text.equals("") ? new String[0] : text.split(regex));
         Sequence sequence = new Sequence();
         for (String s : tokens)
             sequence.add(new Literal(s));
         FunctionReference function = new FunctionReference(sequence);
-        return function.resolve(context);
+        function.resolve(sink, context);
     }
     
     @Override

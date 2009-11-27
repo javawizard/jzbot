@@ -11,12 +11,12 @@ public class IndexofFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
+        // TODO: consider changing to resolveString instead of getString
         if (arguments.length() == 2)
-            return "" + arguments.get(1).indexOf(arguments.get(0));
+            sink.write(arguments.getString(1).indexOf(arguments.getString(0)));
         else
-            return ""
-                    + arguments.get(1).indexOf(arguments.get(0),
-                            Integer.parseInt(arguments.get(2)));
+            sink.write(arguments.getString(1).indexOf(arguments.getString(0),
+                    Integer.parseInt(arguments.getString(2))));
     }
     
     @Override

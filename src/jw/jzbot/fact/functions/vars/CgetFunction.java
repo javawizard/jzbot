@@ -12,9 +12,8 @@ public class CgetFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String var = context.getChainVars().get(arguments.get(0));
-        if (var == null)
-            return "";
-        return var;
+        if (var != null)
+            sink.write(var);
     }
     
     @Override

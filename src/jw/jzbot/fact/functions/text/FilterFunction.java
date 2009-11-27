@@ -1,6 +1,7 @@
 package jw.jzbot.fact.functions.text;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
@@ -11,26 +12,21 @@ public class FilterFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String regex = arguments.get(0);
-        String string = arguments.get(1);
-        String condition = arguments.get(2);
+        String regex = arguments.resolveString(0);
+        String string = arguments.resolveString(1);
+        String condition = arguments.resolveString(2);
         String delimiter = "";
         if (arguments.length() > 3)
-            delimiter = arguments.get(3);
+            delimiter = arguments.resolveString(3);
         String[] split = string.split(regex);
-        StringBuffer result = new StringBuffer();
-        boolean first = true;
+        DelimitedSink result = new DelimitedSink(sink, delimiter);
         for (String s : split)
         {
             if (!s.matches(condition))
                 continue;
-            if (first)
-                first = false;
-            else
-                result.append(delimiter);
-            result.append(s);
+            result.next();
+            result.write(s);
         }
-        return result.toString();
     }
     
     @Override

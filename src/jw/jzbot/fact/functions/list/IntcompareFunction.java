@@ -8,19 +8,18 @@ import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 
-
 public class IntcompareFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String firstString = arguments.get(0);
-        String secondString = arguments.get(1);
+        String firstString = arguments.resolveString(0);
+        String secondString = arguments.resolveString(1);
         boolean forIf = false;
         if (arguments.length() > 2)
         {
-            forIf = IfFunction.findValue(arguments.get(2));
+            forIf = IfFunction.findValue(arguments.resolveString(2));
         }
         BigInteger first = new BigInteger(firstString);
         BigInteger second = new BigInteger(secondString);
@@ -28,8 +27,9 @@ public class IntcompareFunction extends Function
         result = (int) Math.signum(result);
         if (forIf && result == -1)
             result = 0;
-        return "" + result;
+        sink.write(result);
     }
+    
     @Override
     public String getHelp(String topic)
     {

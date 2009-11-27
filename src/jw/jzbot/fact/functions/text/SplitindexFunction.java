@@ -11,15 +11,18 @@ public class SplitindexFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] tokens = arguments.get(1).split(arguments.get(0),
-                Integer.parseInt(arguments.get(2)));
+        // TODO: consider changing this into a looped iteration with a Matcher, as this
+        // would only parse until the indexed item, not further into the list of items,
+        // therefore running faster. Maybe run a benchmark that tests the speed of the two
+        // methods to see which one is faster.
+        String[] tokens = arguments.resolveString(1).split(arguments.resolveString(0),
+                Integer.parseInt(arguments.resolveString(2)));
         try
         {
-            return tokens[Integer.parseInt(arguments.get(3))];
+            sink.write(tokens[Integer.parseInt(arguments.resolveString(3))]);
         }
         catch (ArrayIndexOutOfBoundsException e)
         {
-            return "";
         }
     }
     

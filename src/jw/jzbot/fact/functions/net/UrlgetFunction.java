@@ -22,7 +22,7 @@ public class UrlgetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String urlSpec = arguments.get(0);
+        String urlSpec = arguments.resolveString(0);
         try
         {
             URL url = new URL(urlSpec);
@@ -59,7 +59,7 @@ public class UrlgetFunction extends Function
             out.flush();
             out.close();
             String result = new String(out.toByteArray(), ConfigVars.charset.get());
-            return result;
+            sink.write(result);
         }
         catch (Exception e)
         {

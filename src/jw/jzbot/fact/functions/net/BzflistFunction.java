@@ -6,13 +6,13 @@ import java.util.Map;
 import jw.jzbot.bzf.ListservConnector;
 import jw.jzbot.bzf.Server;
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
-
 
 public class BzflistFunction extends Function
 {
@@ -23,19 +23,19 @@ public class BzflistFunction extends Function
         try
         {
             Server[] servers = ListservConnector.getServers();
-            String prefix = arguments.get(0);
+            String prefix = arguments.resolveString(0);
             String delimiter = "";
             if (arguments.length() > 2)
-                delimiter = arguments.get(2);
-            ArrayList<String> results = new ArrayList<String>();
+                delimiter = arguments.resolveString(2);
+            DelimitedSink result = new DelimitedSink(sink, delimiter);
             for (Server server : servers)
             {
                 setVars(context.getLocalVars(), server, prefix);
-                results.write(arguments.resolve(1));
+                result.next();
+                arguments.resolve(1, result);
                 if ("1".equals(context.getLocalVars().get(prefix + "-quit")))
                     break;
             }
-            return StringUtils.delimited(results.toArray(new String[0]), delimiter);
         }
         catch (Exception e)
         {

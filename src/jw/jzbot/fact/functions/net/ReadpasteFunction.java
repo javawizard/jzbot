@@ -13,7 +13,7 @@ public class ReadpasteFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return PastebinService.readPost(arguments.get(0)).getData();
+        sink.write(PastebinService.readPost(arguments.resolveString(0)).getData());
     }
     
     @Override

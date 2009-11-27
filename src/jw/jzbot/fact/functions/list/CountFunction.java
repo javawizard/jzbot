@@ -11,9 +11,10 @@ public class CountFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (arguments.get(1).equals(""))
-            return "0";
-        return "" + (arguments.get(1).split(arguments.get(0)).length);
+        if (arguments.getString(1).equals(""))
+            sink.write('0');
+        else
+            sink.write(arguments.getString(1).split(arguments.getString(0)).length);
     }
     
     @Override

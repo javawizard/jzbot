@@ -15,3 +15,5 @@ It would also be nice if the debugger could maintain an active list of all facto
 I'm thinking the best way to implement the debugger would be to have a DebuggerSupport class that key points in factoid execution call into, and that class calls Object.wait or waits in a blocking queue if the factoid should be blocked.
 
 It'd also be cool if the debugger could also function as a profiler, and show time spent at certain areas of a factoid and potentially show the steps of running a factoid (loading from db, parsing into an execution tree, running the execution tree).
+
+TODO: consider how the {{args}} function affects all of this.

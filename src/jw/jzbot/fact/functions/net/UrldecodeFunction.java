@@ -10,7 +10,6 @@ import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class UrldecodeFunction extends Function
 {
     @Override
@@ -18,13 +17,13 @@ public class UrldecodeFunction extends Function
     {
         try
         {
-            return URLDecoder
-                    .decode(arguments.get(0), ConfigVars.charset.get());
+            sink.write(URLDecoder.decode(arguments.resolveString(0), ConfigVars.charset
+                    .get()));
         }
         catch (Exception e)
         {
-            throw new FactoidException("Exception while decoding URL fragment",
-                    e);
+            throw new FactoidException("Exception while decoding URL fragment "
+                    + arguments.getString(0), e);
         }
     }
     

@@ -8,6 +8,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
@@ -29,7 +30,7 @@ public class GoogleFunction extends Function
             ArrayList<String> resultList = new ArrayList<String>();
             URL url = new URL(
                     "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q="
-                            + URLEncoder.encode(arguments.get(0)));
+                            + URLEncoder.encode(arguments.resolveString(0)));
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             URLConnection con = url.openConnection();
             con.addRequestProperty("Referer", "http://jzbot.opengroove.org/");
@@ -39,24 +40,26 @@ public class GoogleFunction extends Function
             System.out.println(new String(baos.toByteArray()));
             JSONObject j = new JSONObject(new String(baos.toByteArray()));
             JSONObject responseDataObject = j.getJSONObject("responseData");
-            JSONArray resultsObject = responseDataObject
-                    .getJSONArray("results");
+            JSONArray resultsObject = responseDataObject.getJSONArray("results");
             for (int i = 0; i < resultsObject.length() && i < 5; i++)
             {
                 JSONObject result = resultsObject.getJSONObject(i);
                 String resultText = result.getString("url")
                         + " "
-                        + result.getString("title").replace("<b>", "").replace(
-                                "</b>", "").replace("|", "").replace("\n", "");
+                        + result.getString("title").replace("<b>", "").replace("</b>", "")
+                                .replace("|", "").replace("\n", "");
                 resultList.add(resultText);
             }
-            return StringUtils
-                    .delimited(resultList.toArray(new String[0]), "|");
+            DelimitedSink result = new DelimitedSink(sink, "|");
+            for (String s : resultList)
+            {
+                result.next();
+                result.write(s);
+            }
         }
         catch (Exception e)
         {
-            throw new FactoidException("Exception while reading from Google: "
-                    + e);
+            throw new FactoidException("Exception while reading from Google: " + e);
         }
     }
     

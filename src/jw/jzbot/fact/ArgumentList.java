@@ -187,6 +187,8 @@ public class ArgumentList
      */
     public String getString(int index)
     {
+        // TODO: a speed improvement could be made here by checking to see if the string
+        // has been cached, and if it has, that string can just be returned as-is.
         StringSink sink = new StringSink();
         get(index, sink);
         return sink.toString();

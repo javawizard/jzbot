@@ -16,7 +16,6 @@ import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class WeatherFunction extends Function
 {
     
@@ -24,17 +23,16 @@ public class WeatherFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         Map<String, String> map = new HashMap<String, String>();
-        String zipcode = arguments.get(0);
+        String zipcode = arguments.resolveString(0);
         if (zipcode.length() != 5)
-            throw new FactoidException("The zipcode you specified is \""
-                    + zipcode
+            throw new FactoidException("The zipcode you specified is \"" + zipcode
                     + "\". This isn't exactly 5 characters. Specify a zipcode "
                     + "that's exactly 5 characters. Canadians/Britans: "
                     + "sorry, but international weather isn't supported "
                     + "yet. If you'd like to modify the bot to support "
                     + "international weather, feel free to contact jcp on "
                     + "irc.freenode.net channel #bztraining.");
-        String prefix = arguments.length() > 1 ? arguments.get(1) : "";
+        String prefix = arguments.length() > 1 ? arguments.resolveString(1) : "";
         String weatherbugResultString = null;
         String yahooResultString = null;
         try
@@ -42,7 +40,8 @@ public class WeatherFunction extends Function
             URL weatherbugUrl = new URL(
                     "http://a7686974884.isapi.wxbug.net/WxDataISAPI/WxDataISAPI.dll?Magic=10991&RegNum=0&ZipCode="
                             + zipcode.replace("&", "")
-                            + "&Units=0&Version=7&Fore=0&t=" + Math.random());
+                            + "&Units=0&Version=7&Fore=0&t="
+                            + Math.random());
             InputStream stream = weatherbugUrl.openStream();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
@@ -81,9 +80,8 @@ public class WeatherFunction extends Function
             map.put("gusttime", tokens[25]);
             map.put("station", tokens[35]);
             map.put("citystate", tokens[36]);
-            URL yahooUrl = new URL(
-                    "http://weather.yahooapis.com/forecastrss?p="
-                            + zipcode.replace("&", ""));
+            URL yahooUrl = new URL("http://weather.yahooapis.com/forecastrss?p="
+                    + zipcode.replace("&", ""));
             stream = yahooUrl.openStream();
             baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
@@ -93,8 +91,7 @@ public class WeatherFunction extends Function
             String conditionStart = "yweather:condition  text=\"";
             int conditionsIndex = yahooResult.indexOf(conditionStart);
             String conditions = "";
-            System.out.println("result:" + yahooResult + ",idx:"
-                    + conditionsIndex);
+            System.out.println("result:" + yahooResult + ",idx:" + conditionsIndex);
             if (conditionsIndex != -1)
             {
                 int endIndex = yahooResult.indexOf("\"", conditionsIndex
@@ -109,14 +106,13 @@ public class WeatherFunction extends Function
             e.printStackTrace();
             throw new FactoidException("Exception while parsing weather data: "
                     + e.getClass().getName() + ": " + e.getMessage()
-                    + "\nWeatherbug data: " + weatherbugResultString
-                    + "\nYahoo data: " + yahooResultString, e);
+                    + "\nWeatherbug data: " + weatherbugResultString + "\nYahoo data: "
+                    + yahooResultString, e);
         }
         for (String s : map.keySet())
         {
             context.getLocalVars().put(prefix + s, map.get(s));
         }
-        return "";
     }
     
     @Override
@@ -131,8 +127,8 @@ public class WeatherFunction extends Function
     
     private static final String[] WIND_DIRECTIONS = new String[]
     {
-            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW",
-            "WSW", "W", "WNW", "NW", "NNW"
+            "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W",
+            "WNW", "NW", "NNW"
     };
     
     private String windDegreesToReadable(String string)
@@ -143,8 +139,7 @@ public class WeatherFunction extends Function
         windDegrees += halfSlice;
         for (int i = 0; i < WIND_DIRECTIONS.length; i++)
         {
-            if (windDegrees >= (i * sliceSize)
-                    && windDegrees <= ((i + 1) * sliceSize))
+            if (windDegrees >= (i * sliceSize) && windDegrees <= ((i + 1) * sliceSize))
                 return WIND_DIRECTIONS[i];
             
         }

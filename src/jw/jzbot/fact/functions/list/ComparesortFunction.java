@@ -4,24 +4,23 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class ComparesortFunction extends Function
 {
     
     @Override
-    public void evaluate(Sink sink,
-            final ArgumentList arguments, final FactContext context)
+    public void evaluate(Sink sink, final ArgumentList arguments, final FactContext context)
     {
-        String regex = arguments.get(0);
-        String stringToSplit = arguments.get(1);
-        String delimiter = arguments.get(2);
-        final String prefix = arguments.get(3);
+        String regex = arguments.resolveString(0);
+        String stringToSplit = arguments.resolveString(1);
+        String delimiter = arguments.resolveString(2);
+        final String prefix = arguments.resolveString(3);
         String[] tokens = stringToSplit.split(regex);
         String firstPrevious = context.getLocalVars().get(prefix + "-1");
         String secondPrevious = context.getLocalVars().get(prefix + "-2");
@@ -33,7 +32,7 @@ public class ComparesortFunction extends Function
             {
                 context.getLocalVars().put(prefix + "-1", s1);
                 context.getLocalVars().put(prefix + "-2", s2);
-                return Integer.parseInt(arguments.resolve(4));
+                return Integer.parseInt(arguments.resolveString(4));
             }
         });
         if (firstPrevious != null)
@@ -44,7 +43,12 @@ public class ComparesortFunction extends Function
             context.getLocalVars().put(prefix + "-2", secondPrevious);
         else
             context.getLocalVars().remove(prefix + "-2");
-        return StringUtils.delimited(tokens, delimiter);
+        DelimitedSink result = new DelimitedSink(sink, delimiter);
+        for (String s : tokens)
+        {
+            result.next();
+            result.write(s);
+        }
     }
     
     @Override

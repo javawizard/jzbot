@@ -7,17 +7,16 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class RandomsplitFunction extends Function
 {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] strings = arguments.get(0).split(arguments.get(1));
+        String[] strings = arguments.resolveString(0).split(arguments.resolveString(1));
         if (arguments.length() > 2)
         {
-            String regex = arguments.get(2);
+            String regex = arguments.resolveString(2);
             System.out.println("regex:");
             ArrayList<String> newStrings = new ArrayList<String>();
             for (String s : strings)
@@ -30,9 +29,8 @@ public class RandomsplitFunction extends Function
             strings = newStrings.toArray(new String[0]);
         }
         System.out.println("" + strings.length + " strings");
-        if (strings.length == 0)
-            return "";
-        return strings[(int) (Math.random() * strings.length)];
+        if (strings.length != 0)
+            sink.write(strings[(int) (Math.random() * strings.length)]);
     }
     
     @Override

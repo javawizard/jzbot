@@ -26,8 +26,8 @@ public class TwiliocallFunction extends Function
         TwilioRestClient client = new TwilioRestClient(account, secret, null);
         Map<String, String> map = new HashMap<String, String>();
         map.put("Caller", from);
-        map.put("Called", arguments.get(0));
-        map.put("Url", arguments.get(1));
+        map.put("Called", arguments.getString(0));
+        map.put("Url", arguments.getString(1));
         try
         {
             TwilioRestResponse response = client.request("/2008-08-01/Accounts/"
@@ -36,12 +36,13 @@ public class TwiliocallFunction extends Function
                 throw new RuntimeException(response.getHttpStatus()
                         + ": Rest client reported back an error:\n\n"
                         + response.getResponseText());
-            return response.getResponseText();
+            sink.write(response.getResponseText());
         }
         catch (Exception e)
         {
             throw new FactoidException("Error while calling from " + from + " to "
-                    + arguments.get(0) + " with callback " + arguments.get(1), e);
+                    + arguments.getString(0) + " with callback " + arguments.getString(1),
+                    e);
         }
     }
     

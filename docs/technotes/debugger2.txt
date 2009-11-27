@@ -1,0 +1,3 @@
+The debugger should also be able to handle functions that evaluate alternate code, such as the args function or the (hopefully soon-to-be) store and exec functions. So I'm thinking that the window that shows the current execution stack should also show a box or something to indicate groups of items that use the same source code. When an args function is run, it uses separate source code, which is then shown.
+
+How the output should be shown is another matter, though.

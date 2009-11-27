@@ -12,11 +12,11 @@ public class LengthtoFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] strings = JZUtils.delimitedLengthRestricted(arguments.get(1).split(
-                arguments.get(0)), arguments.get(3), Integer.parseInt(arguments.get(2)));
-        if (strings.length == 0)
-            return "";
-        return strings[0];
+        String[] strings = JZUtils.delimitedLengthRestricted(arguments.resolveString(1)
+                .split(arguments.resolveString(0)), arguments.resolveString(3), Integer
+                .parseInt(arguments.resolveString(2)));
+        if (strings.length != 0)
+            sink.write(strings[0]);
     }
     
     @Override

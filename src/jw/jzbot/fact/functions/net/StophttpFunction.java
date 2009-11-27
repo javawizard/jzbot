@@ -12,9 +12,8 @@ public class StophttpFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        int port = Integer.parseInt(arguments.get(0));
+        int port = Integer.parseInt(arguments.resolveString(0));
         JZBot.stopHttpServer(port);
-        return "";
     }
     
     @Override

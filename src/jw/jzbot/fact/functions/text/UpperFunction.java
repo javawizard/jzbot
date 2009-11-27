@@ -11,7 +11,7 @@ public class UpperFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return arguments.get(0).toUpperCase();
+        sink.write(arguments.resolveString(0).toUpperCase());
     }
     
     @Override

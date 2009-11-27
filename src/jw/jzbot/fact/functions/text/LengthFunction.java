@@ -11,7 +11,7 @@ public class LengthFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        return "" + arguments.get(0).length();
+        sink.write(arguments.resolveString(0).length());
     }
     
     @Override
