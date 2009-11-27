@@ -11,7 +11,32 @@ import jw.jzbot.fact.functions.*;
 import org.jibble.pircbot.Colors;
 
 /**
- * A class that can parse factoids. This is where factoid execution starts.
+ * A class that can parse factoids. This is the main entry point to the Fact
+ * interpreter.<br/><br/>
+ * 
+ * To run a factoid and put the output into a string, you would do something along these
+ * lines:<br/>
+ * 
+ * <pre>
+ * String factoid = &quot;The numbers from 1 to 5 are {{numberlist||1||5}} and the var 1 is %1%&quot;;
+ * FactContext context = new FactContext();
+ * context.getLocalVars().put(&quot;1&quot;, &quot;Hello world!&quot;);
+ * FactEntity entity = FactParser.parse(factoid, &quot;my_test_program&quot;);
+ * StringSink sink = new StringSink();
+ * entity.resolve(sink, context);
+ * String result = sink.toString();
+ * </pre>
+ * 
+ * <br/>
+ * 
+ * At that point, <tt>result</tt> would have the value
+ * <tt>"The numbers from 1 to 5 are 1 2 3 4 5 and the var 1 is Hello world!"</tt>. If you
+ * instead wanted the factoid's output to be sent to stdout, you could replace the last 3
+ * lines of the above example with this:<br/>
+ * 
+ * <pre>
+ * entity.resolve(new StreamSink(System.out), context);
+ * </pre>
  * 
  * @author Alexander Boyd
  * 
@@ -26,10 +51,6 @@ public class FactParser
      * {@link FactEntity#resolve(FactContext) resolved} at any point in the future (and,
      * in fact, resolved multiple times) to actually run this factoid and get its
      * output.<br/><br/>
-     * 
-     * Currently, the resulting FactEntity is an instance of {@link FunctionReference}
-     * that points to the {@link IdentityFunction identity} function, although this
-     * behavior should not be relied upon as it may change in the future.<br/><br/>
      * 
      * Parsing a factoid does not cause any side effects, such as changes to local or
      * global variables, to occur. It's only when you actually resolve a factoid that
@@ -455,7 +476,7 @@ public class FactParser
         FunctionReference ref = (FunctionReference) parse(factoid, name);
         FactEntity entity = ref.getArgumentSequence().get(1);
         StringSink sink = new StringSink();
-        entity.explain(sink,0, 4);
+        entity.explain(sink, 0, 4);
         return sink.toString();
     }
 }

@@ -10,7 +10,6 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-
 public class CascadeFunction extends Function
 {
     
@@ -19,15 +18,17 @@ public class CascadeFunction extends Function
     {
         context.incrementImportCount();
         Map<String, String> map = new HashMap<String, String>();
-        String regex = arguments.get(0);
+        String regex = arguments.getString(0);
         arguments = arguments.subList(1);
         for (String s : context.getLocalVars().keySet())
         {
             if (s.matches(regex))
                 map.put(s, context.getLocalVars().get(s));
         }
-        return JZBot.doFactImport(context.getChannel(), arguments, context
-                .getSender(), true, context.getQuota(), ImportLevel.any, map);
+        // FIXME: re-work the import functionality to write to the main sink instead of
+        // writing to a string sink and then copying into this sink
+        sink.write(JZBot.doFactImport(context.getChannel(), arguments, context.getSender(),
+                true, context.getQuota(), ImportLevel.any, map));
     }
     
     @Override

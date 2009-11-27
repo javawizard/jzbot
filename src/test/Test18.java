@@ -3,6 +3,7 @@ package test;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.StreamSink;
 
 public class Test18
 {
@@ -16,6 +17,7 @@ public class Test18
                 + "||thenumber||%thenumber%||, }}";
         FactEntity entity = FactParser.parse(program, "a_test_program");
         FactContext context = new FactContext();
-        System.out.println("Program output: " + entity.resolve(context));
+        System.out.print("Program output: ");
+        entity.resolve(new StreamSink(System.out), context);
     }
 }

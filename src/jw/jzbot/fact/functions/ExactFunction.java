@@ -14,8 +14,10 @@ public class ExactFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.incrementImportCount();
-        return JZBot.doFactImport(context.getChannel(), arguments, context
-                .getSender(), true, context.getQuota(), ImportLevel.exact);
+        // FIXME: re-work the import functionality to write to the main sink instead of
+        // writing to a string sink and then copying into this sink
+        sink.write(JZBot.doFactImport(context.getChannel(), arguments, context.getSender(),
+                true, context.getQuota(), ImportLevel.exact));
     }
     
     @Override
