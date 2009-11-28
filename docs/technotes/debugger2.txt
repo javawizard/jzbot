@@ -32,7 +32,11 @@ So, onto the wire protocol itself, and its syntax.
 
 When a connection is first made, the server sends to the client the server's version number, as an int. The client reads this, and if it doesn't match (or if the client doesn't know how to talk that version number), it disconnects. The current version number is 1.
 
-Then, the server sends the number of input fields the client needs to send, as an int. It then sends the initial instructions as a string. Then, for each input field, a boolean is sent, representing whether or not the field is a password field, followed by 
+Then, the server sends the number of input fields the client needs to send, as an int. It then sends the initial instructions as a string. Then, for each input field, a boolean is sent, representing whether or not the field is a password field, followed by a string representing the name of the field.
+
+After all fields have been sent, the server waits for a reply. The reply from the client is a number, representing the number of fields it's about to send, followed by that many strings, one for each field.
+
+The server then processes this data, and sends back a boolean, which is true if everything worked out or false if the info is not valid. If it's false, then 
 
 
 
