@@ -31,6 +31,7 @@ public class NumberlistFunction extends Function
         }
         while ((start <= end && step > 0) || (start >= end && step < 0))
         {
+            result.next();
             result.write(start);
             start += step;
         }
