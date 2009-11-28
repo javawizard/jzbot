@@ -6,18 +6,6 @@ public class FunctionReference extends FactEntity
     
     private String functionName;
     
-    private boolean omitFromStack = false;
-    
-    public boolean isOmitFromStack()
-    {
-        return omitFromStack;
-    }
-    
-    public void setOmitFromStack(boolean omitFromStack)
-    {
-        this.omitFromStack = omitFromStack;
-    }
-    
     public FunctionReference(Sequence arguments)
     {
         this.arguments = arguments;
@@ -50,7 +38,7 @@ public class FunctionReference extends FactEntity
     protected void addStackFrame(FactoidException e)
     {
         super.addStackFrame(e);
-        if (omitFromStack)
+        if (isOmitFromStack())
             return;
         String functionName = this.functionName;
         if (functionName == null || functionName.equals(""))

@@ -1,10 +1,9 @@
 package jw.jzbot.fact;
 
 /**
- * A stack of characters. Instances of this class are created by passing in a
- * string. The class essentially is an iterator over that string with methods
- * that allow it to act somewhat like a queue. FactParser uses it internally to
- * aid with parsing factoids.
+ * A stack of characters. Instances of this class are created by passing in a string. The
+ * class essentially is an iterator over that string with methods that allow it to act
+ * somewhat like a queue. FactParser uses it internally to aid with parsing factoids.
  * 
  * @author Alexander Boyd
  * 
@@ -21,8 +20,8 @@ public class CharStack
     }
     
     /**
-     * Gets the next character on this char stack, throwing an exception if
-     * there are no more chars to be consumed.
+     * Gets the next character on this char stack, throwing an exception if there are no
+     * more chars to be consumed.
      * 
      * @return
      */
@@ -44,11 +43,10 @@ public class CharStack
     }
     
     /**
-     * Goes back one character. This will cause {@link #next()} to return the
-     * same character as it did the last time it was called. back can be called
-     * multiple times to go back even further. If back is called when we haven't
-     * consumed any chars yet or we've backed up to the beginning of the string,
-     * it does nothing.
+     * Goes back one character. This will cause {@link #next()} to return the same
+     * character as it did the last time it was called. back can be called multiple times
+     * to go back even further. If back is called when we haven't consumed any chars yet
+     * or we've backed up to the beginning of the string, it does nothing.
      */
     public void back()
     {
@@ -57,9 +55,9 @@ public class CharStack
     }
     
     /**
-     * Returns true if there are more characters to be consumed. In other words,
-     * this returns true if {@link next()} could be called without throwing an
-     * index-related exception.
+     * Returns true if there are more characters to be consumed. In other words, this
+     * returns true if {@link next()} could be called without throwing an index-related
+     * exception.
      * 
      * @return
      */
@@ -68,14 +66,21 @@ public class CharStack
         return index < string.length();
     }
     
+    /**
+     * Returns the index this stack is currently at. A call to {@link #next()} increments
+     * the value returned by this method, and a call to {@link #back()} decrements the
+     * value returned by this method.
+     * 
+     * @return
+     */
     public int at()
     {
         return index;
     }
     
     /**
-     * Gets the next char without actually reading it. The next call to
-     * {@link #next()} will return this same character.
+     * Gets the next char without actually reading it. The next call to {@link #next()}
+     * will return this same character.
      * 
      * @return
      */

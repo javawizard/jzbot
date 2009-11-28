@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import jw.jzbot.fact.functions.*;
 
@@ -45,6 +46,7 @@ public class FactParser
 {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
     private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
+    private static AtomicLong idSequence = new AtomicLong();
     
     /**
      * Parses the specified factoid into a FactEntity. This fact entity can then be
@@ -79,9 +81,10 @@ public class FactParser
         if (reference.getArgumentSequence().length() > 2)
             throw new ParseException(stack.at(),
                     "\"||\" used somewhere in your factoid outside of a function");
-        reference.setFactText(factoid);
-        reference.setOmitFromStack(true);
-        return reference;
+        FactEntity toplevel = reference.getArgumentSequence().get(1);
+        toplevel.setFactText(factoid);
+        toplevel.setParent(null);
+        return toplevel;
     }
     
     /**
@@ -204,6 +207,7 @@ public class FactParser
                 }
                 FunctionReference ref = new FunctionReference(argumentSequence);
                 init(ref, name, startFunctionIndex - indexOffset);
+                argumentSequence.setFunction(ref);
                 return ref;
             }
             else
@@ -403,6 +407,10 @@ public class FactParser
         }
     }
     
+    /**
+     * @deprecated All of these functions have been replaced by escapes as noted in each
+     *             function's help text.
+     */
     private static void installSpecialSet()
     {
         install(
@@ -473,10 +481,14 @@ public class FactParser
      */
     public static String explain(String factoid, String name)
     {
-        FunctionReference ref = (FunctionReference) parse(factoid, name);
-        FactEntity entity = ref.getArgumentSequence().get(1);
+        FactEntity entity = parse(factoid, name);
         StringSink sink = new StringSink();
         entity.explain(sink, 0, 4);
         return sink.toString();
+    }
+    
+    static long nextId()
+    {
+        return idSequence.incrementAndGet();
     }
 }

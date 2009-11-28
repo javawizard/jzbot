@@ -9,6 +9,47 @@ package jw.jzbot.fact;
  */
 public abstract class FactEntity
 {
+    private long id;
+    
+    private FactEntity parent;
+    
+    protected FactEntity()
+    {
+        setId(FactParser.nextId());
+    }
+    
+    public long getId()
+    {
+        return id;
+    }
+    
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+    
+    public FactEntity getParent()
+    {
+        return parent;
+    }
+    
+    public void setParent(FactEntity parent)
+    {
+        this.parent = parent;
+    }
+    
+    private boolean omitFromStack = false;
+    
+    public boolean isOmitFromStack()
+    {
+        return omitFromStack;
+    }
+    
+    public void setOmitFromStack(boolean omitFromStack)
+    {
+        this.omitFromStack = omitFromStack;
+    }
+    
     /**
      * Resolves this entity into an output string. This is what you use to actually run a
      * factoid once you've parsed it with FactParser.
@@ -18,21 +59,43 @@ public abstract class FactEntity
      */
     public final void resolve(Sink sink, FactContext context)
     {
+        debugEnter(context);
         try
         {
             execute(sink, context);
+            debugExit(context);
         }
         catch (FactoidException e)
         {
             addStackFrame(e);
+            debugError(context, e);
             throw e;
         }
         catch (AssertionError ae)
         {
             FactoidException e = new FactoidException("Assertion failed", ae);
             addStackFrame(e);
+            debugError(context, e);
             throw e;
         }
+    }
+    
+    private void debugError(FactContext context, Throwable t)
+    {
+        if (context.getDebugger() != null)
+            context.getDebugger().error(this, t);
+    }
+    
+    private void debugExit(FactContext context)
+    {
+        if (context.getDebugger() != null)
+            context.getDebugger().exiting(this);
+    }
+    
+    private void debugEnter(FactContext context)
+    {
+        if (context.getDebugger() != null)
+            context.getDebugger().entering(this);
     }
     
     /**
@@ -53,6 +116,16 @@ public abstract class FactEntity
         }
     }
     
+    /**
+     * Called by {@link #resolve(Sink, FactContext)}. Subclasses should place the code to
+     * actually execute the entity in this method.<br/><br/>
+     * 
+     * Note that this class takes care of stack frame adding and debug support, so the
+     * subclass does not need to worry about any of these things.
+     * 
+     * @param sink
+     * @param context
+     */
     protected abstract void execute(Sink sink, FactContext context);
     
     /**

@@ -4,6 +4,33 @@ import java.util.ArrayList;
 
 public class Sequence extends FactEntity
 {
+    /**
+     * If this sequence is the list of arguments to a function, then this is the function,
+     * and the sequence will not have a parent. Otherwise, this is null and the sequence
+     * will have a parent (unless it's the top-level debug point).
+     */
+    private FunctionReference function;
+    
+    public FunctionReference getFunction()
+    {
+        return function;
+    }
+    
+    /**
+     * Sets the function reference for this sequence, and changes all children of this
+     * sequence to have the specified function reference as their parent.
+     * 
+     * @param function
+     */
+    public void setFunction(FunctionReference function)
+    {
+        this.function = function;
+        for (FactEntity child : list)
+        {
+            child.setParent(function);
+        }
+    }
+    
     private ArrayList<FactEntity> list = new ArrayList<FactEntity>();
     
     public int length()
@@ -16,6 +43,12 @@ public class Sequence extends FactEntity
         return list.get(index);
     }
     
+    /**
+     * Adds the specified item to this sequence and sets the parent of the specified item
+     * to this sequence.
+     * 
+     * @param entity
+     */
     public void add(FactEntity entity)
     {
         list.add(entity);

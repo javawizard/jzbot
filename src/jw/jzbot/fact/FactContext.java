@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.JZBot;
+import jw.jzbot.fact.debug.DebugInstance;
+import jw.jzbot.fact.debug.DebugSupport;
 
 import org.jdom.Document;
 
@@ -12,11 +14,27 @@ public class FactContext
     private Map<String, String> localVars = new HashMap<String, String>();
     private Map<String, String> globalVars = JZBot.globalVariables;
     private Map<String, Document> xmlDocuments = new HashMap<String, Document>();
+    // TODO: replace xmlDocuments with objectStorage. objectStorage is a map that groups
+    // of functions can use to register custom storage objects, where the name should be
+    // <group>-<whatever>. For example, xml documents will be stored as "xml-<name>",
+    // where <name> is the name of the xml document.
+    private Map<String, Object> objectStorage = new HashMap<String, Object>();
     private boolean action;
     private String channel;
     private String sender;
     private String self = (JZBot.bot == null ? null : JZBot.bot.getNick());
     private FactQuota quota = new FactQuota();
+    private DebugInstance debugger;
+    
+    public DebugInstance getDebugger()
+    {
+        return debugger;
+    }
+    
+    public void installDebugger(DebugSupport support)
+    {
+        this.debugger = support.createInstance();
+    }
     
     public FactQuota getQuota()
     {

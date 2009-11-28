@@ -1,0 +1,1 @@
+This document is on steps that need to be taken to externalize the Fact interpreter, so that it is separate from JZBot. The debugger (to an extent) should be externalized, too.
