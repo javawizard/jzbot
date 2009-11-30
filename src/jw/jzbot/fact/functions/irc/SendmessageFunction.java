@@ -19,14 +19,6 @@ public class SendmessageFunction extends Function
         String message = arguments.resolveString(1);
         context.incrementMessageCount();
         JZBot.bot.sendMessage(to, message);
-        try
-        {
-            Thread.sleep(500);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
     }
     
     public String getName()

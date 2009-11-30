@@ -10,7 +10,7 @@ public class FactQuota
     private int maxMessageCount = MAX_MESSAGE_COUNT;
     private int maxImportCount = MAX_IMPORT_COUNT;
     public static final int MAX_IMPORT_COUNT = 500000;
-    public static final int MAX_MESSAGE_COUNT = 8;
+    public static final int MAX_MESSAGE_COUNT = 40;
     private Map<String, String> chainVars = new HashMap<String, String>();
     
     public Map<String, String> getChainVars()
