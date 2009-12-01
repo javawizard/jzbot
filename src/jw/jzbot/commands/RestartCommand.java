@@ -21,7 +21,7 @@ public class RestartCommand implements Command
                 "The bot will be restarted shortly. Note that this only "
                         + "works if you used the jzbot wrapper script to start "
                         + "the bot. If you didn't, the bot will shut down instead.");
-        long sleepDuration = 3000;
+        long sleepDuration = 1000;
         try
         {
             Thread.sleep(sleepDuration);
