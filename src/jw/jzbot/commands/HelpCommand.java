@@ -26,9 +26,22 @@ public class HelpCommand implements Command
             String arguments)
     {
         if (ConfigVars.helpinpm.get().equals("1") && !pm)
+        {
+            if (arguments.equals("functions"))
+            {
+            	throw new ResponseException(
+            			"You're not allowed to run the help command at a channel. " +
+            			"You can use " +
+            			"http://code.google.com/p/jzbot/wiki/FactoidFunctions" +
+            			"or try sending \"help\" in a pm to the bot instead.");
+            }
+            else
+            {
             throw new ResponseException(
                     "You're not allowed to run the help command at a channel. "
                             + "Try sending \"help\" in a pm to the bot instead.");
+            }
+        }
         ArrayList<String> subpages = new ArrayList<String>();
         String page = arguments;
         String text = null;
@@ -41,8 +54,6 @@ public class HelpCommand implements Command
             else
                 page = page.substring(0, page.length() - " --".length());
         }
-        if (page.equals("functions") && ConfigVars.helpinpm.get().equals("1"))
-        	throw new ResponseException("You can use http://code.google.com/p/jzbot/wiki/FactoidFunctions instead.");
         for (HelpProvider provider : JZBot.helpProviders)
         {
             String possibleText = provider.getPage(page);
