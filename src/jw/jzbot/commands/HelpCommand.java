@@ -32,7 +32,7 @@ public class HelpCommand implements Command
             	throw new ResponseException(
             			"You're not allowed to run the help command at a channel. " +
             			"You can use " +
-            			"http://code.google.com/p/jzbot/wiki/FactoidFunctions" +
+            			"http://code.google.com/p/jzbot/wiki/FactoidFunctions " +
             			"or try sending \"help\" in a pm to the bot instead.");
             }
             else
