@@ -41,6 +41,8 @@ public class HelpCommand implements Command
             else
                 page = page.substring(0, page.length() - " --".length());
         }
+        if (page.equals("functions") && ConfigVars.helpinpm.get().equals("1"))
+        	throw new ResponseException("You can use http://code.google.com/p/jzbot/wiki/FactoidFunctions instead.");
         for (HelpProvider provider : JZBot.helpProviders)
         {
             String possibleText = provider.getPage(page);
@@ -123,7 +125,7 @@ public class HelpCommand implements Command
             }
             JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \""
                     + page
-                    + "\": http://pastebin.com/"
+                    + "\": "
                     + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,
                             null));
         }
