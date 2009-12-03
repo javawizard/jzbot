@@ -242,4 +242,11 @@ public class BZFlagProtocol implements Protocol
         // TODO Auto-generated method stub
         
     }
+    
+    @Override
+    public void sendNotice(String target, String message)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }

@@ -1,6 +1,8 @@
 package jw.jzbot.fact.debug;
 
 import jw.jzbot.fact.FactEntity;
+import jw.jzbot.fact.VarSet;
+import jw.jzbot.fact.VarSet.Type;
 
 public interface DebugInstance
 {
@@ -37,4 +39,6 @@ public interface DebugInstance
      *            The exception that was thrown while executing the entity
      */
     public void error(FactEntity entity, Throwable error);
+    
+    public VarSet wrap(VarSet set, Type type);
 }

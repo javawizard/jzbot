@@ -29,17 +29,17 @@ public class HelpCommand implements Command
         {
             if (arguments.equals("functions"))
             {
-            	throw new ResponseException(
-            			"You're not allowed to run the help command at a channel. " +
-            			"You can use " +
-            			"http://code.google.com/p/jzbot/wiki/FactoidFunctions " +
-            			"or try sending \"help\" in a pm to the bot instead.");
+                throw new ResponseException(
+                        "You're not allowed to run the help command at a channel. "
+                                + "You can use "
+                                + "http://code.google.com/p/jzbot/wiki/FactoidFunctions "
+                                + "or try sending \"help\" in a pm to the bot instead.");
             }
             else
             {
-            throw new ResponseException(
-                    "You're not allowed to run the help command at a channel. "
-                            + "Try sending \"help\" in a pm to the bot instead.");
+                throw new ResponseException(
+                        "You're not allowed to run the help command at a channel. "
+                                + "Try sending \"help\" in a pm to the bot instead.");
             }
         }
         ArrayList<String> subpages = new ArrayList<String>();

@@ -2,6 +2,11 @@ package jw.jzbot.fact;
 
 public interface VarSet
 {
+    public static enum Type
+    {
+        local, chain, global, persistent
+    }
+    
     /**
      * Returns a list of all var names that match the specified regex. If the regex is
      * null, returns a list of all var names.

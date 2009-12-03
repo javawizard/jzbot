@@ -29,6 +29,8 @@ public interface Protocol
     
     public void sendMessage(String target, String message);
     
+    public void sendNotice(String target, String message);
+    
     public void setMessageDelay(long ms);
     
     public void setLogin(String nick);
