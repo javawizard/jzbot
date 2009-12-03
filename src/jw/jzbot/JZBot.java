@@ -960,6 +960,27 @@ public class JZBot
         }
     }
     
+    public static void onNotice(String channel, String sender, String login,
+            String hostname, String message)
+    {
+        logEvent(channel, "notice", sender, message);
+        TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
+        tkt.start();
+        try
+        {
+            System.out
+                    .println("Notice from " + channel + " by " + sender + ": " + message);
+        }
+        catch (FactTimeExceededError e)
+        {
+        	System.out.println("Time exceeded: " + pastebinStack(e));
+        }
+        finally
+        {
+            tkt.active = false;
+        }
+    }
+    
     public static boolean processChannelRegex(String channel, String sender,
             String hostname, String message, boolean action)
     {
