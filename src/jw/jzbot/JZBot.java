@@ -965,14 +965,11 @@ public class JZBot
         logEvent(target, "notice", sourceNick, line);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
-        if (!(target.equals(bot.getNick())))
+        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick())))
         {
             runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
         }
-        if (target.equals(bot.getNick()))
-        {
-            runNotificationFactoid(null, null, sourceNick, "_onNotice", null, true);
-        }
+
         try
         {
             System.out
