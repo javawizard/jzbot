@@ -70,6 +70,13 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
+    public void sendNotice(String target, String message)
+    {
+        JZBot.logEvent(target, "note", getNick(), message);
+        super.sendNotice(target, message);
+    }
+    
+    @Override
     public void setMode(String channel, String mode)
     {
         super.setMode(channel, mode);
