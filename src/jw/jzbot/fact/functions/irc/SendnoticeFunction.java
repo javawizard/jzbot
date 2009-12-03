@@ -30,7 +30,7 @@ public class SendnoticeFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {{sendnotice||<to>||<message>}} -- Sends the specified notice message to "
-                + "the specified recipient, which is a nickname.";
+                + "the specified recipient, which can be a channel or a nickname.";
     }
     
 }
