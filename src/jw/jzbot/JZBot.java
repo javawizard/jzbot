@@ -968,10 +968,11 @@ public class JZBot
         if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick())))
         {
             runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
-        }
-        else if(sourceNick == "NickServ")
-        {
-        	runNotificationFactoid(null , null, sourceNick, "_onNickServ", null, true);
+        
+	        if(sourceNick == "NickServ")
+	        {
+	        	runNotificationFactoid(null , null, sourceNick, "_onNickServ", null, true);
+	        }
         }
         try
         {
