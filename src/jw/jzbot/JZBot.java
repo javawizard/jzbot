@@ -969,10 +969,14 @@ public class JZBot
         {
             runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
         }
+        if (target.equals(bot.getNick()))
+        {
+            runNotificationFactoid(null, null, sourceNick, "_onNotice", null, true);
+        }
         try
         {
             System.out
-                    .println("Notice from " + target + " by " + sourceNick + ": " + line);
+                    .println("Notice to " + target + " by " + sourceNick + ": " + line);
         }
         catch (FactTimeExceededError e)
         {
