@@ -960,16 +960,15 @@ public class JZBot
         }
     }
     
-    public static void onNotice(String channel, String sender, String login,
-            String hostname, String message)
+    public static void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
     {
-        logEvent(channel, "notice", sender, message);
+        logEvent(target, "notice", sourceNick, line);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         try
         {
             System.out
-                    .println("Notice from " + channel + " by " + sender + ": " + message);
+                    .println("Notice from " + target + " by " + sourceNick + ": " + line);
         }
         catch (FactTimeExceededError e)
         {
