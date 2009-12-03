@@ -969,7 +969,10 @@ public class JZBot
         {
             runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
         }
-
+        else if(sourceNick == "NickServ")
+        {
+        	runNotificationFactoid(null , null, sourceNick, "_onNickServ", null, true);
+        }
         try
         {
             System.out
