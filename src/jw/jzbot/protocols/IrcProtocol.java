@@ -138,10 +138,9 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onNotice(String channel, String sender, String login,
-            String hostname, String message)
+    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
     {
-        JZBot.onNotice(channel, sender, login, hostname, message);
+        JZBot.onNotice(sourceNick, sourceLogin, sourceHostname, target, line);
     }
     
     @Override
