@@ -964,10 +964,11 @@ public class JZBot
     public static void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
     {
         logEvent(target, "notice", sourceNick, line);
+        String[] arguments = { line };  // Send the text as parameter %1%
         if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick()))) // if the target of the notice is the bots nick
         	// it is a Global Notice
         {
-            runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
+            runNotificationFactoid(target, null, sourceNick, "_onNotice", arguments, true);
         }
         if (target.equals(bot.getNick())) // if the target of the notice is the bots nick
         	//it is a Personal Notice
@@ -975,7 +976,7 @@ public class JZBot
         	String[] channels = JZBot.bot.getChannels(); // get a list of channels where the bot is in
         	for (String channel : channels) { // for each channel it activates _onPRIVNotice
 	        	runNotificationFactoid(channel, null,
-	        		sourceNick, "_onPRIVNotice", null, true);
+	        		sourceNick, "_onPRIVNotice", arguments, true);
         	}
         }
             System.out
