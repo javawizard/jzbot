@@ -73,6 +73,7 @@ import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
+import net.sf.opengroove.common.proxystorage.StoredList;
 import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.StringUtils.ToString;
 
@@ -963,25 +964,23 @@ public class JZBot
     public static void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
     {
         logEvent(target, "notice", sourceNick, line);
-        TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
-        tkt.start();
-        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick())))
+        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick()))) // if the target of the notice is the bots nick
+        	// it is a Global Notice
         {
             runNotificationFactoid(target, null, sourceNick, "_onNotice", null, true);
         }
-        try
+        if (target.equals(bot.getNick())) // if the target of the notice is the bots nick
+        	//it is a Personal Notice
         {
+        	String[] channels = JZBot.bot.getChannels(); // get a list of channels where the bot is in
+        	for (String channel : channels) { // for each channel it activates _onPRIVNotice
+	        	runNotificationFactoid(channel, null,
+	        		sourceNick, "_onPRIVNotice", null, true);
+        	}
+        }
             System.out
                     .println("Notice to " + target + " by " + sourceNick + ": " + line);
-        }
-        catch (FactTimeExceededError e)
-        {
-        	System.out.println("Time exceeded: " + pastebinStack(e));
-        }
-        finally
-        {
-            tkt.active = false;
-        }
+
     }
     
     public static boolean processChannelRegex(String channel, String sender,
