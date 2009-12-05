@@ -197,7 +197,7 @@ public class FactoidCommand implements Command
                 }
                 if (!currentList.equals(""))
                 {
-                	if (afterCommand.endsWith("--"))
+                	if (afterCommand.endsWith("--") || currentList.length() > 512)
                 	{
                 		JZBot.bot.sendMessage(pm ? sender : channel, 
                 				"List of factoids: "
