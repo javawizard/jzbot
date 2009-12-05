@@ -196,7 +196,19 @@ public class FactoidCommand implements Command
                     }
                 }
                 if (!currentList.equals(""))
-                    JZBot.bot.sendMessage(pm ? sender : channel, currentList);
+                {
+                	if (afterCommand.endsWith("--"))
+                	{
+                		JZBot.bot.sendMessage(pm ? sender : channel, 
+                				"List of factoids: "
+                				+ Pastebin.createPost("jzbot", currentList, Duration.DAY, null,
+                            null));
+                	}
+                	else
+                	{
+                		JZBot.bot.sendMessage(pm ? sender : channel, currentList);
+                	}
+                }
             }
             JZBot.bot.sendMessage(pm ? sender : channel, "End of factoid list. "
                     + (isGlobal ? "" : "You should also run factoid global list for"
