@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions.list;
+package jw.jzbot.fact.functions.li;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;

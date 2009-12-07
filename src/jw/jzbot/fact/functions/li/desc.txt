@@ -1,0 +1,1 @@
+This package holds all functions that deal with lists, as well as iterative functions (such as {{range}}). The package name "li" comes from "List and Iterative". 

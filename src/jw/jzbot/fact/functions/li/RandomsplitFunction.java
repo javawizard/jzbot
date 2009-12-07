@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions.list;
+package jw.jzbot.fact.functions.li;
 
 import java.util.ArrayList;
 
