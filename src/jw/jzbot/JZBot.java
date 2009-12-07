@@ -734,6 +734,43 @@ public class JZBot
         }
     }
     
+    /**
+     * Runs the specified notification factoid.
+     * 
+     * @param channelName
+     *            The channel the event occurred at. This must either be the name of a
+     *            channel that the bot is currently at, or null. If it's null, then this
+     *            means this "event" is a global event, and the notification factoids will
+     *            be run at all channels (and if there are any global notification
+     *            factoids for this event, they will be run too).
+     * @param chan
+     *            The channel object. Normally this is null. Since obtaining a Channel
+     *            object from the database is somewhat expensive, then if the code that
+     *            calls this method already has a Channel object it should generally pass
+     *            it in here. This channel's name must be the same as <tt>channelName</tt>
+     *            , and this must be null if <tt>channelName</tt> is null.
+     * @param sender
+     *            The person that triggered the event. When the notification factoids are
+     *            run, %0% and %who% will be set to the value of this parameter.
+     * @param factname
+     *            The prefix of the notification factoid to run. All factoids whose names
+     *            are either equal to this name or whose names start with this name plus
+     *            an underscore will be run. For example, if <tt>factname</tt> is "_test",
+     *            then the factoids "_test", "_test_something", and "_test_other" would be
+     *            run, but not the factoid "_testsomething".
+     * @param args
+     *            The arguments to pass to the factoids when they are run. The first
+     *            argument will be put into the local varaible %1%, the second argument
+     *            will be put into %2%, and so on. This can be either null or an array
+     *            with no items in it to indicate that there should be no arguments.
+     * @param timed
+     *            True if this is timed, false if it is not. This should almost always be
+     *            true. If this is true, then a TimedKillThread will be started that will
+     *            forcibly terminate the factoids if they run for more than 60 seconds. If
+     *            this is false, the factoids will never be forcibly terminated, which
+     *            could freeze the bot if the factoids have an infinte loop or some such
+     *            other problem.
+     */
     private static void runNotificationFactoid(String channelName, Channel chan,
             String sender, String factname, String[] args, boolean timed)
     {

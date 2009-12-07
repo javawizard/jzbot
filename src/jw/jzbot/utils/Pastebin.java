@@ -56,45 +56,56 @@ public class Pastebin
     }
     
     /*
+     * This is commented out as it is no longer used. 
+     * 
      * Creates a new pastebin post.
      * 
-     * @param poster The poster name to use
+     * @param poster
+     *            The poster name to use
      * 
-     * @param post The message of the post. Any lines that start with @@ will have this
-     * removed and will be highlighted in the final paste.
+     * @param post
+     *            The message of the post. Any lines that start with @@ will have this
+     *            removed and will be highlighted in the final paste.
      * 
-     * @param duration How long the post should last for
+     * @param duration
+     *            How long the post should last for
      * 
-     * @param parent The id of the post that this one is in reply to, or null or the empty
-     * string if this is a new post, not a reply
+     * @param parent
+     *            The id of the post that this one is in reply to, or null or the empty
+     *            string if this is a new post, not a reply
      * 
      * @return The id of the post. This can be appended to "http://pastebin.com/" to
-     * obtain a url that can be used to view the post.
+     *         obtain a url that can be used to view the post.
      * 
-     * public static String createPost(String poster, String post, Duration duration,
-     * String parent) { System.out.println("Creating pastebin post with text:");
-     * System.out.println(post); System.out.println("---------------------------------");
-     * if (post.equals("")) throw new IllegalArgumentException(
-     * "You can't create a pastebin post with no text in it"); if (parent == null) parent
-     * = ""; try { HttpClient client = new DefaultHttpClient();
-     * client.getParams().setParameter("http.socket.timeout", 8000); HttpPost request =
-     * new HttpPost("http://pastebin.com/pastebin.php"); request.addHeader("Content-type",
-     * "application/x-www-form-urlencoded"); request.setEntity(new
-     * StringEntity("parent_pid=" + URLEncoder.encode(parent) + "&format=text&code2=" +
-     * URLEncoder.encode(post, "US-ASCII") + "&poster=" + URLEncoder.encode(poster) +
-     * "&paste=Send&remember=1&expiry=" + duration.toString().substring(0,
-     * 1).toLowerCase() + "&email=")); HttpResponse response = client.execute(request);
-     * int responseCode = response.getStatusLine().getStatusCode(); if (responseCode !=
-     * 302) throw new RuntimeException("Received response code " + responseCode +
-     * " from pastebin (302 should have been sent instead): " +
-     * response.getStatusLine().getReasonPhrase() + " with content " +
-     * readContent(response)); String newUrl = getResponseHeader(response, "Location"); if
-     * (!newUrl.startsWith("http://pastebin.com/")) throw new
-     * RuntimeException("Invalid url prefix: " + newUrl); return
-     * newUrl.substring("http://pastebin.com/".length()); } catch (Exception e) { throw
-     * new RuntimeException(e.getClass().getName() + " " + e.getMessage(), e); } }
+     *         public static String createPost(String poster, String post, Duration
+     *         duration, String parent) {
+     *         System.out.println("Creating pastebin post with text:");
+     *         System.out.println(post);
+     *         System.out.println("---------------------------------"); if
+     *         (post.equals("")) throw new IllegalArgumentException(
+     *         "You can't create a pastebin post with no text in it"); if (parent == null)
+     *         parent = ""; try { HttpClient client = new DefaultHttpClient();
+     *         client.getParams().setParameter("http.socket.timeout", 8000); HttpPost
+     *         request = new HttpPost("http://pastebin.com/pastebin.php");
+     *         request.addHeader("Content-type", "application/x-www-form-urlencoded");
+     *         request.setEntity(new StringEntity("parent_pid=" +
+     *         URLEncoder.encode(parent) + "&format=text&code2=" + URLEncoder.encode(post,
+     *         "US-ASCII") + "&poster=" + URLEncoder.encode(poster) +
+     *         "&paste=Send&remember=1&expiry=" + duration.toString().substring(0,
+     *         1).toLowerCase() + "&email=")); HttpResponse response =
+     *         client.execute(request); int responseCode =
+     *         response.getStatusLine().getStatusCode(); if (responseCode != 302) throw
+     *         new RuntimeException("Received response code " + responseCode +
+     *         " from pastebin (302 should have been sent instead): " +
+     *         response.getStatusLine().getReasonPhrase() + " with content " +
+     *         readContent(response)); String newUrl = getResponseHeader(response,
+     *         "Location"); if (!newUrl.startsWith("http://pastebin.com/")) throw new
+     *         RuntimeException("Invalid url prefix: " + newUrl); return
+     *         newUrl.substring("http://pastebin.com/".length()); } catch (Exception e) {
+     *         throw new RuntimeException(e.getClass().getName() + " " + e.getMessage(),
+     *         e); } }
      */
-
+    
     public static String getResponseHeader(HttpResponse response, String string)
     {
         for (Header header : response.getAllHeaders())

@@ -394,36 +394,25 @@ public class FactoidCommand implements Command
             Arrays.sort(items, 1, items.length);
             items[0] = "" + files.length
                     + " factpacks (use \"factoid pack install <name>\" "
-                    + "to install one of these, or \"factoid pack available "
-                    + "list\" to pastebin info about each one):";
-            if (afterCommand.equals(""))
-                JZUtils.ircSendDelimited(items, "  ", JZBot.bot, pm ? sender : channel);
-            else if (afterCommand.equals("list"))
+                    + "to install one of these):";
+            StringBuffer buffer = new StringBuffer();
+            for (int i = 1; i < items.length; i++)
             {
-                StringBuffer buffer = new StringBuffer();
-                for (int i = 1; i < items.length; i++)
-                {
-                    Factpack pack = packMap.get(items[i]);
-                    buffer.append("@@").append(items[i]).append("\n");
-                    if (!pack.description.equals(""))
-                        buffer.append(pack.description).append("\n");
-                    buffer.append("\n").append(
-                            StringUtils.delimited(generateDescriptionStrings(pack, true),
-                                    ", "));
-                    buffer.append("\n\n");
-                }
-                JZBot.bot.sendMessage(pm ? sender : channel, JZBot.pastebinNotice(buffer
-                        .toString(), new Feature[]
-                {
-                    Feature.highlight
-                }));
+                Factpack pack = packMap.get(items[i]);
+                buffer.append("@@").append(items[i]).append("\n");
+                if (!pack.description.equals(""))
+                    buffer.append(pack.description).append("\n");
+                buffer.append("\n")
+                        .append(
+                                StringUtils.delimited(
+                                        generateDescriptionStrings(pack, true), ", "));
+                buffer.append("\n\n");
             }
-            else
+            JZBot.bot.sendMessage(pm ? sender : channel, JZBot.pastebinNotice(items[0]
+                    + "\n\n\n" + buffer.toString(), new Feature[]
             {
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "Invalid \"factoid pack available\" subcommand. "
-                                + "Try \"factoid pack available\" for help.");
-            }
+                Feature.highlight
+            }));
         }
         else if (command.equals("list"))
         {

@@ -52,7 +52,7 @@ public class PDPastebin implements PastebinProvider
     {
         return new Feature[]
         {
-                Feature.author, Feature.forever, Feature.update
+                Feature.author, Feature.forever, Feature.update, Feature.highlight
         };
     }
     
@@ -69,7 +69,7 @@ public class PDPastebin implements PastebinProvider
             HttpResponse response = client.execute(request);
             InputStream stream = response.getEntity().getContent();
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            StringUtils.copy(stream,out);
+            StringUtils.copy(stream, out);
             String result = new String(out.toByteArray(), "US-ASCII");
             return new Post(null, null, null, null, null, result);
         }

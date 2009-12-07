@@ -1,0 +1,16 @@
+name=local.admin.manager
+author=JZBot Developers
+scope=global
+description=This factpack installs a web management console into the bot. Once you've installed \
+it, you can go to http://hostname:57012 (where hostname is the hostname that the bot is running \
+on). You can use the console to manage the factoids and factpacks that are currently installed, \
+view logs, view channels that the bot has joined and the users on those channels, instruct the \n\
+bot to send messages at particular channels or to particular people, and so on. Almost every \
+aspect of the bot can be managed via this web console.\n\
+You can log into the web console in one of two ways:\n\
+    Send "manager-login" in a pm to the bot. The bot will send back a piece of text, and you \
+can paste this into a form in the management console to authenticate.\n\
+    Use a username and password. In addition to the bot's superops being able to authenticate \
+with the first method, you can also manage a list of users that can authenticate by entering \
+a username and password. Passwords are stored in persistent variables in a hashed form so that \
+other superops can't read them.
