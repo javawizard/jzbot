@@ -20,7 +20,7 @@ public class HideFunction extends Function
                 + "nothing. Specifically, this does not evaluate any of its arguments, so, "
                 + "for example, if you had an {{lset}} function call in one of the "
                 + "arguments, it would not be run and the variable would not be set. This "
-                + "function can be used to comment out some code in a factoid.";
+                + "function can be used to comment out code in a factoid.";
     }
     
 }

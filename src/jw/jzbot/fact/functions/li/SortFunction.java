@@ -54,7 +54,8 @@ public class SortFunction extends Function
                 + "list of substrings (case-sensitively if <case> is 1, otherwise "
                 + "case-insensitively), then reconstructs a new string by delimiting the "
                 + "substrings with <delimiter>. <case> is optional, and defaults to 1 "
-                + "if not present.";
+                + "if not present.\n"
+                + "If you want a more customized sort, consider using {{comparesort}}.";
     }
     
 }

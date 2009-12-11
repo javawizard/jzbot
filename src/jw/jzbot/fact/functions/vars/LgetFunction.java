@@ -28,7 +28,7 @@ public class LgetFunction extends Function
                 + "variable. {{lget||something}} is equivalent to %something%. However, using "
                 + "percent signs doesn't allow for dynamic variable names (as an "
                 + "example, you couldn't do something like %param-%index%% for "
-                + "syntax reasons), which is where you would use {{lget}}.";
+                + "syntax reasons), which is where this function comes in useful.";
     }
     
 }

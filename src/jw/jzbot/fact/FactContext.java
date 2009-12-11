@@ -19,6 +19,18 @@ public class FactContext
     // <group>-<whatever>. For example, xml documents will be stored as "xml-<name>",
     // where <name> is the name of the xml document.
     private Map<String, Object> objectStorage = new HashMap<String, Object>();
+    private Map<String, FactEntity> storedSubroutines = new HashMap<String, FactEntity>();
+    
+    public Map<String, FactEntity> getStoredSubroutines()
+    {
+        return storedSubroutines;
+    }
+    
+    public void setStoredSubroutines(Map<String, FactEntity> storedSubroutines)
+    {
+        this.storedSubroutines = storedSubroutines;
+    }
+    
     private boolean action;
     private String channel;
     private String sender;

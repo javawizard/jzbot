@@ -128,6 +128,21 @@ public class ArgumentList
     }
     
     /**
+     * Gets the unresolved parsed fact entity at the specified index. Most functions don't
+     * need to use this; the primary exception is the {{store}} function.
+     * 
+     * @param index
+     *            The index of the fact entity to get
+     * @return The fact entity at that index
+     */
+    public FactEntity getEntity(int index)
+    {
+        if (delegate != null)
+            return delegate.getEntity(index + offset);
+        return sequence.get(index);
+    }
+    
+    /**
      * Returns a Deferred object representing the value at the specified index. This does
      * not cause the value to be resolved immediately; the value will only be resolved
      * once a method is called on the returned Deferred object.

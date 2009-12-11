@@ -11,6 +11,7 @@ public class MapinlineFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
+        //  {{socket||create||
         String[] strings = arguments.resolveString(2).split(arguments.resolveString(0));
         if (strings.length == 1 && strings[0].equals(""))
             return;

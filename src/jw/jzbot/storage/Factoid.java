@@ -29,7 +29,7 @@ public interface Factoid
     public void setLibrary(boolean library);
     
     @Property
-    @Length(32768)
+    @Length(45000)
     public String getValue();
     
     public void setValue(String value);

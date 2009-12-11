@@ -1,4 +1,10 @@
 #!/bin/bash
+
+
+# First, we need to actually build JZBot.
+ant archive
+
+#Now we'll do the uploading.
 targethost="bztraining.org"
 targetportstring=""
 echo Settings: targethost is $targethost and targetportstring is $targetportstring
