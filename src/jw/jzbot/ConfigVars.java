@@ -8,7 +8,6 @@ import jw.jzbot.utils.Pastebin.Duration;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public enum ConfigVars
 {
     delay(
@@ -57,7 +56,8 @@ public enum ConfigVars
         }
     },
     keys("", "A pipe-separated list of hashes (as obtained from the {{hash}} function). "
-            + "If a user runs \"~op key <text>\", and then has of <text> is equal to " + "one of the hashes in this list, the user will be made a superop. Note that "
+            + "If a user runs \"~op key <text>\", and then has of <text> is equal to "
+            + "one of the hashes in this list, the user will be made a superop. Note that "
             + "keys cannot contain spaces."), notfound(
             "",
             "This config variable is the name of a factoid to run when users "
@@ -108,14 +108,16 @@ public enum ConfigVars
     logsize("0", "This config variable is the maximum size, in bytes, of the logs to "
             + "keep for each channel on a per-channel basis. Use the {{logs}} function "
             + "to actually read these logs. 0 disables logging. This doesn't take effect "
-            + "until the bot is reconnected."), nolog("",
+            + "until the bot is restarted. A channel-specific log size "
+            + "will be coming soon."), nolog("",
             "This config variable is a pipe-separated list of channels that should "
                     + "not be logged, even if the logsize variable is set to a "
                     + "non-zero value. This doesn't take effect until the bot "
-                    + "is reconnected."), modes("",
+                    + "is restarted."), modes("",
             "This config variable is a list of user modes that the bot "
                     + "should set on itself whenever it connects. \"+\" and \"-\" "
-                    + "characters should not be included."), helpinpm(
+                    + "characters should not be included. This is deprecated in favor of "
+                    + "setting modes with an _onconnect notification."), helpinpm(
             "0",
             "If this is 0 (the default), then ~help can be run in channels. "
                     + "If this is 1, then help can only be run in a pm to prevent needless "
@@ -126,6 +128,35 @@ public enum ConfigVars
             if (!(value.equals("0") || value.equals("1")))
                 throw new ResponseException(
                         "Invalid value; must be 0 or 1, see \"~config helpinpm\" for help");
+            super.set(value);
+        }
+    },
+    hsubpastebin("0", "This config variable is the number of subpages of a help page to "
+            + "display with ~help before pastebinning the list of subpages. 0 disables "
+            + "using the pastebin service for this list. TODO: implement this"), lqdelay(
+            "30000", "This config var is the delay, in milliseconds, that the bot "
+                    + "will wait between writing new logs to the log file. The {{log}} "
+                    + "function will typically lag behind the actual channel contents "
+                    + "by this many milliseconds. A restart is needed for this "
+                    + "to take effect.")
+    {
+        public void set(String value)
+        {
+            Integer.parseInt(value);
+            super.set(value);
+        }
+    },
+    lqmaxsize(
+            "700",
+            "This config variable is the maximum number of messages that will be queued "
+                    + "for writing to the log. If more than this many messages arrive within "
+                    + "the number of milliseconds specified by the config variable lqdelay, "
+                    + "some messages will be silently dropped from the log file. A restart is "
+                    + "needed for this to take effect.")
+    {
+        public void set(String value)
+        {
+            Integer.parseInt(value);
             super.set(value);
         }
     };

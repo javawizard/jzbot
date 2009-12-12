@@ -12,7 +12,6 @@ import jw.jzbot.utils.Pastebin.Duration;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class ConfigCommand implements Command
 {
     
@@ -26,8 +25,7 @@ public class ConfigCommand implements Command
     {
         if (!JZBot.isSuperop(hostname))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "You're not a superop.");
+            JZBot.bot.sendMessage(pm ? sender : channel, "You're not a superop.");
             return;
         }
         String[] tokens = arguments.split(" ", 2);
@@ -45,17 +43,13 @@ public class ConfigCommand implements Command
                                 + "\". You can use \"~config " + var.name()
                                 + " <newvalue>\" to set a new value."
                                 + " The variable's description is:");
-                JZBot.bot.sendMessage(pm ? sender : channel, var
-                        .getDescription());
+                JZBot.bot.sendMessage(pm ? sender : channel, var.getDescription());
             }
             else
             {
                 var.set(tokens[1]);
-                JZBot.bot
-                        .sendMessage(pm ? sender : channel,
-                                "Successfully set the var \"" + var.name()
-                                        + "\" to have the value \"" + tokens[1]
-                                        + "\".");
+                JZBot.bot.sendMessage(pm ? sender : channel, "Successfully set the var \""
+                        + var.name() + "\" to have the value \"" + tokens[1] + "\".");
             }
         }
         else
@@ -66,11 +60,14 @@ public class ConfigCommand implements Command
                 configVarNames[i] = ConfigVars.values()[i].name();
             }
             JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Use \"~config <varname>\" to see a var (value and description) "
-                            + "or \"~config "
-                            + "<varname> <value>\" to set a var. Currently, "
-                            + "allowed varnames are, separated by spaces: "
-                            + StringUtils.delimited(configVarNames, "  "));
+                    "Use \"~config <varname>\" to see a variable's current value and "
+                            + "a short description of the variable, " + "or \"~config "
+                            + "<varname> <value>\" to " + "set the value "
+                            + "of a variable. Currently, "
+                            + "allowed variable names are, separated by spaces:");
+            JZUtils
+                    .ircSendDelimited(configVarNames, "  ", JZBot.bot, pm ? sender
+                            : channel);
         }
     }
 }

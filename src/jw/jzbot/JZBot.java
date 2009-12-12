@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -99,6 +101,12 @@ public class JZBot
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
     
     public static volatile int notificationSequence = 0;
+    
+    public static BlockingQueue<LogEvent> logQueue;
+    
+    public static final Object logQueueLock = new Object();
+    
+    public static int logQueueDelay;
     
     public static Thread notificationThread = new Thread("bot-internal-notification-thread")
     {
@@ -362,7 +370,7 @@ public class JZBot
     public static Storage storage;
     
     public static Config config;
-    public static boolean isRunning;
+    public static boolean isRunning = true;
     
     public static void main(String[] args) throws Throwable
     {
@@ -586,6 +594,7 @@ public class JZBot
         loadProtocol();
         loadCommands();
         loadCachedConfig();
+        startLogSinkThread();
         reloadRegexes();
         try
         {
@@ -636,6 +645,9 @@ public class JZBot
             e.printStackTrace();
             configLogsize = 0;
         }
+        logQueue = new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
+                .get()));
+        logQueueDelay = Integer.parseInt(ConfigVars.lqdelay.get());
     }
     
     @SuppressWarnings("unchecked")
@@ -998,27 +1010,41 @@ public class JZBot
         }
     }
     
-    public static void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
+    public static void onNotice(String sourceNick, String sourceLogin,
+            String sourceHostname, String target, String line)
     {
         logEvent(target, "notice", sourceNick, line);
-        String[] arguments = { line };  // Send the text as parameter %1%
-        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick()))) // if the target of the notice is the bots nick
-        	// it is a Global Notice
+        String[] arguments =
+        {
+            line
+        }; // Send the text as parameter %1%
+        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick()))) // if
+        // the
+        // target
+        // of
+        // the
+        // notice
+        // is
+        // the
+        // bots
+        // nick
+        // it is a Global Notice
         {
             runNotificationFactoid(target, null, sourceNick, "_onnotice", arguments, true);
         }
         if (target.equals(bot.getNick())) // if the target of the notice is the bots nick
-        	//it is a Personal Notice
+        // it is a Personal Notice
         {
-        	String[] channels = JZBot.bot.getChannels(); // get a list of channels where the bot is in
-        	for (String channel : channels) { // for each channel it activates _onPRIVNotice
-	        	runNotificationFactoid(channel, null,
-	        		sourceNick, "_onprivnotice", arguments, true);
-        	}
+            String[] channels = JZBot.bot.getChannels(); // get a list of channels where
+            // the bot is in
+            for (String channel : channels)
+            { // for each channel it activates _onPRIVNotice
+                runNotificationFactoid(channel, null, sourceNick, "_onprivnotice",
+                        arguments, true);
+            }
         }
-            System.out
-                    .println("Notice to " + target + " by " + sourceNick + ": " + line);
-
+        System.out.println("Notice to " + target + " by " + sourceNick + ": " + line);
+        
     }
     
     public static boolean processChannelRegex(String channel, String sender,
@@ -1831,6 +1857,57 @@ public class JZBot
     
     public static void logEvent(String channel, String event, String nick, String details)
     {
+        LogEvent e = new LogEvent();
+        e.channel = channel;
+        e.event = event;
+        e.nick = nick;
+        e.details = details;
+        synchronized (logQueueLock)
+        {
+            logQueue.offer(e);
+        }
+    }
+    
+    public static void startLogSinkThread()
+    {
+        Thread thread = new Thread()
+        {
+            public void run()
+            {
+                while (isRunning)
+                {
+                    try
+                    {
+                        Thread.sleep(logQueueDelay);
+                        System.out.println("Sinking log events...");
+                        int events = 0;
+                        LogEvent event;
+                        synchronized (logQueueLock)
+                        {
+                            while ((event = logQueue.poll()) != null)
+                            {
+                                events++;
+                                sinkQueuedLogEvent(event);
+                            }
+                        }
+                        System.out.println("Sunk " + events + " events.");
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        thread.start();
+    }
+    
+    public static void sinkQueuedLogEvent(LogEvent logEvent)
+    {
+        String channel = logEvent.channel;
+        String nick = logEvent.nick;
+        String details = logEvent.details;
+        String event = logEvent.event;
         details = details.replace("\r", "").replace("\n", "");
         try
         {
