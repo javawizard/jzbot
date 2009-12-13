@@ -1,3 +1,5 @@
+UPDATE: THIS IS OBSOLETE. IGNORE IT. ALMOST ALL FUNCTIONAL PIECES OF THE BOT ARE BEING MOVED TO FACTOIDS, SO THIS SYSTEM IS NO LONGER NEEDED.
+
 I've decided to redo jzbot. Right now, you implement the command interface to add a new command, and the only protocol supported is irc (and only one server at a time). 
 
 I'm going to make it so that new protocols can be added by implementing the Protocol interface. It's basically in charge of relaying messages, actions, kicks, bans, status updates, network info, and config from jzbot to the actual chat network. 

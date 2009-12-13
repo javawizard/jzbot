@@ -372,6 +372,8 @@ public class JZBot
     public static Config config;
     public static boolean isRunning = true;
     
+    public static volatile boolean logQueueRunning = true;
+    
     public static void main(String[] args) throws Throwable
     {
         if (args.length > 0)
@@ -383,6 +385,15 @@ public class JZBot
         {
             public void run()
             {
+                System.out.println("Waiting on log queue to shut down...");
+                synchronized (logQueueLock)
+                {
+                    logQueueRunning = false;
+                    int discarded = logQueue.size();
+                    System.out.println("Log queue has shut down. " + discarded
+                            + " log event" + (discarded == 1 ? "" : "s")
+                            + " were discarded.");
+                }
                 System.out.println("JZBot has terminated.");
             }
         });
@@ -1874,7 +1885,7 @@ public class JZBot
         {
             public void run()
             {
-                while (isRunning)
+                while (isRunning && logQueueRunning)
                 {
                     try
                     {
@@ -1884,10 +1895,13 @@ public class JZBot
                         LogEvent event;
                         synchronized (logQueueLock)
                         {
-                            while ((event = logQueue.poll()) != null)
+                            if (logQueueRunning)
                             {
-                                events++;
-                                sinkQueuedLogEvent(event);
+                                while ((event = logQueue.poll()) != null)
+                                {
+                                    events++;
+                                    sinkQueuedLogEvent(event);
+                                }
                             }
                         }
                         System.out.println("Sunk " + events + " events.");

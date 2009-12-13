@@ -32,6 +32,7 @@ public class FactContext
     }
     
     private boolean action;
+    private String server;
     private String channel;
     private String sender;
     private String self = (JZBot.bot == null ? null : JZBot.bot.getNick());
@@ -136,6 +137,23 @@ public class FactContext
     public void incrementImportCount()
     {
         quota.incrementImportCount();
+    }
+    
+    public String getServer()
+    {
+        return server;
+    }
+    
+    public void setServer(String server)
+    {
+        this.server = server;
+    }
+    
+    public String getCheckedServer()
+    {
+        if (server == null)
+            throw new FactoidException("A server is needed, but one was not specified.");
+        return server;
     }
     
 }

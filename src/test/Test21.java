@@ -12,9 +12,10 @@ public class Test21
      */
     public static void main(String[] args)
     {
-        PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php"));
-         PastebinService
-         .installProvider(new PDPastebin("pastebin.com", true, "pastebin.php"));
+        PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php",
+                true));
+        PastebinService.installProvider(new PDPastebin("pastebin.com", true,
+                "pastebin.php", true));
         Post post = PastebinService.readPost("http://pastebin.im/461");
         System.out.println(post.getData());
     }

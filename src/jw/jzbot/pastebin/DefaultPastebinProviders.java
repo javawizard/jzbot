@@ -7,20 +7,24 @@ public class DefaultPastebinProviders
 {
     public static void installDefaultSet()
     {
-        PastebinService
-                .installProvider(new PDPastebin("pastebin.com", true, "pastebin.php"));
-        PastebinService.installProvider(new PDPastebin("p.baf.cc", false, "pastebin.php"));
+        PastebinService.installProvider(new PDPastebin("pastebin.com", true,
+                "pastebin.php", true));
+        // p.baf.cc added a captcha, so removed for now.
+        // PastebinService.installProvider(new PDPastebin("p.baf.cc", false,
+        // "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("pastebin.flamingspork.com", false,
-                "pastebin.php"));
+                "pastebin.php", true));
         PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
-                "pastebin.php"));
-        PastebinService
-                .installProvider(new PDPastebin("pastebin.hu", false, "pastebin.php"));
-        PastebinService
-                .installProvider(new PDPastebin("ampaste.net", true, "pastebin.php"));
+                "pastebin.php", false));
+        PastebinService.installProvider(new PDPastebin("pastebin.hu", false,
+                "pastebin.php", true));
+        PastebinService.installProvider(new PDPastebin("ampaste.net", true, "pastebin.php",
+                true));
         PastebinService.installProvider(new PDPastebin("paste.liquidswords.org", false,
-                "pastebin.php"));
-        PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php"));
+                "pastebin.php", true));
+        // I haven't checked pastebin.im to see if it supports highlights.
+        PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php",
+                false));
         // PastebinService.installProvider(new PDPastebin("paste.uberdragon.net", false,
         // "index.php"));
         

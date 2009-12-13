@@ -32,12 +32,15 @@ public class PDPastebin implements PastebinProvider
     private String location;
     private boolean subdomains;
     private String downloadFile;
+    private boolean highlighting;
     
-    public PDPastebin(String location, boolean subdomains, String downloadFile)
+    public PDPastebin(String location, boolean subdomains, String downloadFile,
+            boolean highlighting)
     {
         this.location = location;
         this.subdomains = subdomains;
         this.downloadFile = downloadFile;
+        this.highlighting = highlighting;
     }
     
     @Override
@@ -50,10 +53,16 @@ public class PDPastebin implements PastebinProvider
     @Override
     public Feature[] getSendFeatures()
     {
-        return new Feature[]
-        {
-                Feature.author, Feature.forever, Feature.update, Feature.highlight
-        };
+        if (highlighting)
+            return new Feature[]
+            {
+                    Feature.author, Feature.forever, Feature.update, Feature.highlight
+            };
+        else
+            return new Feature[]
+            {
+                    Feature.author, Feature.forever, Feature.update
+            };
     }
     
     @Override
