@@ -5,7 +5,7 @@
 ant archive
 
 #Now we'll do the uploading.
-targethost="bztraining.org"
+targethost="jcp.bztraining.org"
 targetportstring=""
 echo Settings: targethost is $targethost and targetportstring is $targetportstring
 echo About to upload. Enter your password when asked.

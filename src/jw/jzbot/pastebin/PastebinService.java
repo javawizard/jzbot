@@ -28,43 +28,34 @@ public class PastebinService
      */
     public static String createPost(Post post, Feature[] requiredFeatures)
     {
-        if(requiredFeatures == null)
+        if (requiredFeatures == null)
             requiredFeatures = new Feature[0];
         if (post == null)
             throw new NullPointerException("Can't create a null post");
         if (post.getData() == null || post.getData().isEmpty())
             throw new PastebinException("Can't create an empty pastebin post");
         List<Feature> requiredFeatureList = Arrays.asList(requiredFeatures);
-        try
+        for (int i = 0; i < providers.size(); i++)
         {
-            for (int i = 0; i < providers.size(); i++)
+            currentProviderIndex++;
+            PastebinProvider provider = providers.get(currentProviderIndex);
+            if (!Arrays.asList(provider.getSendFeatures()).containsAll(requiredFeatureList))
+                /*
+                 * This pastebin doesn't contain all of the needed features
+                 */
+                continue;
+            try
             {
-                int providerIndex = (i + currentProviderIndex) % providers.size();
-                PastebinProvider provider = providers.get(providerIndex);
-                if (!Arrays.asList(provider.getSendFeatures()).containsAll(
-                        requiredFeatureList))
-                    /*
-                     * This pastebin doesn't contain all of the needed features
-                     */
-                    continue;
-                try
-                {
-                    return provider.send(post);
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
+                return provider.send(post);
             }
-            throw new PastebinException("Tried all pastebin providers (there were "
-                    + providers.size()
-                    + " providers), and all of them threw exceptions or "
-                    + "didn't have correct features");
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-        finally
-        {
-            currentProviderIndex += 1;
-        }
+        throw new PastebinException("Tried all pastebin providers (there were "
+                + providers.size() + " providers), and all of them threw exceptions or "
+                + "didn't have correct features");
     }
     
     public static Post readPost(String url)
@@ -80,14 +71,14 @@ public class PastebinService
     
     public static boolean understands(String url)
     {
-        for(PastebinProvider provider : providers)
+        for (PastebinProvider provider : providers)
         {
-            if(provider.understands(url))
+            if (provider.understands(url))
                 return true;
         }
         return false;
     }
-
+    
     public static int getProviderCount()
     {
         return providers.size();
