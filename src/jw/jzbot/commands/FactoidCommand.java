@@ -121,6 +121,11 @@ public class FactoidCommand implements Command
             String factoidName = argumentsTokenized2[0];
             if (JZBot.commands.get(factoidName) != null)
                 throw new ResponseException("That is a reserved keyword.");
+            if (!JZBot.isValidFactoidName(factoidName))
+                throw new ResponseException(
+                        "That factoid name contains invalid characters. Factoid "
+                                + "names must not start with \"#\", \"@\", or \"%\", and "
+                                + "must contain at least one character..");
             String factoidContents = argumentsTokenized2[1];
             if (c != null && c.getFactoid(factoidName) != null)
                 throw new ResponseException(
@@ -197,17 +202,16 @@ public class FactoidCommand implements Command
                 }
                 if (!currentList.equals(""))
                 {
-                	if (afterCommand.endsWith("--") || currentList.length() > 512)
-                	{
-                		JZBot.bot.sendMessage(pm ? sender : channel, 
-                				"List of factoids: "
-                				+ Pastebin.createPost("jzbot", currentList, Duration.DAY, null,
-                            null));
-                	}
-                	else
-                	{
-                		JZBot.bot.sendMessage(pm ? sender : channel, currentList);
-                	}
+                    if (afterCommand.endsWith("--") || currentList.length() > 512)
+                    {
+                        JZBot.bot.sendMessage(pm ? sender : channel, "List of factoids: "
+                                + Pastebin.createPost("jzbot", currentList, Duration.DAY,
+                                        null, null));
+                    }
+                    else
+                    {
+                        JZBot.bot.sendMessage(pm ? sender : channel, currentList);
+                    }
                 }
             }
             JZBot.bot.sendMessage(pm ? sender : channel, "End of factoid list. "

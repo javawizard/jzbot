@@ -25,6 +25,8 @@ public class DefaultPastebinProviders
         // I haven't checked pastebin.im to see if it supports highlights.
         PastebinService.installProvider(new PDPastebin("pastebin.im", false, "index.php",
                 false));
+        PastebinService.installProvider(new PDPastebin("ospaste.com", false, "index.php",
+                true));
         // PastebinService.installProvider(new PDPastebin("paste.uberdragon.net", false,
         // "index.php"));
         

@@ -2031,4 +2031,9 @@ public class JZBot
         number = number.round(datasizeContext);
         return "" + number + suffix;
     }
+
+    public static boolean isValidFactoidName(String factoidName)
+    {
+        return factoidName.matches("^[^\\@\\#\\%].*$");
+    }
 }
