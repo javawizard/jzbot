@@ -209,14 +209,14 @@ public class JZBot
      * @param serverName
      * @return
      */
-    public static Connection getConnection(String serverName)
+    public static ConnectionWrapper getConnection(String serverName)
     {
         ConnectionContext con = connectionMap.get(serverName);
         if (con == null)
             return null;
         if (!con.getConnection().isConnected())
             return null;
-        return con.getConnection();
+        return new ConnectionWrapper(con);
     }
     
     public static class ConnectionCycleThread extends Thread
