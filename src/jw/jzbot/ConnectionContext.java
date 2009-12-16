@@ -5,6 +5,28 @@ import jw.jzbot.storage.Server;
 public class ConnectionContext
 {
     private Server datastoreServer;
+    private Connection connection;
+    private String serverName;
+    
+    public String getServerName()
+    {
+        return serverName;
+    }
+    
+    public void setServerName(String serverName)
+    {
+        this.serverName = serverName;
+    }
+    
+    public Connection getConnection()
+    {
+        return connection;
+    }
+    
+    public void setConnection(Connection connection)
+    {
+        this.connection = connection;
+    }
     
     public Server getDatastoreServer()
     {

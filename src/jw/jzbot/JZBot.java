@@ -70,6 +70,9 @@ import jw.jzbot.help.PropsHelpProvider;
 import jw.jzbot.help.XMLHelpProvider;
 import jw.jzbot.pastebin.DefaultPastebinProviders;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
+import jw.jzbot.protocols.BZFlagProtocol;
+import jw.jzbot.protocols.FacebookProtocol;
+import jw.jzbot.protocols.IrcProtocol;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -85,13 +88,15 @@ import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
 
+import sun.misc.Unsafe;
+
 /**
  * jzbot authenticates off of hostmask.
  */
 public class JZBot
 {
     // public static Connection bot;
-    public static Map<String, Connection> connectionMap = new HashMap<String, Connection>();
+    public static Map<String, ConnectionContext> connectionMap = new HashMap<String, ConnectionContext>();
     
     public static File logsFolder = new File("storage/logs");
     
@@ -106,6 +111,8 @@ public class JZBot
     public static BlockingQueue<LogEvent> logQueue;
     
     public static final Object logQueueLock = new Object();
+    
+    private static final long CONNECTION_CYCLE_TIMEOUT = 60;
     
     public static int logQueueDelay;
     
@@ -204,10 +211,185 @@ public class JZBot
      */
     public static Connection getConnection(String serverName)
     {
-        Connection con = connectionMap.get(serverName);
-        if (!con.isConnected())
+        ConnectionContext con = connectionMap.get(serverName);
+        if (con == null)
             return null;
-        return con;
+        if (!con.getConnection().isConnected())
+            return null;
+        return con.getConnection();
+    }
+    
+    public static class ConnectionCycleThread extends Thread
+    {
+        public void run()
+        {
+            while (isRunning)
+            {
+                try
+                {
+                    doSingleConnectionCycle();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    // TODO: consider making these errors available to the bot's users?
+                }
+            }
+        }
+    }
+    
+    private static ConnectionCycleThread connectionCycleThread;
+    
+    private static BlockingQueue<Object> connectionCycleQueue = new LinkedBlockingQueue<Object>(
+            3000);
+    
+    public static final Object connectionCycleLock = new Object();
+    
+    public static void startConnectionCycleThread()
+    {
+        connectionCycleThread = new ConnectionCycleThread();
+        connectionCycleThread.setDaemon(true);
+        connectionCycleThread.setPriority(3);
+        connectionCycleThread.start();
+    }
+    
+    public static void doSingleConnectionCycle() throws InterruptedException
+    {
+        connectionCycleQueue.poll(CONNECTION_CYCLE_TIMEOUT, TimeUnit.SECONDS);
+        connectionCycleQueue.clear();
+        /*
+         * First step: create a connection object for all servers in the list
+         */
+        synchronized (connectionCycleLock)
+        {
+            for (Server server : storage.getServers().isolate())
+            {
+                if (connectionMap.get(server.getName()) == null)
+                {
+                    /*
+                     * This server doesn't have a corresponding connection. Let's create
+                     * one for it.
+                     */
+                    ConnectionContext context = new ConnectionContext();
+                    context.setServerName(server.getName());
+                    context.setDatastoreServer(server);
+                    Connection c = instantiateConnectionForProtocol(server.getProtocol(),
+                            true);
+                    context.setConnection(c);
+                    c.init(context);
+                    connectionMap.put(server.getName(), context);
+                }
+            }
+        }
+        /*
+         * Second step: iterate through all connection objects and check to see if they
+         * are disconnected. If they are, check to see if their database server object is
+         * active. If it is, attempt to connect the connection.
+         */
+        for (ConnectionContext context : connectionMap.values())
+        {
+            if (!context.getConnection().isConnected())
+            {
+                if (context.getDatastoreServer().isActive())
+                {
+                    try
+                    {
+                        context.getConnection().connect();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                        // FIXME: log this so that the jzbot user can see that the
+                        // connection
+                        // failed, and allow them to see why. Maybe add a global
+                        // notification
+                        // for when a server fails to connect (or maybe a server
+                        // notification;
+                        // figure out how that would work with disconnected servers
+                        // running
+                        // factoids etc)
+                    }
+                }
+            }
+        }
+        /*
+         * Third step: disconnect all connections if they are connected but their server
+         * object is inactive or their server object is no longer present in the server
+         * objects list
+         */
+        synchronized (connectionCycleLock)
+        {
+            for (ConnectionContext context : connectionMap.values())
+            {
+                if (context.getConnection().isConnected())
+                {
+                    if ((!context.getDatastoreServer().isActive())
+                            || !storage.getServers().contains(context.getDatastoreServer()))
+                    // if the server is not active or the server is no longer in the list
+                    {
+                        context.getConnection().disconnect(getDefaultDisconnectMessage());
+                    }
+                }
+            }
+        }
+        /*
+         * Fourth step: find all connection objects whose server objects are not in the
+         * list anymore and delete them.
+         */
+        synchronized (connectionCycleLock)
+        {
+            for (ConnectionContext context : connectionMap.values())
+            {
+                if (!storage.getServers().contains(context.getDatastoreServer()))
+                {
+                    context.getConnection().discard();
+                    connectionMap.remove(context.getDatastoreServer().getName());
+                }
+            }
+        }
+        /*
+         * ...and we're done!
+         */
+    }
+    
+    private static String getDefaultDisconnectMessage()
+    {
+        return "Laters.";
+    }
+    
+    public static Connection instantiateConnectionForProtocol(String name, boolean run)
+    {
+        /*
+         * TODO: the protocol list is hard-coded right now; this should ideally be split
+         * into a .props file; consider jw/jzbot/protocols.props.
+         */
+        Class<? extends Connection> c;
+        if (name.equals("irc"))
+            c = IrcProtocol.class;
+        else if (name.equals("bzflag"))
+            c = BZFlagProtocol.class;
+        else if (name.equals("facebook"))
+            c = FacebookProtocol.class;
+        else
+            throw new RuntimeException("The protocol \"" + name
+                    + "\" is not a valid protocol name. Valid protocol names are, "
+                    + "at present, \"irc\", \"bzflag\", and \"facebook\".");
+        if (!run)
+            return null;
+        try
+        {
+            return c.newInstance();
+        }
+        catch (Exception e)
+        {
+            /*
+             * We need to catch Exception instead of just the two Exception types
+             * newInstance throws as newInstance propegates checked exceptions too, which
+             * isn't good
+             */
+            throw new RuntimeException("Exception while instantiating protocol \"" + name
+                    + "\" for class " + c.getName(), e);
+        }
     }
     
     public static void stopHttpServer(int port)

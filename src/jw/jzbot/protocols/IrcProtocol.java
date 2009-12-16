@@ -203,4 +203,11 @@ public class IrcProtocol extends PircBot implements Connection
         return true;
     }
     
+    @Override
+    public void discard()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }

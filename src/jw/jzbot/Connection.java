@@ -93,4 +93,11 @@ public interface Connection
      * @param newnick
      */
     public void changeNick(String newnick);
+    
+    /**
+     * Called once when JZBot is about to discard this connection. No other methods will
+     * ever be called on this connection again. Unless some unusual circumstance occurs,
+     * this will always be preceded by a call to disconnect().
+     */
+    public void discard();
 }

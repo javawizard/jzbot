@@ -179,5 +179,12 @@ public class FacebookProtocol implements Connection
         // TODO Auto-generated method stub
         return false;
     }
+
+    @Override
+    public void discard()
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
