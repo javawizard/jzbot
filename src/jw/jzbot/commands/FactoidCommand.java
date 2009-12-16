@@ -1,6 +1,7 @@
 package jw.jzbot.commands;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -30,6 +31,10 @@ import jw.jzbot.utils.Pastebin.Duration;
 import net.sf.opengroove.common.proxystorage.StoredList;
 import net.sf.opengroove.common.utils.StringUtils;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.opengroove.utils.English;
 
 public class FactoidCommand implements Command
@@ -221,11 +226,21 @@ public class FactoidCommand implements Command
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
         {
-            
+            throw new ResponseException("Not implemented yet.");
         }
         if (command.equals("isrestricted"))
         {
-            
+            throw new ResponseException("Not implemented yet.");
+        }
+        if (command.equals("export"))
+        {
+            processed = true;
+            Document export = exportServerFactoids();
+            String data = new XMLOutputter(Format.getPrettyFormat().setIndent("    "))
+                    .outputString(export);
+            JZBot.bot.sendMessage(pm ? sender : channel,
+                    "Export of all factoids in this bot at this server: "
+                            + Pastebin.createPost("jzbot", data, Duration.DAY, null, null));
         }
         if (command.equals("attribute") || command.equals("unattribute"))
         {
@@ -1030,5 +1045,54 @@ public class FactoidCommand implements Command
             if (factpack != null && !list.contains(factpack))
                 list.add(factpack);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Document exportServerFactoids()
+    {
+        Element root = new Element("factoids");
+        root.setAttribute("scope", "server");
+        Document doc = new Document(root);
+        Element global = new Element("global");
+        root.getChildren().add(global);
+        populateFactoidExport(global, JZBot.storage);
+        for (Channel channel : JZBot.storage.getChannels().isolate())
+        {
+            Element chan = new Element("channel");
+            chan.setAttribute("name", channel.getName());
+            root.getChildren().add(chan);
+            populateFactoidExport(chan, channel);
+        }
+        return doc;
+    }
+    
+    public static void populateFactoidExport(Element root, HasFactoids container)
+    {
+        ArrayList<Factoid> factoids = container.getFactoids().isolate();
+        for (Factoid factoid : factoids)
+        {
+            Element e = new Element("factoid");
+            root.getChildren().add(e);
+            setAttribute(e, "attribution", factoid.getAttribution());
+            setAttribute(e, "creationtime", "" + factoid.getCreationTime());
+            setAttribute(e, "creator", factoid.getCreator());
+            setAttribute(e, "creatornick", factoid.getCreatorNick());
+            setAttribute(e, "creatorusername", factoid.getCreatorUsername());
+            setAttribute(e, "directrequests", "" + factoid.getDirectRequests());
+            setAttribute(e, "factpack", factoid.getFactpack());
+            setAttribute(e, "indirectrequests", "" + factoid.getIndirectRequests());
+            setAttribute(e, "name", factoid.getName());
+            setAttribute(e, "value", factoid.getValue());
+            setAttribute(e, "active", "" + factoid.isActive());
+            setAttribute(e, "library", "" + factoid.isLibrary());
+            setAttribute(e, "restricted", "" + factoid.isRestricted());
+            setAttribute(e, "uninstall", "" + factoid.isUninstall());
+        }
+    }
+    
+    public static void setAttribute(Element e, String name, String value)
+    {
+        if (value != null)
+            e.setAttribute(name, URLEncoder.encode(value));
     }
 }

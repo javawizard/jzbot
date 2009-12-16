@@ -38,6 +38,7 @@ public class PastebinService
         for (int i = 0; i < providers.size(); i++)
         {
             currentProviderIndex++;
+            currentProviderIndex = currentProviderIndex % providers.size();
             PastebinProvider provider = providers.get(currentProviderIndex);
             if (!Arrays.asList(provider.getSendFeatures()).containsAll(requiredFeatureList))
                 /*

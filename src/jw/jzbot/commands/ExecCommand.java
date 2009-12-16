@@ -25,6 +25,7 @@ public class ExecCommand implements Command
             String arguments)
     {
         JZBot.verifyOp(channel, hostname);
+        long startMillis = System.currentTimeMillis();
         FactEntity entity = FactParser.parse(arguments, "__internal_exec");
         FactContext context = new FactContext();
         context.setChannel(channel);
@@ -38,9 +39,13 @@ public class ExecCommand implements Command
         vars.put("source", pm ? sender : channel);
         context.setLocalVars(vars);
         context.setGlobalVars(JZBot.globalVariables);
+        long parsedMillis = System.currentTimeMillis();
         StringSink sink = new StringSink();
         entity.resolve(sink, context);
         String result = sink.toString();
+        long finishedMillis = System.currentTimeMillis();
+        System.out.println("__internal_exec: Parsed in " + (parsedMillis - startMillis)
+                + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
         JZBot.bot.sendMessage(pm ? sender : channel, result);

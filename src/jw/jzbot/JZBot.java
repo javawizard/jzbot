@@ -903,7 +903,10 @@ public class JZBot
         vars.put("self", bot.getNick());
         vars.put("source", channel == null ? sender : channel);
         String text = factoid.getValue();
+        String factoidName = factoid.getName();
+        long startMillis = System.currentTimeMillis();
         FactEntity parsedFactoid = FactParser.parse(text, factoid.getName());
+        long parsedMillis = System.currentTimeMillis();
         FactContext context = new FactContext();
         context.setQuota(quota);
         context.setChannel(channel);
@@ -915,6 +918,9 @@ public class JZBot
         StringSink resultSink = new StringSink();
         parsedFactoid.resolve(resultSink, context);
         String result = resultSink.toString();
+        long finishedMillis = System.currentTimeMillis();
+        System.out.println(factoidName + ": Parsed in " + (parsedMillis - startMillis)
+                + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         // The factoid has been run. Now we return the value.
         boolean isAction = context.isAction();
         return (isAction ? "<ACTION>" : "") + result.toString();
@@ -2031,7 +2037,7 @@ public class JZBot
         number = number.round(datasizeContext);
         return "" + number + suffix;
     }
-
+    
     public static boolean isValidFactoidName(String factoidName)
     {
         return factoidName.matches("^[^\\@\\#\\%].*$");

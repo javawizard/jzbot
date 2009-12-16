@@ -7,6 +7,7 @@ public class DefaultPastebinProviders
 {
     public static void installDefaultSet()
     {
+        //FIXME: add paste.icefyre.org
         PastebinService.installProvider(new PDPastebin("pastebin.com", true,
                 "pastebin.php", true));
         // p.baf.cc added a captcha, so removed for now.

@@ -9,6 +9,6 @@ targethost="jcp.bztraining.org"
 targetportstring=""
 echo Settings: targethost is $targethost and targetportstring is $targetportstring
 echo About to upload. Enter your password when asked.
-rsync -vvv -e "ssh${targetportstring}" jzbot2-old.tar jcp@${targethost}:/home/jcp/jzbot2-old.tar
+rsync -vv -e "ssh${targetportstring}" jzbot2-old.tar jcp@${targethost}:/home/jcp/jzbot2-old.tar
 echo About to extract. Enter your password when asked.
 ssh${targetportstring} jcp@${targethost} /home/jcp/jzbot-reload
