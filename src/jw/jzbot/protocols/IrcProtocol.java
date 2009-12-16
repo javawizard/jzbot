@@ -200,8 +200,7 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public boolean supportsMessageDelay()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
     
 }

@@ -11,10 +11,9 @@ public class CommandListCommand implements Command
         return "commandlist";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-        String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
-        JZBot.bot.sendMessage(pm ? sender : channel, "Start of command list");
         String currentList = "";
         for (String name : JZBot.commands.keySet())
         {

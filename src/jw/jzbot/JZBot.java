@@ -90,7 +90,8 @@ import org.jibble.pircbot.User;
  */
 public class JZBot
 {
-    public static Connection bot;
+    // public static Connection bot;
+    public static Map<String, Connection> connectionMap = new HashMap<String, Connection>();
     
     public static File logsFolder = new File("storage/logs");
     
@@ -192,6 +193,21 @@ public class JZBot
                 e2.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Gets the connection object for the specified server, if it is currently connected.
+     * If it is not currently connected, null is returned.
+     * 
+     * @param serverName
+     * @return
+     */
+    public static Connection getConnection(String serverName)
+    {
+        Connection con = connectionMap.get(serverName);
+        if (!con.isConnected())
+            return null;
+        return con;
     }
     
     public static void stopHttpServer(int port)
@@ -1626,36 +1642,19 @@ public class JZBot
         }
     }
     
-    public static boolean isOp(String channel, String hostname)
+    public static boolean isSuperop(String serverName, String hostname)
     {
-        if (isSuperop(hostname))
+        if (elevatedSuperopList.contains(serverName + "@" + hostname))
             return true;
-        Channel c = storage.getChannel(channel);
-        if (c == null)
+        Server server = storage.getServer(serverName);
+        if (server == null)
             return false;
-        if (elevatedOpMap.get(channel) != null
-                && elevatedOpMap.get(channel).contains(hostname))
-            return true;
-        return c.getOperator(hostname) != null;
+        return server.getOperator(hostname) != null;
     }
     
-    public static boolean isSuperop(String hostname)
+    public static void verifySuperop(String server, String hostname)
     {
-        if (elevatedSuperopList.contains(hostname))
-            return true;
-        return storage.getOperator(hostname) != null;
-    }
-    
-    public static void verifyOp(String channel, String hostname)
-    {
-        if (!isOp(channel, hostname))
-            throw new ResponseException(
-                    "You are not an op, so you don't have permission to run this command.");
-    }
-    
-    public static void verifySuperop(String hostname)
-    {
-        if (!isSuperop(hostname))
+        if (!isSuperop(server, hostname))
             throw new ResponseException(
                     "You are not a superop, so you don't have permission to run this command.");
     }

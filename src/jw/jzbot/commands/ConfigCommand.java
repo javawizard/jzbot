@@ -20,10 +20,10 @@ public class ConfigCommand implements Command
         return "config";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
-        if (!JZBot.isSuperop(hostname))
+        if (!JZBot.isSuperop(server, hostname))
         {
             JZBot.bot.sendMessage(pm ? sender : channel, "You're not a superop.");
             return;
