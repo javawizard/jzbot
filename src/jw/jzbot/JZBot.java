@@ -90,7 +90,7 @@ import org.jibble.pircbot.User;
  */
 public class JZBot
 {
-    public static Protocol bot;
+    public static Connection bot;
     
     public static File logsFolder = new File("storage/logs");
     
@@ -668,7 +668,7 @@ public class JZBot
         System.out.println("Using protocol " + protocolClass);
         try
         {
-            Class<? extends Protocol> classObject = (Class<? extends Protocol>) Class
+            Class<? extends Connection> classObject = (Class<? extends Connection>) Class
                     .forName(protocolClass);
             bot = classObject.newInstance();
             bot.init();

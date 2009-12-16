@@ -1,11 +1,15 @@
 package jw.jzbot.protocols;
 
-import jw.jzbot.JZBot;
-import jw.jzbot.Protocol;
+import java.io.IOException;
 
+import jw.jzbot.ConnectionContext;
+import jw.jzbot.JZBot;
+import jw.jzbot.Connection;
+
+import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.PircBot;
 
-public class IrcProtocol extends PircBot implements Protocol
+public class IrcProtocol extends PircBot implements Connection
 {
     @Override
     public void changeNick(String newNick)
@@ -26,8 +30,8 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onAction(String sender, String login, String hostname,
-            String target, String action)
+    protected void onAction(String sender, String login, String hostname, String target,
+            String action)
     {
         JZBot.onAction(sender, login, hostname, target, action);
     }
@@ -35,8 +39,7 @@ public class IrcProtocol extends PircBot implements Protocol
     @Override
     public void partChannel(String channel, String reason)
     {
-        JZBot.logEvent(channel, "left", getNick(), "Left the channel: "
-                + reason);
+        JZBot.logEvent(channel, "left", getNick(), "Left the channel: " + reason);
         super.partChannel(channel, reason);
     }
     
@@ -98,10 +101,6 @@ public class IrcProtocol extends PircBot implements Protocol
         return 400;
     }
     
-    public void init()
-    {
-    }
-    
     @Override
     protected void onConnect()
     {
@@ -115,37 +114,36 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onJoin(String channel, String sender, String login,
-            String hostname)
+    protected void onJoin(String channel, String sender, String login, String hostname)
     {
         JZBot.onJoin(channel, sender, login, hostname);
     }
     
     @Override
-    protected void onKick(String channel, String kickerNick,
-            String kickerLogin, String kickerHostname, String recipientNick,
-            String reason)
+    protected void onKick(String channel, String kickerNick, String kickerLogin,
+            String kickerHostname, String recipientNick, String reason)
     {
-        JZBot.onKick(channel, kickerNick, kickerLogin, kickerHostname,
-                recipientNick, reason);
+        JZBot.onKick(channel, kickerNick, kickerLogin, kickerHostname, recipientNick,
+                reason);
     }
     
     @Override
-    protected void onMessage(String channel, String sender, String login,
-            String hostname, String message)
+    protected void onMessage(String channel, String sender, String login, String hostname,
+            String message)
     {
         JZBot.onMessage(channel, sender, login, hostname, message);
     }
     
     @Override
-    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname, String target, String line)
+    protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname,
+            String target, String line)
     {
         JZBot.onNotice(sourceNick, sourceLogin, sourceHostname, target, line);
     }
     
     @Override
-    protected void onMode(String channel, String sourceNick,
-            String sourceLogin, String sourceHostname, String mode)
+    protected void onMode(String channel, String sourceNick, String sourceLogin,
+            String sourceHostname, String mode)
     {
         JZBot.onMode(channel, sourceNick, sourceLogin, sourceHostname, mode);
     }
@@ -158,15 +156,14 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onPart(String channel, String sender, String login,
-            String hostname)
+    protected void onPart(String channel, String sender, String login, String hostname)
     {
         JZBot.onPart(channel, sender, login, hostname);
     }
     
     @Override
-    protected void onPrivateMessage(String sender, String login,
-            String hostname, String message)
+    protected void onPrivateMessage(String sender, String login, String hostname,
+            String message)
     {
         JZBot.onPrivateMessage(sender, login, hostname, message);
     }
@@ -179,10 +176,32 @@ public class IrcProtocol extends PircBot implements Protocol
     }
     
     @Override
-    protected void onTopic(String channel, String topic, String setBy,
-            long date, boolean changed)
+    protected void onTopic(String channel, String topic, String setBy, long date,
+            boolean changed)
     {
         JZBot.onTopic(channel, topic, setBy, date, changed);
+    }
+    
+    @Override
+    public void connect() throws IOException, IrcException
+    {
+        setName(context.getNick());
+        connect(context.getServer(), context.getPort(), context.getPassword());
+    }
+    
+    private ConnectionContext context;
+    
+    @Override
+    public void init(ConnectionContext context)
+    {
+        this.context = context;
+    }
+    
+    @Override
+    public boolean supportsMessageDelay()
+    {
+        // TODO Auto-generated method stub
+        return false;
     }
     
 }

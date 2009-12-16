@@ -42,6 +42,9 @@ public interface Channel extends HasFactoids
     
     public void setTrigger(String trigger);
     
+    /**
+     * The channel-specific factoids present at this channel.
+     */
     @Property
     @ListType(Factoid.class)
     public StoredList<Factoid> getFactoids();
@@ -62,17 +65,10 @@ public interface Channel extends HasFactoids
     public Factoid[] getFactpackFactoids(String factpack);
     
     @Property
-    @ListType(Operator.class)
-    public StoredList<Operator> getOperators();
-    
-    @Property
     @ListType(Regex.class)
     public StoredList<Regex> getRegularExpressions();
     
     @Search(listProperty = "regularExpressions", searchProperty = "expression")
     public Regex getRegex(String expression);
-    
-    @Search(listProperty = "operators", searchProperty = "hostname")
-    public Operator getOperator(String hostname);
     
 }

@@ -26,6 +26,8 @@ Global notification factoids are run when a particular notification occurs at an
 
 Most commands to the bot currently can be prefixed with the name of a channel to run the command at. With the addition of multiple servers, this will change slightly: commands can be run in the context of a particular channel using the previous syntax, but the syntax @server#channel will also be supported, which runs the command in the context of the specified channel on the specified server. Additionally, a % can be present at the beginning of that specifier (so, for example, %@server#channel or %#channel) which tells the bot to use the channel as the message source instead of the user. This will cause the bot to act functionally identical to what it would if the message had been sent at the channel with the bot's trigger, with a few exceptions (most notably that the message is sent to the bot's pm log instead of its channel log).
 
+The connection objects for each server are stored in a hash map on JZBot. 
+
 
 
 Internally, the proxy storage system maintains

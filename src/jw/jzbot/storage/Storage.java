@@ -11,11 +11,11 @@ import net.sf.opengroove.common.proxystorage.StoredList;
 public interface Storage extends HasFactoids
 {
     @Property
-    @ListType(Channel.class)
-    public StoredList<Channel> getChannels();
+    @ListType(Server.class)
+    public StoredList<Server> getServers();
     
-    @Search(listProperty = "channels", searchProperty = "name")
-    public Channel getChannel(String name);
+    @Search(listProperty = "servers", searchProperty = "name")
+    public Server getServer(String name);
     
     @Property
     public Config getConfig();
@@ -88,11 +88,4 @@ public interface Storage extends HasFactoids
     
     @Search(listProperty = "factoids", searchProperty = "factpack", exact = true)
     public Factoid[] getFactpackFactoids(String factpack);
-    
-    @Property
-    @ListType(Operator.class)
-    public StoredList<Operator> getOperators();
-    
-    @Search(listProperty = "operators", searchProperty = "hostname")
-    public Operator getOperator(String hostname);
 }

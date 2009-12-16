@@ -14,16 +14,17 @@ import org.jibble.pircbot.IrcException;
  * implement this class, then edit the single row that's in the CONFIG table in the
  * database, and change the column "protocol" to be the fully-qualified class name of the
  * implementation of this interface that you want to use. The default is
- * "jw.jzbot.protocols.IrcProtocol", which essentially wraps a PircBot. There
- * is another protocol, "jw.jzbot.protocols.BZFlagProtocol", that comes with
- * JZBot that connects it to a BZFlag (http://bzflag.org) server. See that class for more
- * information about the protocol.
+ * "jw.jzbot.protocols.IrcProtocol", which essentially wraps a PircBot. There is another
+ * protocol, "jw.jzbot.protocols.BZFlagProtocol", that comes with JZBot that connects it
+ * to a BZFlag (http://bzflag.org) server. See that class for more information about the
+ * protocol.
  * 
  * @author Alexander Boyd
  * 
  */
-public interface Protocol
+public interface Connection
 {
+    public void init(ConnectionContext context);
     
     public void sendAction(String target, String message);
     
@@ -33,18 +34,17 @@ public interface Protocol
     
     public void setMessageDelay(long ms);
     
+    public boolean supportsMessageDelay();
+    
     public void setLogin(String nick);
     
     public void setName(String nick);
     
     public void setVersion(String string);
     
-    public void setAutoNickChange(boolean b);
-    
     public void setEncoding(String string) throws UnsupportedEncodingException;
     
-    public void connect(String server, int port, String password) throws IOException,
-            IrcException;
+    public void connect() throws IOException, IrcException;
     
     public String getNick();
     
@@ -52,29 +52,45 @@ public interface Protocol
     
     public void joinChannel(String channel);
     
-    public void reconnect() throws IOException, IrcException;
-    
     public User[] getUsers(String channel);
     
+    /**
+     * Returns an approximation of the maximum length of a message on this protocol. This
+     * must be either the same as or less than the maximum size of a message that can be
+     * sent with this protocol.
+     * 
+     * @return
+     */
     public int getProtocolDelimitedLength();
     
-    public void init();
+    public void kick(String channel, String user, String reason);
     
-    public void kick(String channel, String sender, String string);
-    
-    public void setMode(String channel, String string);
+    public void setMode(String channel, String mode);
     
     public boolean isConnected();
     
-    public String getServer();
+    // TODO: consider adding getActualServer() which, for example, when connecting to
+    // irc.freenode.net might return "brown.freenode.net"
     
-    public void partChannel(String channel, String string);
+    public void partChannel(String channel, String reason);
     
     public void disconnect(String message);
     
+    /**
+     * If this protocol supports message delaying, then this returns the number of
+     * messages that have not yet been sent because of the enforced delay.
+     * 
+     * @return
+     */
     public int getOutgoingQueueSize();
     
     public void setTopic(String channel, String topic);
     
+    /**
+     * Changes the bot's nick to the new nickname specified. This generally should not
+     * persist through a reconnect.
+     * 
+     * @param newnick
+     */
     public void changeNick(String newnick);
 }

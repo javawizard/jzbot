@@ -3,7 +3,7 @@ package jw.jzbot.utils;
 import java.util.ArrayList;
 
 import jw.jzbot.JZBot;
-import jw.jzbot.Protocol;
+import jw.jzbot.Connection;
 
 import org.jibble.pircbot.PircBot;
 
@@ -41,14 +41,14 @@ public class JZUtils
                 .getProtocolDelimitedLength());
     }
     
-    public static void ircSendDelimited(String[] items, String delimiter, Protocol bot,
+    public static void ircSendDelimited(String[] items, String delimiter, Connection bot,
             String recipient)
     {
         ircSendDelimited("", items, delimiter, bot, recipient);
     }
     
     public static void ircSendDelimited(String prefix, String[] items, String delimiter,
-            Protocol bot, String recipient)
+            Connection bot, String recipient)
     {
         if (items.length > 0)
             items[0] = prefix + items[0];

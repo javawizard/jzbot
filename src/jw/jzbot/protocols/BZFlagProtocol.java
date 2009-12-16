@@ -64,12 +64,18 @@ import org.jibble.pircbot.User;
  * @author Alexander Boyd
  * 
  */
-public class BZFlagProtocol implements Protocol
+public class BZFlagProtocol implements Connection
 {
     
     @Override
-    public void connect(String server, int port, String password) throws IOException,
-            IrcException
+    public void changeNick(String newnick)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void connect() throws IOException, IrcException
     {
         // TODO Auto-generated method stub
         
@@ -111,13 +117,6 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public String getServer()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    @Override
     public User[] getUsers(String channel)
     {
         // TODO Auto-generated method stub
@@ -125,7 +124,7 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void init()
+    public void init(ConnectionContext context)
     {
         // TODO Auto-generated method stub
         
@@ -146,21 +145,14 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void kick(String channel, String sender, String string)
+    public void kick(String channel, String user, String reason)
     {
         // TODO Auto-generated method stub
         
     }
     
     @Override
-    public void partChannel(String channel, String string)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
-    public void reconnect() throws IOException, IrcException
+    public void partChannel(String channel, String reason)
     {
         // TODO Auto-generated method stub
         
@@ -181,7 +173,7 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void setAutoNickChange(boolean b)
+    public void sendNotice(String target, String message)
     {
         // TODO Auto-generated method stub
         
@@ -209,7 +201,7 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void setMode(String channel, String string)
+    public void setMode(String channel, String mode)
     {
         // TODO Auto-generated method stub
         
@@ -223,13 +215,6 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void setVersion(String string)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
     public void setTopic(String channel, String topic)
     {
         // TODO Auto-generated method stub
@@ -237,16 +222,17 @@ public class BZFlagProtocol implements Protocol
     }
     
     @Override
-    public void changeNick(String newnick)
+    public void setVersion(String string)
     {
         // TODO Auto-generated method stub
         
     }
     
     @Override
-    public void sendNotice(String target, String message)
+    public boolean supportsMessageDelay()
     {
         // TODO Auto-generated method stub
-        
+        return false;
     }
+    
 }
