@@ -51,6 +51,8 @@ public class PastebinService
             }
             catch (Exception e)
             {
+                System.err.println("Exception for provider " + provider + " (index "
+                        + currentProviderIndex);
                 e.printStackTrace();
             }
         }

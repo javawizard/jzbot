@@ -34,6 +34,11 @@ public class PDPastebin implements PastebinProvider
     private String downloadFile;
     private boolean highlighting;
     
+    public String toString()
+    {
+        return "location:" + location + ",downloadfile:" + downloadFile;
+    }
+    
     public PDPastebin(String location, boolean subdomains, String downloadFile,
             boolean highlighting)
     {
@@ -110,8 +115,8 @@ public class PDPastebin implements PastebinProvider
         try
         {
             HttpClient client = new DefaultHttpClient();
-            client.getParams().setParameter("http.socket.timeout", 8000);
-            HttpPost request = new HttpPost("http://" + location + "/pastebin.php");
+            client.getParams().setParameter("http.socket.timeout", 7000);
+            HttpPost request = new HttpPost("http://" + location + "/" + downloadFile);
             request.addHeader("Content-type", "application/x-www-form-urlencoded");
             request.setEntity(new StringEntity("parent_pid=" + URLEncoder.encode(parent)
                     + "&format=text&code2=" + URLEncoder.encode(post.getData(), "US-ASCII")

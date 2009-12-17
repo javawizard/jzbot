@@ -2053,9 +2053,11 @@ public class JZBot
         return false;
     }
     
-    public static void logEvent(String channel, String event, String nick, String details)
+    public static void logEvent(String server, String channel, String event, String nick,
+            String details)
     {
         LogEvent e = new LogEvent();
+        e.server = server;
         e.channel = channel;
         e.event = event;
         e.nick = nick;
@@ -2105,18 +2107,20 @@ public class JZBot
     
     public static void sinkQueuedLogEvent(LogEvent logEvent)
     {
+        String server = logEvent.server;
         String channel = logEvent.channel;
         String nick = logEvent.nick;
         String details = logEvent.details;
         String event = logEvent.event;
+        String filename = "@" + server + channel;
         details = details.replace("\r", "").replace("\n", "");
         try
         {
-            if (StringUtils.isMemberOf(channel, configNolog.split("\\|")))
+            if (StringUtils.isMemberOf(filename, configNolog.split("\\|")))
                 return;
             String data = event + " " + System.currentTimeMillis() + " " + nick + " "
                     + details;
-            File logFile = new File(logsFolder, channel);
+            File logFile = new File(logsFolder, filename);
             if (!logFile.exists())
                 if (!logFile.createNewFile())
                     throw new Exception("Couldn't create new log file.");

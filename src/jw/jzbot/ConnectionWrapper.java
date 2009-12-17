@@ -18,4 +18,8 @@ public class ConnectionWrapper
         this.context = context;
     }
     
+    public ConnectionContext getContext()
+    {
+        return context;
+    }
 }
