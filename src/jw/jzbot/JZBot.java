@@ -173,33 +173,106 @@ public class JZBot
         }
     }
     
+    /**
+     * Runs the specified notification first globally, then on all connected servers
+     * (Read: not servers that are disconnected, deactivated, or no longer existent), then
+     * on all channels within those servers.
+     * 
+     * @param name
+     */
     protected static void sendNotificationToAll(String name)
     {
         try
         {
-            if (!bot.isConnected())
-                return;
-            for (String channel : bot.getChannels())
+            synchronized (connectionCycleLock)
             {
-                runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
-                        new String[0], true);
+                for (ConnectionContext context : connectionMap.values())
+                {
+                    if (!context.getConnection().isConnected())
+                        return;
+                    runNotificationFactoid(context.getServerName(), context.getServer(),
+                            null, null, bot.getNick(), "_on" + name, new String[0], true);
+                    for (String channel : bot.getChannels())
+                    {
+                        runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
+                                new String[0], true);
+                    }
+                }
             }
-            runNotificationFactoid(null, null, bot.getNick(), "_on" + name, new String[0],
-                    true);
         }
         catch (Throwable e)
         {
             e.printStackTrace();
             try
             {
-                bot.sendMessage(ConfigVars.primary.get(), "Global notification failure: "
-                        + pastebinStack(e));
+                sendMessageToTarget(ConfigVars.primary.get(),
+                        "Global notification failure: " + pastebinStack(e));
             }
             catch (Throwable e2)
             {
                 e2.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Sends a message to the specified target, which is a canonical channel name. If the
+     * specified server is not connected or if the specified channel is not joined, this
+     * message is silently discarded.<br/><br/>
+     * 
+     * This <b>must not</b> be called from any logging code, as this method will invoke
+     * the channel logger to log that a message was sent.
+     * 
+     * @param target
+     *            The target to send to
+     * @param message
+     *            The message to send
+     */
+    public static void sendMessageToTarget(String target, String message)
+    {
+        String serverName;
+        String channelName;
+        try
+        {
+            serverName = extractServerName(target);
+            channelName = extractChannelName(target);
+        }
+        catch (Exception e)
+        {
+            /*
+             * This will happen if the target is malformed. We'll just ignore it for now.
+             */
+            e.printStackTrace();
+            return;
+        }
+        ConnectionWrapper wrapper = getConnection(serverName);
+        if (wrapper == null)
+            return;
+        ConnectionContext context = wrapper.getContext();
+        Connection connection = context.getConnection();
+        if (!connection.isConnected())
+            return;
+        wrapper.sendMessage(channelName, message);
+    }
+    
+    public static String extractChannelName(String target)
+    {
+        if (target.startsWith("#"))
+            return target;
+        if (target.startsWith("@") && target.contains("#"))
+            return target.substring(target.indexOf('#'));
+        throw new IllegalArgumentException("The target \"" + target
+                + "\" does not contain a valid channel.");
+    }
+    
+    public static String extractServerName(String target)
+    {
+        if (target.startsWith("@") && target.contains("#"))
+            return target.substring(1, target.indexOf('#'));
+        if (target.startsWith("@"))
+            return target.substring(1);
+        throw new IllegalArgumentException("The target \"" + target
+                + "\" does not contain a valid server name.");
     }
     
     /**
@@ -877,7 +950,8 @@ public class JZBot
         }
     }
     
-    public static void onJoin(String channel, String sender, String login, String hostname)
+    public static void onJoin(Server datastoreServer, String serverName, String channel,
+            String sender, String login, String hostname)
     {
         System.out.println("join detected on " + channel + " by " + sender);
         Channel chan = storage.getChannel(channel);
@@ -894,14 +968,15 @@ public class JZBot
         }
     }
     
-    public static void onPart(String channel, String sender, String login, String hostname)
+    public static void onPart(Server datastoreServer, String serverName, String channel,
+            String sender, String login, String hostname)
     {
         logEvent(channel, "left", sender, "Left the channel");
         runNotificationFactoid(channel, null, sender, "_onpart", null, true);
     }
     
-    public static void onBeforeQuit(String sourceNick, String sourceLogin,
-            String sourceHostname, String reason)
+    public static void onBeforeQuit(Server datastoreServer, String serverName,
+            String sourceNick, String sourceLogin, String sourceHostname, String reason)
     {
         for (String channel : bot.getChannels())
         {
@@ -915,8 +990,8 @@ public class JZBot
     
     public static HashMap<String, String> channelTopics = new HashMap<String, String>();
     
-    public static void onTopic(String channel, String topic, String setBy, long date,
-            boolean changed)
+    public static void onTopic(Server datastoreServer, String serverName, String channel,
+            String topic, String setBy, long date, boolean changed)
     {
         channelTopics.put(channel, topic);
         if (changed)
@@ -929,8 +1004,8 @@ public class JZBot
         }
     }
     
-    public static void onMode(String channel, String sourceNick, String sourceLogin,
-            String sourceHostname, String mode)
+    public static void onMode(Server datastoreServer, String serverName, String channel,
+            String sourceNick, String sourceLogin, String sourceHostname, String mode)
     {
         logEvent(channel, "mode", sourceNick, mode);
         runNotificationFactoid(channel, null, sourceNick, "_onmode", new String[]
@@ -939,8 +1014,8 @@ public class JZBot
         }, true);
     }
     
-    public static void onNickChange(String oldNick, String login, String hostname,
-            String newNick)
+    public static void onNickChange(Server datastoreServer, String serverName,
+            String oldNick, String login, String hostname, String newNick)
     {
         for (String channel : bot.getChannels())
         {
@@ -992,33 +1067,56 @@ public class JZBot
      *            could freeze the bot if the factoids have an infinte loop or some such
      *            other problem.
      */
-    private static void runNotificationFactoid(String channelName, Channel chan,
-            String sender, String factname, String[] args, boolean timed)
+    private static void runNotificationFactoid(String serverName, Server server,
+            String channelName, Channel chan, String sender, String factname,
+            String[] args, boolean timed)
     {
         if (!factname.startsWith("_"))
             System.err.println("Factoid notification name \"" + factname
-                    + "\" doesn't start with an underscore");
+                    + "\" doesn't start with an underscore. All factoid "
+                    + "notification names must start with an underscore.");
         if (args == null)
             args = new String[0];
         ArrayList<Factoid> facts = new ArrayList<Factoid>();
-        if (channelName == null)
+        if (serverName == null)
         {
             facts.addAll(Arrays.asList(storage.searchFactoids(factname)));
             facts.addAll(Arrays.asList(storage.searchFactoids(factname + "_*")));
         }
+        else if (channelName == null)
+        {
+            if (server == null)
+                server = storage.getServer(serverName);
+            if (server == null)
+                return;
+            facts.addAll(Arrays.asList(server.searchFactoids(factname)));
+            facts.addAll(Arrays.asList(server.searchFactoids(factname + "_*")));
+            facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname)));
+            facts
+                    .addAll(Arrays.asList(storage.searchFactoids("_server" + factname
+                            + "_*")));
+        }
         else
         {
+            if (server == null)
+                server = storage.getServer(serverName);
+            if (server == null)
+                return;
             if (chan == null)
-                chan = storage.getChannel(channelName);
+                chan = server.getChannel(channelName);
             if (chan == null)
                 return;
             facts.addAll(Arrays.asList(chan.searchFactoids(factname)));
             facts.addAll(Arrays.asList(chan.searchFactoids(factname + "_*")));
+            facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname)));
+            facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname + "_*")));
             facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname)));
             facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname + "_*")));
         }
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
-        tkt.maxRunTime = 40 * 1000;
+        // FIXME: make this configurable (up to a hard-coded limit of, say, 3 minutes)by a
+        // config variable, and then default it to 40 seconds or something
+        tkt.maxRunTime = 75 * 1000;
         if (timed)
             tkt.start();
         try
@@ -1031,15 +1129,24 @@ public class JZBot
                     String factValue = safeRunFactoid(f, channelName, sender, args, true,
                             new HashMap<String, String>());
                     String pseudoChannel = channelName;
-                    if (pseudoChannel == null)
-                        pseudoChannel = ConfigVars.primary.get();
-                    if (factValue.trim().equals(""))
-                        ;
-                    else if (factValue.startsWith("<ACTION>"))
-                        bot.sendAction(pseudoChannel, factValue.substring("<ACTION>"
-                                .length()));
-                    else
-                        bot.sendMessage(pseudoChannel, factValue);
+                    String pseudoServer = serverName;
+                    if (pseudoServer == null || pseudoChannel == null)
+                    {
+                        String primary = ConfigVars.primary.get();
+                        pseudoServer = extractServerName(primary);
+                        pseudoChannel = extractChannelName(primary);
+                    }
+                    ConnectionWrapper con = getConnection(pseudoServer);
+                    if (con != null)
+                    {
+                        if (factValue.trim().equals(""))
+                            ;
+                        else if (factValue.startsWith("<ACTION>"))
+                            con.sendAction(pseudoChannel, factValue.substring("<ACTION>"
+                                    .length()));
+                        else
+                            con.sendMessage(pseudoChannel, factValue);
+                    }
                 }
             }
         }
@@ -1047,6 +1154,14 @@ public class JZBot
         {
             tkt.active = false;
         }
+    }
+    
+    public static void sendPossibleAction(Connection target, String channel, String message)
+    {
+        if (message.startsWith("<ACTION>"))
+            target.sendAction(channel, message.substring("<ACTION>".length()));
+        else
+            target.sendMessage(channel, message);
     }
     
     public static void incrementIndirectRequests(Factoid f)
@@ -1164,8 +1279,9 @@ public class JZBot
                 allowRestricted, quota);
     }
     
-    public static void onKick(String channel, String kickerNick, String kickerLogin,
-            String kickerHostname, String recipientNick, String reason)
+    public static void onKick(Server datastoreServer, String serverName, String channel,
+            String kickerNick, String kickerLogin, String kickerHostname,
+            String recipientNick, String reason)
     {
         logEvent(channel, "kick", kickerNick, recipientNick + " " + reason);
         runNotificationFactoid(channel, null, kickerNick, "_onkick", new String[]
@@ -1176,8 +1292,8 @@ public class JZBot
             bot.joinChannel(channel);
     }
     
-    public static void onMessage(String channel, String sender, String login,
-            String hostname, String message)
+    public static void onMessage(Server datastoreServer, String serverName, String channel,
+            String sender, String login, String hostname, String message)
     {
         logEvent(channel, "message", sender, message);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
@@ -1225,8 +1341,9 @@ public class JZBot
         }
     }
     
-    public static void onNotice(String sourceNick, String sourceLogin,
-            String sourceHostname, String target, String line)
+    public static void onNotice(Server datastoreServer, String serverName,
+            String sourceNick, String sourceLogin, String sourceHostname, String target,
+            String line)
     {
         logEvent(target, "notice", sourceNick, line);
         String[] arguments =
@@ -1361,8 +1478,8 @@ public class JZBot
         return OverrideStatus.none;
     }
     
-    public static void onAction(String sender, String login, String hostname,
-            String channel, String action)
+    public static void onAction(Server datastoreServer, String serverName, String sender,
+            String login, String hostname, String channel, String action)
     {
         if (!(channel.startsWith("#")))
             return;
@@ -1633,7 +1750,7 @@ public class JZBot
         }
     }
     
-    public static void onConnect()
+    public static void onConnect(Server datastoreServer, String serverName)
     {
         new Thread()
         {
@@ -1696,7 +1813,7 @@ public class JZBot
         }.start();
     }
     
-    public static void onDisconnect()
+    public static void onDisconnect(Server datastoreServer, String serverName)
     {
         System.out.println("on disconnect");
         try
@@ -1768,8 +1885,8 @@ public class JZBot
         }.start();
     }
     
-    public static void onPrivateMessage(String sender, String login, String hostname,
-            String message)
+    public static void onPrivateMessage(Server datastoreServer, String serverName,
+            String sender, String login, String hostname, String message)
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
@@ -2056,6 +2173,8 @@ public class JZBot
     public static void logEvent(String server, String channel, String event, String nick,
             String details)
     {
+        if (server.startsWith("@"))
+            server = server.substring(1);
         LogEvent e = new LogEvent();
         e.server = server;
         e.channel = channel;
@@ -2226,5 +2345,10 @@ public class JZBot
     public static boolean isValidFactoidName(String factoidName)
     {
         return factoidName.matches("^[^\\@\\#\\%].*$");
+    }
+    
+    public static String getDefaultPartMessage(String serverName, String channel)
+    {
+        return "Later everyone.";
     }
 }

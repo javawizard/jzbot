@@ -25,28 +25,21 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public void kick(String channel, String nick, String reason)
     {
-        JZBot.logEvent(channel, "kick", getNick(), nick + " " + reason);
+        // JZBot.logEvent(channel, "kick", getNick(), nick + " " + reason);
         super.kick(channel, nick, reason);
-    }
-    
-    @Override
-    protected void onAction(String sender, String login, String hostname, String target,
-            String action)
-    {
-        JZBot.onAction(sender, login, hostname, target, action);
     }
     
     @Override
     public void partChannel(String channel, String reason)
     {
-        JZBot.logEvent(channel, "left", getNick(), "Left the channel: " + reason);
+        // JZBot.logEvent(channel, "left", getNick(), "Left the channel: " + reason);
         super.partChannel(channel, reason);
     }
     
     @Override
     public void partChannel(String channel)
     {
-        JZBot.logEvent(channel, "left", getNick(), "Left the channel");
+        // JZBot.logEvent(channel, "left", getNick(), "Left the channel");
         super.partChannel(channel);
     }
     
@@ -59,23 +52,23 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public void sendAction(String target, String action)
     {
-        if (target.startsWith("#"))
-            JZBot.logEvent(target, "action", getNick(), action);
+        // if (target.startsWith("#"))
+        // JZBot.logEvent(target, "action", getNick(), action);
         super.sendAction(target, action);
     }
     
     @Override
     public void sendMessage(String target, String message)
     {
-        if (target.startsWith("#"))
-            JZBot.logEvent(target, "message", getNick(), message);
+        // if (target.startsWith("#"))
+        // JZBot.logEvent(target, "message", getNick(), message);
         super.sendMessage(target, message);
     }
     
     @Override
     public void sendNotice(String target, String message)
     {
-        JZBot.logEvent(target, "notice", getNick(), message);
+        // JZBot.logEvent(target, "notice", getNick(), message);
         super.sendNotice(target, message);
     }
     
@@ -102,28 +95,35 @@ public class IrcProtocol extends PircBot implements Connection
     }
     
     @Override
+    protected void onAction(String sender, String login, String hostname, String target,
+            String action)
+    {
+        context.onAction(sender, login, hostname, target, action);
+    }
+    
+    @Override
     protected void onConnect()
     {
-        JZBot.onConnect();
+        context.onConnect();
     }
     
     @Override
     protected void onDisconnect()
     {
-        JZBot.onDisconnect();
+        context.onDisconnect();
     }
     
     @Override
     protected void onJoin(String channel, String sender, String login, String hostname)
     {
-        JZBot.onJoin(channel, sender, login, hostname);
+        context.onJoin(channel, sender, login, hostname);
     }
     
     @Override
     protected void onKick(String channel, String kickerNick, String kickerLogin,
             String kickerHostname, String recipientNick, String reason)
     {
-        JZBot.onKick(channel, kickerNick, kickerLogin, kickerHostname, recipientNick,
+        context.onKick(channel, kickerNick, kickerLogin, kickerHostname, recipientNick,
                 reason);
     }
     
@@ -131,55 +131,55 @@ public class IrcProtocol extends PircBot implements Connection
     protected void onMessage(String channel, String sender, String login, String hostname,
             String message)
     {
-        JZBot.onMessage(channel, sender, login, hostname, message);
+        context.onMessage(channel, sender, login, hostname, message);
     }
     
     @Override
     protected void onNotice(String sourceNick, String sourceLogin, String sourceHostname,
             String target, String line)
     {
-        JZBot.onNotice(sourceNick, sourceLogin, sourceHostname, target, line);
+        context.onNotice(sourceNick, sourceLogin, sourceHostname, target, line);
     }
     
     @Override
     protected void onMode(String channel, String sourceNick, String sourceLogin,
             String sourceHostname, String mode)
     {
-        JZBot.onMode(channel, sourceNick, sourceLogin, sourceHostname, mode);
+        context.onMode(channel, sourceNick, sourceLogin, sourceHostname, mode);
     }
     
     @Override
     protected void onNickChange(String oldNick, String login, String hostname,
             String newNick)
     {
-        JZBot.onNickChange(oldNick, login, hostname, newNick);
+        context.onNickChange(oldNick, login, hostname, newNick);
     }
     
     @Override
     protected void onPart(String channel, String sender, String login, String hostname)
     {
-        JZBot.onPart(channel, sender, login, hostname);
+        context.onPart(channel, sender, login, hostname);
     }
     
     @Override
     protected void onPrivateMessage(String sender, String login, String hostname,
             String message)
     {
-        JZBot.onPrivateMessage(sender, login, hostname, message);
+        context.onPrivateMessage(sender, login, hostname, message);
     }
     
     @Override
     protected void onBeforeQuit(String sourceNick, String sourceLogin,
             String sourceHostname, String reason)
     {
-        JZBot.onBeforeQuit(sourceNick, sourceLogin, sourceHostname, reason);
+        context.onBeforeQuit(sourceNick, sourceLogin, sourceHostname, reason);
     }
     
     @Override
     protected void onTopic(String channel, String topic, String setBy, long date,
             boolean changed)
     {
-        JZBot.onTopic(channel, topic, setBy, date, changed);
+        context.onTopic(channel, topic, setBy, date, changed);
     }
     
     @Override
@@ -206,8 +206,6 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public void discard()
     {
-        // TODO Auto-generated method stub
-        
     }
     
 }
