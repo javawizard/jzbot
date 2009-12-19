@@ -113,7 +113,7 @@ public class JZBot
     public static BlockingQueue<LogEvent> logQueue;
     
     public static final Object logQueueLock = new Object();
-    
+    // TODO: consider changing this to 90
     private static final long CONNECTION_CYCLE_TIMEOUT = 60;
     
     public static int logQueueDelay;
@@ -299,6 +299,16 @@ public class JZBot
         return new ConnectionWrapper(con);
     }
     
+    public static ConnectionContext getRealConnection(String serverName)
+    {
+        ConnectionContext con = connectionMap.get(serverName);
+        if (con == null)
+            return null;
+        if (!con.getConnection().isConnected())
+            return null;
+        return con;
+    }
+    
     public static class ConnectionCycleThread extends Thread
     {
         public void run()
@@ -321,7 +331,7 @@ public class JZBot
     private static ConnectionCycleThread connectionCycleThread;
     
     private static BlockingQueue<Object> connectionCycleQueue = new LinkedBlockingQueue<Object>(
-            3000);
+            500);
     
     public static final Object connectionCycleLock = new Object();
     
@@ -337,6 +347,8 @@ public class JZBot
     {
         connectionCycleQueue.poll(CONNECTION_CYCLE_TIMEOUT, TimeUnit.SECONDS);
         connectionCycleQueue.clear();
+        // We'll wait a bit, mostly for the heck of it
+        Thread.sleep(2000);
         /*
          * First step: create a connection object for all servers in the list
          */
@@ -344,20 +356,27 @@ public class JZBot
         {
             for (Server server : storage.getServers().isolate())
             {
-                if (connectionMap.get(server.getName()) == null)
+                String serverName = server.getName();
+                if (connectionMap.get(serverName) == null)
                 {
                     /*
                      * This server doesn't have a corresponding connection. Let's create
                      * one for it.
                      */
+                    System.out.println("Building connection for server " + serverName
+                            + "...");
                     ConnectionContext context = new ConnectionContext();
-                    context.setServerName(server.getName());
+                    context.setServerName(serverName);
                     context.setDatastoreServer(server);
+                    System.out.println("Instantiating protocol instance...");
                     Connection c = instantiateConnectionForProtocol(server.getProtocol(),
                             true);
                     context.setConnection(c);
+                    System.out.println("Initializing protocol...");
                     c.init(context);
+                    System.out.println("Registering connection...");
                     connectionMap.put(server.getName(), context);
+                    System.out.println("Connection built successfully.");
                 }
             }
         }
@@ -374,7 +393,13 @@ public class JZBot
                 {
                     try
                     {
+                        System.out.println("Running pre-connect actions for server "
+                                + context.getServerName());
+                        runPreConnectActions(context);
+                        System.out.println("Connecting to server "
+                                + context.getServerName());
                         context.getConnection().connect();
+                        System.out.println("Connection established.");
                     }
                     catch (Exception e)
                     {
@@ -407,7 +432,10 @@ public class JZBot
                             || !storage.getServers().contains(context.getDatastoreServer()))
                     // if the server is not active or the server is no longer in the list
                     {
+                        System.out.println("Disconnecting from server "
+                                + context.getServerName());
                         context.getConnection().disconnect(getDefaultDisconnectMessage());
+                        System.out.println("Disconnected.");
                     }
                 }
             }
@@ -422,14 +450,39 @@ public class JZBot
             {
                 if (!storage.getServers().contains(context.getDatastoreServer()))
                 {
+                    System.out.println("Discarding connection for server "
+                            + context.getServerName());
                     context.getConnection().discard();
+                    System.out.println("Unregistering connection...");
                     connectionMap.remove(context.getDatastoreServer().getName());
+                    System.out.println("Connection discarded successfully.");
                 }
             }
         }
         /*
          * ...and we're done!
          */
+    }
+    
+    public static void notifyConnectionCycleThread()
+    {
+        connectionCycleQueue.offer(new Object());
+    }
+    
+    private static void runPreConnectActions(ConnectionContext context)
+    {
+        context.getConnection().setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
+        // TODO: might want to change this to an onVersion method in IrcProtocol itself,
+        // and have it retrievable from the context
+        context.getConnection().setVersion("JZBot -- http://jzbot.googlecode.com");
+        try
+        {
+            context.getConnection().setEncoding(ConfigVars.charset.get());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
     
     private static String getDefaultDisconnectMessage()
@@ -898,29 +951,13 @@ public class JZBot
         loadCachedConfig();
         startLogSinkThread();
         reloadRegexes();
-        try
-        {
-            bot.setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        bot.setLogin(config.getNick());
-        bot.setName(config.getNick());
-        bot.setVersion("JZBot -- http://jzbot.googlecode.com");
-        bot.setAutoNickChange(true);
-        try
-        {
-            bot.setEncoding(ConfigVars.charset.get());
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            e.printStackTrace();
-        }
-        System.out.println("connecting");
-        bot.connect(config.getServer(), config.getPort(), config.getPassword());
-        System.out.println("connected");
+        System.out.println("Starting connection cycle thread...");
+        startConnectionCycleThread();
+        System.out.println("Dispatching notifications to connection cycle thread...");
+        notifyConnectionCycleThread();
+        System.out.println("Connect thread started.");
+        System.out.println("JZBot has successfully started up. Server "
+                + "connections will be established in a few seconds.");
     }
     
     private static void initProxyStorage()
@@ -952,39 +989,24 @@ public class JZBot
         logQueueDelay = Integer.parseInt(ConfigVars.lqdelay.get());
     }
     
-    @SuppressWarnings("unchecked")
-    private static void loadProtocol()
-    {
-        String protocolClass = config.getProtocol();
-        System.out.println("Using protocol " + protocolClass);
-        try
-        {
-            Class<? extends Connection> classObject = (Class<? extends Connection>) Class
-                    .forName(protocolClass);
-            bot = classObject.newInstance();
-            bot.init();
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("Exception occurred while loading protocol", e);
-        }
-    }
-    
     public static void onJoin(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname)
     {
-        System.out.println("join detected on " + channel + " by " + sender);
-        Channel chan = storage.getChannel(channel);
+        System.out.println("join detected at " + serverName + " on " + channel + " by "
+                + sender);
+        Channel chan = datastoreServer.getChannel(channel);
         if (chan == null)
             return;
-        logEvent(channel, "joined", sender, login + "@" + hostname);
-        if (sender.equals(bot.getNick()))
+        logEvent(serverName, channel, "joined", sender, login + "@" + hostname);
+        if (sender.equals(getRealConnection(serverName).getConnection().getNick()))
         {
-            runNotificationFactoid(channel, chan, sender, "_selfjoin", null, true);
+            runNotificationFactoid(serverName, datastoreServer, channel, chan, sender,
+                    "_selfjoin", null, true, true);
         }
         else
         {
-            runNotificationFactoid(channel, chan, sender, "_onjoin", null, true);
+            runNotificationFactoid(serverName, datastoreServer, channel, chan, sender,
+                    "_onjoin", null, true, true);
         }
     }
     

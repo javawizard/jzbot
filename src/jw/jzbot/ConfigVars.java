@@ -10,18 +10,15 @@ import net.sf.opengroove.common.utils.StringUtils;
 
 public enum ConfigVars
 {
-    delay(
-            "1000",
+    delay("1000",
             "This config variable sets how often marlen can send messages, in milliseconds. "
-                    + "For example, if this is 1000 (the default), then marlen will send "
-                    + "no more than 1 "
-                    + "message per second, and will buffer messages so that they aren't sent more "
-                    + "often than that.")
+                    + "The default is 1000. The bot will buffer messages if they are sent "
+                    + "more often than this. This does not take effect until "
+                    + "the bot is restarted.")
     {
         public void set(String value)
         {
             int i = Integer.parseInt(value);
-            JZBot.bot.setMessageDelay(i);
             super.set(value);
         }
     },
