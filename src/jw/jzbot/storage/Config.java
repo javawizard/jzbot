@@ -5,8 +5,11 @@ import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
 @ProxyBean
-public interface Config 
+public interface Config
 {
+    // None of these properties are needed anymore. Once I'm certain everything with the
+    // new bot is up and working, I'll get rid of the Config class altogether.
+    
     @Property
     @Default(stringValue = "jw.jzbot.protocols.IrcProtocol")
     public String getProtocol();

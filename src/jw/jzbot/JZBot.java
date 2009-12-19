@@ -48,6 +48,7 @@ import jw.jzbot.commands.RedefineCommand;
 import jw.jzbot.commands.RegexCommand;
 import jw.jzbot.commands.RestartCommand;
 import jw.jzbot.commands.RestrictCommand;
+import jw.jzbot.commands.ServerCommand;
 import jw.jzbot.commands.ShutdownCommand;
 import jw.jzbot.commands.StatusCommand;
 import jw.jzbot.commands.SuperopCommand;
@@ -63,6 +64,7 @@ import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.FactQuota;
 import jw.jzbot.fact.FactoidException;
+import jw.jzbot.fact.NullSink;
 import jw.jzbot.fact.StringSink;
 import jw.jzbot.help.DefaultHelpProvider;
 import jw.jzbot.help.FunctionHelpProvider;
@@ -184,18 +186,23 @@ public class JZBot
     {
         try
         {
+            runNotificationFactoid(null, null, null, null, "", "_on" + name, new String[0],
+                    true, false);
             synchronized (connectionCycleLock)
             {
                 for (ConnectionContext context : connectionMap.values())
                 {
                     if (!context.getConnection().isConnected())
                         return;
-                    runNotificationFactoid(context.getServerName(), context.getServer(),
-                            null, null, bot.getNick(), "_on" + name, new String[0], true);
-                    for (String channel : bot.getChannels())
+                    runNotificationFactoid(context.getServerName(), context
+                            .getDatastoreServer(), null, null, context.getConnection()
+                            .getNick(), "_on" + name, new String[0], true, false);
+                    for (String channel : context.getConnection().getChannels())
                     {
-                        runNotificationFactoid(channel, null, bot.getNick(), "_on" + name,
-                                new String[0], true);
+                        runNotificationFactoid(context.getServerName(), context
+                                .getDatastoreServer(), channel, null, context
+                                .getConnection().getNick(), "_on" + name, new String[0],
+                                true, false);
                     }
                 }
             }
@@ -481,13 +488,24 @@ public class JZBot
         catch (Exception e)
         {
             throw new FactoidException(
-                    "Exception occured while stopping an http server on port " + port);
+                    "Exception occurred while stopping an http server on port " + port);
         }
     }
     
     public static final File serverPortsFile = new File("storage", "serverports.txt");
     public static final File maxServersFile = new File("storage", "maxservers.txt");
     
+    /**
+     * Throws an exception if a server cannot be started on the specified port. The
+     * reasons for throwing an exception are, at present:<br/>
+     * <ul>
+     * <li>HTTP servers are disabled because storage/serverports.txt does not exist</li>
+     * <li>The specified port does not match the regex in storage/serverports.txt</li>
+     * <li>There are too many servers already started</li>
+     * </ul>
+     * 
+     * @param port
+     */
     private static void verifyStartServer(int port)
     {
         if (!serverPortsFile.exists())
@@ -552,6 +570,7 @@ public class JZBot
     public static class FutureFactoid implements Runnable
     {
         private int delay;
+        private String server;
         private String channel;
         private ArgumentList arguments;
         private String sender;
@@ -559,17 +578,20 @@ public class JZBot
         private FactQuota quota;
         public long startTime;
         
-        public FutureFactoid(int delay, String channel, ArgumentList arguments,
-                String sender, String key, FactQuota quota)
+        public FutureFactoid(int delay, String server, String channel,
+                ArgumentList arguments, String sender, String key, FactQuota quota)
         {
             if (delay > (86400 * 2))
                 throw new RuntimeException("Futures can't be scheduled more than 2 days ("
                         + (86400 * 2) + " seconds) into the future. You're "
                         + "trying to schedule " + "a future to run sooner than that.");
+            // FIXME: This needs to be changed so that future factoids can be scheduled in
+            // factoids that are not channel-scoped.
             if (channel == null)
                 throw new RuntimeException("Can't schedule future factoids in pm. "
                         + "Run this factoid at a channel.");
             this.delay = delay;
+            this.server = server;
             this.channel = channel;
             this.arguments = arguments;
             this.sender = sender;
@@ -581,7 +603,7 @@ public class JZBot
              * future is run
              */
             for (int i = 0; i < arguments.length(); i++)
-                arguments.getString(i);
+                arguments.get(i, new NullSink());
         }
         
         public void run()
@@ -604,7 +626,7 @@ public class JZBot
                 String result;
                 try
                 {
-                    result = doFactImport(channel, arguments, sender, true, quota,
+                    result = doFactImport(server, channel, arguments, sender, true, quota,
                             ImportLevel.any);
                 }
                 catch (Throwable t)
@@ -617,10 +639,10 @@ public class JZBot
                 }
                 if (result.trim().equals(""))
                     return;
-                if (result.startsWith("<ACTION>"))
-                    bot.sendAction(channel, result.substring("<ACTION>".length()));
-                else
-                    bot.sendMessage(channel, result);
+                // TODO: this doesn't properly catch the case where the server is
+                // nonexistent or the server is not connected. Add code to deal with these
+                // two cases.
+                sendActionOrMessage(getConnection(server), channel, result);
             }
         }
         
@@ -634,7 +656,6 @@ public class JZBot
     public static final Object futureFactoidLock = new Object();
     public static ScheduledThreadPoolExecutor futureFactoidPool = new ScheduledThreadPoolExecutor(
             1);
-    public static boolean manualReconnect = false;
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
     // numeric 320: is signed on as account
     public static ProxyStorage<Storage> proxyStorage;
@@ -677,7 +698,8 @@ public class JZBot
         {
             System.out.println("JZBot is an IRC bot. If you have questions, connect");
             System.out.println("to irc.freenode.net and join channel ##jzbot.");
-            System.out.println("To set up your bot, run \"jzbot setup <server> ");
+            System.out
+                    .println("To set up your bot, run \"jzbot addserver <name> <server> ");
             System.out.println("<port> <nick> <hostname> <password>\". <server>");
             System.out.println("is the IRC server to connect to. For example, this");
             System.out.println("could be \"irc.freenode.net\". <port> is the port");
@@ -688,10 +710,10 @@ public class JZBot
             System.out.println("tell it to join channels, leave channels, create ");
             System.out.println("factoids, and so on. <password> is the password");
             System.out.println("you want the bot to use when connecting to the");
-            System.out.println("server. <password> is entirely optional.");
-            System.out.println("");
-            System.out.println("If you set up the bot with incorrect information,");
-            System.out.println("you can always run the setup command again.");
+            System.out.println("server. <password> is entirely optional. <name> ");
+            System.out.println("is a name for your server. You'll use this to refer");
+            System.out.println("to your server when communicating with your bot. This");
+            System.out.println("can be anything.");
             System.out.println("");
             System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
@@ -702,42 +724,30 @@ public class JZBot
             System.out.println("that implements jw.jzbot.Protocol.");
             System.out.println("Most users will not need to do this.");
         }
-        else if (args[0].equals("protocol"))
-        {
-            initProxyStorage();
-            if (config == null)
-            {
-                System.out.println("You need to run \"jzbot protocol\" *after* you");
-                System.out.println("run \"jzbot setup\".");
-                return;
-            }
-            if (args.length <= 1)
-            {
-                System.out.println("You need to specify the protocol to use. Try ");
-                System.out.println("\"jzbot protocol <class>\", or \"jzbot help\".");
-                return;
-            }
-            config.setProtocol(args[1]);
-            System.out.println("The protocol has been successfully set to \""
-                    + config.getProtocol() + "\".");
-        }
-        else if (args[0].equals("setup"))
+        else if (args[0].equals("addserver"))
         {
             ArrayList<String> list = new ArrayList<String>(Arrays.asList(args));
             list.remove(0);
             args = list.toArray(new String[0]);
-            if (args.length < 4 || args.length > 5)
+            if (args.length < 5 || args.length > 6)
             {
-                System.out.println("\"jzbot setup\" expects either 4 or 5 "
+                System.out.println("\"jzbot setup\" expects either 5 or 6 "
                         + "arguments, but you provided " + args.length);
                 System.out.println("arguments. See \"jzbot help\" for help.");
                 return;
             }
-            String server = args[0];
-            String portString = args[1];
-            String nick = args[2];
-            String hostname = args[3];
-            String password = (args.length > 4 ? args[4] : "");
+            String serverName = args[0];
+            String server = args[1];
+            String portString = args[2];
+            String nick = args[3];
+            String hostname = args[4];
+            String password = (args.length > 5 ? args[5] : "");
+            if (!isOkServerName(serverName))
+            {
+                System.out.println("That server name is not valid. Server names must");
+                System.out.println("contain only lowercase letters, numbers, and hyphens.");
+                return;
+            }
             int port;
             try
             {
@@ -759,18 +769,23 @@ public class JZBot
             System.out.println("will work. Hang on a sec while I set everything up.");
             System.out.println("");
             initProxyStorage();
-            config.setNick(nick);
-            config.setPassword(password);
-            config.setPort(port);
-            config.setServer(server);
-            if (storage.getOperator(hostname) == null)
+            if (storage.getServer(serverName) != null)
             {
-                Operator op = storage.createOperator();
-                op.setHostname(hostname);
-                storage.getOperators().add(op);
+                System.out.println("There is already a server using that name. ");
+                System.out.println("Try another name.");
+                return;
             }
+            Server datastoreServer = storage.createServer();
+            datastoreServer.setName(serverName);
+            datastoreServer.setNick(nick);
+            datastoreServer.setPassword(password);
+            datastoreServer.setPort(port);
+            datastoreServer.setServer(server);
+            Operator op = storage.createOperator();
+            op.setHostname(hostname);
+            datastoreServer.getOperators().add(op);
             System.out.println("");
-            System.out.println("JZBot has been successfully set up. Run \"jzbot\"");
+            System.out.println("A new server has been added. Run \"jzbot\"");
             System.out.println("to start your bot.");
         }
         else if (args[0].equals("config"))
@@ -802,25 +817,30 @@ public class JZBot
                         + "\" to the value \"" + args[2] + "\".");
             }
         }
-        else if (args[0].equals("switchnick"))
-        {
-            if (args.length > 1)
-            {
-                initProxyStorage();
-                config.setNick(args[1]);
-                System.out.println("Successfully set the bot's nick to be \"" + args[1]
-                        + "\".");
-            }
-            else
-            {
-                System.out.println("You need to specify a new nickname for the "
-                        + "bot to use. Try \"jzbot switchnick <newnick>\".");
-            }
-        }
+        // else if (args[0].equals("switchnick"))
+        // {
+        // if (args.length > 1)
+        // {
+        // initProxyStorage();
+        // config.setNick(args[1]);
+        // System.out.println("Successfully set the bot's nick to be \"" + args[1]
+        // + "\".");
+        // }
+        // else
+        // {
+        // System.out.println("You need to specify a new nickname for the "
+        // + "bot to use. Try \"jzbot switchnick <newnick>\".");
+        // }
+        // }
         else
         {
             System.out.println("That's an invalid command. Try \"jzbot help\".");
         }
+    }
+    
+    private static boolean isOkServerName(String serverName)
+    {
+        return serverName.matches("^[a-z0-9\\-]*$");
     }
     
     private static void loadCommands()
@@ -845,6 +865,7 @@ public class JZBot
         loadCommand(new RestrictCommand());
         // loadCommand(new RouletteCommand());
         // loadCommand(new SayCommand());
+        loadCommand(new ServerCommand());
         loadCommand(new ShutdownCommand());
         loadCommand(new StatusCommand());
         loadCommand(new SuperopCommand());
@@ -865,15 +886,14 @@ public class JZBot
         DefaultPastebinProviders.installDefaultSet();
         logsFolder.mkdirs();
         initProxyStorage();
-        if (config.getNick() == null || config.getPassword() == null
-                || config.getServer() == null)
+        if (storage.getServers().size() == 0)
         {
-            System.out.println("No connect info specified. JZBot will exit.");
-            System.out.println("Run \"jzbot help\" for help on how to set up");
-            System.out.println("JZBot and the connection info.");
+            System.out.println("No servers have been added. JZBot will exit.");
+            System.out.println("Run \"jzbot help\" for help on how to add a");
+            System.out.println("server for your bot to connect to. Specifically,");
+            System.out.println("you'll want to look at the addserver command.");
             System.exit(0);
         }
-        loadProtocol();
         loadCommands();
         loadCachedConfig();
         startLogSinkThread();
@@ -1069,7 +1089,7 @@ public class JZBot
      */
     private static void runNotificationFactoid(String serverName, Server server,
             String channelName, Channel chan, String sender, String factname,
-            String[] args, boolean timed)
+            String[] args, boolean timed, boolean cascade)
     {
         if (!factname.startsWith("_"))
             System.err.println("Factoid notification name \"" + factname
@@ -1091,10 +1111,12 @@ public class JZBot
                 return;
             facts.addAll(Arrays.asList(server.searchFactoids(factname)));
             facts.addAll(Arrays.asList(server.searchFactoids(factname + "_*")));
-            facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname)));
-            facts
-                    .addAll(Arrays.asList(storage.searchFactoids("_server" + factname
-                            + "_*")));
+            if (cascade)
+            {
+                facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname)));
+                facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname
+                        + "_*")));
+            }
         }
         else
         {
@@ -1108,10 +1130,15 @@ public class JZBot
                 return;
             facts.addAll(Arrays.asList(chan.searchFactoids(factname)));
             facts.addAll(Arrays.asList(chan.searchFactoids(factname + "_*")));
-            facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname)));
-            facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname + "_*")));
-            facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname)));
-            facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname + "_*")));
+            if (cascade)
+            {
+                facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname)));
+                facts.addAll(Arrays
+                        .asList(server.searchFactoids("_chan" + factname + "_*")));
+                facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname)));
+                facts.addAll(Arrays.asList(storage
+                        .searchFactoids("_chan" + factname + "_*")));
+            }
         }
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         // FIXME: make this configurable (up to a hard-coded limit of, say, 3 minutes)by a
@@ -1156,7 +1183,8 @@ public class JZBot
         }
     }
     
-    public static void sendPossibleAction(Connection target, String channel, String message)
+    public static void sendActionOrMessage(ConnectionWrapper target, String channel,
+            String message)
     {
         if (message.startsWith("<ACTION>"))
             target.sendAction(channel, message.substring("<ACTION>".length()));
@@ -1244,15 +1272,17 @@ public class JZBot
         any, exact, global
     }
     
-    public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted, FactQuota quota, ImportLevel level)
+    public static String doFactImport(String server, String channel,
+            ArgumentList arguments, String sender, boolean allowRestricted,
+            FactQuota quota, ImportLevel level)
     {
-        return doFactImport(channel, arguments, sender, allowRestricted, quota, level, null);
+        return doFactImport(server, channel, arguments, sender, allowRestricted, quota,
+                level, null);
     }
     
-    public static String doFactImport(String channel, ArgumentList arguments,
-            String sender, boolean allowRestricted, FactQuota quota, ImportLevel level,
-            Map<String, String> cascadingVars)
+    public static String doFactImport(String server, String channel,
+            ArgumentList arguments, String sender, boolean allowRestricted,
+            FactQuota quota, ImportLevel level, Map<String, String> cascadingVars)
     {
         Factoid f = null;
         boolean channelSpecific = false;
@@ -2129,7 +2159,11 @@ public class JZBot
         }
     }
     
-    private static Map<String, List<String>> regexCache = new HashMap<String, List<String>>();
+    /**
+     * Maps server names to a map that maps channel names to a list of all regexes at the
+     * channel.
+     */
+    private static Map<String, Map<String, List<String>>> regexCache = new HashMap<String, Map<String, List<String>>>();
     
     private static Object regexLock = new Object();
     
@@ -2144,13 +2178,18 @@ public class JZBot
         synchronized (regexLock)
         {
             regexCache.clear();
-            for (Channel c : storage.getChannels().isolate())
+            for (Server server : storage.getServers().isolate())
             {
-                ArrayList<String> list = new ArrayList<String>();
-                regexCache.put(c.getName(), list);
-                for (Regex regex : c.getRegularExpressions().isolate())
+                Map<String, List<String>> thisServerMap = new HashMap<String, List<String>>();
+                regexCache.put(server.getName(), thisServerMap);
+                for (Channel c : server.getChannels().isolate())
                 {
-                    list.add(regex.getExpression());
+                    ArrayList<String> list = new ArrayList<String>();
+                    thisServerMap.put(c.getName(), list);
+                    for (Regex regex : c.getRegularExpressions().isolate())
+                    {
+                        list.add(regex.getExpression());
+                    }
                 }
             }
         }

@@ -71,6 +71,9 @@ public interface Storage extends HasFactoids
     public Operator createOperator();
     
     @Constructor
+    public Server createServer();
+    
+    @Constructor
     public Channel createChannel();
     
     @Constructor
