@@ -1013,19 +1013,23 @@ public class JZBot
     public static void onPart(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname)
     {
-        logEvent(channel, "left", sender, "Left the channel");
-        runNotificationFactoid(channel, null, sender, "_onpart", null, true);
+        logEvent(serverName, channel, "left", sender, "Left the channel");
+        runNotificationFactoid(serverName, datastoreServer, channel, null, sender,
+                "_onpart", null, true, true);
     }
     
     public static void onBeforeQuit(Server datastoreServer, String serverName,
             String sourceNick, String sourceLogin, String sourceHostname, String reason)
     {
-        for (String channel : bot.getChannels())
+        Connection con = getRealConnection(serverName).getConnection();
+        for (String channel : con.getChannels())
         {
-            if (getUser(channel, sourceNick) != null)
+            if (getUser(con, channel, sourceNick) != null)
             {
-                logEvent(channel, "left", sourceNick, "Quit: " + reason);
-                runNotificationFactoid(channel, null, sourceNick, "_onquit", null, true);
+                logEvent(serverName, channel, "left", sourceNick, "Quit: " + reason);
+                runNotificationFactoid(serverName, datastoreServer, channel, null,
+                        sourceNick, "_onquit", null, true, true);// should cascade here be
+                // false? (to rely on the quit notification itself)
             }
         }
     }
@@ -1038,36 +1042,40 @@ public class JZBot
         channelTopics.put(channel, topic);
         if (changed)
         {
-            logEvent(channel, "topic", setBy, topic);
-            runNotificationFactoid(channel, null, setBy, "_ontopic", new String[]
-            {
-                    topic, "" + date
-            }, true);
+            logEvent(serverName, channel, "topic", setBy, topic);
+            runNotificationFactoid(serverName, datastoreServer, channel, null, setBy,
+                    "_ontopic", new String[]
+                    {
+                            topic, "" + date
+                    }, true, true);
         }
     }
     
     public static void onMode(Server datastoreServer, String serverName, String channel,
             String sourceNick, String sourceLogin, String sourceHostname, String mode)
     {
-        logEvent(channel, "mode", sourceNick, mode);
-        runNotificationFactoid(channel, null, sourceNick, "_onmode", new String[]
-        {
-            mode
-        }, true);
+        logEvent(serverName, channel, "mode", sourceNick, mode);
+        runNotificationFactoid(serverName, datastoreServer, channel, null, sourceNick,
+                "_onmode", new String[]
+                {
+                    mode
+                }, true, true);
     }
     
     public static void onNickChange(Server datastoreServer, String serverName,
             String oldNick, String login, String hostname, String newNick)
     {
-        for (String channel : bot.getChannels())
+        Connection con = getRealConnection(serverName).getConnection();
+        for (String channel : con.getChannels())
         {
-            if (getUser(channel, newNick) != null)
+            if (getUser(con, channel, newNick) != null)
             {
-                logEvent(channel, "nick", oldNick, newNick);
-                runNotificationFactoid(channel, null, newNick, "_onrename", new String[]
-                {
-                        oldNick, newNick
-                }, true);
+                logEvent(serverName, channel, "nick", oldNick, newNick);
+                runNotificationFactoid(serverName, datastoreServer, channel, null, newNick,
+                        "_onrename", new String[]
+                        {
+                                oldNick, newNick
+                        }, true, true);
             }
         }
     }
@@ -1237,9 +1245,9 @@ public class JZBot
      * @param sender
      *            The sender of the factoid request
      */
-    public static String runFactoid(Factoid factoid, String channel, String sender,
-            String[] args, Map<String, String> vars, boolean allowRestricted,
-            FactQuota quota)
+    public static String runFactoid(Factoid factoid, String server, String channel,
+            String sender, String[] args, Map<String, String> vars,
+            boolean allowRestricted, FactQuota quota)
     {
         if (quota == null)
             quota = new FactQuota();
@@ -1261,9 +1269,14 @@ public class JZBot
         vars.put("who", sender);
         if (channel != null)
             vars.put("channel", channel);
-        else
-            vars.put("channel", "none");
-        vars.put("self", bot.getNick());
+        String selfName = null;
+        if (server != null)
+        {
+            vars.put("server", server);
+            Connection realCon = getRealConnection(server).getConnection();
+            selfName = realCon.getNick();
+            vars.put("self", selfName);
+        }
         vars.put("source", channel == null ? sender : channel);
         String text = factoid.getValue();
         String factoidName = factoid.getName();
@@ -1276,7 +1289,8 @@ public class JZBot
         context.setSender(sender);
         context.setGlobalVars(globalVariables);
         context.setLocalVars(vars);
-        context.setSelf(bot.getNick());
+        context.setServer(server);
+        context.setSelf(selfName);
         // Now we actually run the factoid.
         StringSink resultSink = new StringSink();
         parsedFactoid.resolve(resultSink, context);
@@ -1291,6 +1305,7 @@ public class JZBot
     
     public static enum ImportLevel
     {
+        // FIXME: add a server level here
         any, exact, global
     }
     
@@ -1308,46 +1323,71 @@ public class JZBot
     {
         Factoid f = null;
         boolean channelSpecific = false;
-        if (channel != null)
+        boolean serverSpecific = false;
+        Server sv = null;
+        Channel cn = null;
+        String factname = arguments.getString(0);
+        if (server != null)
         {
-            Channel cn = JZBot.storage.getChannel(channel);
-            String factname = arguments.getString(0);
-            if (cn != null)
-                f = cn.getFactoid(factname);
+            sv = storage.getServer(server);
+            if (channel != null)
+                cn = sv.getChannel(channel);
+        }
+        // First, we'll try channel-specific lookup.
+        if (cn != null)
+        {
+            f = cn.getFactoid(factname);
             if (f != null)
                 channelSpecific = true;
         }
+        // Now we'll try server-specific lookup.
+        if (f == null && sv != null)
+        {
+            f = sv.getFactoid(factname);
+            if (f != null)
+                serverSpecific = true;
+        }
+        // Now we'll try global lookup.
         if (f == null)
         {
-            f = JZBot.storage.getFactoid(arguments.getString(0));
+            f = JZBot.storage.getFactoid(factname);
         }
+        // Make sure we got one
         if (f == null)
             throw new RuntimeException("Invalid import factoid " + arguments.getString(0));
         Map<String, String> varMap = new HashMap<String, String>();
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
         incrementIndirectRequests(f);
-        return runFactoid(f, channel, sender, arguments.subList(1).evalToArray(), varMap,
-                allowRestricted, quota);
+        return runFactoid(f, server, channel, sender, arguments.subList(1).evalToArray(),
+                varMap, allowRestricted, quota);
     }
     
     public static void onKick(Server datastoreServer, String serverName, String channel,
             String kickerNick, String kickerLogin, String kickerHostname,
             String recipientNick, String reason)
     {
-        logEvent(channel, "kick", kickerNick, recipientNick + " " + reason);
-        runNotificationFactoid(channel, null, kickerNick, "_onkick", new String[]
-        {
-                recipientNick, reason, kickerNick
-        }, true);
+        logEvent(serverName, channel, "kick", kickerNick, recipientNick + " " + reason);
+        runNotificationFactoid(serverName, datastoreServer, channel, null, kickerNick,
+                "_onkick", new String[]
+                {
+                        recipientNick, reason, kickerNick
+                }, true, true);
         if (recipientNick.equals(bot.getNick()))
-            bot.joinChannel(channel);
+        {
+            // FIXME: wait a configurable amount of time before rejoining, and maybe put
+            // this into a thread pool executor to wait, and maybe try to rejoin every few
+            // seconds if we can't on the first try. Also, this is really bad to operate
+            // on the low-level connection since this join doesn't get logged; this needs
+            // to be fixed as soon as possible.
+            getRealConnection(serverName).getConnection().joinChannel(channel);
+        }
     }
     
     public static void onMessage(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname, String message)
     {
-        logEvent(channel, "message", sender, message);
+        logEvent(serverName, channel, "message", sender, message);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         try
@@ -2058,9 +2098,9 @@ public class JZBot
         return null;
     }
     
-    public static User getUser(String channel, String nick)
+    public static User getUser(Connection con, String channel, String nick)
     {
-        User[] users = bot.getUsers(channel);
+        User[] users = con.getUsers(channel);
         for (User u : users)
         {
             if (nick.equalsIgnoreCase(u.getNick()))
