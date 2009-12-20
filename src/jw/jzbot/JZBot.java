@@ -1216,6 +1216,8 @@ public class JZBot
     public static void sendActionOrMessage(ConnectionWrapper target, String channel,
             String message)
     {
+        if (message.equals(""))
+            ;
         if (message.startsWith("<ACTION>"))
             target.sendAction(channel, message.substring("<ACTION>".length()));
         else
@@ -1373,7 +1375,7 @@ public class JZBot
                 {
                         recipientNick, reason, kickerNick
                 }, true, true);
-        if (recipientNick.equals(bot.getNick()))
+        if (recipientNick.equals(getRealConnection(serverName).getConnection().getNick()))
         {
             // FIXME: wait a configurable amount of time before rejoining, and maybe put
             // this into a thread pool executor to wait, and maybe try to rejoin every few
@@ -1392,16 +1394,17 @@ public class JZBot
         tkt.start();
         try
         {
-            System.out
-                    .println("Message from " + channel + " by " + sender + ": " + message);
-            Channel chan = storage.getChannel(channel);
+            System.out.println("Message at " + serverName + " channel " + channel
+                    + " from " + sender + ": " + message);
+            Channel chan = datastoreServer.getChannel(channel);
             if (chan == null)
             {
-                System.out.println("No matching channel");
+                System.out.println("No matching channel, probably means "
+                        + "we've joined a channel without storage");
                 return;
             }
-            boolean processFactoids = processChannelRegex(channel, sender, hostname,
-                    message, false);
+            boolean processFactoids = processChannelRegex(datastoreServer, serverName,
+                    channel, sender, hostname, message, false);
             String trigger = chan.getTrigger();
             if (trigger != null && message.startsWith(trigger))
             {
@@ -1414,8 +1417,8 @@ public class JZBot
                 catch (Throwable e)
                 {
                     e.printStackTrace();
-                    JZBot.bot.sendMessage(channel, "Internal upper-propegation error: "
-                            + pastebinStack(e));
+                    getConnection(serverName).sendMessage(channel,
+                            "Internal upper-propegation error: " + pastebinStack(e));
                 }
             }
             else
@@ -1425,7 +1428,8 @@ public class JZBot
         }
         catch (FactTimeExceededError e)
         {
-            JZBot.bot.sendMessage(channel, "Time exceeded: " + pastebinStack(e));
+            getConnection(serverName).sendMessage(channel,
+                    "Time exceeded: " + pastebinStack(e));
         }
         finally
         {
@@ -1437,49 +1441,29 @@ public class JZBot
             String sourceNick, String sourceLogin, String sourceHostname, String target,
             String line)
     {
-        logEvent(target, "notice", sourceNick, line);
-        String[] arguments =
-        {
-            line
-        }; // Send the text as parameter %1%
-        if (!(target.equals(bot.getNick())) || !(sourceNick.equals(bot.getNick()))) // if
-        // the
-        // target
-        // of
-        // the
-        // notice
-        // is
-        // the
-        // bots
-        // nick
-        // it is a Global Notice
-        {
-            runNotificationFactoid(target, null, sourceNick, "_onnotice", arguments, true);
-        }
-        if (target.equals(bot.getNick())) // if the target of the notice is the bots nick
-        // it is a Personal Notice
-        {
-            String[] channels = JZBot.bot.getChannels(); // get a list of channels where
-            // the bot is in
-            for (String channel : channels)
-            { // for each channel it activates _onPRIVNotice
-                runNotificationFactoid(channel, null, sourceNick, "_onprivnotice",
-                        arguments, true);
-            }
-        }
+        Connection con = getRealConnection(serverName).getConnection();
+        boolean inPm = target.equals(con.getNick());
+        if (!inPm && target.startsWith("#"))
+            logEvent(serverName, target, "notice", sourceNick, line);
+        runNotificationFactoid(serverName, datastoreServer, inPm ? null : target, null,
+                sourceNick, "_onnotice", new String[]
+                {
+                        line, target
+                }, true, true);
         System.out.println("Notice to " + target + " by " + sourceNick + ": " + line);
         
     }
     
-    public static boolean processChannelRegex(String channel, String sender,
-            String hostname, String message, boolean action)
+    public static boolean processChannelRegex(Server server, String serverName,
+            String channel, String sender, String hostname, String message, boolean action)
     {
         try
         {
             boolean factOverridden = false;
             synchronized (regexLock)
             {
-                List<String> channelList = regexCache.get(channel);
+                Map<String, List<String>> smap = regexCache.get(serverName);
+                List<String> channelList = (smap == null ? null : smap.get(channel));
                 if (channelList == null)
                     return true;
                 for (String regex : channelList)
@@ -1491,8 +1475,8 @@ public class JZBot
                     /*
                      * We found something.
                      */
-                    OverrideStatus override = runRegex(channel, sender, hostname, message,
-                            matcher, regex, action);
+                    OverrideStatus override = runRegex(server, serverName, channel, sender,
+                            hostname, message, matcher, regex, action);
                     if (override == OverrideStatus.override)
                         return false;
                     else if (override == OverrideStatus.factoverride)
@@ -1506,7 +1490,8 @@ public class JZBot
         catch (Throwable e)
         {
             e.printStackTrace();
-            bot.sendMessage(channel, "Pre-process regex error: " + pastebinStack(e));
+            getConnection(serverName).sendMessage(channel,
+                    "Pre-process regex error: " + pastebinStack(e));
             return true;
         }
     }
@@ -1518,6 +1503,7 @@ public class JZBot
     
     /**
      * 
+     * @param server
      * @param channel
      * @param sender
      * @param hostname
@@ -1526,10 +1512,11 @@ public class JZBot
      * @param regex
      * @return True if this overrides, false if it doesn't
      */
-    private static OverrideStatus runRegex(String channel, String sender, String hostname,
-            String message, Matcher matcher, String regexValue, boolean action)
+    private static OverrideStatus runRegex(Server server, String serverName,
+            String channel, String sender, String hostname, String message,
+            Matcher matcher, String regexValue, boolean action)
     {
-        Channel c = storage.getChannel(channel);
+        Channel c = server.getChannel(channel);
         if (c == null)
             return OverrideStatus.none;
         Regex regex = c.getRegex(regexValue);
@@ -1537,11 +1524,13 @@ public class JZBot
             return OverrideStatus.none;
         Factoid f = c.getFactoid(regex.getFactoid());
         if (f == null)
+            f = server.getFactoid(regex.getFactoid());
+        if (f == null)
             f = JZBot.storage.getFactoid(regex.getFactoid());
         if (f == null)
         {
-            bot.sendMessage(channel, "Invalid factoid in regex " + regexValue + ": "
-                    + regex.getFactoid());
+            getConnection(serverName).sendMessage(channel,
+                    "Invalid factoid in regex " + regexValue + ": " + regex.getFactoid());
             return OverrideStatus.none;
         }
         HashMap<String, String> vars = new HashMap<String, String>();
@@ -1557,12 +1546,7 @@ public class JZBot
         }
         incrementIndirectRequests(f);
         String factValue = safeRunFactoid(f, channel, sender, strings, true, vars);
-        if (factValue.trim().equals(""))
-            ;
-        else if (factValue.startsWith("<ACTION>"))
-            bot.sendAction(channel, factValue.substring("<ACTION>".length()));
-        else
-            bot.sendMessage(channel, factValue);
+        sendActionOrMessage(getConnection(serverName), channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
         else if ("true".equalsIgnoreCase(vars.get("__fact_override")))
