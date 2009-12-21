@@ -7,7 +7,9 @@ import net.sf.opengroove.common.utils.StringUtils;
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.fact.functions.HashFunction;
 import jw.jzbot.storage.Operator;
 import jw.jzbot.storage.Server;
@@ -20,8 +22,8 @@ public class SuperopCommand implements Command
         return "superop";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         if (server == null)
             throw new ResponseException(
