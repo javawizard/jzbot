@@ -11,6 +11,7 @@ import java.util.Map;
 import jw.jzbot.Command;
 import jw.jzbot.Factpack;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.Factpack.Dependency;
@@ -46,7 +47,7 @@ public class FactoidCommand implements Command
         return "factoid";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, ServerUser sender,Messenger source,
             String arguments)
     {
         boolean isGlobal = false;

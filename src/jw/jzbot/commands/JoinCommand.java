@@ -2,6 +2,7 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
@@ -16,7 +17,7 @@ public class JoinCommand implements Command
     }
     
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         Server dServer = JZBot.storage.getServer(server);
         // if (!pm)
@@ -32,10 +33,8 @@ public class JoinCommand implements Command
             if (c.isSuspended())
             {
                 c.setSuspended(false);
-                JZBot.getServer(server).sendMessage(
-                        pm ? sender : channel,
-                        "Ok, I'll come back to that channel. I remember all "
-                                + "of my factoids and such from there.");
+                source.sendMessage("Ok, I'll come back to that channel. I remember all "
+                        + "of my factoids and such from there.");
                 JZBot.getServer(server).joinChannel(name);
                 // JZBot.bot.sendMessage(name, "I've come back (courtesy of " + sender
                 // + ")");
@@ -56,8 +55,7 @@ public class JoinCommand implements Command
         c.setTrigger("~");
         dServer.getChannels().add(c);
         JZBot.getServer(server).joinChannel(name);
-        JZBot.getServer(server).sendMessage(sender,
-                "Successful. I'm only allowing superops to create stuff here.");
+        sender.sendMessage("Successful. I'm only allowing superops to create stuff here.");
         // JZBot.bot.sendMessage(name, "Here I am (courtesy of " + sender
         // + "). I'm only allowing ops to create factoids here.");
     }

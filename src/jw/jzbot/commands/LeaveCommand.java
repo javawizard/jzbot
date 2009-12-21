@@ -2,7 +2,9 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
@@ -23,22 +25,29 @@ public class LeaveCommand implements Command
         return "leave";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         Server dServer = JZBot.storage.getServer(server);
         if (channel == null)
             throw new ResponseException("You must specify a channel.");
         try
         {
-            JZBot.verifySuperop(server, hostname);
+            sender.verifySuperop();
         }
         catch (RuntimeException e)
         {
-            User user = JZBot.getUser(JZBot.getRealConnection(server).getConnection(),
-                    channel, sender);
-            if (!user.isOp())
+            if (server.equals(sender.getServerName()))
+            {
+                User user = JZBot.getUser(JZBot.getRealConnection(server).getConnection(),
+                        channel, sender.getNick());
+                if (!user.isOp())
+                    throw e;
+            }
+            else
+            {
                 throw e;
+            }
         }
         Channel c = dServer.getChannel(channel);
         if (c == null)
@@ -48,12 +57,10 @@ public class LeaveCommand implements Command
             throw new ResponseException("I've already left that channel. You might "
                     + "want to pm \"restart\" if I seem not to have left it.");
         c.setSuspended(true);
-        JZBot.getServer(server).sendMessage(
-                sender,
-                "Ok, I'll leave now. I'll remember this channel's "
-                        + "settings, though. Use \"/msg "
-                        + JZBot.getServer(server).getConnection().getNick() + " join "
-                        + channel + "\" to have me join the channel again.");
+        sender.sendMessage("Ok, I'll leave now. I'll remember this channel's "
+                + "settings, though. Use \"/msg "
+                + JZBot.getServer(server).getConnection().getNick() + " join " + channel
+                + "\" to have me join the channel again.");
         JZBot.getServer(server).partChannel(channel, "Leaving on request from " + sender);
     }
     

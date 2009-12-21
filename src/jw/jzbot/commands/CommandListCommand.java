@@ -22,12 +22,12 @@ public class CommandListCommand implements Command
             currentList += name + "  ";
             if (currentList.length() > 200)
             {
-                sender.sendMessage(server, pm, channel, currentList);
+                source.sendMessage(currentList);
                 currentList = "";
             }
         }
         if (!currentList.equals(""))
-            sender.sendMessage(server, pm, channel, currentList);
-        sender.sendMessage(pm, server, channel, "End of command list");
+            source.sendMessage(currentList);
+        source.sendMessage("End of command list");
     }
 }

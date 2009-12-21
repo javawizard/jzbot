@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
@@ -23,7 +24,7 @@ public class ExecCommand implements Command
     
     @Override
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         sender.verifySuperop();
         long startMillis = System.currentTimeMillis();
@@ -57,6 +58,6 @@ public class ExecCommand implements Command
                 + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
-        sender.sendMessage(server, pm, channel, result);
+        source.sendMessage(result);
     }
 }

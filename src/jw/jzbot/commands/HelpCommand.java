@@ -8,6 +8,7 @@ import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
@@ -25,7 +26,7 @@ public class HelpCommand implements Command
     }
     
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         Server datastoreServer = JZBot.storage.getServer(server);
         if (ConfigVars.helpinpm.get().equals("1") && !pm)
@@ -88,7 +89,7 @@ public class HelpCommand implements Command
             for (String s : messages)
             {
                 if (!s.trim().equals(""))
-                    sender.sendMessage(pm, server, channel, s);
+                    source.sendMessage(s);
             }
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
@@ -109,19 +110,19 @@ public class HelpCommand implements Command
                 {
                     if (sentFirst)
                     {
-                        sender.sendMessage(pm, server, channel, prefix + s);
+                        source.sendMessage(prefix + s);
                     }
                     else
                     {
                         sentFirst = true;
                         if (subpages.size() > 0)// disables "no subpages" message for now
-                            sender.sendMessage(pm, server, channel, prefix + startText + s);
+                            source.sendMessage(prefix + startText + s);
                     }
                 }
             }
             else
             {
-                sender.sendMessage(pm, server, channel, prefix + startText);
+                source.sendMessage(prefix + startText);
             }
         }
         else
@@ -141,7 +142,7 @@ public class HelpCommand implements Command
                 buffer.append(subpage).append(":\n");
                 buffer.append(subtext).append("\n\n");
             }
-            sender.sendMessage(pm, server, channel, "All subpages of \""
+            source.sendMessage("All subpages of \""
                     + page
                     + "\": "
                     + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,

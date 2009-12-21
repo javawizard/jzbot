@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.utils.JZUtils;
@@ -22,11 +23,11 @@ public class ConfigCommand implements Command
     }
     
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         if (!sender.isSuperop())
         {
-            sender.sendMessage(pm, server, channel, "You're not a superop.");
+            source.sendMessage("You're not a superop.");
             return;
         }
         String[] tokens = arguments.split(" ", 2);
@@ -39,17 +40,17 @@ public class ConfigCommand implements Command
                                 + "a list of var names.");
             if (tokens.length == 1)
             {
-                sender.sendMessage(pm, server, channel,
+                source.sendMessage(
                         "This variable's current value is \"" + var.get()
                                 + "\". You can use \"~config " + var.name()
                                 + " <newvalue>\" to set a new value."
                                 + " The variable's description is:");
-                sender.sendMessage(pm, server, channel, var.getDescription());
+                source.sendMessage(var.getDescription());
             }
             else
             {
                 var.set(tokens[1]);
-                sender.sendMessage(pm, server, channel, "Successfully set the var \""
+                source.sendMessage("Successfully set the var \""
                         + var.name() + "\" to have the value \"" + tokens[1] + "\".");
             }
         }
@@ -60,7 +61,7 @@ public class ConfigCommand implements Command
             {
                 configVarNames[i] = ConfigVars.values()[i].name();
             }
-            sender.sendMessage(pm, server, channel,
+            source.sendMessage(
                     "Use \"~config <varname>\" to see a variable's current value and "
                             + "a short description of the variable, " + "or \"~config "
                             + "<varname> <value>\" to " + "set the value "

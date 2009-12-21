@@ -2,6 +2,7 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactParser;
@@ -20,7 +21,7 @@ public class ExplainCommand implements Command
     
     @Override
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         // FIXME: merge this into ~factoid, to allow for scoping (IE specifying
         // specifically which factoid you want if there are several factoids with the same
@@ -44,8 +45,8 @@ public class ExplainCommand implements Command
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());
         buffer.append("\n\nExplanation for this factoid:\n\n");
         buffer.append(explanation);
-        sender
-                .sendMessage(pm, server, channel, "Explanation of this factoid: "
+        source
+                .sendMessage("Explanation of this factoid: "
                         + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
                                 null, null));
     }
