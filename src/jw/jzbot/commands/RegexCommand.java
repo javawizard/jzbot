@@ -6,7 +6,9 @@ import java.util.regex.Pattern;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Regex;
 import jw.jzbot.storage.Server;
@@ -23,18 +25,18 @@ public class RegexCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         if (server == null || channel == null)
             throw new ResponseException(
                     "The regex command needs to be scoped to a channel.");
-        JZBot.verifySuperop(server, hostname);
-        doRegexCommand(server, channel, pm, sender, arguments, true);
+        sender.verifySuperop();
+        doRegexCommand(server, channel, pm, sender, source, arguments, true);
     }
     
     public static void doRegexCommand(String server, String channel, boolean pm,
-            String sender, String arguments, boolean reply)
+            ServerUser sender, Messenger source, String arguments, boolean reply)
     {
         Server dServer = JZBot.storage.getServer(server);
         String[] argSplit1 = arguments.split(" ", 2);
@@ -69,8 +71,7 @@ public class RegexCommand implements Command
             c.getRegularExpressions().add(regex);
             JZBot.reloadRegexes();
             if (reply)
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "Successfully added and activated.");
+                source.sendMessage("Successfully added and activated.");
         }
         else if (command.equals("delete"))
         {
@@ -86,8 +87,7 @@ public class RegexCommand implements Command
             c.getRegularExpressions().remove(regex);
             JZBot.reloadRegexes();
             if (reply)
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "Successfully removed and deactivated.");
+                source.sendMessage("Successfully removed and deactivated.");
             
         }
         else if (command.equals("deleteall"))
@@ -95,8 +95,7 @@ public class RegexCommand implements Command
             c.getRegularExpressions().clear();
             JZBot.reloadRegexes();
             if (reply)
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "Successfully deleted all regexes on this channel.");
+                source.sendMessage("Successfully deleted all regexes on this channel.");
         }
         else if (command.equals("list"))
         {
@@ -109,22 +108,19 @@ public class RegexCommand implements Command
             if (split.length > 2)
             {
                 if (reply)
-                    JZBot.getServer(server).sendMessage(
-                            pm ? sender : channel,
-                            "Regex list: "
-                                    + Pastebin.createPost("jzbot", buffer.toString(),
-                                            Duration.DAY, null, null));
+                    source.sendMessage("Regex list: "
+                            + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
+                                    null, null));
             }
             else
             {
                 for (String s : split)
                 {
                     if (reply)
-                        JZBot.getServer(server).sendMessage(pm ? sender : channel, s);
+                        source.sendMessage(s);
                 }
                 if (reply)
-                    JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                            "End of regex list");
+                    source.sendMessage("End of regex list");
             }
         }
         else

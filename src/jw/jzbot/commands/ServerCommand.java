@@ -2,7 +2,9 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Server;
 
 public class ServerCommand implements Command
@@ -15,8 +17,8 @@ public class ServerCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         // TODO: make a config var that, when set to a certain value, allows the list of
         // servers to be read by non-superops, too.

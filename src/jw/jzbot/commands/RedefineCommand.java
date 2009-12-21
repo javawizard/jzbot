@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.MapEntry;
 import jw.jzbot.utils.JZUtils;
 
@@ -18,8 +20,8 @@ public class RedefineCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         // NOTE: anyone should be allowed to read the redefinition list, but only superops
         // should be able to modify it.
@@ -34,7 +36,7 @@ public class RedefineCommand implements Command
                 list.add(redefinition.getKey() + "->" + redefinition.getValue());
             }
             JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ", JZBot
-                    .getServer(server), pm ? sender : channel);
+                    .getServer(pm ? sender.nick() : server), pm ? sender.nick() : channel);
         }
         throw new ResponseException(
                 "Redefinition is not yet supported. When it is, it will "

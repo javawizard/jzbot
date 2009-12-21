@@ -188,17 +188,13 @@ public class MMCommand implements Command
             }
             stateMap.remove(channel);
             if (pm)
-                JZBot.getServer(server).sendMessage(sender,
-                        "You won! That was the correct answer.");
+                sender.sendMessage("You won! That was the correct answer.");
             JZBot.getServer(server).sendMessage(channel,
                     sender + " won! " + answer + " was the correct answer.");
             return;
         }
-        JZBot.getServer(server).sendMessage(
-                pm ? sender : channel,
-                sender + ": " + rightPosition + " right place, " + rightNumber
-                        + " right number wrong place. " + state.guesses
-                        + " guesses so far.");
+        source.sendMessage(sender + ": " + rightPosition + " right place, " + rightNumber
+                + " right number wrong place. " + state.guesses + " guesses so far.");
     }
     
     private void removeOne(ArrayList<Integer> correct, int guess)

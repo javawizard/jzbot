@@ -2,6 +2,8 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
+import jw.jzbot.ServerUser;
 
 public class RestartCommand implements Command
 {
@@ -13,16 +15,15 @@ public class RestartCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
         // FIXME: this could possibly be moved to a factpack. Maybe keep it just in case,
         // but allow it to be redefined.
-        JZBot.verifySuperop(server, hostname);
-        JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                "The bot will be restarted shortly. Note that this only "
-                        + "works if you used the jzbot wrapper script to start "
-                        + "the bot. If you didn't, the bot will shut down instead.");
+        sender.verifySuperop();
+        source.sendMessage("The bot will be restarted shortly. Note that this only "
+                + "works if you used the jzbot wrapper script to start "
+                + "the bot. If you didn't, the bot will shut down instead.");
         long sleepDuration = 1000;
         try
         {
