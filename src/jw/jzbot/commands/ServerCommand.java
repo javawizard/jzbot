@@ -22,12 +22,11 @@ public class ServerCommand implements Command
     {
         // TODO: make a config var that, when set to a certain value, allows the list of
         // servers to be read by non-superops, too.
-        JZBot.verifySuperop(server, hostname);
+        sender.verifySuperop();
         if (arguments.equals(""))
         {
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "You need to specify one of add, delete, details, activate, "
+            source
+                    .sendMessage("You need to specify one of add, delete, details, activate, "
                             + "deactivate, edit, list, or current.");
             return;
         }
@@ -59,9 +58,8 @@ public class ServerCommand implements Command
             if (tokens.length > 4)
                 newServer.setPassword(tokens[4]);
             JZBot.storage.getServers().add(newServer);
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "That server has successfully been added. Use \"server activate "
+            source
+                    .sendMessage("That server has successfully been added. Use \"server activate "
                             + newServer + "\" to get the bot to actually connect to it.");
         }
         else if (subcommand.equals("delete"))
@@ -69,10 +67,8 @@ public class ServerCommand implements Command
             Server s = server(serverName);
             JZBot.storage.getServers().remove(s);
             JZBot.notifyConnectionCycleThread();
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "The server and its factoids and settings have been "
-                            + "successfully deleted.");
+            source.sendMessage("The server and its factoids and settings have been "
+                    + "successfully deleted.");
         }
         else if (subcommand.equals("details"))
         {
@@ -85,10 +81,8 @@ public class ServerCommand implements Command
                 throw new ResponseException("That server is already active.");
             s.setActive(true);
             JZBot.notifyConnectionCycleThread();
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "The server was successfully activated. The bot will "
-                            + "connect to it within a few seconds.");
+            source.sendMessage("The server was successfully activated. The bot will "
+                    + "connect to it within a few seconds.");
         }
         else if (subcommand.equals("deactivate"))
         {
@@ -97,10 +91,8 @@ public class ServerCommand implements Command
                 throw new ResponseException("That server is not active.");
             s.setActive(false);
             JZBot.notifyConnectionCycleThread();
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "The server was successfully deactivated. The bot will "
-                            + "disconnect from it within a few seconds.");
+            source.sendMessage("The server was successfully deactivated. The bot will "
+                    + "disconnect from it within a few seconds.");
         }
         else if (subcommand.equals("edit"))
         {
