@@ -2,6 +2,7 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.ServerUser;
 
 public class CommandListCommand implements Command
 {
@@ -11,8 +12,8 @@ public class CommandListCommand implements Command
         return "commandlist";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
         String currentList = "";
         for (String name : JZBot.commands.keySet())
@@ -20,13 +21,12 @@ public class CommandListCommand implements Command
             currentList += name + "  ";
             if (currentList.length() > 200)
             {
-                JZBot.getServer(server).sendMessage(pm ? sender : channel, currentList);
+                sender.sendMessage(server, pm, channel, currentList);
                 currentList = "";
             }
         }
         if (!currentList.equals(""))
-            JZBot.getServer(server).sendMessage(pm ? sender : channel, currentList);
-        JZBot.getServer(server).sendMessage(pm ? sender : channel, "End of command list");
+            sender.sendMessage(server, pm, channel, currentList);
+        sender.sendMessage(pm, server, channel, "End of command list");
     }
-    
 }

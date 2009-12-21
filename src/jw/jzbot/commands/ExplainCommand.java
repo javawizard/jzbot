@@ -3,6 +3,7 @@ package jw.jzbot.commands;
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.Pastebin;
@@ -18,8 +19,8 @@ public class ExplainCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
         // FIXME: merge this into ~factoid, to allow for scoping (IE specifying
         // specifically which factoid you want if there are several factoids with the same
@@ -43,9 +44,8 @@ public class ExplainCommand implements Command
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());
         buffer.append("\n\nExplanation for this factoid:\n\n");
         buffer.append(explanation);
-        JZBot.getServer(server).sendMessage(
-                pm ? sender : channel,
-                "Explanation of this factoid: "
+        sender
+                .sendMessage(pm, server, channel, "Explanation of this factoid: "
                         + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
                                 null, null));
     }

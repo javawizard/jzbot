@@ -195,6 +195,9 @@ public class IrcProtocol extends PircBot implements Connection
     public void init(ConnectionContext context)
     {
         this.context = context;
+        setLogin("jzbot");
+        setFinger("If I had any idea what the finger command is supposed to do...");
+        setVersion("JZBot -- http://jzbot.googlecode.com");
     }
     
     @Override

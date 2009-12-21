@@ -49,9 +49,44 @@ public class ServerUser
         return JZBot.isSuperop(serverName, hostname);
     }
     
+    /**
+     * Throws an exception if this user is not a superop.
+     */
     public void verifySuperop()
     {
         JZBot.verifySuperop(serverName, hostname);
     }
     
+    public String nick()
+    {
+        return getNick();
+    }
+    
+    public void sendMessage(boolean pm, String serverName, String channel, String message)
+    {
+        sendMessage(serverName, pm, channel, message);
+    }
+    
+    /**
+     * If <tt>pm</tt> is true, sends a message to this user. Otherwise, sends a message to
+     * the specified channel on the specified server.
+     * 
+     * @param serverName
+     * @param pm
+     * @param channel
+     * @param message
+     */
+    public void sendMessage(String serverName, boolean pm, String channel, String message)
+    {
+        if (pm)
+        {
+            ConnectionWrapper con = JZBot.getServer(this.serverName);
+            con.sendMessage(this.nick, message);
+        }
+        else
+        {
+            ConnectionWrapper con = JZBot.getServer(serverName);
+            con.sendMessage(channel, message);
+        }
+    }
 }

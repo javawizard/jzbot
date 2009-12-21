@@ -1612,7 +1612,8 @@ public class JZBot
             try
             {
                 threadLocalUsername.set(username);
-                c.run(serverName, channel, pm, sender, hostname, commandArguments);
+                c.run(serverName, channel, pm, new ServerUser(senderServerName, sender,
+                        hostname), commandArguments);
             }
             catch (Exception e)
             {
@@ -2468,4 +2469,5 @@ public class JZBot
     {
         return getConnection(server);
     }
+    
 }

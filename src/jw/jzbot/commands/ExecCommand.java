@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
@@ -21,15 +22,16 @@ public class ExecCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
-        JZBot.verifySuperop(server, hostname);
+        sender.verifySuperop();
         long startMillis = System.currentTimeMillis();
         FactEntity entity = FactParser.parse(arguments, "__internal_exec");
         FactContext context = new FactContext();
         context.setServer(server);
         context.setChannel(channel);
+        // FIXME: we need to have a senderserver or something on the context
         context.setSender(sender);
         context.setSelf(JZBot.getServer(server).getConnection().getNick());
         context.setQuota(new FactQuota());
@@ -39,9 +41,10 @@ public class ExecCommand implements Command
         // a fact here)
         vars.put("channel", channel);
         vars.put("server", server);
-        vars.put("0", sender);
-        vars.put("who", sender);
-        vars.put("source", pm ? sender : channel);
+        vars.put("0", sender.nick());
+        vars.put("who", sender.nick());
+        // TODO: add a senderserver var or something, or just have that as a function
+        vars.put("source", pm ? sender.nick() : channel);
         vars.put("self", context.getSelf());
         context.setLocalVars(vars);
         context.setGlobalVars(JZBot.globalVariables);
@@ -54,6 +57,6 @@ public class ExecCommand implements Command
                 + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
-        JZBot.getServer(server).sendMessage(pm ? sender : channel, result);
+        sender.sendMessage(server, pm, channel, result);
     }
 }

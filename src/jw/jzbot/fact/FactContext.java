@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.JZBot;
+import jw.jzbot.ServerUser;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
 
@@ -34,8 +35,8 @@ public class FactContext
     private boolean action;
     private String server;
     private String channel;
-    private String sender;
-    private String self = (JZBot.bot == null ? null : JZBot.bot.getNick());
+    private ServerUser sender;
+    private String self;
     private FactQuota quota = new FactQuota();
     private DebugInstance debugger;
     
@@ -84,12 +85,12 @@ public class FactContext
         this.channel = channel;
     }
     
-    public String getSender()
+    public ServerUser getSender()
     {
         return sender;
     }
     
-    public void setSender(String sender)
+    public void setSender(ServerUser sender)
     {
         this.sender = sender;
     }
