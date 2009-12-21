@@ -1411,8 +1411,9 @@ public class JZBot
                 try
                 {
                     System.out.println("running message command");
-                    runMessageCommand(channel, false, sender, hostname, login, message
-                            .substring(trigger.length()), processFactoids);
+                    runMessageCommand(datastoreServer, serverName, channel, false, sender,
+                            hostname, login, message.substring(trigger.length()),
+                            processFactoids);
                 }
                 catch (Throwable e)
                 {
@@ -1559,18 +1560,19 @@ public class JZBot
     {
         if (!(channel.startsWith("#")))
             return;
-        logEvent(channel, "action", sender, action);
+        logEvent(serverName, channel, "action", sender, action);
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         try
         {
-            processChannelRegex(channel, sender, hostname, action, true);
+            processChannelRegex(datastoreServer, serverName, channel, sender, hostname,
+                    action, true);
         }
         catch (Throwable t)
         {
             t.printStackTrace();
-            bot.sendMessage(sender, "Exception while processing action: "
-                    + pastebinStack(t));
+            getConnection(serverName).sendMessage(sender,
+                    "Exception while processing action: " + pastebinStack(t));
         }
         finally
         {
@@ -1578,9 +1580,11 @@ public class JZBot
         }
     }
     
-    private static void runMessageCommand(String channel, boolean pm, String sender,
-            String hostname, String username, String message, boolean processFactoids)
+    private static void runMessageCommand(Server datastoreServer, String serverName,
+            String channel, boolean pm, String sender, String hostname, String username,
+            String message, boolean processFactoids)
     {
+        ConnectionWrapper con = getConnection(serverName);
         System.out.println("Starting command run for message " + message);
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
@@ -1597,19 +1601,19 @@ public class JZBot
             try
             {
                 threadLocalUsername.set(username);
-                c.run(channel, pm, sender, hostname, commandArguments);
+                c.run(serverName, channel, pm, sender, hostname, commandArguments);
             }
             catch (Exception e)
             {
                 if (e instanceof ResponseException)
                 {
-                    bot.sendMessage(pm ? sender : channel, ((ResponseException) e)
+                    con.sendMessage(pm ? sender : channel, ((ResponseException) e)
                             .getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
-                    bot.sendMessage(pm ? sender : channel,
+                    con.sendMessage(pm ? sender : channel,
                             "An error occured while running the command " + command + ": "
                                     + pastebinStack(e));
                 }
@@ -1621,56 +1625,33 @@ public class JZBot
          * If we get here, then the text isn't a command. We'll check to see if it's a
          * factoid.
          * 
-         * Our first check will be for a channel-specific factoid.
+         * Our first check will be for a channel-specific factoid. However, we should just
+         * return if we're not supposed to process factoids, which occurrs if a regex
+         * filtered out a call with override or factoverride.
+         * 
+         * And actually, that brings to mind another task that needs to be done, and I'm
+         * putting it here in case I forget it: override and factoverride set local
+         * varaibles prefixed with two underscores. Some mechanism that doesn't use local
+         * variables needs to be added.
          */
         if (!processFactoids)
         {
             System.out.println("Finishing command run #2");
             return;
         }
+        Factoid factoid = null;
+        //Check for a channel-specific factoid
         if (channel != null)
         {
-            Channel cn = storage.getChannel(channel);
+            Channel cn = datastoreServer.getChannel(channel);
             if (cn != null)
             {
-                Factoid f = cn.getFactoid(command);
-                if (f != null)
-                {
-                    System.out.println("channel-specific factoid");
-                    if (f.isLibrary())
-                    {
-                        bot.sendMessage(pm ? sender : channel,
-                                "That factoid is a library factoid. It can only be run "
-                                        + "by importing it, by creating a regex "
-                                        + "that uses it, by using it as "
-                                        + "a trigger, and so on. Run \"factoid unlibrary "
-                                        + command
-                                        + "\" if you want to remove this factoid's "
-                                        + "library status.");
-                        System.out.println("Finishing command run #3");
-                        return;
-                    }
-                    incrementDirectRequests(f);
-                    String factValue;
-                    factValue = safeRunFactoid(f, channel, sender, commandArguments
-                            .split(" "), isOp(channel, hostname),
-                            new HashMap<String, String>());
-                    System.out.println("fact value: " + factValue);
-                    if (factValue.trim().equals(""))
-                        ;
-                    else if (factValue.startsWith("<ACTION>"))
-                        bot.sendAction((pm ? sender : channel), factValue
-                                .substring("<ACTION>".length()));
-                    else
-                        bot.sendMessage((pm ? sender : channel), factValue);
-                    System.out.println("Finishing command run #4");
-                    return;
-                }
+                factoid = cn.getFactoid(command);
             }
         }
-        /*
-         * Now we'll check for a global factoid.
-         */
+        //Check for a server-specific factoid
+        if(factoid == null)
+            factoid = datastoreServer.getFactoid(command);
         Factoid f = storage.getFactoid(command);
         if (f != null)
         {
