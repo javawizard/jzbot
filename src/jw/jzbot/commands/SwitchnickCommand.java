@@ -2,7 +2,9 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 
 import org.jibble.pircbot.PircBot;
 
@@ -16,10 +18,10 @@ public class SwitchnickCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
-        JZBot.verifySuperop(server, hostname);
+        sender.verifySuperop();
         if (arguments.equals(""))
         {
             throw new ResponseException(

@@ -31,7 +31,7 @@ public class SuperopCommand implements Command
         // TODO: consider having "founders", which are like superops but can't remove each
         // other, and can't be removed by superops; they should probably be declared in a
         // server-side file.
-        JZBot.verifySuperop(server, hostname);
+        sender.verifySuperop();
         String[] tokens = arguments.split(" ", 2);
         String subcommand = tokens[0];
         if (subcommand.equals("list"))
@@ -42,20 +42,17 @@ public class SuperopCommand implements Command
             {
                 strings.add(op.getHostname());
             }
-            JZBot.sendDelimited(JZBot.getServer(server), strings.toArray(new String[0]),
-                    "    ", pm ? sender : channel);
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "End of superop list. These superops are the superops at "
-                            + "this server; this list does not include superops at "
-                            + "other servers.");
+            JZBot.sendDelimited(JZBot.getServer(pm ? sender.getServerName() : server),
+                    strings.toArray(new String[0]), "    ", pm ? sender.nick() : channel);
+            source.sendMessage("End of superop list. These superops are the superops at "
+                    + "this server; this list does not include superops at "
+                    + "other servers.");
         }
         else if (subcommand.equals("add"))
         {
             if (tokens.length == 0)
             {
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "You need to specify a hostname.");
+                source.sendMessage("You need to specify a hostname.");
                 return;
             }
             String newHostname = tokens[1];
@@ -63,15 +60,14 @@ public class SuperopCommand implements Command
             op.setHostname(newHostname);
             Server dServer = JZBot.storage.getServer(server);
             dServer.getOperators().add(op);
-            JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                    "Hostname " + newHostname + " was successfully added as a superop.");
+            source.sendMessage("Hostname " + newHostname
+                    + " was successfully added as a superop.");
         }
         else if (subcommand.equals("delete"))
         {
             if (tokens.length == 0)
             {
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "You need to specify a hostname.");
+                source.sendMessage("You need to specify a hostname.");
                 return;
             }
             String newHostname = tokens[1];
@@ -79,12 +75,11 @@ public class SuperopCommand implements Command
             Operator op = dServer.getOperator(newHostname);
             if (op == null)
             {
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        "That hostname isn't a superop.");
+                source.sendMessage("That hostname isn't a superop.");
                 return;
             }
             dServer.getOperators().remove(op);
-            JZBot.getServer(server).sendMessage(pm ? sender : channel, "Removed.");
+            source.sendMessage("Removed.");
         }
         else if (subcommand.equals("key"))
         {
@@ -92,12 +87,11 @@ public class SuperopCommand implements Command
             String theHash = HashFunction.doHash(theKey);
             if (StringUtils.isMemberOf(theHash, ConfigVars.keys.get().split("\\|")))
             {
-                JZBot.elevate(server, hostname, ConfigVars.primary.get());
-                JZBot.getServer(server).sendMessage(
-                        pm ? sender : channel,
-                        "That key is correct. Your hostname has now been "
-                                + "added as a superop. This will persist until the "
-                                + "bot is restarted.");
+                JZBot.elevate(sender.getServerName(), sender.getHostname(),
+                        ConfigVars.primary.get());
+                source.sendMessage("That key is correct. Your hostname has now been "
+                        + "added as a superop. This will persist until the "
+                        + "bot is restarted.");
                 return;
             }
             else
@@ -108,11 +102,9 @@ public class SuperopCommand implements Command
         
         else
         {
-            JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                    "Specify one of add, list, key, or delete.");
+            source.sendMessage("Specify one of add, list, key, or delete.");
             return;
         }
         
     }
-    
 }
