@@ -13,19 +13,18 @@ public class ShutdownCommand implements Command
         return "shutdown";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
-        if (!JZBot.isSuperop(hostname))
-        {
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "You're not a superop.");
-            return;
-        }
-        JZBot.bot
-                .sendMessage(pm ? sender : channel,
-                        "Shutdown has been scheduled. No further commands will be acknowledged.");
-        long sleepDuration = 5000;
+        // TODO: add some server-side mechanism (that can't be overridden on the
+        // client-side) to prevent shutdowns. This should not prevent restarts, however;
+        // only shutdowns should be prevented, to stop rogue superops from killing the bot
+        // when someone that can start it back up is not present. Maybe use a storage
+        // file, which blocks the shutdown command when it exists.
+        JZBot.verifySuperop(server, hostname);
+        JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                "Shutdown has been scheduled. No further commands will be acknowledged.");
+        long sleepDuration = 2000;
         // for (Channel c : JZBot.storage.getChannels().isolate())
         // {
         // sleepDuration += 1100;

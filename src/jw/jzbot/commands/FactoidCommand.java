@@ -45,8 +45,8 @@ public class FactoidCommand implements Command
         return "factoid";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
         boolean isGlobal = false;
         if (arguments.startsWith("global "))

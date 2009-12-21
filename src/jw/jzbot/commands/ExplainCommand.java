@@ -18,17 +18,22 @@ public class ExplainCommand implements Command
     }
     
     @Override
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
+        // FIXME: merge this into ~factoid, to allow for scoping (IE specifying
+        // specifically which factoid you want if there are several factoids with the same
+        // name at different scopes)
         if (arguments.equals(""))
         {
-            throw new ResponseException(
-                    "You need to specify the name of a factoid.");
+            throw new ResponseException("You need to specify the name of a factoid.");
         }
         Factoid f = null;
         if (channel != null)
-            f = JZBot.getChannelFactoid(channel, arguments);
+            f = JZBot
+                    .getChannelFactoid(JZBot.storage.getServer(server), channel, arguments);
+        if (f == null)
+            f = JZBot.getServerFactoid(JZBot.storage.getServer(server), arguments);
         if (f == null)
             f = JZBot.getGlobalFactoid(arguments);
         if (f == null)
@@ -38,9 +43,10 @@ public class ExplainCommand implements Command
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());
         buffer.append("\n\nExplanation for this factoid:\n\n");
         buffer.append(explanation);
-        JZBot.bot.sendMessage(pm ? sender : channel,
+        JZBot.getServer(server).sendMessage(
+                pm ? sender : channel,
                 "Explanation of this factoid: "
-                        + Pastebin.createPost("jzbot", buffer.toString(),
-                                Duration.DAY, null, null));
+                        + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
+                                null, null));
     }
 }

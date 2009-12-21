@@ -16,15 +16,19 @@ public class SwitchnickCommand implements Command
     }
     
     @Override
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
-        JZBot.verifySuperop(hostname);
+        JZBot.verifySuperop(server, hostname);
         if (arguments.equals(""))
         {
-            throw new ResponseException("Syntax: ~switchnick <newnick>");
+            throw new ResponseException(
+                    "Syntax: ~switchnick <newnick> -- Switches the bot's nickname "
+                            + "to the specified nick. This will not persist across a reconnect. "
+                            + "See \"~server edit\" to change the bot's nick permanently.");
         }
-        JZBot.bot.changeNick(arguments);
+        // FIXME: log this
+        JZBot.getServer(server).getConnection().changeNick(arguments);
     }
     
 }

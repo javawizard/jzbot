@@ -20,13 +20,13 @@ public class CommandListCommand implements Command
             currentList += name + "  ";
             if (currentList.length() > 200)
             {
-                JZBot.bot.sendMessage(pm ? sender : channel, currentList);
+                JZBot.getServer(server).sendMessage(pm ? sender : channel, currentList);
                 currentList = "";
             }
         }
         if (!currentList.equals(""))
-            JZBot.bot.sendMessage(pm ? sender : channel, currentList);
-        JZBot.bot.sendMessage(pm ? sender : channel, "End of command list");
+            JZBot.getServer(server).sendMessage(pm ? sender : channel, currentList);
+        JZBot.getServer(server).sendMessage(pm ? sender : channel, "End of command list");
     }
     
 }

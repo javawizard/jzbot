@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.ResponseException;
 import jw.jzbot.storage.MapEntry;
 import jw.jzbot.utils.JZUtils;
-
 
 public class RedefineCommand implements Command
 {
@@ -18,25 +18,28 @@ public class RedefineCommand implements Command
     }
     
     @Override
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
+        // NOTE: anyone should be allowed to read the redefinition list, but only superops
+        // should be able to modify it.
         String[] tokens = arguments.split(" ");
         if (arguments.equals(""))
         {
             ArrayList<String> list = new ArrayList<String>();
-            list
-                    .add("Use ~redefine <command> <newname> to redefine <command> to have "
-                            + "the name <newname>. Current redefinitions (newname->command):");
+            list.add("Use ~redefine <command> <newname> to redefine <command> to have "
+                    + "the name <newname>. Current redefinitions (newname->command):");
             for (MapEntry redefinition : JZBot.storage.getRedefinitions())
             {
-                list
-                        .add(redefinition.getKey() + "->"
-                                + redefinition.getValue());
+                list.add(redefinition.getKey() + "->" + redefinition.getValue());
             }
-            JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ",
-                    JZBot.bot, pm ? sender : channel);
+            JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ", JZBot
+                    .getServer(server), pm ? sender : channel);
         }
+        throw new ResponseException(
+                "Redefinition is not yet supported. When it is, it will "
+                        + "allow changing the names that built-in commands "
+                        + "(except for ~redefine itself) are known under.");
     }
     
 }

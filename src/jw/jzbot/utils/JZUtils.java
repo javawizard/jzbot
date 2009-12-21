@@ -2,6 +2,7 @@ package jw.jzbot.utils;
 
 import java.util.ArrayList;
 
+import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.Connection;
 
@@ -35,20 +36,21 @@ public class JZUtils
         return strings.toArray(new String[0]);
     }
     
-    public static String[] ircDelimited(String[] items, String delimiter)
+    public static String[] ircDelimited(ConnectionWrapper con, String[] items,
+            String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, JZBot.bot
+        return delimitedLengthRestricted(items, delimiter, con.getConnection()
                 .getProtocolDelimitedLength());
     }
     
-    public static void ircSendDelimited(String[] items, String delimiter, Connection bot,
-            String recipient)
+    public static void ircSendDelimited(String[] items, String delimiter,
+            ConnectionWrapper bot, String recipient)
     {
         ircSendDelimited("", items, delimiter, bot, recipient);
     }
     
     public static void ircSendDelimited(String prefix, String[] items, String delimiter,
-            Connection bot, String recipient)
+            ConnectionWrapper bot, String recipient)
     {
         if (items.length > 0)
             items[0] = prefix + items[0];
@@ -57,7 +59,7 @@ public class JZUtils
             {
                 prefix
             };
-        for (String s : ircDelimited(items, delimiter))
+        for (String s : ircDelimited(bot, items, delimiter))
         {
             bot.sendMessage(recipient, s);
         }

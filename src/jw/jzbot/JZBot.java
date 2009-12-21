@@ -296,6 +296,7 @@ public class JZBot
             return null;
         if (!con.getConnection().isConnected())
             return null;
+        // FIXME: add caching of the connection wrapper
         return new ConnectionWrapper(con);
     }
     
@@ -936,26 +937,38 @@ public class JZBot
     
     private static void start() throws Throwable
     {
+        System.out.println("This is JZBot, http://jzbot.googlecode.com");
+        System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
+                + "and Jonathon Kloster");
+        System.out.println();
+        System.out.println("Initializing...");
         DefaultPastebinProviders.installDefaultSet();
         logsFolder.mkdirs();
+        System.out.println("Starting the ProxyStorage system...");
         initProxyStorage();
         if (storage.getServers().size() == 0)
         {
+            System.out.println();
             System.out.println("No servers have been added. JZBot will exit.");
             System.out.println("Run \"jzbot help\" for help on how to add a");
             System.out.println("server for your bot to connect to. Specifically,");
             System.out.println("you'll want to look at the addserver command.");
             System.exit(0);
         }
+        System.out.println("Loading core components...");
         loadCommands();
         loadCachedConfig();
         startLogSinkThread();
         reloadRegexes();
+        System.out.println("Running _onstartup notifications...");
+        runNotificationFactoid(null, null, null, null, "", "_onstartup", new String[0],
+                true, false);
         System.out.println("Starting connection cycle thread...");
         startConnectionCycleThread();
         System.out.println("Dispatching notifications to connection cycle thread...");
         notifyConnectionCycleThread();
         System.out.println("Connect thread started.");
+        System.out.println();
         System.out.println("JZBot has successfully started up. Server "
                 + "connections will be established in a few seconds.");
     }
@@ -1183,8 +1196,8 @@ public class JZBot
                 if (f != null)
                 {
                     incrementIndirectRequests(f);
-                    String factValue = safeRunFactoid(f, channelName, sender, args, true,
-                            new HashMap<String, String>());
+                    String factValue = safeRunFactoid(f, server, serverName, channelName,
+                            sender, args, true, new HashMap<String, String>());
                     String pseudoChannel = channelName;
                     String pseudoServer = serverName;
                     if (pseudoServer == null || pseudoChannel == null)
@@ -1411,9 +1424,9 @@ public class JZBot
                 try
                 {
                     System.out.println("running message command");
-                    runMessageCommand(datastoreServer, serverName, channel, false, sender,
-                            hostname, login, message.substring(trigger.length()),
-                            processFactoids);
+                    runMessageCommand(datastoreServer, serverName, channel, false,
+                            datastoreServer, serverName, sender, hostname, login, message
+                                    .substring(trigger.length()), processFactoids);
                 }
                 catch (Throwable e)
                 {
@@ -1546,7 +1559,8 @@ public class JZBot
             strings[i - 1] = matcher.group(i);
         }
         incrementIndirectRequests(f);
-        String factValue = safeRunFactoid(f, channel, sender, strings, true, vars);
+        String factValue = safeRunFactoid(f, server, serverName, channel, sender, strings,
+                true, vars);
         sendActionOrMessage(getConnection(serverName), channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
@@ -1581,8 +1595,9 @@ public class JZBot
     }
     
     private static void runMessageCommand(Server datastoreServer, String serverName,
-            String channel, boolean pm, String sender, String hostname, String username,
-            String message, boolean processFactoids)
+            String channel, boolean pm, Server senderServer, String senderServerName,
+            String sender, String hostname, String username, String message,
+            boolean processFactoids)
     {
         ConnectionWrapper con = getConnection(serverName);
         System.out.println("Starting command run for message " + message);
@@ -1640,7 +1655,7 @@ public class JZBot
             return;
         }
         Factoid factoid = null;
-        //Check for a channel-specific factoid
+        // Check for a channel-specific factoid
         if (channel != null)
         {
             Channel cn = datastoreServer.getChannel(channel);
@@ -1649,16 +1664,17 @@ public class JZBot
                 factoid = cn.getFactoid(command);
             }
         }
-        //Check for a server-specific factoid
-        if(factoid == null)
+        // Check for a server-specific factoid
+        if (factoid == null)
             factoid = datastoreServer.getFactoid(command);
-        Factoid f = storage.getFactoid(command);
-        if (f != null)
+        // Check for a global factoid
+        if (factoid == null)
+            factoid = storage.getFactoid(command);
+        if (factoid != null)
         {
-            System.out.println("global factoid");
-            if (f.isLibrary())
+            if (factoid.isLibrary())
             {
-                bot.sendMessage(pm ? sender : channel,
+                con.sendMessage(pm ? sender : channel,
                         "That factoid is a library factoid. It can only be run "
                                 + "by importing it, by creating a regex "
                                 + "that uses it, by using it as "
@@ -1668,29 +1684,20 @@ public class JZBot
                 System.out.println("Finishing command run #5");
                 return;
             }
-            incrementDirectRequests(f);
+            incrementDirectRequests(factoid);
             System.out.println("requests incremented");
             String factValue;
             System.out.println("calculating fact value");
-            factValue = safeRunFactoid(f, channel, sender, commandArguments.split(" "),
-                    isOp(channel, hostname), new HashMap<String, String>());
+            factValue = safeRunFactoid(factoid, datastoreServer, serverName, channel,
+                    sender, commandArguments.split(" "), isSuperop(serverName, hostname),
+                    new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
-            if (factValue.trim().equals(""))
-                System.out.println("Empty value; doing nothing");
-            else if (factValue.startsWith("<ACTION>"))
-                bot.sendAction((pm ? sender : channel), factValue.substring("<ACTION>"
-                        .length()));
-            else
-            {
-                System.out
-                        .println("sending global message " + channel + " to " + factValue);
-                bot.sendMessage((pm ? sender : channel), factValue);
-            }
+            sendActionOrMessage(con, pm ? sender : channel, factValue);
             System.out.println("Finishing command run #6");
             return;
         }
         System.out.println("invalid command");
-        doInvalidCommand(pm, channel, sender);
+        doInvalidCommand(pm, datastoreServer, serverName, channel, sender);
         System.out.println("Finishing command run #7");
     }
     
@@ -1716,22 +1723,19 @@ public class JZBot
      * @return The output of the factoid, or an error message containing a pastebin url if
      *         the factoid threw an exception while running
      */
-    public static String safeRunFactoid(Factoid f, String channel, String sender,
-            String[] arguments, boolean allowRestricted, Map<String, String> vars)
+    public static String safeRunFactoid(Factoid f, Server server, String serverName,
+            String channel, String sender, String[] arguments, boolean allowRestricted,
+            Map<String, String> vars)
     {
         String factValue;
         try
         {
-            factValue = runFactoid(f, channel, sender, arguments, vars, allowRestricted,
-                    null);
+            factValue = runFactoid(f, serverName, channel, sender, arguments, vars,
+                    allowRestricted, null);
         }
         catch (FactoidException e)
         {
             factValue = "Syntax exception while running factoid: " + pastebinStack(e);
-        }
-        catch (Exception e)
-        {
-            factValue = "External exception while running factoid: " + pastebinStack(e);
         }
         catch (FactTimeExceededError e)
         {
@@ -1739,7 +1743,12 @@ public class JZBot
         }
         catch (StackOverflowError e)
         {
-            factValue = "Internal stack overflow error: " + e;
+            factValue = "A stack overflow occurred. This probably means you have an infinitely-recursive loop in your factoid. Details: "
+                    + pastebinStack(e);
+        }
+        catch (Exception e)
+        {
+            factValue = "External exception while running factoid: " + pastebinStack(e);
         }
         return factValue;
     }
@@ -1764,17 +1773,19 @@ public class JZBot
         }
     }
     
-    private static void doInvalidCommand(boolean pm, String channel, String sender)
+    private static void doInvalidCommand(boolean pm, Server server, String serverName,
+            String channel, String sender)
     {
-        Channel c = storage.getChannel(channel);
+        Channel c = server.getChannel(channel);
         String notfoundFact = ConfigVars.notfound.get();
+        ConnectionWrapper con = getConnection(serverName);
         if (notfoundFact.trim().equals("") && c != null)
         {
-            bot.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
+            con.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
         }
         else if (notfoundFact.trim().equals(""))
         {
-            bot.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
+            con.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
         }
         else
         {
@@ -1784,64 +1795,70 @@ public class JZBot
                 if (c != null)
                     f = c.getFactoid(notfoundFact);
                 if (f == null)
+                    f = server.getFactoid(notfoundFact);
+                if (f == null)
                     f = storage.getFactoid(notfoundFact);
                 if (f == null)
-                    throw new RuntimeException("The factoid " + notfoundFact
-                            + " does not exist.");
-                String factValue = safeRunFactoid(f, channel, sender, new String[0], true,
-                        new HashMap<String, String>());
+                    throw new RuntimeException("The not-found factoid \"" + notfoundFact
+                            + "\" does not exist.");
+                String factValue = safeRunFactoid(f, server, serverName, channel, sender,
+                        new String[0], true, new HashMap<String, String>());
                 if (factValue.trim().equals(""))
-                    bot.sendMessage(pm ? sender : channel,
-                            "Notfound factoid didn't output anything");
-                else if (factValue.startsWith("<ACTION>"))
-                    bot.sendAction(pm ? sender : channel, factValue.substring("<ACTION>"
-                            .length()));
-                else
-                    bot.sendMessage(pm ? sender : channel, factValue);
+                    factValue = "Not-found factoid didn't output anything";
+                sendActionOrMessage(con, pm ? sender : channel, factValue);
             }
             catch (Throwable t)
             {
-                bot.sendMessage(pm ? sender : channel, "Syntax error in notfound factoid: "
-                        + pastebinStack(t));
+                con.sendMessage(pm ? sender : channel,
+                        "Syntax error in not-found factoid: " + pastebinStack(t));
             }
         }
     }
     
-    public static void onConnect(Server datastoreServer, String serverName)
+    public static void onConnect(final Server datastoreServer, final String serverName)
     {
+        final ConnectionWrapper con = getConnection(serverName);
         new Thread()
         {
             public void run()
             {
                 if (ConfigVars.servicemsg.get().equals("1"))
                 {
+                    try
+                    {
+                        Thread.sleep(2500);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                     System.out.println("Authenticating with NickServ via privmsg");
                     String pwd = config.getPassword();
                     if (pwd != null && !"".equals(pwd))
-                        bot.sendMessage("NickServ", "identify " + pwd);
+                        con.sendMessage("NickServ", "identify " + pwd);
                 }
                 try
                 {
-                    Thread.sleep(2500);
+                    Thread.sleep(2300);// FIXME: make this a config var
                 }
                 catch (InterruptedException e)
                 {
                     e.printStackTrace();
                 }
-                for (Channel channel : storage.getChannels().isolate())
+                for (Channel channel : datastoreServer.getChannels().isolate())
                 {
                     if (!channel.isSuspended())
                     {
                         try
                         {
-                            Thread.sleep(2500);
+                            Thread.sleep(2300);
                         }
                         catch (InterruptedException e)
                         {
                             e.printStackTrace();
                         }
-                        System.out.println("joining " + channel.getName());
-                        bot.joinChannel(channel.getName());
+                        System.out.println(serverName + ": joining " + channel.getName());
+                        con.joinChannel(channel.getName());
                     }
                 }
                 try
@@ -1852,7 +1869,7 @@ public class JZBot
                 {
                     e.printStackTrace();
                 }
-                sendNotificationToAll("ready");
+                sendNotificationToAll("connect");
                 try
                 {
                     Thread.sleep(3500);
@@ -1864,7 +1881,7 @@ public class JZBot
                 String umodes = ConfigVars.modes.get();
                 for (char c : umodes.toCharArray())
                 {
-                    bot.setMode(bot.getNick(), "+" + c);
+                    con.setMode(con.getNick(), "+" + c);
                 }
             }
         }.start();
@@ -1873,73 +1890,80 @@ public class JZBot
     public static void onDisconnect(Server datastoreServer, String serverName)
     {
         System.out.println("on disconnect");
-        try
-        {
-            elevatedOpMap.clear();
-            elevatedSuperopList.clear();
-            channelTopics.clear();
-            proxyStorage.close();
-            synchronized (httpServers)
-            {
-                for (int port : httpServers.keySet())
-                {
-                    httpServers.get(port).stopServer();
-                }
-                httpServers.clear();
-            }
-            initProxyStorage();
-            reloadRegexes();
-            loadCachedConfig();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        System.out.println("starting reconnect thread");
-        new Thread()
-        {
-            
-            public void run()
-            {
-                int attempts = 0;
-                while (true)
-                {
-                    try
-                    {
-                        attempts++;
-                        int time;
-                        if (attempts < 5)
-                            time = 1;
-                        else if (attempts < 10)
-                            time = 5;
-                        else if (attempts < 20)
-                            time = 15;
-                        else if (attempts < 40)
-                            time = 30;
-                        else if (attempts < 70)
-                            time = 60;
-                        else if (attempts < 100)
-                            time = 120;
-                        else
-                            time = 240;
-                        // This is to make sure that we don't flood ourselves
-                        // off again after we join
-                        if (manualReconnect)
-                            manualReconnect = false;
-                        else
-                            time += 30;
-                        Thread.sleep(time * 1000);
-                        bot.reconnect();
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                        continue;
-                    }
-                    return;
-                }
-            }
-        }.start();
+        // This method is commented out because the connection cycle thread essentially
+        // takes care of all of this for us.
+        
+        // FIXME: the topic map still needs to be cleared; we're not doing that here,
+        // which is bad because it lets us get misinformed about a channel's topic when
+        // that channel used to have a topic but lost it while we were reconnecting.
+        
+        // try
+        // {
+        // elevatedOpMap.clear();
+        // elevatedSuperopList.clear();
+        // channelTopics.clear();
+        // proxyStorage.close();
+        // synchronized (httpServers)
+        // {
+        // for (int port : httpServers.keySet())
+        // {
+        // httpServers.get(port).stopServer();
+        // }
+        // httpServers.clear();
+        // }
+        // initProxyStorage();
+        // reloadRegexes();
+        // loadCachedConfig();
+        // }
+        // catch (Exception e)
+        // {
+        // e.printStackTrace();
+        // }
+        // System.out.println("starting reconnect thread");
+        // new Thread()
+        // {
+        //            
+        // public void run()
+        // {
+        // int attempts = 0;
+        // while (true)
+        // {
+        // try
+        // {
+        // attempts++;
+        // int time;
+        // if (attempts < 5)
+        // time = 1;
+        // else if (attempts < 10)
+        // time = 5;
+        // else if (attempts < 20)
+        // time = 15;
+        // else if (attempts < 40)
+        // time = 30;
+        // else if (attempts < 70)
+        // time = 60;
+        // else if (attempts < 100)
+        // time = 120;
+        // else
+        // time = 240;
+        // // This is to make sure that we don't flood ourselves
+        // // off again after we join
+        // if (manualReconnect)
+        // manualReconnect = false;
+        // else
+        // time += 30;
+        // Thread.sleep(time * 1000);
+        // bot.reconnect();
+        // }
+        // catch (Exception e)
+        // {
+        // e.printStackTrace();
+        // continue;
+        // }
+        // return;
+        // }
+        // }
+        // }.start();
     }
     
     public static void onPrivateMessage(Server datastoreServer, String serverName,
@@ -1947,29 +1971,72 @@ public class JZBot
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
+        ConnectionWrapper con = getConnection(serverName);
         try
         {
+            String pseudoServer = serverName;
+            String pseudoChannel = null;
+            boolean replyToPseudo = false;
             System.out.println("pm from " + sender + ": " + message);
-            String channel = null;
-            if (message.startsWith("#") && message.contains(" "))
+            if (message.contains(" "))
             {
-                channel = message.substring(0, message.indexOf(" "));
-                message = message.substring(message.indexOf(" ") + 1);
+                if (message.startsWith("%"))
+                {
+                    message = message.substring(1);
+                    replyToPseudo = true;
+                }
+                if (message.startsWith("#"))
+                {
+                    pseudoChannel = message.substring(0, message.indexOf(" "));
+                    message = message.substring(message.indexOf(" ") + 1);
+                }
+                else if (message.startsWith("@"))
+                {
+                    String fragment = message.substring(0, message.indexOf(" "));
+                    message = message.substring(message.indexOf(" ") + 1);
+                    if (fragment.contains("#"))
+                    {
+                        pseudoServer = fragment.substring(0, fragment.indexOf("#"));
+                        pseudoChannel = fragment.substring(fragment.indexOf("#"));
+                    }
+                    else
+                    {
+                        pseudoServer = fragment;
+                        pseudoChannel = null;
+                    }
+                }
+            }
+            if (replyToPseudo && pseudoChannel == null)
+            {
+                con.sendMessage(sender, "You can only instruct the bot to reply to "
+                        + "the target if the target contains a channel.");
             }
             try
             {
-                runMessageCommand(channel, true, sender, hostname, login, message, true);
+                Server pseudoDatastoreServer = storage.getServer(pseudoServer);
+                if (replyToPseudo)
+                {
+                    runMessageCommand(pseudoDatastoreServer, pseudoServer, pseudoChannel,
+                            false, datastoreServer, serverName, sender, hostname, login,
+                            message, true);
+                }
+                else
+                {
+                    runMessageCommand(pseudoDatastoreServer, pseudoServer, pseudoChannel,
+                            true, datastoreServer, serverName, sender, hostname, login,
+                            message, true);
+                }
             }
             catch (Throwable e)
             {
                 e.printStackTrace();
-                bot.sendMessage(sender, "Internal upper-propegating pm exception: "
+                con.sendMessage(sender, "Internal upper-propegating pm exception: "
                         + pastebinStack(e));
             }
         }
         catch (FactTimeExceededError e)
         {
-            JZBot.bot.sendMessage(sender, "Time exceeded: " + pastebinStack(e));
+            con.sendMessage(sender, "Time exceeded: " + pastebinStack(e));
         }
         finally
         {
@@ -1978,24 +2045,11 @@ public class JZBot
         
     }
     
-    private static Map<String, ArrayList<String>> elevatedOpMap = new HashMap<String, ArrayList<String>>();
-    
     private static ArrayList<String> elevatedSuperopList = new ArrayList<String>();
     
-    public static void elevate(String hostname, String channel)
+    public static void elevate(String serverName, String hostname, String channel)
     {
-        if (channel.equals(ConfigVars.primary.get()))
-            elevatedSuperopList.add(hostname);
-        else
-        {
-            ArrayList<String> list = elevatedOpMap.get(channel);
-            if (list == null)
-            {
-                list = new ArrayList<String>();
-                elevatedOpMap.put(channel, list);
-            }
-            list.add(hostname);
-        }
+        elevatedSuperopList.add(serverName + "@" + hostname);
     }
     
     public static boolean isSuperop(String serverName, String hostname)
@@ -2013,54 +2067,6 @@ public class JZBot
         if (!isSuperop(server, hostname))
             throw new ResponseException(
                     "You are not a superop, so you don't have permission to run this command.");
-    }
-    
-    /**
-     * Gets the nickname for the specified user. If the url is a nickname url, then the
-     * nickname is simply taken from the url. If the url is an authenticated url, then the
-     * corresponding protocol is asked for the user's nickname.
-     * 
-     * @param user
-     * @return
-     */
-    public static String getNickname(URI user)
-    {
-        return null;
-    }
-    
-    /**
-     * Gets the authenticated name for the specified user. If the user is an authenticated
-     * url, then the authenticated name is simply taken from the url. If the url is a
-     * nickname url, then the protocol is asked for the user's authenticated name.<br/>
-     * <br/>
-     * 
-     * Due to the fact that nicknames can change frequently while authenticated names
-     * generally won't, this should be called as soon after receiving a nickname as
-     * possible, to avoid the wrong authenticated name being obtained.<br/> <br/>
-     * 
-     * It's possible that the user's authenticated name and the user's nickname are the
-     * same.
-     * 
-     * @param user
-     * @return The user's authenticated name, or null if their protocol reports that the
-     *         user is not authenticated
-     */
-    public static String getAuthname(URI user)
-    {
-        return null;
-    }
-    
-    /**
-     * Converts the specified nickname url to an authenticated name url, or null if the
-     * user specified is not authenticated. If the url is already an authenticated url,
-     * then it is returned as-is.
-     * 
-     * @param user
-     * @return
-     */
-    public static URI toAuthForm(URI user)
-    {
-        return null;
     }
     
     public static User getUser(Connection con, String channel, String nick)
@@ -2113,17 +2119,24 @@ public class JZBot
         return d.toPlainString();
     }
     
-    public static void sendDelimited(String[] array, String delimiter, String recipient)
+    public static void sendDelimited(ConnectionWrapper bot, String[] array,
+            String delimiter, String recipient)
     {
         JZUtils.ircSendDelimited(array, delimiter, bot, recipient);
     }
     
-    public static Factoid getChannelFactoid(String channelName, String factoid)
+    public static Factoid getChannelFactoid(Server server, String channelName,
+            String factoid)
     {
-        Channel channel = storage.getChannel(channelName);
+        Channel channel = server.getChannel(channelName);
         if (channel == null)
             throw new ResponseException("No such channel: " + channel);
         return channel.getFactoid(factoid);
+    }
+    
+    public static Factoid getServerFactoid(Server server, String factoid)
+    {
+        return server.getFactoid(factoid);
     }
     
     public static Factoid getGlobalFactoid(String factoid)
@@ -2152,7 +2165,11 @@ public class JZBot
         validateWorkableCharset(charset);
         try
         {
-            bot.setEncoding(charset);
+            synchronized (connectionCycleLock)
+            {
+                for (ConnectionContext con : connectionMap.values())
+                    con.getConnection().setEncoding(charset);
+            }
         }
         catch (Exception e)
         {
@@ -2222,9 +2239,9 @@ public class JZBot
         }
     }
     
-    public static boolean isChannelOp(String channel, String sender)
+    public static boolean isChannelOp(String serverName, String channel, String sender)
     {
-        User[] users = bot.getUsers(channel);
+        User[] users = getRealConnection(serverName).getConnection().getUsers(channel);
         for (User user : users)
         {
             if (user.getNick().equals(sender))
@@ -2416,5 +2433,42 @@ public class JZBot
     public static String getDefaultPartMessage(String serverName, String channel)
     {
         return "Later everyone.";
+    }
+    
+    public static String failsafeExtractServerName(String string)
+    {
+        try
+        {
+            return extractServerName(string);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "Exception while getting server via JZBot.failsafeExtractServerName()";
+        }
+    }
+    
+    public static String failsafeExtractChannelName(String string)
+    {
+        try
+        {
+            return extractChannelName(string);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return "Exception while getting channel via JZBot.failsafeExtractChannelName()";
+        }
+    }
+    
+    /**
+     * Returns getConnection(server).
+     * 
+     * @param server
+     * @return
+     */
+    public static ConnectionWrapper getServer(String server)
+    {
+        return getConnection(server);
     }
 }

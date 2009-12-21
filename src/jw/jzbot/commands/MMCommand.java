@@ -11,23 +11,24 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.commands.games.MastermindState;
 import jw.jzbot.commands.games.RouletteState;
 
-
 /**
- * A game of mastermind. Uses numbers 1 through 5 as "bead colors". 4 beads by
- * default, I'll probably change that later so you can choose.
+ * A game of mastermind. Uses numbers 1 through 5 as "bead colors". 4 beads by default,
+ * I'll probably change that later so you can choose.
  * 
- * ~mm reset resets the game. ~mm 2435 guesses that position, which will result
- * in something like "1 right place, 2 right number wrong place", or
+ * ~mm reset resets the game. ~mm 2435 guesses that position, which will result in
+ * something like "1 right place, 2 right number wrong place", or
  * "you win! 2435 was the answer."
  * 
  * Games are reset after 10 minutes if unused.
+ * 
+ * This is deprecated, and will be replaced with a factpack soon.
  * 
  * @author Alexander Boyd
  * 
  */
 public class MMCommand implements Command
 {
-    protected static final long TIME_TO_EXPIRE = 0;
+    protected static final long TIME_TO_EXPIRE = 1000 * 60 * 10;
     protected static final int numberOfBeads = 4;
     protected static final double numberOfColors = 5.0;
     private static Map<String, MastermindState> stateMap = Collections
@@ -44,8 +45,7 @@ public class MMCommand implements Command
                     try
                     {
                         Thread.sleep(30 * 1000);
-                        for (String key : new ArrayList<String>(stateMap
-                                .keySet()))
+                        for (String key : new ArrayList<String>(stateMap.keySet()))
                         {
                             MastermindState value = stateMap.get(key);
                             if (value != null)
@@ -70,12 +70,12 @@ public class MMCommand implements Command
         return "mm";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
         if (channel == null)
         {
-            JZBot.bot.sendMessage(sender,
+            JZBot.getServer(server).sendMessage(sender,
                     "You can only use mastermind when a channel is specified.");
             return;
         }
@@ -83,12 +83,11 @@ public class MMCommand implements Command
         if (arguments.equals("info"))
         {
             if (state == null)
-                JZBot.bot
-                        .sendMessage(pm ? sender : channel,
-                                "Info: a game is not in progress. Use ~mm to start one.");
+                JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                        "Info: a game is not in progress. Use ~mm to start one.");
             else
-                JZBot.bot.sendMessage(pm ? sender : channel, "Info: "
-                        + state.guesses + " guesses so far");
+                JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                        "Info: " + state.guesses + " guesses so far");
             state.changed = System.currentTimeMillis();
             return;
         }
@@ -99,45 +98,44 @@ public class MMCommand implements Command
             state.guesses = 0;
             for (int i = 0; i < numberOfBeads; i++)
             {
-                state.correct
-                        .add((int) (1.0 + (Math.random() * numberOfColors)));
+                state.correct.add((int) (1.0 + (Math.random() * numberOfColors)));
             }
             stateMap.put(channel, state);
-            JZBot.bot
-                    .sendMessage(
-                            pm ? sender : channel,
-                            "A new game of Mastermind has been started. Positions: "
-                                    + numberOfBeads
-                                    + ". Numbers 1 through "
-                                    + ((int) numberOfColors)
-                                    + " are available for guesses. Guess by using ~mm 1234. "
-                                    + "Game will reset if unused for 10 minutes.");
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
+                    "A new game of Mastermind has been started. Positions: "
+                            + numberOfBeads + ". Numbers 1 through "
+                            + ((int) numberOfColors)
+                            + " are available for guesses. Guess by using ~mm 1234. "
+                            + "Game will reset if unused for 10 minutes.");
             return;
         }
         if (arguments.equals("reset"))
         {
             stateMap.remove(channel);
-            JZBot.bot.sendMessage(pm ? sender : channel,
+            JZBot.getServer(server).sendMessage(pm ? sender : channel,
                     "The game has been cleared.");
             return;
         }
         if (arguments.equals("show"))
         {
-            if (JZBot.isOp(channel, hostname))
+            if (JZBot.isSuperop(server, hostname))
             {
                 String answer = "";
                 for (int v : state.correct)
                 {
                     answer += v;
                 }
-                JZBot.bot.sendMessage(sender, "The answer is " + answer);
-                JZBot.bot.sendMessage(channel, "" + sender
-                        + " has seen the answer.");
+                JZBot.getServer(server).sendMessage(sender, "The answer is " + answer);
+                JZBot.getServer(server).sendMessage(channel,
+                        "" + sender + " has seen the answer.");
             }
             else
             {
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "You're not an op here.");
+                JZBot.getServer(server).sendMessage(
+                        pm ? sender : channel,
+                        "You're not a superop. I'm only letting superops "
+                                + "see the correct answer. Keep guessing!");
             }
             return;
         }
@@ -148,8 +146,7 @@ public class MMCommand implements Command
         {
             state.changed = System.currentTimeMillis();
             throw new ResponseException("You guessed " + arguments.length()
-                    + " numbers. However, the correct answer has "
-                    + state.correct.size()
+                    + " numbers. However, the correct answer has " + state.correct.size()
                     + " number in it. Guess that many numbers.");
         }
         state.changed = System.currentTimeMillis();
@@ -190,18 +187,22 @@ public class MMCommand implements Command
         state.guesses++;
         if (rightPosition == state.correct.size())
         {
+            String answer = "";
+            for (int v : state.correct)
+            {
+                answer += v;
+            }
             stateMap.remove(channel);
             if (pm)
-                JZBot.bot.sendMessage(sender, sender
-                        + " won! That was the correct answer.");
-            JZBot.bot.sendMessage(channel, sender
-                    + " won! That was the correct answer.");
+                JZBot.getServer(server).sendMessage(sender,
+                        "You won! That was the correct answer.");
+            JZBot.getServer(server).sendMessage(channel,
+                    sender + " won! " + answer + " was the correct answer.");
             return;
         }
-        JZBot.bot.sendMessage(pm ? sender : channel, sender + ": "
-                + rightPosition + " right place, " + rightNumber
-                + " right number wrong place. " + state.guesses
-                + " guesses so far.");
+        JZBot.getServer(server).sendMessage(pm ? sender : channel, sender + ": " + rightPosition
+                + " right place, " + rightNumber + " right number wrong place. "
+                + state.guesses + " guesses so far.");
     }
     
     private void removeOne(ArrayList<Integer> correct, int guess)

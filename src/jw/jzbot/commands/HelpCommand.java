@@ -10,6 +10,7 @@ import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.storage.Channel;
+import jw.jzbot.storage.Server;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -22,9 +23,10 @@ public class HelpCommand implements Command
         return "help";
     }
     
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
+        Server datastoreServer = JZBot.storage.getServer(server);
         if (ConfigVars.helpinpm.get().equals("1") && !pm)
         {
             if (arguments.equals("functions"))
@@ -68,14 +70,15 @@ public class HelpCommand implements Command
             throw new ResponseException("No such help page");
         String helpCommand;
         if (pm)
-            helpCommand = "/msg " + JZBot.bot.getNick() + " help";
+            helpCommand = "/msg "
+                    + JZBot.getRealConnection(server).getConnection().getNick() + " help";
         else
         {
-            Channel c = JZBot.storage.getChannel(channel);
+            Channel c = datastoreServer.getChannel(channel);
             if (c != null)
                 helpCommand = c.getTrigger() + "help";
             else
-                helpCommand = "~trigger";
+                helpCommand = "~help";
         }
         text = text.replace("%HELPCMD%", helpCommand);
         if (!allSubpages)
@@ -84,7 +87,7 @@ public class HelpCommand implements Command
             for (String s : messages)
             {
                 if (!s.trim().equals(""))
-                    JZBot.bot.sendMessage(pm ? sender : channel, s);
+                    JZBot.getServer(server).sendMessage(pm ? sender : channel, s);
             }
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
@@ -92,6 +95,10 @@ public class HelpCommand implements Command
             String startText = (subpages.size() > 0 ? "Subpages (\"" + helpCommand
                     + pageWithSpace + " <pagename>\" to show a page): " : "No subpages.");
             String prefix = "---> ";
+            // TODO: have it pastebin the list of subpages if there are more than, say, 20
+            // subpages. Also have it omit "---> No subpages." if there aren't any.
+            // UPDATE: this might already be disabled, see the comment about 15 lines
+            // down from here.
             String[] delimited = JZUtils.delimitedLengthRestricted(subpages
                     .toArray(new String[0]), "   ", 320);
             boolean sentFirst = false;
@@ -101,20 +108,22 @@ public class HelpCommand implements Command
                 {
                     if (sentFirst)
                     {
-                        JZBot.bot.sendMessage(pm ? sender : channel, prefix + s);
+                        JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                                prefix + s);
                     }
                     else
                     {
                         sentFirst = true;
                         if (subpages.size() > 0)// disables "no subpages" message for now
-                            JZBot.bot.sendMessage(pm ? sender : channel, prefix + startText
-                                    + s);
+                            JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                                    prefix + startText + s);
                     }
                 }
             }
             else
             {
-                JZBot.bot.sendMessage(pm ? sender : channel, prefix + startText);
+                JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                        prefix + startText);
             }
         }
         else
@@ -134,11 +143,13 @@ public class HelpCommand implements Command
                 buffer.append(subpage).append(":\n");
                 buffer.append(subtext).append("\n\n");
             }
-            JZBot.bot.sendMessage(pm ? sender : channel, "All subpages of \""
-                    + page
-                    + "\": "
-                    + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,
-                            null));
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
+                    "All subpages of \""
+                            + page
+                            + "\": "
+                            + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
+                                    null, null));
         }
     }
 }

@@ -7,7 +7,6 @@ import java.net.*;
 import jw.jzbot.fact.FactQuota;
 import jw.jzbot.storage.Factoid;
 
-
 /**
  * A simple, tiny, nicely embeddable HTTP 1.0 server in Java
  * 
@@ -109,8 +108,8 @@ public class HttpServer
             String factoidResult;
             try
             {
-                factoidResult = JZBot.runFactoid(factoid, "none", "", new String[0], vars,
-                        true, quota);
+                factoidResult = JZBot.runFactoid(factoid, null, null, "", new String[0],
+                        vars, true, quota);
             }
             catch (FactTimeExceededError e)
             {
@@ -182,8 +181,8 @@ public class HttpServer
             Response response = new Response(HTTP_INTERNALERROR, "text/plain",
                     "Internal server exception:\n\n" + sw.toString()
                             + "\n\nYou might want to connect to the IRC server "
-                            + JZBot.bot.getServer() + " and join "
-                            + ConfigVars.primary.get() + " and ask for help.");
+                            + JZBot.failsafeExtractServerName(ConfigVars.primary.get()) + " and join "
+                            + JZBot.failsafeExtractChannelName(ConfigVars.primary.get()) + " and ask for help.");
             return response;
         }
     }

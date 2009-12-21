@@ -10,6 +10,7 @@ import javax.management.ObjectName;
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
+import jw.jzbot.ResponseException;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.storage.Channel;
@@ -19,7 +20,6 @@ import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
 import net.sf.opengroove.common.utils.DataUtils;
-
 
 public class StatusCommand implements Command
 {
@@ -31,11 +31,11 @@ public class StatusCommand implements Command
     }
     
     @Override
-    public void run(String channel, boolean pm, String sender, String hostname,
-            String arguments)
+    public void run(String server, String channel, boolean pm, String sender,
+            String hostname, String arguments)
     {
         if (ConfigVars.openstatus.get().equals("0"))
-            JZBot.verifySuperop(hostname);
+            JZBot.verifySuperop(server, hostname);
         if (arguments.equals(""))
         {
             String s = "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
@@ -44,9 +44,12 @@ public class StatusCommand implements Command
                     + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
                     + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
                     + ",functions:" + FactParser.getFunctionNames().length + ",commands:"
-                    + JZBot.commands.size() + ",queue:" + JZBot.bot.getOutgoingQueueSize() + ",pastebins:" + PastebinService.getProviderCount();
-            JZBot.bot.sendMessage(pm ? sender : channel, s);
-            JZBot.bot.sendMessage(pm ? sender : channel,
+                    + JZBot.commands.size() + ",queue:"
+                    + JZBot.getServer(server).getConnection().getOutgoingQueueSize()
+                    + ",pastebins:" + PastebinService.getProviderCount();
+            JZBot.getServer(server).sendMessage(pm ? sender : channel, s);
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
                     "For more info, try \"status gc\", \"status threads\", "
                             + "\"status facts\". \"status storage\", "
                             + "\"status mx\", \"status stack\", "
@@ -56,7 +59,8 @@ public class StatusCommand implements Command
         {
             long t = System.currentTimeMillis();
             System.gc();
-            JZBot.bot.sendMessage(pm ? sender : channel,
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
                     "Garbage-collected successfully in " + (System.currentTimeMillis() - t)
                             + " milliseconds.");
         }
@@ -90,8 +94,8 @@ public class StatusCommand implements Command
             {
                 strings.add(s);
             }
-            JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", JZBot.bot,
-                    pm ? sender : channel);
+            JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", JZBot
+                    .getServer(server), pm ? sender : channel);
         }
         else if (arguments.equals("logging"))
         {
@@ -107,28 +111,40 @@ public class StatusCommand implements Command
             }
             JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
                     + (strings.size() > 0 ? ", per-channel: " : ""), strings
-                    .toArray(new String[0]), ", ", JZBot.bot, pm ? sender : channel);
+                    .toArray(new String[0]), ", ", JZBot.getServer(server), pm ? sender
+                    : channel);
         }
         else if (arguments.equals("facts"))
         {
-            int totalFacts = 0;
-            String highestChannel = null;
-            int highestChannelFacts = -1;
-            int globalFacts = JZBot.storage.getFactoids().size();
-            totalFacts += globalFacts;
-            for (Channel c : JZBot.storage.getChannels().isolate())
-            {
-                int factCount = c.getFactoids().size();
-                totalFacts += factCount;
-                if (factCount > highestChannelFacts)
-                {
-                    highestChannelFacts = factCount;
-                    highestChannel = c.getName();
-                }
-            }
-            JZBot.bot.sendMessage(pm ? sender : channel, "Total factoids: " + totalFacts
-                    + ", global factoids: " + globalFacts + ", " + highestChannel
-                    + " has the most factoids (" + highestChannelFacts + " factoids)");
+            // int totalFacts = 0;
+            // String highestChannel = null;
+            // int highestChannelFacts = -1;
+            // int globalFacts = JZBot.storage.getFactoids().size();
+            // totalFacts += globalFacts;
+            // for (Channel c : JZBot.storage.getChannels().isolate())
+            // {
+            // int factCount = c.getFactoids().size();
+            // totalFacts += factCount;
+            // if (factCount > highestChannelFacts)
+            // {
+            // highestChannelFacts = factCount;
+            // highestChannel = c.getName();
+            // }
+            // }
+            // JZBot.getServer(server).sendMessage(
+            // pm ? sender : channel,
+            // "Total factoids: " + totalFacts + ", global factoids: " + globalFacts
+            // + ", " + highestChannel + " has the most factoids ("
+            // + highestChannelFacts + " factoids)");
+            // TODO: make this work. Show overall stats, and then the server with the
+            // highest amount and the channel with the highest amount. Maybe also state
+            // which server is highest for server-level facts and which server is highest
+            // overall with channel facts included, and sums both with and without
+            // server-level facts.
+            throw new ResponseException(
+                    "\"~status facts\" needs to be re-written since the "
+                            + "change to multiple servers. Until this is done, "
+                            + "\"~status facts\" does not work.");
         }
         else if (arguments.equals("stack"))
         {
@@ -143,10 +159,11 @@ public class StatusCommand implements Command
                 }
                 b.append("\n");
             }
-            JZBot.bot.sendMessage(pm ? sender : channel,
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
                     "Stack traces of all live threads: "
-                            + Pastebin
-                                    .createPost("jzbot", b.toString(), Duration.DAY, null,null));
+                            + Pastebin.createPost("jzbot", b.toString(), Duration.DAY,
+                                    null, null));
         }
         else if (arguments.equals("storage"))
         {
@@ -155,26 +172,31 @@ public class StatusCommand implements Command
             long logsFolderSize = DataUtils.recursiveSizeScan(new File("storage/logs"));
             long resourcesSize = DataUtils.recursiveSizeScan(new File("resources"));
             long entireSize = DataUtils.recursiveSizeScan(new File("."));
-            JZBot.bot.sendMessage(pm ? sender : channel, "Overall storage size: "
-                    + format(totalStorageSize) + ", database size: " + format(databaseSize)
-                    + ", logs folder size: " + format(logsFolderSize)
-                    + ", resources size: " + format(resourcesSize)
-                    + ", entire installation size: " + format(entireSize));
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
+                    "Overall storage size: " + format(totalStorageSize)
+                            + ", database size: " + format(databaseSize)
+                            + ", logs folder size: " + format(logsFolderSize)
+                            + ", resources size: " + format(resourcesSize)
+                            + ", entire installation size: " + format(entireSize));
         }
         else if (arguments.equals("os"))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, "memory: "
-                    + format(getOsAttribute("TotalPhysicalMemorySize")) + ", free: "
-                    + format(getOsAttribute("FreePhysicalMemorySize")) + ", swap: "
-                    + format(getOsAttribute("TotalSwapSpaceSize")) + ", free: "
-                    + format(getOsAttribute("FreeSwapSpaceSize")) + ", open FDs: "
-                    + getOsAttribute("OpenFileDescriptorCount") + ", max FDs: "
-                    + getOsAttribute("MaxFileDescriptorCount") + ", load average: "
-                    + getOsAttribute("SystemLoadAverage") + ", bot CPU time: " +  getOsAttribute("ProcessCpuTime"));
+            JZBot.getServer(server).sendMessage(
+                    pm ? sender : channel,
+                    "memory: " + format(getOsAttribute("TotalPhysicalMemorySize"))
+                            + ", free: " + format(getOsAttribute("FreePhysicalMemorySize"))
+                            + ", swap: " + format(getOsAttribute("TotalSwapSpaceSize"))
+                            + ", free: " + format(getOsAttribute("FreeSwapSpaceSize"))
+                            + ", open FDs: " + getOsAttribute("OpenFileDescriptorCount")
+                            + ", max FDs: " + getOsAttribute("MaxFileDescriptorCount")
+                            + ", load average: " + getOsAttribute("SystemLoadAverage")
+                            + ", bot CPU time: " + getOsAttribute("ProcessCpuTime"));
         }
         else
         {
-            JZBot.bot.sendMessage(pm ? sender : channel, "Invalid status command.");
+            JZBot.getServer(server).sendMessage(pm ? sender : channel,
+                    "Invalid status command.");
         }
     }
     

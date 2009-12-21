@@ -78,7 +78,7 @@ public class ConnectionWrapper
         getConnection().setTopic(channel, topic);
     }
     
-    private String getNick()
+    String getNick()
     {
         return getConnection().getNick();
     }
@@ -88,8 +88,14 @@ public class ConnectionWrapper
         return context.getServerName();
     }
     
-    private Connection getConnection()
+    public Connection getConnection()
     {
         return context.getConnection();
+    }
+    
+    public void joinChannel(String name)
+    {
+        // FIXME: log this
+        getConnection().joinChannel(name);
     }
 }

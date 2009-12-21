@@ -31,14 +31,18 @@ public class ExecCommand implements Command
         context.setServer(server);
         context.setChannel(channel);
         context.setSender(sender);
-        context.setSelf(JZBot.bot.getNick());
+        context.setSelf(JZBot.getServer(server).getConnection().getNick());
         context.setQuota(new FactQuota());
         Map<String, String> vars = new HashMap<String, String>();
+        // FIXME: move these vars into a method that sets them all, since they're all set
+        // in like 3 different places (running a fact, running a future fact, and exec'ing
+        // a fact here)
         vars.put("channel", channel);
         vars.put("server", server);
         vars.put("0", sender);
         vars.put("who", sender);
         vars.put("source", pm ? sender : channel);
+        vars.put("self", context.getSelf());
         context.setLocalVars(vars);
         context.setGlobalVars(JZBot.globalVariables);
         long parsedMillis = System.currentTimeMillis();
@@ -50,6 +54,6 @@ public class ExecCommand implements Command
                 + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
-        JZBot.bot.sendMessage(pm ? sender : channel, result);
+        JZBot.getServer(server).sendMessage(pm ? sender : channel, result);
     }
 }
