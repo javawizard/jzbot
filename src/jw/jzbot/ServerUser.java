@@ -1,6 +1,6 @@
 package jw.jzbot;
 
-public class ServerUser
+public class ServerUser implements Messenger
 {
     private String serverName;
     private String nick;
@@ -88,5 +88,12 @@ public class ServerUser
             ConnectionWrapper con = JZBot.getServer(serverName);
             con.sendMessage(channel, message);
         }
+    }
+    
+    @Override
+    public void sendMessage(String message)
+    {
+        ConnectionWrapper con = JZBot.getServer(serverName);
+        con.sendMessage(nick, message);
     }
 }

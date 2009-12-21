@@ -2,6 +2,7 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
 
 public class CommandListCommand implements Command
@@ -13,7 +14,7 @@ public class CommandListCommand implements Command
     }
     
     public void run(String server, String channel, boolean pm, ServerUser sender,
-            String arguments)
+            Messenger source, String arguments)
     {
         String currentList = "";
         for (String name : JZBot.commands.keySet())

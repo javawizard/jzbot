@@ -9,6 +9,7 @@ import jw.jzbot.ConfigVars;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.JZUtils;
@@ -23,8 +24,8 @@ public class HelpCommand implements Command
         return "help";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
         Server datastoreServer = JZBot.storage.getServer(server);
         if (ConfigVars.helpinpm.get().equals("1") && !pm)
@@ -87,7 +88,7 @@ public class HelpCommand implements Command
             for (String s : messages)
             {
                 if (!s.trim().equals(""))
-                    JZBot.getServer(server).sendMessage(pm ? sender : channel, s);
+                    sender.sendMessage(pm, server, channel, s);
             }
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
@@ -108,22 +109,19 @@ public class HelpCommand implements Command
                 {
                     if (sentFirst)
                     {
-                        JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                                prefix + s);
+                        sender.sendMessage(pm, server, channel, prefix + s);
                     }
                     else
                     {
                         sentFirst = true;
                         if (subpages.size() > 0)// disables "no subpages" message for now
-                            JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                                    prefix + startText + s);
+                            sender.sendMessage(pm, server, channel, prefix + startText + s);
                     }
                 }
             }
             else
             {
-                JZBot.getServer(server).sendMessage(pm ? sender : channel,
-                        prefix + startText);
+                sender.sendMessage(pm, server, channel, prefix + startText);
             }
         }
         else
@@ -143,13 +141,11 @@ public class HelpCommand implements Command
                 buffer.append(subpage).append(":\n");
                 buffer.append(subtext).append("\n\n");
             }
-            JZBot.getServer(server).sendMessage(
-                    pm ? sender : channel,
-                    "All subpages of \""
-                            + page
-                            + "\": "
-                            + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
-                                    null, null));
+            sender.sendMessage(pm, server, channel, "All subpages of \""
+                    + page
+                    + "\": "
+                    + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,
+                            null));
         }
     }
 }

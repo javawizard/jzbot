@@ -12,6 +12,7 @@ import jw.jzbot.Command;
 import jw.jzbot.Factpack;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.Factpack.Dependency;
 import jw.jzbot.Factpack.FactpackEntry;
 import jw.jzbot.fact.FactContext;
@@ -45,8 +46,8 @@ public class FactoidCommand implements Command
         return "factoid";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
         boolean isGlobal = false;
         if (arguments.startsWith("global "))
@@ -58,7 +59,7 @@ public class FactoidCommand implements Command
         String command = argumentsTokenized1[0];
         if ((!isGlobal) && (channel == null) && (!command.equalsIgnoreCase("isglobal")))
         {
-            JZBot.bot.sendMessage(pm ? sender : channel,
+            sender.sendMessage(pm, server, channel,
                     "For non-global commands, you must specify "
                             + "a channel (unless it is the isglobal command)");
             return;

@@ -3,6 +3,7 @@ package jw.jzbot.commands;
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
@@ -14,8 +15,8 @@ public class JoinCommand implements Command
         return "join";
     }
     
-    public void run(String server, String channel, boolean pm, String sender,
-            String hostname, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            String arguments)
     {
         Server dServer = JZBot.storage.getServer(server);
         // if (!pm)
@@ -23,7 +24,7 @@ public class JoinCommand implements Command
         // JZBot.bot.sendMessage(sender, "Join only works in a pm");
         // return;
         // }
-        JZBot.verifySuperop(server, hostname);
+        sender.verifySuperop();
         String name = arguments;
         if (dServer.getChannel(name) != null)
         {

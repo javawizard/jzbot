@@ -622,13 +622,13 @@ public class JZBot
         private String server;
         private String channel;
         private ArgumentList arguments;
-        private String sender;
+        private ServerUser sender;
         private String key;
         private FactQuota quota;
         public long startTime;
         
         public FutureFactoid(int delay, String server, String channel,
-                ArgumentList arguments, String sender, String key, FactQuota quota)
+                ArgumentList arguments, ServerUser sender, String key, FactQuota quota)
         {
             if (delay > (86400 * 2))
                 throw new RuntimeException("Futures can't be scheduled more than 2 days ("
@@ -1179,8 +1179,8 @@ public class JZBot
             }
         }
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
-        // FIXME: make this configurable (up to a hard-coded limit of, say, 3 minutes)by a
-        // config variable, and then default it to 40 seconds or something
+        // FIXME: make this configurable (up to a hard-coded limit of, say, 3 minutes) by
+        // a config variable, and then default it to 40 seconds or something
         tkt.maxRunTime = 75 * 1000;
         if (timed)
             tkt.start();
@@ -1191,8 +1191,11 @@ public class JZBot
                 if (f != null)
                 {
                     incrementIndirectRequests(f);
+                    // FIXME: this means notification factoids can't tell if a user is a
+                    // superop. We need to somehow include the hostname of the user here.
                     String factValue = safeRunFactoid(f, server, serverName, channelName,
-                            sender, args, true, new HashMap<String, String>());
+                            new ServerUser(serverName, sender, null), args, true,
+                            new HashMap<String, String>());
                     String pseudoChannel = channelName;
                     String pseudoServer = serverName;
                     if (pseudoServer == null || pseudoChannel == null)
@@ -1256,7 +1259,7 @@ public class JZBot
      *            The sender of the factoid request
      */
     public static String runFactoid(Factoid factoid, String server, String channel,
-            String sender, String[] args, Map<String, String> vars,
+            ServerUser sender, String[] args, Map<String, String> vars,
             boolean allowRestricted, FactQuota quota)
     {
         if (quota == null)
@@ -1275,8 +1278,8 @@ public class JZBot
             cAppend = args[i] + ((i == args.length - 1) ? "" : " ") + cAppend;
             vars.put("" + (i + 1) + "-", cAppend);
         }
-        vars.put("0", sender);
-        vars.put("who", sender);
+        vars.put("0", sender.nick());
+        vars.put("who", sender.nick());
         if (channel != null)
             vars.put("channel", channel);
         String selfName = null;
@@ -1287,7 +1290,7 @@ public class JZBot
             selfName = realCon.getNick();
             vars.put("self", selfName);
         }
-        vars.put("source", channel == null ? sender : channel);
+        vars.put("source", channel == null ? sender.nick() : channel);
         String text = factoid.getValue();
         String factoidName = factoid.getName();
         long startMillis = System.currentTimeMillis();
@@ -1320,7 +1323,7 @@ public class JZBot
     }
     
     public static String doFactImport(String server, String channel,
-            ArgumentList arguments, String sender, boolean allowRestricted,
+            ArgumentList arguments, ServerUser sender, boolean allowRestricted,
             FactQuota quota, ImportLevel level)
     {
         return doFactImport(server, channel, arguments, sender, allowRestricted, quota,
@@ -1328,7 +1331,7 @@ public class JZBot
     }
     
     public static String doFactImport(String server, String channel,
-            ArgumentList arguments, String sender, boolean allowRestricted,
+            ArgumentList arguments, ServerUser sender, boolean allowRestricted,
             FactQuota quota, ImportLevel level, Map<String, String> cascadingVars)
     {
         Factoid f = null;
@@ -1554,8 +1557,8 @@ public class JZBot
             strings[i - 1] = matcher.group(i);
         }
         incrementIndirectRequests(f);
-        String factValue = safeRunFactoid(f, server, serverName, channel, sender, strings,
-                true, vars);
+        String factValue = safeRunFactoid(f, server, serverName, channel, new ServerUser(
+                serverName, sender, hostname), strings, true, vars);
         sendActionOrMessage(getConnection(serverName), channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
@@ -1594,6 +1597,10 @@ public class JZBot
             String sender, String hostname, String username, String message,
             boolean processFactoids)
     {
+        ServerUser serverUser = new ServerUser(senderServerName, sender, hostname);
+        ServerChannel serverChannel = null;
+        if (channel != null)
+            serverChannel = new ServerChannel(serverName, channel);
         ConnectionWrapper con = getConnection(serverName);
         ConnectionWrapper senderCon = getConnection(senderServerName);
         System.out.println("Starting command run for message " + message);
@@ -1612,8 +1619,8 @@ public class JZBot
             try
             {
                 threadLocalUsername.set(username);
-                c.run(serverName, channel, pm, new ServerUser(senderServerName, sender,
-                        hostname), commandArguments);
+                c.run(serverName, channel, pm, serverUser, pm ? serverUser : serverChannel,
+                        commandArguments);
             }
             catch (Exception e)
             {
@@ -1686,8 +1693,8 @@ public class JZBot
             String factValue;
             System.out.println("calculating fact value");
             factValue = safeRunFactoid(factoid, datastoreServer, serverName, channel,
-                    sender, commandArguments.split(" "), isSuperop(serverName, hostname),
-                    new HashMap<String, String>());
+                    serverUser, commandArguments.split(" "),
+                    isSuperop(serverName, hostname), new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             sendActionOrMessage((pm ? senderCon : con), pm ? sender : channel, factValue);
             System.out.println("Finishing command run #6");
@@ -1695,7 +1702,7 @@ public class JZBot
         }
         System.out.println("invalid command");
         doInvalidCommand(pm, pm ? senderServer : datastoreServer, pm ? senderServerName
-                : serverName, channel, sender);
+                : serverName, channel, serverUser);
         System.out.println("Finishing command run #7");
     }
     
@@ -1722,7 +1729,7 @@ public class JZBot
      *         the factoid threw an exception while running
      */
     public static String safeRunFactoid(Factoid f, Server server, String serverName,
-            String channel, String sender, String[] arguments, boolean allowRestricted,
+            String channel, ServerUser sender, String[] arguments, boolean allowRestricted,
             Map<String, String> vars)
     {
         String factValue;
@@ -1772,18 +1779,18 @@ public class JZBot
     }
     
     private static void doInvalidCommand(boolean pm, Server server, String serverName,
-            String channel, String sender)
+            String channel, ServerUser sender)
     {
         Channel c = server.getChannel(channel);
         String notfoundFact = ConfigVars.notfound.get();
-        ConnectionWrapper con = getConnection(serverName);
+        ConnectionWrapper con = getConnection(pm ? sender.getServerName() : serverName);
         if (notfoundFact.trim().equals("") && c != null)
         {
-            con.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
+            sender.sendMessage(pm, serverName, channel, "Huh? (pm \"help\" for more info)");
         }
         else if (notfoundFact.trim().equals(""))
         {
-            con.sendMessage(pm ? sender : channel, "Huh? (pm \"help\" for more info)");
+            sender.sendMessage(pm, serverName, channel, "Huh? (pm \"help\" for more info)");
         }
         else
         {
@@ -1803,11 +1810,11 @@ public class JZBot
                         new String[0], true, new HashMap<String, String>());
                 if (factValue.trim().equals(""))
                     factValue = "Not-found factoid didn't output anything";
-                sendActionOrMessage(con, pm ? sender : channel, factValue);
+                sendActionOrMessage(con, pm ? sender.nick() : channel, factValue);
             }
             catch (Throwable t)
             {
-                con.sendMessage(pm ? sender : channel,
+                sender.sendMessage(pm, serverName, channel,
                         "Syntax error in not-found factoid: " + pastebinStack(t));
             }
         }
