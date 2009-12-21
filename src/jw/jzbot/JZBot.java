@@ -500,7 +500,7 @@ public class JZBot
         else if (name.equals("facebook"))
             c = FacebookProtocol.class;
         else
-            throw new RuntimeException("The protocol \"" + name
+            throw new ResponseException("The protocol \"" + name
                     + "\" is not a valid protocol name. Valid protocol names are, "
                     + "at present, \"irc\", \"bzflag\", and \"facebook\".");
         if (!run)
@@ -726,11 +726,12 @@ public class JZBot
         {
             public void run()
             {
+                System.out.println();
                 System.out.println("Waiting on log queue to shut down...");
                 synchronized (logQueueLock)
                 {
                     logQueueRunning = false;
-                    int discarded = logQueue.size();
+                    int discarded = (logQueue == null ? 0 : logQueue.size());
                     System.out.println("Log queue has shut down. " + discarded
                             + " log event" + (discarded == 1 ? "" : "s")
                             + " were discarded.");
