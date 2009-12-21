@@ -827,6 +827,7 @@ public class JZBot
                 return;
             }
             Server datastoreServer = storage.createServer();
+            datastoreServer.setActive(true);
             datastoreServer.setName(serverName);
             datastoreServer.setProtocol(protocol);
             datastoreServer.setNick(nick);
@@ -1594,6 +1595,7 @@ public class JZBot
             boolean processFactoids)
     {
         ConnectionWrapper con = getConnection(serverName);
+        ConnectionWrapper senderCon = getConnection(senderServerName);
         System.out.println("Starting command run for message " + message);
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
@@ -1616,13 +1618,13 @@ public class JZBot
             {
                 if (e instanceof ResponseException)
                 {
-                    con.sendMessage(pm ? sender : channel, ((ResponseException) e)
-                            .getMessage());
+                    (pm ? senderCon : con).sendMessage(pm ? sender : channel,
+                            ((ResponseException) e).getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
-                    con.sendMessage(pm ? sender : channel,
+                    (pm ? senderCon : con).sendMessage(pm ? sender : channel,
                             "An error occured while running the command " + command + ": "
                                     + pastebinStack(e));
                 }
@@ -1686,12 +1688,13 @@ public class JZBot
                     sender, commandArguments.split(" "), isSuperop(serverName, hostname),
                     new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
-            sendActionOrMessage(con, pm ? sender : channel, factValue);
+            sendActionOrMessage((pm ? senderCon : con), pm ? sender : channel, factValue);
             System.out.println("Finishing command run #6");
             return;
         }
         System.out.println("invalid command");
-        doInvalidCommand(pm, datastoreServer, serverName, channel, sender);
+        doInvalidCommand(pm, pm ? senderServer : datastoreServer, pm ? senderServerName
+                : serverName, channel, sender);
         System.out.println("Finishing command run #7");
     }
     
