@@ -2001,12 +2001,12 @@ public class JZBot
                     message = message.substring(message.indexOf(" ") + 1);
                     if (fragment.contains("#"))
                     {
-                        pseudoServer = fragment.substring(0, fragment.indexOf("#"));
+                        pseudoServer = fragment.substring(1, fragment.indexOf("#"));
                         pseudoChannel = fragment.substring(fragment.indexOf("#"));
                     }
                     else
                     {
-                        pseudoServer = fragment;
+                        pseudoServer = fragment.substring(1);
                         pseudoChannel = null;
                     }
                 }
