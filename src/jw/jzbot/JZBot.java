@@ -749,7 +749,7 @@ public class JZBot
             System.out.println("JZBot is an IRC bot. If you have questions, connect");
             System.out.println("to irc.freenode.net and join channel ##jzbot.");
             System.out
-                    .println("To set up your bot, run \"jzbot addserver <name> <server> ");
+                    .println("To set up your bot, run \"jzbot addserver <name> <protocol> <server> ");
             System.out.println("<port> <nick> <hostname> <password>\". <server>");
             System.out.println("is the IRC server to connect to. For example, this");
             System.out.println("could be \"irc.freenode.net\". <port> is the port");
@@ -779,19 +779,20 @@ public class JZBot
             ArrayList<String> list = new ArrayList<String>(Arrays.asList(args));
             list.remove(0);
             args = list.toArray(new String[0]);
-            if (args.length < 5 || args.length > 6)
+            if (args.length < 6 || args.length > 7)
             {
-                System.out.println("\"jzbot setup\" expects either 5 or 6 "
+                System.out.println("\"jzbot setup\" expects either 6 or 7 "
                         + "arguments, but you provided " + args.length);
                 System.out.println("arguments. See \"jzbot help\" for help.");
                 return;
             }
             String serverName = args[0];
-            String server = args[1];
-            String portString = args[2];
-            String nick = args[3];
-            String hostname = args[4];
-            String password = (args.length > 5 ? args[5] : "");
+            String protocol = args[1];
+            String server = args[2];
+            String portString = args[3];
+            String nick = args[4];
+            String hostname = args[5];
+            String password = (args.length > 6 ? args[6] : "");
             if (!isOkServerName(serverName))
             {
                 System.out.println("That server name is not valid. Server names must");
@@ -827,6 +828,7 @@ public class JZBot
             }
             Server datastoreServer = storage.createServer();
             datastoreServer.setName(serverName);
+            datastoreServer.setProtocol(protocol);
             datastoreServer.setNick(nick);
             datastoreServer.setPassword(password);
             datastoreServer.setPort(port);
@@ -834,6 +836,7 @@ public class JZBot
             Operator op = storage.createOperator();
             op.setHostname(hostname);
             datastoreServer.getOperators().add(op);
+            storage.getServers().add(datastoreServer);
             System.out.println("");
             System.out.println("A new server has been added. Run \"jzbot\"");
             System.out.println("to start your bot.");
