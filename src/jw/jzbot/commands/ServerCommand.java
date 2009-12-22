@@ -49,7 +49,7 @@ public class ServerCommand implements Command
                 throw new ResponseException("A server with that name already exists.");
             JZBot.instantiateConnectionForProtocol(tokens[0], false);
             Server newServer = JZBot.storage.createServer();
-            newServer.setActive(false);
+            newServer.setActive(true);
             newServer.setName(serverName);
             newServer.setProtocol(tokens[0]);
             newServer.setServer(tokens[1]);
@@ -58,9 +58,9 @@ public class ServerCommand implements Command
             if (tokens.length > 4)
                 newServer.setPassword(tokens[4]);
             JZBot.storage.getServers().add(newServer);
-            source
-                    .sendMessage("That server has successfully been added. Use \"server activate "
-                            + newServer + "\" to get the bot to actually connect to it.");
+            JZBot.notifyConnectionCycleThread();
+            source.sendMessage("That server has been added and activated. The bot "
+                    + "will connect to it within a few seconds.");
         }
         else if (subcommand.equals("delete"))
         {

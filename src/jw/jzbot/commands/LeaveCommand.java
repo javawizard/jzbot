@@ -61,7 +61,8 @@ public class LeaveCommand implements Command
                 + "settings, though. Use \"/msg "
                 + JZBot.getServer(server).getConnection().getNick() + " join " + channel
                 + "\" to have me join the channel again.");
-        JZBot.getServer(server).partChannel(channel, "Leaving on request from " + sender);
+        JZBot.getServer(server).partChannel(channel,
+                "Leaving on request from " + sender.nick());
     }
     
 }
