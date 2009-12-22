@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.JZBot;
+import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
@@ -12,6 +13,10 @@ import org.jdom.Document;
 
 public class FactContext
 {
+    public FactContext()
+    {
+    }
+    
     private Map<String, String> localVars = new HashMap<String, String>();
     private Map<String, String> globalVars = JZBot.globalVariables;
     private Map<String, Document> xmlDocuments = new HashMap<String, Document>();
@@ -36,6 +41,18 @@ public class FactContext
     private String server;
     private String channel;
     private ServerUser sender;
+    private Messenger source;
+    
+    public Messenger getSource()
+    {
+        return source;
+    }
+    
+    public void setSource(Messenger source)
+    {
+        this.source = source;
+    }
+    
     private String self;
     private FactQuota quota = new FactQuota();
     private DebugInstance debugger;

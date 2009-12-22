@@ -36,6 +36,7 @@ public class ExecCommand implements Command
         context.setSender(sender);
         context.setSelf(JZBot.getServer(server).getConnection().getNick());
         context.setQuota(new FactQuota());
+        context.setSource(source);
         Map<String, String> vars = new HashMap<String, String>();
         // FIXME: move these vars into a method that sets them all, since they're all set
         // in like 3 different places (running a fact, running a future fact, and exec'ing
