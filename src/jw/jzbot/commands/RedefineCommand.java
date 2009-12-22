@@ -35,8 +35,7 @@ public class RedefineCommand implements Command
             {
                 list.add(redefinition.getKey() + "->" + redefinition.getValue());
             }
-            JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ", JZBot
-                    .getServer(pm ? sender.nick() : server), pm ? sender.nick() : channel);
+            JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ", source);
         }
         throw new ResponseException(
                 "Redefinition is not yet supported. When it is, it will "

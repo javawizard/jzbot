@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.Connection;
+import jw.jzbot.Messenger;
 
 import org.jibble.pircbot.PircBot;
 
@@ -36,21 +37,21 @@ public class JZUtils
         return strings.toArray(new String[0]);
     }
     
-    public static String[] ircDelimited(ConnectionWrapper con, String[] items,
+    public static String[] ircDelimited(Messenger messenger, String[] items,
             String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, con.getConnection()
+        return delimitedLengthRestricted(items, delimiter, messenger
                 .getProtocolDelimitedLength());
     }
     
     public static void ircSendDelimited(String[] items, String delimiter,
-            ConnectionWrapper bot, String recipient)
+            Messenger messenger)
     {
-        ircSendDelimited("", items, delimiter, bot, recipient);
+        ircSendDelimited("", items, delimiter, messenger);
     }
     
     public static void ircSendDelimited(String prefix, String[] items, String delimiter,
-            ConnectionWrapper bot, String recipient)
+            Messenger messenger)
     {
         if (items.length > 0)
             items[0] = prefix + items[0];
@@ -59,9 +60,9 @@ public class JZUtils
             {
                 prefix
             };
-        for (String s : ircDelimited(bot, items, delimiter))
+        for (String s : ircDelimited(messenger, items, delimiter))
         {
-            bot.sendMessage(recipient, s);
+            messenger.sendMessage(s);
         }
     }
 }

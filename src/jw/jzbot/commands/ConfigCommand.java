@@ -40,18 +40,17 @@ public class ConfigCommand implements Command
                                 + "a list of var names.");
             if (tokens.length == 1)
             {
-                source.sendMessage(
-                        "This variable's current value is \"" + var.get()
-                                + "\". You can use \"~config " + var.name()
-                                + " <newvalue>\" to set a new value."
-                                + " The variable's description is:");
+                source.sendMessage("This variable's current value is \"" + var.get()
+                        + "\". You can use \"~config " + var.name()
+                        + " <newvalue>\" to set a new value."
+                        + " The variable's description is:");
                 source.sendMessage(var.getDescription());
             }
             else
             {
                 var.set(tokens[1]);
-                source.sendMessage("Successfully set the var \""
-                        + var.name() + "\" to have the value \"" + tokens[1] + "\".");
+                source.sendMessage("Successfully set the var \"" + var.name()
+                        + "\" to have the value \"" + tokens[1] + "\".");
             }
         }
         else
@@ -61,14 +60,15 @@ public class ConfigCommand implements Command
             {
                 configVarNames[i] = ConfigVars.values()[i].name();
             }
-            source.sendMessage(
-                    "Use \"~config <varname>\" to see a variable's current value and "
-                            + "a short description of the variable, " + "or \"~config "
-                            + "<varname> <value>\" to " + "set the value "
+            source
+                    .sendMessage("Use \"~config <varname>\" to see a variable's current value and "
+                            + "a short description of the variable, "
+                            + "or \"~config "
+                            + "<varname> <value>\" to "
+                            + "set the value "
                             + "of a variable. Currently, "
                             + "allowed variable names are, separated by spaces:");
-            JZUtils.ircSendDelimited(configVarNames, "  ", JZBot.getServer(pm ? sender
-                    .getServerName() : server), pm ? sender.nick() : channel);
+            JZUtils.ircSendDelimited(configVarNames, "  ", source);
         }
     }
 }

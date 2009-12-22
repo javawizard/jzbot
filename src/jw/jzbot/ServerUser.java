@@ -96,4 +96,17 @@ public class ServerUser implements Messenger
         ConnectionWrapper con = JZBot.getServer(serverName);
         con.sendMessage(nick, message);
     }
+    
+    @Override
+    public int getProtocolDelimitedLength()
+    {
+        return JZBot.getServer(serverName).getConnection().getProtocolDelimitedLength();
+    }
+    
+    @Override
+    public void sendAction(String action)
+    {
+        JZBot.getConnection(serverName).sendMessage(nick, action);
+    }
+    
 }

@@ -39,4 +39,16 @@ public class ServerChannel implements Messenger
         con.sendMessage(channel, message);
     }
     
+    @Override
+    public int getProtocolDelimitedLength()
+    {
+        return JZBot.getServer(serverName).getConnection().getProtocolDelimitedLength();
+    }
+    
+    @Override
+    public void sendAction(String action)
+    {
+        JZBot.getConnection(serverName).sendMessage(channel, action);
+    }
+    
 }

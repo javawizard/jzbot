@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.Command;
+import jw.jzbot.FactScope;
 import jw.jzbot.Factpack;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
@@ -26,6 +27,7 @@ import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.storage.HasFactoids;
+import jw.jzbot.storage.Server;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -47,33 +49,54 @@ public class FactoidCommand implements Command
         return "factoid";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,Messenger source,
-            String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
     {
-        boolean isGlobal = false;
+        FactScope scope;
         if (arguments.startsWith("global "))
         {
-            isGlobal = true;
+            scope = FactScope.global;
             arguments = arguments.substring("global ".length());
+        }
+        else if (arguments.startsWith("server "))
+        {
+            scope = FactScope.server;
+        }
+        else
+        {
+            scope = FactScope.channel;
         }
         String[] argumentsTokenized1 = arguments.split(" ", 2);
         String command = argumentsTokenized1[0];
-        if ((!isGlobal) && (channel == null) && (!command.equalsIgnoreCase("isglobal")))
+        if (isScopedCommand(command))
         {
-            sender.sendMessage(pm, server, channel,
-                    "For non-global commands, you must specify "
-                            + "a channel (unless it is the isglobal command)");
-            return;
+            if (scope == FactScope.server && server == null)
+                throw new ResponseException(
+                        "You need to specify a server when running this.");
+            if (scope == FactScope.channel && channel == null)
+                throw new ResponseException(
+                        "You need to specify a channel when running this.");
         }
+        // if ((!isGlobal) && (channel == null) &&
+        // (!command.equalsIgnoreCase("isglobal")))
+        // {
+        // sender.sendMessage(pm, server, channel,
+        // "For non-global commands, you must specify "
+        // + "a channel (unless it is the isglobal command)");
+        // return;
+        // }
         String afterCommand = (argumentsTokenized1.length > 1) ? argumentsTokenized1[1]
                 : "";
         /*
          * command is something like create, delete, isglobal, etc., and afterCommand is
          * the rest
          */
+        Server s = null;
+        if (scope == FactScope.server || scope == FactScope.channel)
+            s = JZBot.storage.getServer(server);
         Channel c = null;
-        if (!isGlobal)
-            c = JZBot.storage.getChannel(channel);
+        if (scope == FactScope.channel)
+            c = s.getChannel(channel);
         boolean processed = false;
         /*
          * oldFact is set to the old factoid when the replace command is used. This is
@@ -84,42 +107,46 @@ public class FactoidCommand implements Command
         if (command.equals("delete") || command.equals("replace"))
         {
             processed = true;
-            verifyOpSuperop(isGlobal, channel, hostname);
+            sender.verifySuperop();
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
             if (argumentsTokenized2.length != 2 && command.equals("replace"))
-                throw new ResponseException("You need to specify the factoid itself");
+                throw new ResponseException(
+                        "You need to specify the new contents of the factoid");
             String factoidName = argumentsTokenized2[0];
             if (factoidName.equals(""))
-                throw new ResponseException("You need to specify the factoid");
+                throw new ResponseException("You need to specify the name of the factoid");
             Factoid f;
-            if (isGlobal)
+            if (scope == FactScope.global)
                 f = JZBot.storage.getFactoid(factoidName);
+            else if (scope == FactScope.server)
+                f = s.getFactoid(factoidName);
             else
                 f = c.getFactoid(factoidName);
             if (f == null)
             {
-                if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
-                    throw new ResponseException(
-                            "That factoid doesn't exist. However, there is a global "
-                                    + "factoid with that name. Use \"factoid global\" instead "
-                                    + "of \"factoid\" in the command to do stuff with "
-                                    + "the global factoid.");
-                throw new ResponseException("That factoid doesn't exist");
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist at that scope.");
             }
-            if (isGlobal)
+            if (scope == FactScope.global)
                 JZBot.storage.getFactoids().remove(f);
+            else if (scope == FactScope.server)
+                s.getFactoids().remove(f);
             else
                 c.getFactoids().remove(f);
             if (command.equals("delete"))
-                JZBot.bot.sendMessage(pm ? sender : channel, "Factoid " + afterCommand
-                        + " deleted.");
+                source.sendMessage("Factoid " + afterCommand + " deleted.");
             if (command.equals("replace"))
                 oldFact = f;
         }
         if (command.equals("create") || command.equals("replace"))
         {
             processed = true;
-            verifyOpSuperop(isGlobal, channel, hostname);
+            sender.verifySuperop();
             if (afterCommand.equals(""))
                 throw new ResponseException("You need to specify the factoid name");
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
@@ -132,12 +159,16 @@ public class FactoidCommand implements Command
                 throw new ResponseException(
                         "That factoid name contains invalid characters. Factoid "
                                 + "names must not start with \"#\", \"@\", or \"%\", and "
-                                + "must contain at least one character..");
+                                + "must contain at least one character.");
             String factoidContents = argumentsTokenized2[1];
-            if (c != null && c.getFactoid(factoidName) != null)
+            if (scope == FactScope.channel && c.getFactoid(factoidName) != null)
                 throw new ResponseException(
                         "That factoid already exists as a channel-specific factoid");
-            else if (c == null && JZBot.storage.getFactoid(factoidName) != null)
+            else if (scope == FactScope.server && s.getFactoid(factoidName) != null)
+                throw new ResponseException(
+                        "That factoid already exists as a server-specific factoid");
+            else if (scope == FactScope.global
+                    && JZBot.storage.getFactoid(factoidName) != null)
                 throw new ResponseException(
                         "That factoid already exists as a global factoid");
             boolean fromPastebin = PastebinService.understands(factoidContents);
@@ -153,19 +184,19 @@ public class FactoidCommand implements Command
             }
             catch (Exception e)
             {
-                recreate(oldFact, isGlobal, c);
+                recreate(oldFact, scope, s, c);
                 throw new ResponseException(
                         "There is a syntax error in the contents of the factoid: "
                                 + JZBot.pastebinStack(e));
             }
             Factoid f = JZBot.storage.createFactoid();
-            f.setCreator(hostname);
+            f.setCreator(sender.getHostname());
             f.setName(factoidName);
             f.setActive(true);
             f.setValue(factoidContents);
             // history stuff
             f.setCreationTime(System.currentTimeMillis());
-            f.setCreatorNick(sender);
+            f.setCreatorNick(sender.nick());
             f.setCreatorUsername(JZBot.getThreadLocalUsername());
             f.setDirectRequests(0);
             f.setIndirectRequests(0);
@@ -175,23 +206,27 @@ public class FactoidCommand implements Command
                 f.setDirectRequests(oldFact.getDirectRequests());
                 f.setIndirectRequests(oldFact.getIndirectRequests());
             }
-            if (isGlobal)
+            if (scope == FactScope.global)
                 JZBot.storage.getFactoids().add(f);
+            else if (scope == FactScope.server)
+                s.getFactoids().add(f);
             else
                 c.getFactoids().add(f);
             System.out.println("created fact " + factoidName + " " + factoidContents);
-            JZBot.bot.sendMessage(pm ? sender : channel, "Factoid " + factoidName
+            source.sendMessage("Factoid " + factoidName
                     + (command.equals("replace") ? " replaced. " : " created."));
         }
         if (command.equals("list"))
         {
             processed = true;
-            System.out.println("command is list, " + isGlobal);
+            System.out.println("command is list, " + scope);
             // JZBot.bot.sendMessage(pm ? sender : channel,
             // "Start of factoid list");
             StoredList<Factoid> list;
-            if (isGlobal)
+            if (scope == FactScope.global)
                 list = JZBot.storage.getFactoids();
+            else if (scope == FactScope.server)
+                list = s.getFactoids();
             else
                 list = c.getFactoids();
             if (list != null)
@@ -201,53 +236,57 @@ public class FactoidCommand implements Command
                 {
                     currentList += (f.isLibrary() ? "%" : "")
                             + (f.isRestricted() ? "@" : "") + f.getName() + "  ";
-                    if (currentList.length() > 400)
-                    {
-                        JZBot.bot.sendMessage(pm ? sender : channel, currentList);
-                        currentList = "";
-                    }
+                }
+                if (currentList.length() > source.getProtocolDelimitedLength())
+                {
+                    currentList = JZBot.pastebinNotice(currentList, null);
                 }
                 if (!currentList.equals(""))
                 {
-                    if (afterCommand.endsWith("--") || currentList.length() > 512)
-                    {
-                        JZBot.bot.sendMessage(pm ? sender : channel, "List of factoids: "
-                                + Pastebin.createPost("jzbot", currentList, Duration.DAY,
-                                        null, null));
-                    }
-                    else
-                    {
-                        JZBot.bot.sendMessage(pm ? sender : channel, currentList);
-                    }
+                    source.sendMessage(currentList);
                 }
             }
-            JZBot.bot.sendMessage(pm ? sender : channel, "End of factoid list. "
-                    + (isGlobal ? "" : "You should also run factoid global list for"
-                            + " global factoids. These were not included "
-                            + "in this list."));
+            if (scope == FactScope.global)
+                source.sendMessage("End of factoid list.");
+            else if (scope == FactScope.server)
+                source.sendMessage("End of factoid list. You should also run "
+                        + "\"factoid global list\" for"
+                        + " global factoids. These were not included " + "in this list.");
+            else
+                source.sendMessage("End of factoid list. You should also run "
+                        + "\"factoid global list\" and \"factoid server list\" for"
+                        + " global factoids and server-specific factoids. These "
+                        + "were not included " + "in this list.");
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
         {
+            // FIXME: need to implement these
             throw new ResponseException("Not implemented yet.");
         }
         if (command.equals("isrestricted"))
         {
+            // FIXME: need to implement these
             throw new ResponseException("Not implemented yet.");
         }
         if (command.equals("export"))
         {
+            if (scope != FactScope.server)
+                throw new ResponseException(
+                        "The export command requires exactly a scope of "
+                                + "\"server\". I'm hoping to add the ability to "
+                                + "export channel-scope and global-scope "
+                                + "factoids soon.");
             processed = true;
             Document export = exportServerFactoids();
             String data = new XMLOutputter(Format.getPrettyFormat().setIndent("    "))
                     .outputString(export);
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "Export of all factoids in this bot at this server: "
-                            + Pastebin.createPost("jzbot", data, Duration.DAY, null, null));
+            source.sendMessage("Export of all factoids in this bot at this server: "
+                    + Pastebin.createPost("jzbot", data, Duration.DAY, null, null));
         }
         if (command.equals("attribute") || command.equals("unattribute"))
         {
             processed = true;
-            verifyOpSuperop(isGlobal, channel, hostname);
+            sender.verifySuperop();
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
             if (argumentsTokenized2.length != 2)
                 throw new ResponseException("You need to specify the name of the factoid "
@@ -255,25 +294,21 @@ public class FactoidCommand implements Command
             String factoidName = argumentsTokenized2[0];
             if (factoidName.equals(""))
                 throw new ResponseException("You need to specify the factoid");
-            Factoid f;
-            if (isGlobal)
-                f = JZBot.storage.getFactoid(factoidName);
-            else
-                f = c.getFactoid(factoidName);
+            Factoid f = getScopedFactoid(scope, s, c, factoidName);
             if (f == null)
             {
-                if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
-                    throw new ResponseException(
-                            "That factoid doesn't exist. However, there is a global "
-                                    + "factoid with that name. Use \"factoid global\" instead "
-                                    + "of \"factoid\" in the command to do stuff with "
-                                    + "the global factoid.");
-                throw new ResponseException("That factoid doesn't exist");
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist at that scope.");
             }
             if (command.equals("attribute"))
             {
                 f.setAttribution(argumentsTokenized2[1]);
-                JZBot.bot.sendMessage(pm ? sender : channel, "The factoid " + f.getName()
+                source.sendMessage("The factoid " + f.getName()
                         + " has been attributed to \"" + f.getAttribution() + "\".");
             }
             else
@@ -283,9 +318,9 @@ public class FactoidCommand implements Command
                     throw new ResponseException(
                             "This factoid does not currently have an attribution.");
                 f.setAttribution(null);
-                JZBot.bot.sendMessage(pm ? sender : channel, "The attribution for "
-                        + f.getName() + " (which was previously \"" + previousAttribution
-                        + "\" has been removed.");
+                source.sendMessage("The attribution for " + f.getName()
+                        + " (which was previously \"" + previousAttribution
+                        + "\") has been removed.");
             }
         }
         if (command.equals("literal"))
@@ -293,45 +328,38 @@ public class FactoidCommand implements Command
             processed = true;
             if (afterCommand.equals(""))
                 throw new ResponseException("You need to specify the factoid");
-            Factoid f;
-            if (isGlobal)
-                f = JZBot.storage.getFactoid(afterCommand);
-            else
-                f = c.getFactoid(afterCommand);
+            Factoid f = getScopedFactoid(scope, s, c, afterCommand);
             if (f == null)
             {
-                if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
-                    throw new ResponseException(
-                            "That factoid doesn't exist. However, there is a global "
-                                    + "factoid with that name. Use \"factoid global\" instead "
-                                    + "of \"factoid\" in the command to do stuff with "
-                                    + "the global factoid.");
-                throw new ResponseException("That factoid doesn't exist");
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist at that scope.");
             }
             String value = f.getValue();
-            if (value.contains("\n") || value.contains("\r") || value.length() > 400
+            if (value.contains("\n") || value.contains("\r")
+                    || value.length() > source.getProtocolDelimitedLength()
                     || PastebinService.understands(value))
                 value = Pastebin.createPost("jzbot", value, Duration.DAY, null, null);
-            JZBot.bot.sendMessage(pm ? sender : channel, value);
+            source.sendMessage(value);
         }
         if (command.equals("info"))
         {
             processed = true;
             if (afterCommand.equals(""))
                 throw new ResponseException("You need to specify the factoid");
-            Factoid f;
-            if (isGlobal)
-                f = JZBot.storage.getFactoid(afterCommand);
-            else
-                f = c.getFactoid(afterCommand);
+            Factoid f = getScopedFactoid(scope, s, c, afterCommand);
             if (f == null)
             {
-                if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
-                    throw new ResponseException(
-                            "That factoid doesn't exist. However, there is a global "
-                                    + "factoid with that name. Use \"factoid global\" instead "
-                                    + "of \"factoid\" in the command to do stuff with "
-                                    + "the global factoid.");
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist");
             }
             int directRequests = f.getDirectRequests();
@@ -353,9 +381,8 @@ public class FactoidCommand implements Command
             {
                 attributionMessage = "; attributed to \"" + attribution + "\"";
             }
-            JZBot.bot.sendMessage(pm ? sender : channel, "" + f.getName()
-                    + " -- created by " + f.getCreatorNick() + " <"
-                    + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
+            source.sendMessage("" + f.getName() + " -- created by " + f.getCreatorNick()
+                    + " <" + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
                     + new Date(f.getCreationTime()).toString() + "; requested "
                     + totalRequests + " times (" + directRequests + " directly, "
                     + indirectRequests + " indirectly)" + attributionMessage
@@ -363,19 +390,36 @@ public class FactoidCommand implements Command
         }
         if (command.equals("pack"))
         {
-            doFactpackCommand(pm, sender, hostname, afterCommand, isGlobal, channel, c);
+            doFactpackCommand(pm, sender, source, afterCommand, scope, server, s, channel,
+                    c);
             processed = true;
         }
         if (!processed)
         {
-            throw new ResponseException("Invalid factoid command. Try 'factoid [global] "
-                    + "<list|create|replace|delete|literal|info|pack"
-                    + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
+            throw new ResponseException(
+                    "Invalid factoid command. Try 'factoid [global|server] "
+                            + "<list|create|replace|delete|literal|info|pack"
+                            + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
         }
     }
     
-    private void doFactpackCommand(boolean pm, String sender, String hostname,
-            String commandString, boolean isGlobal, String channel, Channel storedChannel)
+    private Factoid getScopedFactoid(FactScope scope, Server s, Channel c, String name)
+    {
+        if (scope == FactScope.global)
+            return JZBot.storage.getFactoid(name);
+        else if (scope == FactScope.server)
+            return s.getFactoid(name);
+        return c.getFactoid(name);
+    }
+    
+    private boolean isScopedCommand(String command)
+    {
+        return !(command.equals("scope"));
+    }
+    
+    private void doFactpackCommand(boolean pm, ServerUser sender, Messenger source,
+            String commandString, FactScope scope, String server, Server s, String channel,
+            Channel storedChannel)
     {
         String[] argumentList = commandString.split(" ", 2);
         if (commandString.equals(""))
@@ -1006,14 +1050,19 @@ public class FactoidCommand implements Command
             throw new ResponseException(string);
     }
     
-    private void recreate(Factoid oldFact, boolean isGlobal, Channel c)
+    private void recreate(Factoid oldFact, FactScope scope, Server s, Channel c)
     {
         if (oldFact != null)
         {
-            if (isGlobal)
+            if (scope == FactScope.global)
             {
                 if (JZBot.storage.getFactoid(oldFact.getName()) == null)
                     JZBot.storage.getFactoids().add(oldFact);
+            }
+            else if (scope == FactScope.server)
+            {
+                if (s.getFactoid(oldFact.getName()) == null)
+                    s.getFactoids().add(oldFact);
             }
             else
             {

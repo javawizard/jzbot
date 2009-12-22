@@ -92,9 +92,7 @@ public class StatusCommand implements Command
             {
                 strings.add(s);
             }
-            JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", JZBot
-                    .getServer(pm ? sender.getServerName() : server), pm ? sender.nick()
-                    : channel);
+            JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", source);
         }
         else if (arguments.equals("logging"))
         {
@@ -110,8 +108,7 @@ public class StatusCommand implements Command
             }
             JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
                     + (strings.size() > 0 ? ", per-channel: " : ""), strings
-                    .toArray(new String[0]), ", ", JZBot.getServer(pm ? sender
-                    .getServerName() : server), pm ? sender.nick() : channel);
+                    .toArray(new String[0]), ", ", source);
         }
         else if (arguments.equals("facts"))
         {

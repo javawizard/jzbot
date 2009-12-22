@@ -1235,6 +1235,16 @@ public class JZBot
             target.sendMessage(channel, message);
     }
     
+    public static void sendActionOrMessage(Messenger target, String message)
+    {
+        if (message.equals(""))
+            ;
+        if (message.startsWith("<ACTION>"))
+            target.sendAction(message.substring("<ACTION>".length()));
+        else
+            target.sendMessage(message);
+    }
+    
     public static void incrementIndirectRequests(Factoid f)
     {
         f.setIndirectRequests(f.getIndirectRequests() + 1);
@@ -1421,10 +1431,37 @@ public class JZBot
             {
                 try
                 {
+                    message = message.substring(trigger.length());
+                    boolean replyToPseudo = false;
+                    ServerChannel pseudoTarget = new ServerChannel(serverName, channel);
+                    if (isSuperop(serverName, hostname))
+                    {
+                        if (message.startsWith("%"))
+                        {
+                            replyToPseudo = true;
+                            message = message.substring(trigger.length());
+                        }
+                        if ((message.startsWith("@") || message.startsWith("#"))
+                                && message.contains(" "))
+                        {
+                            pseudoTarget = parseFragment(message, pseudoTarget);
+                            message = message.substring(message.indexOf(' ') + 1);
+                        }
+                    }
+                    if (replyToPseudo && pseudoTarget.getChannel() == null)
+                    {
+                        getConnection(serverName).sendMessage(
+                                channel,
+                                "You can only instruct the bot to reply to "
+                                        + "the target if the target contains a channel.");
+                        return;
+                    }
                     System.out.println("running message command");
-                    runMessageCommand(datastoreServer, serverName, channel, false,
-                            datastoreServer, serverName, sender, hostname, login, message
-                                    .substring(trigger.length()), processFactoids);
+                    runMessageCommand(datastoreServer, pseudoTarget.getServerName(),
+                            pseudoTarget.getChannel(), false, datastoreServer, serverName,
+                            sender, replyToPseudo ? pseudoTarget : new ServerChannel(
+                                    serverName, channel), hostname, login, message,
+                            processFactoids);
                 }
                 catch (Throwable e)
                 {
@@ -1594,15 +1631,22 @@ public class JZBot
     
     private static void runMessageCommand(Server datastoreServer, String serverName,
             String channel, boolean pm, Server senderServer, String senderServerName,
-            String sender, String hostname, String username, String message,
-            boolean processFactoids)
+            String sender, Messenger source, String hostname, String username,
+            String message, boolean processFactoids)
     {
         ServerUser serverUser = new ServerUser(senderServerName, sender, hostname);
         ServerChannel serverChannel = null;
         if (channel != null)
             serverChannel = new ServerChannel(serverName, channel);
-        ConnectionWrapper con = getConnection(serverName);
-        ConnectionWrapper senderCon = getConnection(senderServerName);
+        if (source == null)
+        {
+            if (pm)
+                source = serverUser;
+            else
+                source = serverChannel;
+        }
+        // ConnectionWrapper con = getConnection(serverName);
+        // ConnectionWrapper senderCon = getConnection(senderServerName);
         System.out.println("Starting command run for message " + message);
         String[] commandSplit = message.split(" ", 2);
         String command = commandSplit[0];
@@ -1619,22 +1663,19 @@ public class JZBot
             try
             {
                 threadLocalUsername.set(username);
-                c.run(serverName, channel, pm, serverUser, pm ? serverUser : serverChannel,
-                        commandArguments);
+                c.run(serverName, channel, pm, serverUser, source, commandArguments);
             }
             catch (Exception e)
             {
                 if (e instanceof ResponseException)
                 {
-                    (pm ? senderCon : con).sendMessage(pm ? sender : channel,
-                            ((ResponseException) e).getMessage());
+                    source.sendMessage(((ResponseException) e).getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
-                    (pm ? senderCon : con).sendMessage(pm ? sender : channel,
-                            "An error occured while running the command " + command + ": "
-                                    + pastebinStack(e));
+                    source.sendMessage("An error occured while running the command "
+                            + command + ": " + pastebinStack(e));
                 }
             }
             System.out.println("Finishing command run #1");
@@ -1678,13 +1719,11 @@ public class JZBot
         {
             if (factoid.isLibrary())
             {
-                con.sendMessage(pm ? sender : channel,
-                        "That factoid is a library factoid. It can only be run "
-                                + "by importing it, by creating a regex "
-                                + "that uses it, by using it as "
-                                + "a trigger, and so on. Run \"factoid unlibrary "
-                                + command + "\" if you want to remove this factoid's "
-                                + "library status.");
+                source.sendMessage("That factoid is a library factoid. It can only be run "
+                        + "by importing it, by creating a regex "
+                        + "that uses it, by using it as "
+                        + "a trigger, and so on. Run \"factoid unlibrary " + command
+                        + "\" if you want to remove this factoid's " + "library status.");
                 System.out.println("Finishing command run #5");
                 return;
             }
@@ -1696,7 +1735,7 @@ public class JZBot
                     serverUser, commandArguments.split(" "),
                     isSuperop(serverName, hostname), new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
-            sendActionOrMessage((pm ? senderCon : con), pm ? sender : channel, factValue);
+            sendActionOrMessage(source, factValue);
             System.out.println("Finishing command run #6");
             return;
         }
@@ -1979,57 +2018,43 @@ public class JZBot
         ConnectionWrapper con = getConnection(serverName);
         try
         {
-            String pseudoServer = serverName;
-            String pseudoChannel = null;
+            ServerChannel pseudoTarget = new ServerChannel(serverName, null);
             boolean replyToPseudo = false;
             System.out.println("pm from " + sender + ": " + message);
-            if (message.contains(" "))
+            if (message.contains(" ") && isSuperop(serverName, hostname))
             {
                 if (message.startsWith("%"))
                 {
                     message = message.substring(1);
                     replyToPseudo = true;
                 }
-                if (message.startsWith("#"))
+                if (message.startsWith("@") || message.startsWith("#"))
                 {
-                    pseudoChannel = message.substring(0, message.indexOf(" "));
+                    pseudoTarget = parseFragment(message, pseudoTarget);
                     message = message.substring(message.indexOf(" ") + 1);
-                }
-                else if (message.startsWith("@"))
-                {
-                    String fragment = message.substring(0, message.indexOf(" "));
-                    message = message.substring(message.indexOf(" ") + 1);
-                    if (fragment.contains("#"))
-                    {
-                        pseudoServer = fragment.substring(1, fragment.indexOf("#"));
-                        pseudoChannel = fragment.substring(fragment.indexOf("#"));
-                    }
-                    else
-                    {
-                        pseudoServer = fragment.substring(1);
-                        pseudoChannel = null;
-                    }
                 }
             }
-            if (replyToPseudo && pseudoChannel == null)
+            if (replyToPseudo && pseudoTarget.getChannel() == null)
             {
                 con.sendMessage(sender, "You can only instruct the bot to reply to "
                         + "the target if the target contains a channel.");
+                return;
             }
             try
             {
-                Server pseudoDatastoreServer = storage.getServer(pseudoServer);
+                Server pseudoDatastoreServer = storage.getServer(pseudoTarget
+                        .getServerName());
                 if (replyToPseudo)
                 {
-                    runMessageCommand(pseudoDatastoreServer, pseudoServer, pseudoChannel,
-                            false, datastoreServer, serverName, sender, hostname, login,
-                            message, true);
+                    runMessageCommand(pseudoDatastoreServer, pseudoTarget.getServerName(),
+                            pseudoTarget.getChannel(), false, datastoreServer, serverName,
+                            sender, null, hostname, login, message, true);
                 }
                 else
                 {
-                    runMessageCommand(pseudoDatastoreServer, pseudoServer, pseudoChannel,
-                            true, datastoreServer, serverName, sender, hostname, login,
-                            message, true);
+                    runMessageCommand(pseudoDatastoreServer, pseudoTarget.getServerName(),
+                            pseudoTarget.getChannel(), true, datastoreServer, serverName,
+                            sender, null, hostname, login, message, true);
                 }
             }
             catch (Throwable e)
@@ -2048,6 +2073,33 @@ public class JZBot
             tkt.active = false;
         }
         
+    }
+    
+    public static ServerChannel parseFragment(String message, ServerChannel scope)
+    {
+        String pseudoServer = scope.getServerName();
+        String pseudoChannel = scope.getChannel();
+        if (message.startsWith("#"))
+        {
+            pseudoChannel = message.substring(0, message.indexOf(" "));
+            message = message.substring(message.indexOf(" ") + 1);
+        }
+        else if (message.startsWith("@"))
+        {
+            String fragment = message.substring(0, message.indexOf(" "));
+            message = message.substring(message.indexOf(" ") + 1);
+            if (fragment.contains("#"))
+            {
+                pseudoServer = fragment.substring(1, fragment.indexOf("#"));
+                pseudoChannel = fragment.substring(fragment.indexOf("#"));
+            }
+            else
+            {
+                pseudoServer = fragment.substring(1);
+                pseudoChannel = null;
+            }
+        }
+        return new ServerChannel(pseudoServer, pseudoChannel);
     }
     
     private static ArrayList<String> elevatedSuperopList = new ArrayList<String>();
