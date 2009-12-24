@@ -942,6 +942,11 @@ public class JZBot
         System.out.println("This is JZBot, http://jzbot.googlecode.com");
         System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
                 + "and Jonathon Kloster");
+        System.out.println("A.k.a.s, respectively, javawizard2539/jcp, "
+                + "schrottplatz, and MrDudle");
+        System.out.println("With contributions from others; send \"help authors\"");
+        System.out.println("and \"help packwriters\" to your bot in a pm for ");
+        System.out.println("other contributors.");
         System.out.println();
         System.out.println("Initializing...");
         DefaultPastebinProviders.installDefaultSet();
