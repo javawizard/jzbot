@@ -83,9 +83,12 @@ public class ServerCommand implements Command
                         "There isn't such a server by that name. Try \"server list\" "
                                 + "to get a list of servers, and then do "
                                 + "\"server details <name>\".");
+            String passwordString = s.getPassword();
+            if (passwordString == null)
+                passwordString = "";
             source.sendMessage("protocol:" + s.getProtocol() + "  host:" + s.getServer()
                     + "  port:" + s.getPort() + "  nick:" + s.getNick() + "  password:"
-                    + s.getPassword().replaceAll(".", "*"));
+                    + passwordString.replaceAll(".", "*"));
         }
         else if (subcommand.equals("activate"))
         {
@@ -154,7 +157,9 @@ public class ServerCommand implements Command
             source.sendMessage("Here's the list. Servers in this list are in the format "
                     + "<flags>:<name>, where <flags> are some flags and <name> is the "
                     + "name of the server. Flags are 1: active, 2: has a connection "
-                    + "object, 3: currently connected, 0: no other flags.");
+                    + "object, 3: currently connected, 4: error occurred during last "
+                    + "connection attempt (use \"server error\" to read the error message)"
+                    + ", 0: no other flags.");
             List<String> items = new ArrayList<String>();
             for (Server s : JZBot.storage.getServers().isolate())
             {
@@ -169,11 +174,28 @@ public class ServerCommand implements Command
                     if (c.getConnection().isConnected())
                         flags += "3";
                 }
+                if (JZBot.connectionLastErrorMap.get(sName) != null)
+                    flags += "4";
                 if (flags.equals(""))
                     flags = "0";
                 items.add(flags + ":" + sName);
             }
             JZUtils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
+        }
+        else if (subcommand.equals("error"))
+        {
+            Server s = JZBot.storage.getServer(serverName);
+            if (s == null)
+                throw new ResponseException("There isn't a server by that name. Use "
+                        + "\"server error <name>\" to get the error "
+                        + "message for a server that failed to connect.");
+            Throwable t = JZBot.connectionLastErrorMap.get(serverName);
+            if (t == null)
+                source.sendMessage("This server did not encounter an error "
+                        + "since the last time it tried to connect.");
+            else
+                source.sendMessage("Details of the last connection error: "
+                        + JZBot.pastebinStack(t));
         }
         else if (subcommand.equals("current"))
         {

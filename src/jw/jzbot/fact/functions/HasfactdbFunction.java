@@ -3,8 +3,10 @@ package jw.jzbot.fact.functions;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.storage.Server;
 
 public class HasfactdbFunction extends Function
 {
@@ -12,7 +14,18 @@ public class HasfactdbFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if(JZBot.storage.getChannel(arguments.resolveString(0)) == null)
+        String channel = arguments.resolveString(0);
+        String server = context.getServer();
+        if (channel.startsWith("@"))
+        {
+            server = JZBot.extractServerName(channel);
+            channel = JZBot.extractChannelName(channel);
+        }
+        Server s = JZBot.storage.getServer(server);
+        if (s == null)
+            throw new FactoidException("Invalid server name " + server + " (with channel "
+                    + channel + ")");
+        if (s.getChannel(channel) == null)
             sink.write('0');
         else
             sink.write('1');

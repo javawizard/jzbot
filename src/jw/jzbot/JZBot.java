@@ -329,6 +329,8 @@ public class JZBot
     private static BlockingQueue<Object> connectionCycleQueue = new LinkedBlockingQueue<Object>(
             500);
     
+    public static Map<String, Throwable> connectionLastErrorMap = new HashMap<String, Throwable>();
+    
     public static final Object connectionCycleLock = new Object();
     
     public static void startConnectionCycleThread()
@@ -396,10 +398,12 @@ public class JZBot
                                 + context.getServerName());
                         context.getConnection().connect();
                         System.out.println("Connection established.");
+                        connectionLastErrorMap.remove(context.getServerName());
                     }
                     catch (Exception e)
                     {
                         e.printStackTrace();
+                        connectionLastErrorMap.put(context.getServerName(), e);
                         // FIXME: log this so that the jzbot user can see that the
                         // connection
                         // failed, and allow them to see why. Maybe add a global
@@ -1468,11 +1472,12 @@ public class JZBot
                         return;
                     }
                     System.out.println("running message command");
-                    runMessageCommand(datastoreServer, pseudoTarget.getServerName(),
-                            pseudoTarget.getChannel(), false, datastoreServer, serverName,
-                            sender, replyToPseudo ? pseudoTarget : new ServerChannel(
-                                    serverName, channel), hostname, login, message,
-                            processFactoids);
+                    runMessageCommand(
+                            JZBot.storage.getServer(pseudoTarget.getServerName()),
+                            pseudoTarget.getServerName(), pseudoTarget.getChannel(), false,
+                            datastoreServer, serverName, sender,
+                            replyToPseudo ? pseudoTarget : new ServerChannel(serverName,
+                                    channel), hostname, login, message, processFactoids);
                 }
                 catch (Throwable e)
                 {

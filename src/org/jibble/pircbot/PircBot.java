@@ -245,9 +245,21 @@ public abstract class PircBot implements ReplyConstants
                 }
                 else if (code.startsWith("5") || code.startsWith("4"))
                 {
-                    socket.close();
-                    _inputThread = null;
-                    throw new IrcException("Could not log into the IRC server: " + line);
+                    if (code.equals("439"))
+                    {
+                        // 439 seems to be sent by a lot of servers as a warning code
+                        // about
+                        // spambot protection, but it doesn't appear to be a fatal error,
+                        // so we'll
+                        // ignore it here.
+                        System.out.println("Code 439 received by " + _server + ": " + line);
+                    }
+                    else
+                    {
+                        socket.close();
+                        _inputThread = null;
+                        throw new IrcException("Could not log into the IRC server: " + line);
+                    }
                 }
             }
             this.setNick(nick);

@@ -61,6 +61,7 @@ public class FactoidCommand implements Command
         else if (arguments.startsWith("server "))
         {
             scope = FactScope.server;
+            arguments = arguments.substring("server ".length());
         }
         else
         {

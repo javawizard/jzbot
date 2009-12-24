@@ -34,10 +34,10 @@ public class HelpFunction extends Function
                 + "page can contain newlines. If the specified help page does not exist, "
                 + "{{help}} evaluates to nothing.\n"
                 + "{{help||}} evaluates to the contents of the top level help page (IE "
-                + "the one that you see if you pm \"help\" to the bot). Also, the "
-                + "literal string \"%HELPCMD\" may appear in the result, which "
-                + "should be translated to \"~help\" or \"/msg "
-                + JZBot.bot.getNick()
+                + "the one that you see if you pm \"help\" to the bot). Also, "
+                + "percentHELPCMDpercent (with \"percent\" replaced with \"%\") may "
+                + "appear in the result, which \n"
+                + "should be translated to \"~help\" or \"/msg <bot>"
                 + " help\", depending on where the message was sent from.";
     }
     

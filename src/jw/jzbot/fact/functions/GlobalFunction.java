@@ -16,8 +16,9 @@ public class GlobalFunction extends Function
         context.incrementImportCount();
         // FIXME: re-work the import functionality to write to the main sink instead of
         // writing to a string sink and then copying into this sink
-        sink.write(JZBot.doFactImport(context.getChannel(), arguments, context.getSender(),
-                true, context.getQuota(), ImportLevel.global));
+        sink.write(JZBot.doFactImport(context.getServer(), context.getChannel(), arguments,
+                context.getSender(), context.getSource(), true, context.getQuota(),
+                ImportLevel.global));
     }
     
     @Override

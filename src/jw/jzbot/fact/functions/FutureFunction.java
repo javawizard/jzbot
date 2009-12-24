@@ -16,8 +16,9 @@ public class FutureFunction extends Function
         ArgumentList newArgs = arguments.subList(2);
         String key = arguments.getString(0);
         int delay = Integer.parseInt(arguments.getString(1));
-        FutureFactoid future = new FutureFactoid(delay, context.getChannel(),
-                newArgs, context.getSender(), key, context.getQuota());
+        FutureFactoid future = new FutureFactoid(delay, context.getServer(), context
+                .getChannel(), newArgs, context.getSender(), context.getSource(), key,
+                context.getQuota());
         synchronized (JZBot.futureFactoidLock)
         {
             JZBot.futureFactoids.put(key, future);

@@ -38,7 +38,7 @@ public class RandomizeFunction extends Function
                 + "list of strings, and then evaluates to a <delimiter>-separated list "
                 + "of those strings. For example, {{randomize||\\\\\\.||"
                 + "first.second.third.fourth||-}} could evaluate to \"third-second-"
-                + "first-fourth\" or maybe \"second-first-fourth-third\".";
+                + "first-fourth\" or maybe \"second-fourth-first-third\".";
     }
     
 }

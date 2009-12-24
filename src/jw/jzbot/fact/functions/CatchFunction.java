@@ -4,6 +4,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.StringSink;
 
 public class CatchFunction extends Function
 {
@@ -13,7 +14,13 @@ public class CatchFunction extends Function
     {
         try
         {
-            arguments.resolve(0, sink);
+            /*
+             * We want to do this in a string sink so that if it throws an exception, we
+             * won't get half-written results sent to the main sink.
+             */
+            StringSink ss = new StringSink();
+            arguments.resolve(0, ss);
+            sink.write(ss.toString());
         }
         catch (Exception e)
         {
@@ -27,7 +34,7 @@ public class CatchFunction extends Function
             context.getLocalVars().put(prefix + "-message", e.getMessage());
             context.getLocalVars().put(prefix + "-root-class", root.getClass().getName());
             context.getLocalVars().put(prefix + "-root-message", root.getMessage());
-            arguments.resolve(2,sink);
+            arguments.resolve(2, sink);
         }
     }
     

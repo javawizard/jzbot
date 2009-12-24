@@ -12,8 +12,9 @@ public class AddregexFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        RegexCommand.doRegexCommand(context.getChannel(), false, context.getSender(),
-                "add " + arguments.getString(0), false);
+        RegexCommand.doRegexCommand(context.getServer(), context.getChannel(), false,
+                context.getSender(), context.getSource(), "add " + arguments.getString(0),
+                false);
     }
     
     @Override
