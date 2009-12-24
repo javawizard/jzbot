@@ -109,7 +109,8 @@ public class HttpServer
             try
             {
                 factoidResult = JZBot.runFactoid(factoid, null, null, new ServerUser(null,
-                        null, null), new String[0], vars, true, quota);
+                        null, null), new ServerUser(null, null, null), new String[0], vars,
+                        true, quota);
             }
             catch (FactTimeExceededError e)
             {

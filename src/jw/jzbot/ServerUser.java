@@ -106,7 +106,7 @@ public class ServerUser implements Messenger
     @Override
     public void sendAction(String action)
     {
-        JZBot.getConnection(serverName).sendMessage(nick, action);
+        JZBot.getConnection(serverName).sendAction(nick, action);
     }
     
 }

@@ -48,7 +48,7 @@ public class ServerChannel implements Messenger
     @Override
     public void sendAction(String action)
     {
-        JZBot.getConnection(serverName).sendMessage(channel, action);
+        JZBot.getConnection(serverName).sendAction(channel, action);
     }
     
 }
