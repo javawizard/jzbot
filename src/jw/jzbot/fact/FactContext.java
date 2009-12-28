@@ -3,16 +3,29 @@ package jw.jzbot.fact;
 import java.util.HashMap;
 import java.util.Map;
 
+import jw.jzbot.ConnectionWrapper;
+import jw.jzbot.Scope;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
+import jw.jzbot.storage.Server;
 
 import org.jdom.Document;
 
-public class FactContext
+public class FactContext implements Scope
 {
+    /**
+     * A message that can be used as exception messages to indicate that a server was
+     * needed but the scope does not contain one.
+     */
+    private static final String NO_SCOPED_SERVER = "The current "
+            + "scope does not have an associated "
+            + "server, but a server was needed. Consider "
+            + "wrapping this function call with a call to "
+            + "the {{scope}} function to add a server to the current scope.";
+    
     public FactContext()
     {
     }
@@ -167,11 +180,64 @@ public class FactContext
         this.server = server;
     }
     
+    /**
+     * Returns the database server object that represents the server that this context is
+     * currently scoped to. If there is no such server, or if this context is not scoped
+     * to a server, an exception will be thrown.
+     * 
+     * @return
+     */
+    public Server checkedGetDatastoreServer()
+    {
+        Server s = JZBot.storage.getServer(server);
+        if (s == null)
+            throw new FactoidException(NO_SCOPED_SERVER);
+        return s;
+    }
+    
     public String getCheckedServer()
     {
         if (server == null)
-            throw new FactoidException("A server is needed, but one was not specified.");
+            throw new FactoidException(NO_SCOPED_SERVER);
         return server;
+    }
+    
+    public ConnectionWrapper getConnection()
+    {
+        return JZBot.getConnection(server);
+    }
+    
+    /**
+     * Gets the connection object associated with this context's server (the context's
+     * server name can be seen with {@link #getServer()} and set with
+     * {@link #setServer(String)}). If there is no such connection, or if getServer()
+     * returns null, a FactoidException is thrown with a message indicating this.
+     * 
+     * @return The connection object for this context
+     * @throws FactoidException
+     *             if there is no such connection or getServer() returns null
+     */
+    public ConnectionWrapper checkedGetConnection()
+    {
+        ConnectionWrapper con = getConnection();
+        if (con == null)
+            throw new FactoidException("The current scope does not have an associated "
+                    + "server, but a server was needed. Consider "
+                    + "wrapping this function call with a call to "
+                    + "the {{scope}} function to add a server to the current scope.");
+        return con;
+    }
+    
+    /**
+     * Same as {@link #getServer()}. This method exists so that FactContext can implement
+     * {@link Scope}.
+     * 
+     * @return
+     */
+    @Override
+    public String getServerName()
+    {
+        return getServer();
     }
     
 }

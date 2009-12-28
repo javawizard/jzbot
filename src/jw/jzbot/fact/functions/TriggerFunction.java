@@ -13,7 +13,8 @@ public class TriggerFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        Channel c = JZBot.storage.getChannel(context.getChannel());
+        Channel c = JZBot.storage.getServer(context.getServer()).getChannel(
+                context.getChannel());
         if (c == null)
             return;
         if (arguments.length() == 0)

@@ -1,6 +1,6 @@
 package jw.jzbot;
 
-public class ServerChannel implements Messenger
+public class ServerChannel implements Messenger, Scope
 {
     private String serverName;
     private String channel;

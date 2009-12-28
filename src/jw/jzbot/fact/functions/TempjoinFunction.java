@@ -1,5 +1,6 @@
 package jw.jzbot.fact.functions;
 
+import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -13,7 +14,9 @@ public class TempjoinFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.incrementMessageCount();
-        JZBot.bot.joinChannel(arguments.resolveString(0));
+        String target = arguments.resolveString(0);
+        JZBot.checkedGetExtractedConnection(target, context).joinChannel(
+                JZBot.extractRelativeChannel(target, context));
     }
     
     @Override
@@ -21,7 +24,8 @@ public class TempjoinFunction extends Function
     {
         return "Syntax: {{tempjoin||<channel>}} -- Causes the bot to join the specified "
                 + "channel, but without setting this channel to auto-join or creating "
-                + "a factoid database for the channel.";
+                + "a factoid database for the channel. The channel can be a "
+                + "fully-qualified channel if needed.";
     }
     
 }

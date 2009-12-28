@@ -13,8 +13,10 @@ public class TemppartFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         context.incrementMessageCount();
-        JZBot.bot.partChannel(arguments.resolveString(0),
-                (arguments.length() > 1 ? arguments.resolveString(1) : "Leaving"));
+        String target = arguments.resolveString(0);
+        JZBot.checkedGetExtractedConnection(target, context).partChannel(
+                JZBot.extractRelativeChannel(target, context),
+                (arguments.length() > 1 ? arguments.resolveString(1) : "Laters."));
     }
     
     @Override

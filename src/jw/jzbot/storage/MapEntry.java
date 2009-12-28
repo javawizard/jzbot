@@ -15,7 +15,7 @@ public interface MapEntry
     
     @Property
     @Default(stringValue = "")
-    @Length(100000)
+    @Length(600000)
     public String getValue();
     
     public void setValue(String value);

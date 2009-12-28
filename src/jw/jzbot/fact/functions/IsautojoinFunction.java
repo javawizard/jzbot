@@ -6,6 +6,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.storage.Channel;
+import jw.jzbot.storage.Server;
 
 public class IsautojoinFunction extends Function
 {
@@ -13,7 +14,8 @@ public class IsautojoinFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        Channel c = JZBot.storage.getChannel(arguments.resolveString(0));
+        Server server = JZBot.storage.getServer(context.getServer());
+        Channel c = server.getChannel(arguments.resolveString(0));
         if (c == null)
             sink.write('0');
         else if (c.isSuspended())

@@ -277,7 +277,7 @@ public class JZBot
                 + "\" does not contain a valid server name.");
     }
     
-    public static String extractRelativeServer(String target, ServerChannel scope)
+    public static String extractRelativeServer(String target, Scope scope)
     {
         if (target.startsWith("@") && target.contains("#"))
             return target.substring(1, target.indexOf('#'));
@@ -288,7 +288,7 @@ public class JZBot
         return null;
     }
     
-    public static String extractRelativeChannel(String target, ServerChannel scope)
+    public static String extractRelativeChannel(String target, Scope scope)
     {
         if (target.startsWith("#"))
             return target;
@@ -319,6 +319,39 @@ public class JZBot
             return null;
         // FIXME: add caching of the connection wrapper
         return new ConnectionWrapper(con);
+    }
+    
+    /**
+     * Extracts the server name from the target specified (which could be
+     * "@server#channel", for example), then gets and returns the connection for that
+     * server. If the target does not specify a server, then the connection for the server
+     * <tt>scope</tt> is currently using is returned instead. If <tt>scope</tt> doesn't
+     * contain a server and <tt>target</tt> doesn't contain one either, an exception is
+     * thrown.
+     * 
+     * @param target
+     * @param scope
+     * @return
+     */
+    public static ConnectionWrapper checkedGetExtractedConnection(String target,
+            Scope scope)
+    {
+        String serverName = extractRelativeServer(target, scope);
+        if (serverName == null)
+            throw new FactoidException("The target \"" + target
+                    + "\" was expected to contain a server name, but it "
+                    + "did not and the current scope doesn't contain "
+                    + "a server name either. Consider wrapping this "
+                    + "function call with a call to the {{scope}} "
+                    + "function to add a server to the current scope, "
+                    + "or just specify a server in the target string "
+                    + "that you're using.");
+        ConnectionWrapper con = getConnection(serverName);
+        if (con == null)
+            throw new FactoidException("There isn't a connection for the server name "
+                    + serverName
+                    + ". This probably means that the server is currently disconnected.");
+        return con;
     }
     
     public static ConnectionContext getRealConnection(String serverName)
@@ -2551,7 +2584,8 @@ public class JZBot
         catch (Exception e)
         {
             e.printStackTrace();
-            return "Exception while getting server via JZBot.failsafeExtractServerName()";
+            return "Exception while getting server via JZBot.failsafeExtractServerName("
+                    + string + ")";
         }
     }
     
@@ -2564,7 +2598,8 @@ public class JZBot
         catch (Exception e)
         {
             e.printStackTrace();
-            return "Exception while getting channel via JZBot.failsafeExtractChannelName()";
+            return "Exception while getting channel via JZBot.failsafeExtractChannelName("
+                    + string + ")";
         }
     }
     
@@ -2577,6 +2612,15 @@ public class JZBot
     public static ConnectionWrapper getServer(String server)
     {
         return getConnection(server);
+    }
+    
+    public static ConnectionWrapper getCheckedConnection(String serverName)
+    {
+        ConnectionWrapper con = getConnection(serverName);
+        if (con == null)
+            throw new FactoidException("There is no server for the server name "
+                    + serverName + ", but this command requires a valid server name.");
+        return con;
     }
     
 }
