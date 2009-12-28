@@ -189,6 +189,8 @@ public class FactContext implements Scope
      */
     public Server checkedGetDatastoreServer()
     {
+        if (server == null)
+            throw new FactoidException(NO_SCOPED_SERVER);
         Server s = JZBot.storage.getServer(server);
         if (s == null)
             throw new FactoidException(NO_SCOPED_SERVER);
@@ -221,10 +223,7 @@ public class FactContext implements Scope
     {
         ConnectionWrapper con = getConnection();
         if (con == null)
-            throw new FactoidException("The current scope does not have an associated "
-                    + "server, but a server was needed. Consider "
-                    + "wrapping this function call with a call to "
-                    + "the {{scope}} function to add a server to the current scope.");
+            throw new FactoidException(NO_SCOPED_SERVER);
         return con;
     }
     
