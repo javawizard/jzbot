@@ -19,7 +19,8 @@ public class TypeFunction extends Function
         boolean isChannel = false;
         if (context.getChannel() != null)
         {
-            Channel c = JZBot.storage.getChannel(context.getChannel());
+            Channel c = context.checkedGetDatastoreServer()
+                    .getChannel(context.getChannel());
             if (c != null)
             {
                 if (c.getFactoid(factname) != null)
