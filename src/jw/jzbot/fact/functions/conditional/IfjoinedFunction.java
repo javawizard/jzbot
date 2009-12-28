@@ -14,7 +14,8 @@ public class IfjoinedFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        User[] users = JZBot.bot.getUsers(context.getChannel());
+        User[] users = context.checkedGetConnection().getConnection().getUsers(
+                context.getChannel());
         boolean isJoined = false;
         for (User user : users)
         {
