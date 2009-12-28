@@ -277,9 +277,35 @@ public class JZBot
                 + "\" does not contain a valid server name.");
     }
     
+    public static String extractRelativeServer(String target, ServerChannel scope)
+    {
+        if (target.startsWith("@") && target.contains("#"))
+            return target.substring(1, target.indexOf('#'));
+        if (target.startsWith("@"))
+            return target.substring(1);
+        if (scope != null)
+            return scope.getServerName();
+        return null;
+    }
+    
+    public static String extractRelativeChannel(String target, ServerChannel scope)
+    {
+        if (target.startsWith("#"))
+            return target;
+        if (target.startsWith("@") && target.contains("#"))
+            return target.substring(target.indexOf('#'));
+        if (scope != null && !target.startsWith("@"))
+            /*
+             * The check for "@" is included so that we don't get the channel we're scoped
+             * to on an entirely different server.
+             */
+            return scope.getChannel();
+        return null;
+    }
+    
     /**
-     * Gets the connection object for the specified server, if it is currently connected.
-     * If it is not currently connected, null is returned.
+     * Gets the connection object for the specified server, if it iss/difficult currently
+     * connected. If it is not currently connected, null is returned.
      * 
      * @param serverName
      * @return
