@@ -12,7 +12,8 @@ public class ModeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        JZBot.bot.setMode(context.getChannel(), arguments.resolveString(0));
+        context.checkedGetConnection().getConnection().setMode(context.getChannel(),
+                arguments.resolveString(0));
     }
     
     @Override

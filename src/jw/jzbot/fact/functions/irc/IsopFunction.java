@@ -27,7 +27,7 @@ public class IsopFunction extends Function
             channel = arguments.getString(0);
             user = arguments.getString(1);
         }
-        User[] users = JZBot.bot.getUsers(channel);
+        User[] users =context.checkedGetConnection().getConnection().getUsers(channel);
         for (User userObject : users)
         {
             System.out.println("Scanning for user " + userObject.getNick());

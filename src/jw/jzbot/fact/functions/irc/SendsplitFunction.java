@@ -1,6 +1,7 @@
 package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
+import jw.jzbot.ServerChannel;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
@@ -13,12 +14,14 @@ public class SendsplitFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] tokens = JZUtils.ircDelimited(arguments.resolveString(3).split(
+        String[] tokens = JZUtils.ircDelimited(new ServerChannel(context.getServer(),
+                context.getChannel()), arguments.resolveString(3).split(
                 arguments.resolveString(1)), arguments.resolveString(2));
         for (String s : tokens)
         {
             context.incrementMessageCount();
-            JZBot.bot.sendMessage(arguments.getString(0), s);
+            context.checkedGetConnection().getConnection().sendMessage(
+                    arguments.getString(0), s);
             try
             {
                 Thread.sleep(500);

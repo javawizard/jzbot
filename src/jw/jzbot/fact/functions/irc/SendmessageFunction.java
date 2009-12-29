@@ -17,11 +17,11 @@ public class SendmessageFunction extends Function
         String to = arguments.resolveString(0);
         String serverName = JZBot.extractRelativeServer(to, context);
         ConnectionWrapper con = JZBot.getCheckedConnection(serverName);
-        if (!JZBot.bot.isConnected())
+        if (!context.checkedGetConnection().getConnection().isConnected())
             throw new FactoidException("Can't send messages when the bot is disconnected");
         String message = arguments.resolveString(1);
         context.incrementMessageCount();
-        JZBot.bot.sendMessage(to, message);
+        context.checkedGetConnection().getConnection().sendMessage(to, message);
     }
     
     public String getName()

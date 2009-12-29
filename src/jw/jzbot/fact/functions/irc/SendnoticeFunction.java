@@ -13,12 +13,12 @@ public class SendnoticeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (!JZBot.bot.isConnected())
+        if (!context.checkedGetConnection().getConnection().isConnected())
             throw new FactoidException("Can't send notices when the bot is disconnected");
         String to = arguments.resolveString(0);
         String message = arguments.resolveString(1);
         context.incrementMessageCount();
-        JZBot.bot.sendNotice(to, message);
+        context.checkedGetConnection().getConnection().sendNotice(to, message);
     }
     
     public String getName()

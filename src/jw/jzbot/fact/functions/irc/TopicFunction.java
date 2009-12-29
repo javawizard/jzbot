@@ -24,7 +24,8 @@ public class TopicFunction extends Function
         else
         // setting channel topic
         {
-            JZBot.bot.setTopic(context.getChannel(), arguments.resolveString(0));
+            context.checkedGetConnection().getConnection().setTopic(context.getChannel(),
+                    arguments.resolveString(0));
         }
     }
     

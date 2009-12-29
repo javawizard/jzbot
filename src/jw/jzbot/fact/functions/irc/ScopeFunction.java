@@ -13,50 +13,54 @@ public class ScopeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String channel = context.getChannel();
-        String server = context.getServer();
-        String oldChannel = channel;
-        String oldServer = server;
-        String newScope = arguments.resolveString(0);
-        if (newScope.equals(""))
+        if (arguments.length() == 0)
+        // we're supposed to return the current scope
         {
-            channel = null;
-            server = null;
+            String result = "";
+            if (context.getServer() != null)
+                result += "@" + context.getServer();
+            if (context.getChannel() != null)
+                result += context.getChannel();
+            sink.write(result);
         }
-        else if (newScope.startsWith("#") && !newScope.contains("@"))
+        else
         {
-            if (server == null)
-                throw new FactoidException("The new scope \"" + newScope
-                        + "\" contains only a channel, but the current scope "
-                        + "doesn't contain a server. You need to include a "
-                        + "server to scope to.");
-            channel = newScope;
+            String newScope = arguments.resolveString(1);
+            String oldServer = context.getServer();
+            String oldChannel = context.getChannel();
+            String newServer;
+            String newChannel;
+            if (newScope.equals(""))
+            {
+                newServer = null;
+                newChannel = null;
+            }
+            else
+            {
+                newServer = JZBot.extractRelativeServer(newScope, context);
+                newChannel = JZBot.extractRelativeChannel(newScope, context);
+            }
+            if (newServer == null && newChannel != null)
+                throw new FactoidException("Using the new scope " + newScope
+                        + " in the context of the server " + oldServer
+                        + " and the channel " + oldChannel
+                        + " would result in a scope that contains a "
+                        + "channel but not a server. This is not allowed.");
+            context.setServer(newServer);
+            context.setChannel(newChannel);
         }
-        else if (newScope.startsWith("@") && !newScope.contains("#"))
-        {
-            server = newScope.substring(1);
-            channel = null;
-        }
-        else if(newScope.startsWith("@") && newScope.contains("#"))
-        {
-            server = JZBot.extractServerName(newScope);
-            channel = JZBot.extractChannelName(newScope);
-        }
-        context.setChannel(channel);
-        context.setServer(server);
-        arguments.resolve(1, sink);
-        context.setChannel(oldChannel);
-        context.setServer(oldServer);
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{scope||<newscope>||<action>}} -- Runs <action> (and evaluates "
-                + "to it), but with the invocation context switched to the specified scope. "
-                + "A scope is specified as either a server prefixed with \"@\", a channel "
-                + "that starts with \"#\", both together (with the server first), or the "
-                + "empty string. This does not change any scope-related local variables.";
+        return "Syntax: {{scope}}, {{scope||<newscope>}}, or {{scope||<newscope>||<action>}}"
+                + " -- The first version evaluates to the fully-qualified current "
+                + "scope. The second form sets the new scope to be used for the "
+                + "remainder of this factoid; this does not, however, persist to "
+                + "a factoid that might have imported this factoid. The third form\n"
+                + "runs <action> with the specified scope, and then sets the scope "
+                + "back to what it was after <action> has been run.";
     }
     
 }
