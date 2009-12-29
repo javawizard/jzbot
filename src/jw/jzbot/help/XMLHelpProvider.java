@@ -60,22 +60,21 @@ public class XMLHelpProvider implements HelpProvider
     private HelpPage parseHelp(Element element)
     {
         HelpPage page = new HelpPage();
-        Element[] helpTextElements = (Element[]) element
-                .getChildren("helptext").toArray(new Element[0]);
+        Element[] helpTextElements = (Element[]) element.getChildren("helptext").toArray(
+                new Element[0]);
         StringBuffer buffer = new StringBuffer();
         for (Element e : helpTextElements)
         {
             if (buffer.length() > 0)
                 buffer.append("\n");
-            buffer.append(e.getText().trim().replace("\r", "").replaceAll(
-                    " *\n *", " ").replaceAll("^ *", "").replaceAll(" *$", ""));
+            buffer.append(e.getText().trim().replace("\r", "").replaceAll(" *\n *", " ")
+                    .replaceAll("^ *", "").replaceAll(" *$", ""));
         }
         page.text = buffer.toString();
         List subElements = element.getChildren();
         for (Object o : subElements)
         {
-            if ((o instanceof Element)
-                    && !((Element) o).getName().equals("helptext"))
+            if ((o instanceof Element) && !((Element) o).getName().equals("helptext"))
             {
                 Element subElement = (Element) o;
                 page.pages.put(subElement.getName(), parseHelp(subElement));
@@ -90,7 +89,7 @@ public class XMLHelpProvider implements HelpProvider
         HelpPage helpPage = getPageForName(page);
         if (helpPage == null)
             return null;
-        return helpPage.text.replace("%SELFNICK%", JZBot.bot.getNick());
+        return helpPage.text/* .replace("%SELFNICK%", JZBot.bot.getNick()) */;
     }
     
     @Override

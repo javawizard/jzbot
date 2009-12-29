@@ -9,7 +9,6 @@ import java.util.Properties;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 
-
 public class PropsHelpProvider implements HelpProvider
 {
     private HashMap<String, String> props = new HashMap<String, String>();
@@ -21,12 +20,12 @@ public class PropsHelpProvider implements HelpProvider
             Properties props = new Properties();
             props.load(new FileInputStream(filename));
             /*
-             * The reason we're creating an extra variable, propsGeneric, here
-             * is that Properties extends Hashtable<Object,Object>, so it's not
-             * directly type-compatible with Map<String,String>. We know,
-             * however, that, being a properties object, props won't have any
-             * non-string values in it, so we'll use the propsGeneric variable
-             * to circumvent Java's generic type checking mechanism.
+             * The reason we're creating an extra variable, propsGeneric, here is that
+             * Properties extends Hashtable<Object,Object>, so it's not directly
+             * type-compatible with Map<String,String>. We know, however, that, being a
+             * properties object, props won't have any non-string values in it, so we'll
+             * use the propsGeneric variable to circumvent Java's generic type checking
+             * mechanism.
              */
             Map propsGeneric = props;
             this.props.putAll(propsGeneric);
@@ -44,7 +43,10 @@ public class PropsHelpProvider implements HelpProvider
         if (s != null)
         {
             s = s.trim();
-            s = s.replace("%SELFNICK%", JZBot.bot.getNick());
+            // FIXME: enable this. We need to figure out how to get access to the user's
+            // current bot at this point, and how to resolve this depending on where the
+            // user is targeting. Consider using the source messenger.
+            // s = s.replace("%SELFNICK%", JZBot.bot.getNick());
         }
         return s;
     }
@@ -63,8 +65,7 @@ public class PropsHelpProvider implements HelpProvider
                 matches = name.startsWith(page + ".")
                         && !(name.substring(page.length() + 1)).contains(".");
             if (matches)
-                pages.add(name.substring(page.length()
-                        + (page.equals("") ? 0 : 1)));
+                pages.add(name.substring(page.length() + (page.equals("") ? 0 : 1)));
         }
         return pages.toArray(new String[0]);
     }

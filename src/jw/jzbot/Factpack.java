@@ -8,15 +8,10 @@ import java.util.Set;
 
 import jw.jzbot.fact.functions.EscapeFunction;
 
-
 public class Factpack
 {
     public static class FactpackEntry
     {
-        /**
-         * One of "g", "c", or "t".
-         */
-        public String target;
         /**
          * The name of the factoid.
          */
@@ -30,7 +25,7 @@ public class Factpack
          */
         public String restrict;
         /**
-         * A command to run to determine if this should be a library.
+         * A command to run to determine if this should be a library factoid.
          */
         public String library;
         /**
@@ -39,21 +34,9 @@ public class Factpack
         public String rename;
     }
     
-    public static class Dependency
-    {
-        /**
-         * One of exact, any, or global. Exact means exactly at the scope we're installing
-         * at. Any means either at the exact scope, or global. Global means global only.
-         */
-        public String scope;
-        public String name;
-        public String message;
-    }
-    
     public String name;
     public String author;
     public String description;
-    public Dependency[] depends;
     public String preinstall;
     public String postinstall;
     public String scope;

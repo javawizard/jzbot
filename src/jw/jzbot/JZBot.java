@@ -333,8 +333,7 @@ public class JZBot
      * @param scope
      * @return
      */
-    public static ConnectionWrapper checkedGetExtractedConnection(String target,
-            Scope scope)
+    public static ConnectionWrapper checkedGetExtractedConnection(String target, Scope scope)
     {
         String serverName = extractRelativeServer(target, scope);
         if (serverName == null)
@@ -1118,7 +1117,7 @@ public class JZBot
     public static void onTopic(Server datastoreServer, String serverName, String channel,
             String topic, String setBy, long date, boolean changed)
     {
-        channelTopics.put(channel, topic);
+        channelTopics.put("@" + serverName + channel, topic);
         if (changed)
         {
             logEvent(serverName, channel, "topic", setBy, topic);

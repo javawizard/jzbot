@@ -8,7 +8,6 @@ import jw.jzbot.utils.JZUtils;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
-
 public class DefaultHelpProvider implements HelpProvider
 {
     @Override
@@ -51,7 +50,9 @@ public class DefaultHelpProvider implements HelpProvider
                     "Float11 (from J2ME Map, http://j2memap.landspurg.net)",
                     "JMLogo Interpreter (http://me.opengroove.org/search?q=jmlogo)"
             };
-            String[] messageList = JZUtils.ircDelimited(creditsList, ", ");
+            // TODO: the delimited length is hard-coded; figure out a way around this
+            String[] messageList = JZUtils
+                    .delimitedLengthRestricted(creditsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n");
         }
         else if (page.equals("authors"))
@@ -63,7 +64,8 @@ public class DefaultHelpProvider implements HelpProvider
                             + "Alexander Boyd (javawizard2539/jcp/jpc)", "MrDudle",
                     "Maximilian Dirkmann (schrottplatz)", "Phase"
             };
-            String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
+            String[] messageList = JZUtils
+                    .delimitedLengthRestricted(authorsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n")
                     + "\nFor people that have contributed (directly or indirectly) to the "
                     + "bot's built-in factpacks, see \"%HELPCMD% packwriters\".";
@@ -79,7 +81,8 @@ public class DefaultHelpProvider implements HelpProvider
                     "Daniel Outmin (a_meteorite)", "Maximilian Dirkmann (schrottplatz)",
                     "MrDudle", "Joshua Bodine (Constitution)", "Tim Riker (TimRiker)"
             };
-            String[] messageList = JZUtils.ircDelimited(authorsList, ", ");
+            String[] messageList = JZUtils
+                    .delimitedLengthRestricted(authorsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n");
         }
         return null;
