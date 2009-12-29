@@ -1,1 +1,3 @@
 This obsoletes the .props-related stuff in factpacks.txt. See the SVN commit history for which portions of which documents obsolete each other.
+
+Anyway, the new factpack format is quite similar to the old format, but it's intended to allow factoids to be inserted verbatim into a file, without the double-escaping of backslashes that the properties format required. It does this in a smiliar manner to bash's heredoc functionality; namely, that the file is made up of keys and values, and values are either single-line, or are multi-line and terminated with a string specified where the value is started.

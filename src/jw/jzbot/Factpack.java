@@ -62,23 +62,6 @@ public class Factpack
         pack.name = name;
         pack.author = props.getProperty("author");
         pack.description = props.getProperty("description", "");
-        ArrayList<Dependency> depends = new ArrayList<Dependency>();
-        String dependencies = props.getProperty("depends");
-        if (dependencies != null && !dependencies.equals(""))
-        {
-            String[] strings = dependencies.split("\\|");
-            for (String s : strings)
-            {
-                String[] tokens1 = s.split("\\,", 2);
-                String[] tokens2 = tokens1[0].split("\\:", 2);
-                Dependency d = new Dependency();
-                d.scope = tokens2[0];
-                d.name = tokens2[1];
-                d.message = (tokens1.length > 1 ? tokens1[1] : null);
-                depends.add(d);
-            }
-        }
-        pack.depends = depends.toArray(new Dependency[0]);
         pack.preinstall = props.getProperty("preinstall");
         pack.postinstall = props.getProperty("postinstall");
         pack.scope = props.getProperty("scope");
@@ -90,7 +73,7 @@ public class Factpack
             if (!(prop.startsWith("g.") || prop.startsWith("c.") || prop.startsWith("t.")))
                 continue;
             FactpackEntry entry = new FactpackEntry();
-            entry.target = "" + prop.charAt(0);
+            // entry.target = "" + prop.charAt(0);
             entry.name = prop.substring(2);
             entry.contents = props.getProperty(prop);
             entry.restrict = props.getProperty("restrict." + prop, "0");

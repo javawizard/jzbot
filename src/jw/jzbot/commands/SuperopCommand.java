@@ -13,6 +13,7 @@ import jw.jzbot.ServerUser;
 import jw.jzbot.fact.functions.HashFunction;
 import jw.jzbot.storage.Operator;
 import jw.jzbot.storage.Server;
+import jw.jzbot.utils.JZUtils;
 
 public class SuperopCommand implements Command
 {
@@ -42,8 +43,7 @@ public class SuperopCommand implements Command
             {
                 strings.add(op.getHostname());
             }
-            JZBot.sendDelimited(JZBot.getServer(pm ? sender.getServerName() : server),
-                    strings.toArray(new String[0]), "    ", pm ? sender.nick() : channel);
+            JZUtils.ircSendDelimited(strings.toArray(new String[0]), "  ", source);
             source.sendMessage("End of superop list. These superops are the superops at "
                     + "this server; this list does not include superops at "
                     + "other servers.");

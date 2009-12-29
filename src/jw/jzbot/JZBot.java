@@ -1199,6 +1199,8 @@ public class JZBot
             String channelName, Channel chan, String sender, String factname,
             String[] args, boolean timed, boolean cascade)
     {
+        System.out.println("Running notification factoid on server " + serverName
+                + " channel " + channelName + ", with sender " + sender + ": " + factname);
         if (!factname.startsWith("_"))
             System.err.println("Factoid notification name \"" + factname
                     + "\" doesn't start with an underscore. All factoid "
@@ -1995,7 +1997,8 @@ public class JZBot
                 {
                     e.printStackTrace();
                 }
-                sendNotificationToAll("connect");
+                runNotificationFactoid(serverName, datastoreServer, null, null, con
+                        .getConnection().getNick(), "_onconnect", new String[0], true, true);
                 try
                 {
                     Thread.sleep(3500);

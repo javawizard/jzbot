@@ -15,7 +15,6 @@ import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
-import jw.jzbot.Factpack.Dependency;
 import jw.jzbot.Factpack.FactpackEntry;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
@@ -468,10 +467,7 @@ public class FactoidCommand implements Command
                 buffer.append("@@").append(items[i]).append("\n");
                 if (!pack.description.equals(""))
                     buffer.append(pack.description).append("\n");
-                buffer.append("\n")
-                        .append(
-                                StringUtils.delimited(
-                                        generateDescriptionStrings(pack, true), ", "));
+                buffer.append("\n").append(StringUtils.delimited(new String[0], ", "));
                 buffer.append("\n\n");
             }
             source.sendMessage(JZBot.pastebinNotice(
@@ -559,7 +555,7 @@ public class FactoidCommand implements Command
         }
         Factpack factpack = Factpack.parse(packContents);
         String sn = factpack.name + ": ";
-        String[] strings = generateDescriptionStrings(factpack, false);
+        String[] strings = new String[0];
         JZUtils.ircSendDelimited(sn, strings, ", ", source);
         if (!factpack.description.equals(""))
         {
@@ -575,42 +571,6 @@ public class FactoidCommand implements Command
             for (String l : descStrings)
                 source.sendMessage(l);
         }
-    }
-    
-    private String[] generateDescriptionStrings(Factpack factpack, boolean postDescription)
-    {
-        return new String[]
-        {
-                "Written by \"" + factpack.author + "\"",
-                factpack.scope + " scope",
-                "" + factpack.factoids.length + " factoid"
-                        + (factpack.factoids.length == 1 ? "" : "s"),
-                generateDependencyString(factpack.depends, postDescription)
-                        + (postDescription ? ""
-                                : factpack.description.equals("") ? "No description"
-                                        : "Description:")
-        };
-    }
-    
-    private String generateDependencyString(Dependency[] deps, boolean postDescription)
-    {
-        if (deps.length == 0)
-        {
-            if (postDescription)
-                return "No dependencies";
-            else
-                return "No dependencies, ";
-        }
-        String[] depNames = new String[Math.min(deps.length, 6)];
-        System.out.println("deps: " + deps.length + ",depNames: " + depNames.length);
-        for (int i = 0; i < depNames.length; i++)
-        {
-            depNames[i] = deps[i].name;
-        }
-        if (depNames.length < deps.length)
-            depNames[depNames.length - 1] = "" + ((deps.length - depNames.length) + 1)
-                    + " others";
-        return "Depends on " + English.and(depNames) + (postDescription ? "" : "; ");
     }
     
     private void doFactpackRemove(boolean pm, ServerUser sender, Messenger source,
