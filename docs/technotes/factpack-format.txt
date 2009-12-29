@@ -1,0 +1,1 @@
+This obsoletes the .props-related stuff in factpacks.txt. See the SVN commit history for which portions of which documents obsolete each other.
