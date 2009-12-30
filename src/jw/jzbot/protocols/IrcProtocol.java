@@ -185,6 +185,7 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public void connect() throws IOException, IrcException
     {
+        setLogin(context.getNick());
         setName(context.getNick());
         connect(context.getServer(), context.getPort(), context.getPassword());
     }
@@ -195,7 +196,6 @@ public class IrcProtocol extends PircBot implements Connection
     public void init(ConnectionContext context)
     {
         this.context = context;
-        setLogin("jzbot");
         setFinger("If I had any idea what the finger command is supposed to do...");
         setVersion("JZBot -- http://jzbot.googlecode.com");
     }
