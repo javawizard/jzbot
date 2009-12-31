@@ -20,6 +20,7 @@ public class FactProps extends HashMap<String, String>
             // we have an actual property here.
             String valueLineText = null;
             String key = null;
+            String value = null;
             if (line.startsWith("<"))
             {
                 // line is a heredoc
@@ -61,7 +62,39 @@ public class FactProps extends HashMap<String, String>
                     valueLineText = line.substring(spaceIndex + 1);
                 }
             }
-            // now we parse the value
+            // now we parse the value.
+            if (valueLineText.startsWith(":"))
+            {
+                // line is normal
+                value = valueLineText.substring(1);
+            }
+            else if (valueLineText.startsWith("<"))
+            {
+                // line is a heredoc
+                valueLineText = valueLineText.substring(1);
+                if (valueLineText.startsWith("<"))
+                    valueLineText = valueLineText.substring(1);
+                String heredocTerminator = valueLineText.trim();
+                value = "";
+                // now we read new lines until we hit one that is equal to the heredoc
+                // terminator, exactly
+                line = in.readLine();
+                while (!line.equals(heredocTerminator))
+                {
+                    value += "\n";
+                    value += line;
+                    line = in.readLine();
+                }
+                if (value.length() > 0)
+                    value = value.substring(1);
+            }
+            else
+            {
+                // line is implicitly normal
+                value = valueLineText;
+            }
+            // now we add the property
+            put(key, value);
         }
     }
 }
