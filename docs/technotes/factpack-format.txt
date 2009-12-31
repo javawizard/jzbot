@@ -26,7 +26,9 @@ So, that outlines how factpacks are stored. Now, for the list of properties that
     
     description: same as in the old format.
     
-    preinstall: same as in the old format. Since the new format does not have a "depends" property, a preinstall script must be used to check for dependencies. 
+    preinstall: same as in the old format. Since the new format does not have a "depends" property, a preinstall script must be used to check for dependencies.
+    
+    postinstall: same as in the old format.
     
     >*: Adds a factoid called "*". For example, ">roulette" would cause a factoid called "roulette" to be added with the contents contained in that property's value.
     

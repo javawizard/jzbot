@@ -60,23 +60,15 @@ public class Factpack
                 + "\". The name can consist only of digits, "
                 + "lower-case letters, hyphens, and periods.");
         pack.name = name;
-        pack.author = props.get("author");
-        if (pack.author == null)
-            pack.author = "(unspecified)";
-        pack.description = props.get("description", "");
-        if (pack.description == null)
-            pack.description = "(no description)";
-        pack.preinstall = props.get("preinstall");
-        if (pack.preinstall == null)
-            pack.preinstall = "";
-        pack.postinstall = props.get("postinstall");
-        if (pack.postinstall == null)
-            pack.postinstall = "";
-        Set<String> names = props.stringPropertyNames();
+        pack.author = props.get("author", "(unspecified)");
+        pack.description = props.get("description", "(no description)");
+        pack.preinstall = props.get("preinstall", "");
+        pack.postinstall = props.get("postinstall", "");
+        Set<String> names = props.keySet();
         ArrayList<FactpackEntry> entries = new ArrayList<FactpackEntry>();
         for (String prop : names)
         {
-            if (!(prop.startsWith("g.") || prop.startsWith("c.") || prop.startsWith("t.")))
+            if (!prop.startsWith(">"))
                 continue;
             FactpackEntry entry = new FactpackEntry();
             // entry.target = "" + prop.charAt(0);
