@@ -97,4 +97,23 @@ public class FactProps extends HashMap<String, String>
             put(key, value);
         }
     }
+    
+    /**
+     * Returns the value of the specified property, or <tt>def</tt> if such a property
+     * does not exist.
+     * 
+     * @param key
+     *            The key of the property to get
+     * @param def
+     *            The value to return if such a property does not exist
+     * @return The value of the specified property, or <tt>def</tt> if there is no such
+     *         property
+     */
+    public String get(String key, String def)
+    {
+        String value = get(key);
+        if (value == null)
+            return def;
+        return value;
+    }
 }

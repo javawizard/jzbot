@@ -44,7 +44,7 @@ public class Factpack
     public static Factpack parse(String text)
     {
         Factpack pack = new Factpack();
-        //Properties props = new Properties(createDefaults());
+        // Properties props = new Properties(createDefaults());
         FactProps props = new FactProps();
         try
         {
@@ -54,16 +54,24 @@ public class Factpack
         {
             throw new RuntimeException(e);
         }
-        String name = props.getProperty("name");
+        String name = props.get("name");
         verify(name, "No name was present.");
         verifyMatch(name, "^[0-9a-z\\-\\.]*$", "Invalid factpack name \"" + name
                 + "\". The name can consist only of digits, "
                 + "lower-case letters, hyphens, and periods.");
         pack.name = name;
-        pack.author = props.getProperty("author");
-        pack.description = props.getProperty("description", "");
-        pack.preinstall = props.getProperty("preinstall");
-        pack.postinstall = props.getProperty("postinstall");
+        pack.author = props.get("author");
+        if (pack.author == null)
+            pack.author = "(unspecified)";
+        pack.description = props.get("description", "");
+        if (pack.description == null)
+            pack.description = "(no description)";
+        pack.preinstall = props.get("preinstall");
+        if (pack.preinstall == null)
+            pack.preinstall = "";
+        pack.postinstall = props.get("postinstall");
+        if (pack.postinstall == null)
+            pack.postinstall = "";
         Set<String> names = props.stringPropertyNames();
         ArrayList<FactpackEntry> entries = new ArrayList<FactpackEntry>();
         for (String prop : names)
@@ -73,11 +81,10 @@ public class Factpack
             FactpackEntry entry = new FactpackEntry();
             // entry.target = "" + prop.charAt(0);
             entry.name = prop.substring(2);
-            entry.contents = props.getProperty(prop);
-            entry.restrict = props.getProperty("restrict." + prop, "0");
-            entry.rename = props.getProperty("rename." + prop, EscapeFunction
-                    .escape(entry.name));
-            entry.library = props.getProperty("library." + prop, "0");
+            entry.contents = props.get(prop);
+            entry.restrict = props.get("restrict." + prop, "0");
+            entry.rename = props.get("rename." + prop, EscapeFunction.escape(entry.name));
+            entry.library = props.get("library." + prop, "0");
             entries.add(entry);
         }
         pack.factoids = entries.toArray(new FactpackEntry[0]);
