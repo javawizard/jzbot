@@ -17,6 +17,26 @@ public class FactProps extends HashMap<String, String>
                 continue;
             else if (line.startsWith("#"))
                 continue;
+            // we have an actual property here.
+            String valueLineText = null;
+            if (line.startsWith("<"))
+            {
+                // line is a heredoc
+                line = line.substring(1);
+                if (line.startsWith("<"))
+                    line = line.substring(1);
+                String heredocTerminator = line.trim();
+                String keyContents = "";
+                // now we read new lines until we hit one that is equal to the heredoc
+                // terminator, exactly
+                line = in.readLine();
+                while (!line.equals(heredocTerminator))
+                {
+                    keyContents += line;
+                    keyContents += "\n";
+                    line = in.readLine();
+                }
+            }
         }
     }
 }
