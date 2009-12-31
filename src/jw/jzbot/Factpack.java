@@ -39,13 +39,13 @@ public class Factpack
     public String description;
     public String preinstall;
     public String postinstall;
-    public String scope;
     public FactpackEntry[] factoids;
     
     public static Factpack parse(String text)
     {
         Factpack pack = new Factpack();
-        Properties props = new Properties(createDefaults());
+        //Properties props = new Properties(createDefaults());
+        FactProps props = new FactProps();
         try
         {
             props.load(new StringReader(text));
@@ -64,8 +64,6 @@ public class Factpack
         pack.description = props.getProperty("description", "");
         pack.preinstall = props.getProperty("preinstall");
         pack.postinstall = props.getProperty("postinstall");
-        pack.scope = props.getProperty("scope");
-        verify(pack.scope, "The factpack did not specify a scope.");
         Set<String> names = props.stringPropertyNames();
         ArrayList<FactpackEntry> entries = new ArrayList<FactpackEntry>();
         for (String prop : names)

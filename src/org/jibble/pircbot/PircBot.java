@@ -986,7 +986,9 @@ public abstract class PircBot implements ReplyConstants
     protected void handleLine(String line)
     {
         this.log(line);
-        
+        // FIXME: add a config var that can disable this, since it's sorta verbose
+        System.out.println("Line received from " + _server + " for name " + _name + ": "
+                + line);
         // Check for server pings.
         if (line.startsWith("PING "))
         {

@@ -1,15 +1,20 @@
 <project name="jzbot2" default="archive">
 	<target name="compile">
-		<mkdir dir="classes"/>
-		<javac srcdir="src" destdir="classes">
+		<mkdir dir="classes" />
+		<javac srcdir="src" destdir="classes" encoding="UTF-8">
 			<classpath>
-				<fileset dir="lib"></fileset>
+				<fileset dir="lib">
+				</fileset>
 			</classpath>
 		</javac>
 	</target>
 	<target name="archive">
 		<!-- We're using a tar here instead of a tar.gz or a zip so 
-		that rsync uploads go really fast. -->
+		that rsync uploads go really fast. If we use a tar, then the 
+		majority of the file remains the same, so rsync doesn't 
+		upload it. If we use a tar.gz, then the gzip algorithm causes 
+		almost the entire file to be different, so rsync has to 
+		upload the whole thing. -->
 		<tar destfile="jzbot2-old.tar">
 			<fileset dir=".">
 				<include name="**/*" />

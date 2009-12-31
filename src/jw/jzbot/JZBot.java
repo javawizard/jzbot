@@ -1457,7 +1457,9 @@ public class JZBot
         }
         // Make sure we got one
         if (f == null)
-            throw new RuntimeException("Invalid import factoid " + arguments.getString(0));
+            throw new RuntimeException("That factoid (\"" + arguments.getString(0)
+                    + "\") doesn't exist at the server \"" + server + "\" and channel \""
+                    + channel + "\", so you can't import it.");
         Map<String, String> varMap = new HashMap<String, String>();
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
