@@ -32,10 +32,12 @@ public class FactProps extends HashMap<String, String>
                 line = in.readLine();
                 while (!line.equals(heredocTerminator))
                 {
-                    keyContents += line;
                     keyContents += "\n";
+                    keyContents += line;
                     line = in.readLine();
                 }
+                if (keyContents.length() > 0)
+                    keyContents = keyContents.substring(1);
             }
         }
     }
