@@ -69,18 +69,21 @@ public class FactParser
      */
     public static FactEntity parse(String factoid, String name)
     {
-        CharStack stack = new CharStack("{{identity||" + factoid + "}}");
-        FunctionReference reference = parseFunction(stack, name, "{{identity||".length());
+        CharStack stack = new CharStack("{identity|" + factoid + "}");
+        FunctionReference reference = parseFunction(stack, name, "{identity|".length());
         if (stack.more())
             /*
              * The only way we can have more here is if they closed the identity function
              * accidentally
              */
             throw new ParseException(stack.at(),
-                    "There are more \"}}\" than there are \"{{\"");
+                    "There are more \"}\" than there are \"{\"");
         if (reference.getArgumentSequence().length() > 2)
-            throw new ParseException(stack.at(),
-                    "\"||\" used somewhere in your factoid outside of a function");
+            throw new ParseException(stack.at(), "\"|\" is being used "
+                    + "somewhere in your factoid "
+                    + "outside of a function. If you want a literal \"|\" "
+                    + "character included in your text, you need to put "
+                    + "a backslash before it.");
         FactEntity toplevel = reference.getArgumentSequence().get(1);
         toplevel.setFactText(factoid);
         toplevel.setParent(null);
@@ -90,8 +93,8 @@ public class FactParser
     /**
      * Parses a CharStack representing a function call into a function reference. Usually,
      * if you're just trying to parse/run a factoid, you'll use {@link #parse(String)}
-     * instead. parse(String) interally calls this method with the argument "{{identity||"
-     * + factText + "}}" where factText is the text of the factoid.
+     * instead. parse(String) interally calls this method with the argument "{identity|" +
+     * factText + "}" where factText is the text of the factoid.
      * 
      * 
      * @param stack
@@ -104,9 +107,7 @@ public class FactParser
     public static FunctionReference parseFunction(CharStack stack, String name,
             int indexOffset)
     {
-        // This should be | instead of || to make sure that it's not
-        // short-circuit, so that at()-2 would yield the correct result.
-        if (stack.next() != '{' | stack.next() != '{')
+        if (stack.next() != '{')
             throw new ParseException(stack.at() - 2,
                     "Start of function reference must be two open braces but is not");
         int startFunctionIndex = stack.at() - 2;
@@ -114,15 +115,15 @@ public class FactParser
         Sequence currentArgument = init(new Sequence(), name, stack.at() - indexOffset);
         argumentSequence.add(currentArgument);
         Literal currentLiteral = null;
-        // Now we parse until we hit one of "%", "{{", "||", or "}}". "%" means
+        // Now we parse until we hit one of "%", "{", "|", or "}". "%" means
         // a variable reference, so we parse until the next "%", create a
         // literal off of that, and add a reference to the lget command with the
-        // argument being the literal. "{{" means the start of another function,
+        // argument being the literal. "{" means the start of another function,
         // which means we go back to just before it, call parseFunction again,
         // and add the resulting function reference to the current argument.
-        // "||" means we're on to the next argument, so we add the current
+        // "|" means we're on to the next argument, so we add the current
         // argument to the argument sequence and set the current argument to be
-        // a new argument. "}}" means we're at the end of the function, so we
+        // a new argument. "}" means we're at the end of the function, so we
         // add the current argument to the argument sequence, create a function
         // reference off of the argument sequence, and return it.
         while (stack.more())
@@ -169,17 +170,16 @@ public class FactParser
                             startIndex - indexOffset));
                 }
             }
-            else if (c == '{' && stack.peek() == '{')
+            else if (c == '{')
             {
                 currentLiteral = null;
                 stack.back();
                 FunctionReference ref = parseFunction(stack, name, indexOffset);
                 currentArgument.add(ref);
             }
-            else if (c == '|' && stack.peek() == '|')
+            else if (c == '|')
             {
                 currentLiteral = null;
-                stack.next();
                 if (currentArgument.length() == 1)
                 {
                     /*
@@ -192,10 +192,9 @@ public class FactParser
                 currentArgument = init(new Sequence(), name, stack.at() - indexOffset);
                 argumentSequence.add(currentArgument);
             }
-            else if (c == '}' && stack.peek() == '}')
+            else if (c == '}')
             {
                 currentLiteral = null;
-                stack.next();
                 if (currentArgument.length() == 1)
                 {
                     /*
@@ -225,7 +224,7 @@ public class FactParser
          * closed properly, so we'll throw an exception.
          */
         throw new ParseException(stack.at() - 1, "Function call not closed (IE you have "
-                + "more \"{{\" than you have \"}}\")");
+                + "more \"{\" than you have \"}\")");
     }
     
     private static <T extends FactEntity> T init(T entity, String factName, int index)
