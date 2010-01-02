@@ -27,6 +27,9 @@ public class JoinCommand implements Command
         // }
         sender.verifySuperop();
         String name = arguments;
+        if (!name.startsWith("#"))
+            throw new ResponseException("Right now, only channel names that "
+                    + "start with a \"#\" sign are supported.");
         if (dServer.getChannel(name) != null)
         {
             Channel c = dServer.getChannel(name);

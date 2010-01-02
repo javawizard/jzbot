@@ -149,6 +149,8 @@ public abstract class FactEntity
      */
     public static String spaces(int number)
     {
+        if (number < 0)
+            return "(negative space size)";
         char[] c = new char[number];
         for (int i = 0; i < number; i++)
         {

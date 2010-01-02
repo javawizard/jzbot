@@ -25,7 +25,7 @@ public class ScopeFunction extends Function
         }
         else
         {
-            String newScope = arguments.resolveString(1);
+            String newScope = arguments.resolveString(0);
             String oldServer = context.getServer();
             String oldChannel = context.getChannel();
             String newServer;
@@ -48,6 +48,17 @@ public class ScopeFunction extends Function
                         + "channel but not a server. This is not allowed.");
             context.setServer(newServer);
             context.setChannel(newChannel);
+            /*
+             * If the user just wanted to set the scope, we're done. If, however, they
+             * wanted to run an action, we need to run it and set the scope back to what
+             * it used to be.
+             */
+            if (arguments.length() == 2)
+            {
+                arguments.resolve(1, sink);
+                context.setServer(oldServer);
+                context.setChannel(oldChannel);
+            }
         }
     }
     

@@ -109,7 +109,7 @@ public class JZBot
     
     public static final Object logQueueLock = new Object();
     // TODO: consider changing this to 90
-    private static final long CONNECTION_CYCLE_TIMEOUT = 60;
+    private static final long CONNECTION_CYCLE_TIMEOUT = 120;
     
     public static int logQueueDelay;
     
