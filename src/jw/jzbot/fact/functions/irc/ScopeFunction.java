@@ -16,12 +16,7 @@ public class ScopeFunction extends Function
         if (arguments.length() == 0)
         // we're supposed to return the current scope
         {
-            String result = "";
-            if (context.getServer() != null)
-                result += "@" + context.getServer();
-            if (context.getChannel() != null)
-                result += context.getChannel();
-            sink.write(result);
+            sink.write(context.currentScope());
         }
         else
         {

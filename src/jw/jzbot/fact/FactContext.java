@@ -239,4 +239,14 @@ public class FactContext implements Scope
         return getServer();
     }
     
+    public String currentScope()
+    {
+        String result = "";
+        if (getServer() != null)
+            result += "@" + getServer();
+        if (getChannel() != null)
+            result += getChannel();
+        return result;
+    }
+    
 }

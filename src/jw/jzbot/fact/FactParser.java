@@ -46,6 +46,7 @@ public class FactParser
 {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
     private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
+    private static Map<Class<? extends Function>, Function> functionsByClass = new HashMap<Class<? extends Function>, Function>();
     private static AtomicLong idSequence = new AtomicLong();
     
     /**
@@ -300,6 +301,11 @@ public class FactParser
     public static String getFunctionName(Function function)
     {
         return reverseFunctionMap.get(function);
+    }
+    
+    public static Function getFunctionByClass(Class<? extends Function> c)
+    {
+        return functionsByClass.get(c);
     }
     
     static
