@@ -22,6 +22,7 @@ import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
 import net.sf.opengroove.common.utils.DataUtils;
+import net.sf.opengroove.common.utils.StringUtils;
 
 public class StatusCommand implements Command
 {
@@ -92,7 +93,16 @@ public class StatusCommand implements Command
             {
                 strings.add(s);
             }
-            JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", source);
+            if (strings.size() > 10)
+            {
+                String pastebin = JZBot.pastebinNotice(StringUtils.delimited(strings
+                        .toArray(new String[0]), "\n"), null);
+                source.sendMessage("" + size + " threads: " + pastebin);
+            }
+            else
+            {
+                JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", source);
+            }
         }
         else if (arguments.equals("logging"))
         {

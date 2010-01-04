@@ -73,7 +73,7 @@ public class FactoidCommand implements Command
             if (scope == FactScope.server && server == null)
                 throw new ResponseException(
                         "You need to specify a server when running this.");
-            if (scope == FactScope.channel && channel == null)
+            if (scope == FactScope.channel && (server == null || channel == null))
                 throw new ResponseException(
                         "You need to specify a channel when running this.");
         }
@@ -667,15 +667,29 @@ public class FactoidCommand implements Command
     }
     
     /**
-     * Generates the name of the scope for this factpack.
+     * Generates the fully-qualified name of the combination of <tt>server</tt> and
+     * <tt>channel</tt>, but only nested as deep as <tt>scope</tt> is. For example, if
+     * <tt>scope</tt> is {@link FactScope#global global}, then the result will always be
+     * the empty string. If <tt>scope</tt> is {@link FactScope#server}, then the result
+     * will be either the empty string or it will contain just a server, IE the result
+     * will never contain a channel.
      * 
      * @param scope
+     *            The scope
      * @param server
+     *            The server
      * @param channel
+     *            The channel
+     * 
      * @return
      */
     private String generateFactpackScopeName(FactScope scope, String server, String channel)
     {
+        /*
+         * Earlier validation will ensure that server and channel are not null if they
+         * would be needed by the scope, so we don't have to worry about checking for null
+         * in this method.
+         */
         if (scope == FactScope.global)
             return "";
         if (scope == FactScope.server)
@@ -695,12 +709,9 @@ public class FactoidCommand implements Command
          * 
          * Create a parsed Factpack object
          * 
-         * Look up the factpack's scope. If it's global, then make sure we're a superop.
-         * If it's channel, make sure we've specified a channel and we're op at the
-         * channel. If it's both, make sure we've specified a channel and we're superop.
-         * If it's any, then if we've specified a channel make sure we're op at the
-         * channel, otherwise make sure we're superop. If it's any other value, or if it's
-         * not present, then we throw an exception.
+         * Look up the factpack's scope. We used then to check here on a ton of stuff to
+         * figure out if we needed to see if they were an op or a superop; since ops are
+         * now dealt away with, we just need to check and make sure the user is an op.
          */
         FactScope targetScopeLevel = null;
         String targetScopeName = (channel == null ? "" : channel);
