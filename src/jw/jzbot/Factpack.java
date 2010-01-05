@@ -72,7 +72,7 @@ public class Factpack
                 continue;
             FactpackEntry entry = new FactpackEntry();
             // entry.target = "" + prop.charAt(0);
-            entry.name = prop.substring(2);
+            entry.name = prop.substring(1);
             entry.contents = props.get(prop);
             entry.restrict = props.get("restrict." + prop, "0");
             entry.rename = props.get("rename." + prop, EscapeFunction.escape(entry.name));

@@ -579,48 +579,16 @@ public class FactoidCommand implements Command
             FactScope scope, String server, Server s, String channel,
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
-        /*
-         * Here's what we need to do:
-         * 
-         * First, we need to validate that the user has permission to remove this factoid.
-         * To do that, we do this:
-         */
-        // -- if isGlobal is true
-        // ---- make sure that the user is a superop
-        // -- if isGlobal is false
-        // ---- if the factpack has factoids present globally for that
-        // installation
-        // ------ make sure that the user is a superop
-        // ---- else (if the factpack does not have any global factoids)
-        // ------ make sure that the user is a channel operator at the channel
-        /*
-         * Then, we set the factpack name that we're going to remove to be the channel
-         * name (or "" if isGlobal is false) plus ":" plus the name of the factpack to
-         * remove. We then scan over all factoids in the entire system, and if the
-         * factoid's factpack matches, we delete it. If we get through and there were no
-         * factoids to delete, then we report to the user that the factpack in question is
-         * not installed at the scope the user specified.
-         */
         boolean hasAnyFactoids = false;
-        ArrayList<Factoid> factoidList = new ArrayList<Factoid>();
-        factoidList.addAll(JZBot.storage.getFactoids().isolate());
-        for (Server s2 : JZBot.storage.getServers())
-        {
-            factoidList.addAll(s2.getFactoids().isolate());
-            for (Channel c : s2.getChannels().isolate())
-            {
-                factoidList.addAll(c.getFactoids().isolate());
-            }
-        }
-        String factpackName = generateFactpackScopeName(scope, server, channel) + ":"
-                + afterCommand;
+        HasFactoids target = (scope == FactScope.global ? JZBot.storage
+                : scope == FactScope.server ? s : storedChannel);
         /*
          * Now we do the initial iteration to figure out if there are any factoids, and if
          * they are global.
          */
-        for (Factoid f : factoidList)
+        for (Factoid f : target.getFactoids().isolate())
         {
-            if (factpackName.equals(f.getFactpack()))
+            if (afterCommand.equals(f.getFactpack()))
             {
                 hasAnyFactoids = true;
             }
@@ -637,26 +605,13 @@ public class FactoidCommand implements Command
          * delete it.
          */
         ArrayList<String> uninstallScripts = new ArrayList<String>();
-        ArrayList<HasFactoids> containers = new ArrayList<HasFactoids>();
-        containers.add(JZBot.storage);
-        for (Server s2 : JZBot.storage.getServers())
+        for (Factoid factoid : target.getFactoids().isolate())
         {
-            containers.add(s2);
-            for (Channel c : s2.getChannels().isolate())
+            if (afterCommand.equals(factoid.getFactpack()))
             {
-                containers.add(c);
-            }
-        }
-        for (HasFactoids container : containers)
-        {
-            for (Factoid factoid : container.getFactoids().isolate())
-            {
-                if (factpackName.equals(factoid.getFactpack()))
-                {
-                    if (factoid.isUninstall())
-                        uninstallScripts.add(factoid.getValue());
-                    container.getFactoids().remove(factoid);
-                }
+                if (factoid.isUninstall())
+                    uninstallScripts.add(factoid.getValue());
+                target.getFactoids().remove(factoid);
             }
         }
         /*

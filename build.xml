@@ -1,7 +1,7 @@
 <project name="jzbot2" default="archive">
 	<target name="compile">
 		<mkdir dir="classes" />
-		<javac srcdir="src" destdir="classes" encoding="UTF-8">
+		<javac srcdir="src" destdir="classes" encoding="UTF-8" debug="true" debuglevel="lines,vars,source">
 			<classpath>
 				<fileset dir="lib">
 				</fileset>
