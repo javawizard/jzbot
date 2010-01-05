@@ -33,9 +33,9 @@ public class FpcheckdepFunction extends Function
             }
             throw new FactpackInstallationException(
                     "That factpack requires the factpack \"" + factpack
-                            + " to be installed at \"" + target
-                            + "\" (an empty target means it needs to be installed\n"
-                            + "globally), but this factpack is not installed."
+                            + "\" to be installed at \"" + target
+                            + "\" (an empty target means it needs to be installed "
+                            + "globally), \nbut this factpack is not installed."
                             + "You'll need to install that factpack first. The "
                             + "JZBot Development Team is planning on adding "
                             + "automatic dependency installation in the future.");
@@ -49,7 +49,7 @@ public class FpcheckdepFunction extends Function
                 + "{fphasdep}, but aborts factpack installation (as if by a call to "
                 + "{fpabort}) if the specified dependency is not present. In fact, "
                 + "this function actually calls {fphasdep} to see if the "
-                + "dependency is present.";
+                + "dependesncy is present.";
     }
     
 }

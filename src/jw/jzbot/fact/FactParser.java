@@ -280,6 +280,7 @@ public class FactParser
     {
         functionMap.put(name.toLowerCase(), function);
         reverseFunctionMap.put(function, name.toLowerCase());
+        functionsByClass.put(function.getClass(), function);
         try
         {
             String helpString = function.getHelp(null);
