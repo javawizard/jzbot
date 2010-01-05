@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.Command;
+import jw.jzbot.DieException;
 import jw.jzbot.FactScope;
 import jw.jzbot.Factpack;
 import jw.jzbot.JZBot;
@@ -19,6 +20,7 @@ import jw.jzbot.Factpack.FactpackEntry;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.FactpackInstallationException;
 import jw.jzbot.fact.StringSink;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 import jw.jzbot.pastebin.PastebinService;
@@ -713,9 +715,6 @@ public class FactoidCommand implements Command
          * figure out if we needed to see if they were an op or a superop; since ops are
          * now dealt away with, we just need to check and make sure the user is an op.
          */
-        FactScope targetScopeLevel = null;
-        String targetScopeName = (channel == null ? "" : channel);
-        System.out.println("target scope name is " + targetScopeName);
         String location = afterCommand;
         String packContents;
         if (PastebinService.understands(location))
@@ -724,43 +723,19 @@ public class FactoidCommand implements Command
         {
             File file = JZBot.getLocalFactpackFile(location);
             if (file == null)
-                throw new ResponseException("Invalid factpack \"" + location
+            {
+                source.sendMessage("Invalid factpack \"" + location
                         + "\", must be either a known factpack name "
                         + "or the URL of a pastebin post containing "
                         + "the factpack to install");
+                source.sendMessage("You could try \"factoid global pack available\" "
+                        + "to get a list of factpacks that are built-in to the bot.");
+                return;
+            }
             packContents = StringUtils.readFile(file);
         }
         Factpack factpack = Factpack.parse(packContents);
-        if (factpack.scope.equals("global"))
-        {
-            targetScopeLevel = "global";
-            targetScopeName = "";
-            vpSuperop(hostname,
-                    "That factpack has a scope of \"global\", which requires that "
-                            + "you're a superop to install it. You are not, "
-                            + "however, a superop.");
-        }
-        else if (factpack.scope.equals("any"))
-        {
-            if (isGlobal)
-            {
-                targetScopeLevel = "global";
-                targetScopeName = "";
-                vpSuperop(hostname, "That factpack has a scope of \"any\", and you're "
-                        + "trying to install it globally. This requires that you're "
-                        + "a superop. You are not, however, a superop.");
-            }
-            else
-            {
-                targetScopeLevel = "channel";
-                vpOp(channel, hostname, "That factpack has a scope of \"any\", and you're "
-                        + "trying to install it to the channel " + channel
-                        + ". This requires that you're an op at this "
-                        + "channel. You are not, however, an op at " + channel + ".");
-            }
-        }
-        else
-            throw new ResponseException("Invalid factpack scope: " + factpack.scope);
+        sender.verifySuperop();
         /*
          * We've validated that the factpack exists, and that a correct scope is
          * specified, a correct target for this scope is specified, and the user has
@@ -776,8 +751,10 @@ public class FactoidCommand implements Command
         localVars.put("factpack-channel", (channel == null ? "" : channel));
         localVars.put("factpack-data", "");
         localVars.put("factpack-name", factpack.name);
-        localVars.put("source", pm ? sender : channel);
-        localVars.put("sender", sender);
+        localVars.put("factpack-target", generateFactpackScopeName(scope, server, channel));
+        localVars.put("sender", sender.getNick());
+        localVars.put("sender-server", sender.getServerName());
+        localVars.put("sender-hostname", sender.getHostname());
         /*
          * Time to run the preinstall script
          */
@@ -792,15 +769,25 @@ public class FactoidCommand implements Command
             context.setServer(server);
             context.setSource(source);
             StringSink sink = new StringSink();
-            preinstallScript.resolve(sink, context);
+            try
+            {
+                preinstallScript.resolve(sink, context);
+            }
+            catch (FactpackInstallationException e)
+            {
+                String message = e.getMessage();
+                if (message.trim().equals(""))
+                    message = "The factpack's preinstall script aborted the installation "
+                            + "without specifying an error message.";
+                for (String m : message.split("\n"))
+                {
+                    source.sendMessage(m.trim());
+                }
+                throw new DieException();
+            }
             String response = sink.toString();
             if (!response.equals(""))
-                JZBot.bot.sendMessage(pm ? sender : channel, response);
-            if ("1".equals(context.getLocalVars().get("fail")))
-            {
-                throw new ResponseException(
-                        "The factpack's preinstall script aborted the installation.");
-            }
+                source.sendMessage(response);
         }
         catch (ResponseException e)
         {
@@ -813,48 +800,8 @@ public class FactoidCommand implements Command
                             + JZBot.pastebinStack(e));
         }
         /*
-         * Preinstall script has been run. Now we check dependencies.
-         */
-        ArrayList<String> existingFactpacks = new ArrayList<String>();
-        buildFactpackList(JZBot.storage, existingFactpacks);
-        for (Channel c : JZBot.storage.getChannels().isolate())
-        {
-            buildFactpackList(c, existingFactpacks);
-        }
-        for (Dependency d : factpack.depends)
-        {
-            boolean atChannel = isGlobal ? false : existingFactpacks.contains(channel + ":"
-                    + d.name);
-            boolean atGlobal = existingFactpacks.contains(":" + d.name);
-            boolean resolved = false;
-            if (d.scope.equals("global"))
-                resolved = atGlobal;
-            else if (d.scope.equals("any"))
-                resolved = atGlobal || atChannel;
-            else if (d.scope.equals("exact"))
-                resolved = (atGlobal && targetScopeLevel.equals("global"))
-                        || (atChannel && targetScopeLevel.equals("channel"));
-            if (!resolved)
-            {
-                JZBot.bot.sendMessage(pm ? sender : channel,
-                        "That factpack requires the factpack \"" + d.name
-                                + "\" on scope \"" + d.scope
-                                + "\", but this factpack is not "
-                                + "currently installed. Install \"" + d.name
-                                + "\", then try again."
-                                + (d.message != null ? " Additional info:" : ""));
-                if (d.message != null)
-                    JZBot.bot.sendMessage(pm ? sender : channel, d.message);
-                if (JZBot.getLocalFactpackFile(d.name) != null)
-                    JZBot.bot.sendMessage(pm ? sender : channel, "This factpack (\""
-                            + d.name + "\") is available locally. To install "
-                            + "it, try \"factoid pack install " + d.name
-                            + "\". Then try installing \"" + factpack.name + "\" again.");
-                return;
-            }
-        }
-        /*
-         * Dependencies have been checked. Steps:
+         * Preinstall script has been run, and will have checked for any dependencies if
+         * they are missing. Now, we move on to the installation steps:
          * 
          * Go through the list of factpack entries
          * 
@@ -865,56 +812,52 @@ public class FactoidCommand implements Command
          * Then run the rename command, and store its output as the name for the factpack.
          * 
          * Then run the restrict command, and store its output as whether the factoid is
-         * restricted.
+         * restricted. Same with the library command.
          * 
          * Then, iterate over the factoids again, and create a factoid for each one, at
-         * the scope specified, with the name and restricted setting as specified.
+         * the scope specified, with the name and restricted setting as specified. We run
+         * the rename and library factoids before actually installing anything so that if
+         * one of them aborts because of a syntax error, it won't cause the factpack to be
+         * half-installed. This also makes sure that the factpack won't be half-installed
+         * if there is a factoid that has the same name as one of the factoids in this
+         * factpack.
          */
         Map<String, String> realNameMap = new HashMap<String, String>();
         Map<String, Boolean> restrictedMap = new HashMap<String, Boolean>();
         Map<String, Boolean> libraryMap = new HashMap<String, Boolean>();
-        HasFactoids targetScope = (targetScopeLevel.equals("channel") ? storedChannel
-                : JZBot.storage);
+        HasFactoids targetScope = (scope == FactScope.global ? JZBot.storage
+                : (scope == FactScope.server ? s : storedChannel));
+        /*
+         * We'll look up the container we're inserting in to.
+         */
+        HasFactoids container = scope == FactScope.global ? JZBot.storage
+                : scope == FactScope.server ? s : storedChannel;
         for (FactpackEntry entry : factpack.factoids)
         {
-            String target = entry.target;
-            if (target.equals("g")
-                    && !(factpack.scope.equals("global") || factpack.scope.equals("both")))
-                throw new ResponseException("Invalid target \"g\" for scope \""
-                        + factpack.scope + "\"");
-            else if (target.equals("c")
-                    && !(factpack.scope.equals("channel") || factpack.scope.equals("both")))
-                throw new ResponseException("Invalid target \"c\" for scope \""
-                        + factpack.scope + "\"");
-            else if (target.equals("t") && !(factpack.scope.equals("any")))
-                throw new ResponseException("Invalid target \"t\" for scope \""
-                        + factpack.scope + "\"");
-            else if (!(target.equals("t") || target.equals("c") || target.equals("g")))
-                throw new RuntimeException("Internal invalid target/scope error");
             /*
              * Scope is correct. Now we run rename and restricted scripts.
              */
             realNameMap.put(entry.name, runInstallScript("rename_" + entry.name,
-                    entry.rename, channel, localVars, sender));
+                    entry.rename, server, s, channel, storedChannel, localVars, sender,
+                    source));
             restrictedMap.put(entry.name, IfFunction.findValue(runInstallScript("restrict_"
-                    + entry.name, entry.restrict, channel, localVars, sender)));
+                    + entry.name, entry.restrict, server, s, channel, storedChannel,
+                    localVars, sender, source)));
             libraryMap.put(entry.name, IfFunction.findValue(runInstallScript("library_"
-                    + entry.name, entry.library, channel, localVars, sender)));
+                    + entry.name, entry.library, server, s, channel, storedChannel,
+                    localVars, sender, source)));
             /*
              * Now we make sure this wouldn't overwrite anything.
              */
             if (!force)
             {
-                HasFactoids container = target.equals("g") ? JZBot.storage : target
-                        .equals("c") ? storedChannel : isGlobal ? JZBot.storage
-                        : storedChannel;
                 if (container.getFactoid(realNameMap.get(entry.name)) != null)
                     throw new ResponseException(
                             "This factpack wants to install a factoid called \""
                                     + realNameMap.get(entry.name)
                                     + "\", but such a factoid already exists. You can "
                                     + "override this with \"+install\" instead "
-                                    + "of \"install\" if you want.");
+                                    + "of \"install\" in your command if you want.");
                 
             }
             /*
@@ -927,7 +870,7 @@ public class FactoidCommand implements Command
             catch (Exception e)
             {
                 throw new ResponseException("There is a syntax error in the factoid \""
-                        + entry.name + "\" in the factpack: " + JZBot.pastebinStack(e));
+                        + entry.name + "\" in that factpack: " + JZBot.pastebinStack(e));
             }
         }
         /*
@@ -941,11 +884,11 @@ public class FactoidCommand implements Command
             Factoid fact = JZBot.storage.createFactoid();
             fact.setActive(true);
             fact.setCreationTime(System.currentTimeMillis());
-            fact.setCreator(hostname);
-            fact.setCreatorNick(sender);
+            fact.setCreator(sender.getHostname());
+            fact.setCreatorNick(sender.getNick());
             fact.setCreatorUsername(JZBot.getThreadLocalUsername());
             fact.setDirectRequests(0);
-            fact.setFactpack(targetScopeName + ":" + factpack.name);
+            fact.setFactpack(factpack.name);
             System.out.println("factpack is " + fact.getFactpack());
             fact.setIndirectRequests(0);
             fact.setName(realNameMap.get(entry.name));
@@ -954,8 +897,6 @@ public class FactoidCommand implements Command
             fact.setLibrary(libraryMap.get(entry.name));
             fact.setRestricted(restrictedMap.get(entry.name));
             fact.setValue(entry.contents);
-            HasFactoids container = entry.target.equals("g") ? JZBot.storage : entry.target
-                    .equals("c") ? storedChannel : isGlobal ? JZBot.storage : storedChannel;
             Factoid oldFact = container.getFactoid(fact.getName());
             if (oldFact != null)
                 container.getFactoids().remove(oldFact);
@@ -967,24 +908,24 @@ public class FactoidCommand implements Command
         String response = "";
         try
         {
-            response = runInstallScript("postinstall", factpack.postinstall, channel,
-                    localVars, sender);
+            response = runInstallScript("postinstall", factpack.postinstall, server, s,
+                    channel, storedChannel, localVars, sender, source);
         }
         catch (Exception e)
         {
             e.printStackTrace();
-            JZBot.bot.sendMessage(pm ? sender : channel,
-                    "The postinstall script had an error. The factpack has still been installed. "
-                            + JZBot.pastebinStack(e));
+            source.sendMessage("The postinstall script encountered an error. "
+                    + "The factpack has still been installed. Details: "
+                    + JZBot.pastebinStack(e));
         }
         if (!response.equals(""))
-            JZBot.bot.sendMessage(pm ? sender : channel, response);
-        JZBot.bot.sendMessage(pm ? sender : channel,
-                "The factpack has been successfully installed.");
+            source.sendMessage(response);
+        source.sendMessage("The factpack has been successfully installed.");
     }
     
-    private String runInstallScript(String name, String text, String channel,
-            Map<String, String> localVars, String sender)
+    private String runInstallScript(String name, String text, String server,
+            Server storedServer, String channel, Channel storedChannel,
+            Map<String, String> localVars, ServerUser sender, Messenger source)
     {
         try
         {
@@ -993,6 +934,8 @@ public class FactoidCommand implements Command
             context.setChannel(channel);
             context.getLocalVars().putAll(localVars);
             context.setSender(sender);
+            context.setServer(server);
+            context.setSource(source);
             StringSink sink = new StringSink();
             renameScript.resolve(sink, context);
             String response = sink.toString();

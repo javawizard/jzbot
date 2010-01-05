@@ -1755,7 +1755,8 @@ public class JZBot
             {
                 if (e instanceof ResponseException)
                 {
-                    source.sendMessage(((ResponseException) e).getMessage());
+                    if (!(e instanceof DieException))
+                        source.sendMessage(((ResponseException) e).getMessage());
                 }
                 else
                 {
