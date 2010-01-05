@@ -109,9 +109,9 @@ public class FactParser
             int indexOffset)
     {
         if (stack.next() != '{')
-            throw new ParseException(stack.at() - 2,
-                    "Start of function reference must be two open braces but is not");
-        int startFunctionIndex = stack.at() - 2;
+            throw new ParseException(stack.at() - 1,
+                    "Start of function reference must be an open brace but is not");
+        int startFunctionIndex = stack.at() - 1;
         Sequence argumentSequence = init(new Sequence(), name, stack.at() - indexOffset);
         Sequence currentArgument = init(new Sequence(), name, stack.at() - indexOffset);
         argumentSequence.add(currentArgument);
