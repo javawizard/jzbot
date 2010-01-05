@@ -1,0 +1,7 @@
+name local.misc.bzfrag
+author Alexander Boyd
+scope any
+description Coming soon.
+preinstall {fpcheckdep||local.library.randomresline}
+depends=global:local.library.randomresline
+>bzfrag {action}{firstvar|p|%1%|%0%}{import|library.randomresline|bzfrag.txt|%p%}
