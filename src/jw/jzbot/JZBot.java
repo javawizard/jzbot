@@ -1593,14 +1593,23 @@ public class JZBot
         
     }
     
-    public static void onInvitation(Server datastoreServer, String serverName, String channel,
-    		String sender, String login, String hostname, String message)
+    public static void onInvitation(Server datastoreServer, String serverName,
+            String channel, String sender, String login, String hostname, String message)
     {
-    	
-    	ServerUser source = new ServerUser(serverName, sender, hostname);
-    	Command command = commands.get("join");
-    	command.run( serverName, channel, true, source,
-                source, message);
+        ServerUser source = new ServerUser(serverName, sender, hostname);
+        try
+        {
+            Command command = commands.get("join");
+            command.run(serverName, channel, true, source, source, message);
+        }
+        catch (Exception e)
+        {
+            if (e instanceof ResponseException)
+                source.sendMessage(e.getMessage());
+            else
+                source.sendMessage("An error occurred while processing your invitation: "
+                        + pastebinStack(e));
+        }
     }
     
     public static boolean processChannelRegex(Server server, String serverName,
