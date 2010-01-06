@@ -1602,7 +1602,7 @@ public class JZBot
             Command command = commands.get("join");
             command.run(serverName, channel, true, source, source, message);
         }
-        catch (Exception e)
+        catch (Throwable e)
         {
             if (e instanceof ResponseException)
                 source.sendMessage(e.getMessage());
