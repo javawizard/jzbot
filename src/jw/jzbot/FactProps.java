@@ -11,12 +11,75 @@ public class FactProps extends HashMap<String, String>
     {
         BufferedReader in = new BufferedReader(rd);
         String line;
+        String lastPropertyKey = null;
+        boolean lastPropertyNoNewline = false;
         while ((line = in.readLine()) != null)
         {
-            if (line.trim().equals(""))
+            if (line.equals(""))
                 continue;
             else if (line.startsWith("#"))
                 continue;
+            else if (line.startsWith(" "))
+            {
+                /*
+                 * we have an inline continuation of a property value. We'll look up the
+                 * property whose name is lastPropertyKey, and then append this line, with
+                 * the space removed, onto it, optionally with a newline.
+                 * 
+                 * Specifically, with regard to the newline, we figure out the
+                 * continuation and whether to add a newline according to these rules, in
+                 * the order given:
+                 * 
+                 * If the line starts with " |", the first two characters are removed and
+                 * the result is the continuation. A newline is added.
+                 * 
+                 * If the line starts with "  |", the first three characters are removed
+                 * and the result is the continuation. A newline is not added.
+                 * 
+                 * If the line starts with "  ", the first two characters are removed and
+                 * the result is the continuation. A newline is not added.
+                 * 
+                 * If the line starts with " ", the first character is removed and the
+                 * result is the continuation. A newline is added.
+                 */
+                if (lastPropertyKey == null)
+                    throw new RuntimeException("A line continuation (IE a line that "
+                            + "started with a space character) was used, "
+                            + "but no property has been declared yet.");
+                String existingValue = get(lastPropertyKey);
+                String continuation;
+                boolean newline;
+                if (line.startsWith(" |"))
+                {
+                    continuation = line.substring(2);
+                    newline = true;
+                }
+                else if (line.startsWith("  |"))
+                {
+                    continuation = line.substring(3);
+                    newline = false;
+                }
+                else if (line.startsWith("  "))
+                {
+                    continuation = line.substring(2);
+                    newline = false;
+                }
+                else
+                // line is guaranteed to start with a space character as a result of the
+                // if statement surrounding this whole block
+                {
+                    continuation = line.substring(1);
+                    newline = true;
+                }
+                if (lastPropertyNoNewline)
+                    newline = false;
+                lastPropertyNoNewline = false;
+                if (newline)
+                    existingValue += "\n";
+                existingValue += continuation;
+                put(lastPropertyKey, existingValue);
+                continue;
+            }
             // we have an actual property here.
             String valueLineText = null;
             String key = null;
@@ -63,10 +126,19 @@ public class FactProps extends HashMap<String, String>
                 }
             }
             // now we parse the value.
+            lastPropertyNoNewline = false;
             if (valueLineText.startsWith(":"))
             {
                 // line is normal
                 value = valueLineText.substring(1);
+            }
+            else if (valueLineText.equals("-"))
+            {
+                // line is blank, and will be added to by a continuation. This means we
+                // should omit the first newline in the continuation following this
+                // property, if there is one.
+                value = "";
+                lastPropertyNoNewline = true;
             }
             else if (valueLineText.startsWith("<"))
             {
@@ -95,6 +167,7 @@ public class FactProps extends HashMap<String, String>
             }
             // now we add the property
             put(key, value);
+            lastPropertyKey = key;
         }
     }
     
