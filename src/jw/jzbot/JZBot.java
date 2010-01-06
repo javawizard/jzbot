@@ -1593,6 +1593,16 @@ public class JZBot
         
     }
     
+    public static void onInvitation(Server datastoreServer, String serverName, String channel,
+    		String sender, String login, String hostname, String message)
+    {
+    	
+    	ServerUser source = new ServerUser(serverName, sender, hostname);
+    	Command command = commands.get("join");
+    	command.run( serverName, channel, true, source,
+                source, message);
+    }
+    
     public static boolean processChannelRegex(Server server, String serverName,
             String channel, String sender, String hostname, String message, boolean action)
     {
