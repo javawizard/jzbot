@@ -76,6 +76,13 @@ public class ConnectionContext
         JZBot.onDisconnect(datastoreServer, serverName);
     }
     
+    public void onInvitation(String channel, String sender, String login, String hostname,
+            String message)
+    {
+        JZBot.onInvitation(datastoreServer, serverName, channel, sender, login, hostname,
+                message);
+    }
+    
     public void onJoin(String channel, String sender, String login, String hostname)
     {
         JZBot.onJoin(datastoreServer, serverName, channel, sender, login, hostname);
