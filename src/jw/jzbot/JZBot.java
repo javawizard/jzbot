@@ -2520,7 +2520,16 @@ public class JZBot
     {
         for (File file : listLocalFactpackFiles())
         {
-            Factpack pack = Factpack.parse(StringUtils.readFile(file));
+            Factpack pack;
+            try
+            {
+                pack = Factpack.parse(StringUtils.readFile(file));
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Exception while processing file "
+                        + file.getAbsolutePath(), e);
+            }
             if (pack.name.equals(canonicalName))
                 return file;
         }

@@ -28,6 +28,7 @@ public class PastebinService
      */
     public static String createPost(Post post, Feature[] requiredFeatures)
     {
+        doFirstTimeInit();
         if (requiredFeatures == null)
             requiredFeatures = new Feature[0];
         if (post == null)
@@ -59,6 +60,16 @@ public class PastebinService
         throw new PastebinException("Tried all pastebin providers (there were "
                 + providers.size() + " providers), and all of them threw exceptions or "
                 + "didn't have correct features");
+    }
+    
+    private static volatile boolean initialized = false;
+    
+    private static synchronized void doFirstTimeInit()
+    {
+        if (initialized)
+            return;
+        initialized = true;
+        currentProviderIndex = (int) (Math.random() * providers.size());
     }
     
     public static Post readPost(String url)
