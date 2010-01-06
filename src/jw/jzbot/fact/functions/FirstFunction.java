@@ -24,7 +24,7 @@ public class FirstFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{first||<arg1>||<arg2>||...}} -- Evaluates to the first argument "
+        return "Syntax: {first|<arg1>|<arg2>|...} -- Evaluates to the first argument "
                 + "that is not the empty string.";
     }
     

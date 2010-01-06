@@ -17,8 +17,8 @@ public class FuturesFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{futures}} -- Evaluates to a newline-separated list of "
-                + "the keys of all future tasks scheduled with {{future}} that have "
+        return "Syntax: {futures} -- Evaluates to a newline-separated list of "
+                + "the keys of all future tasks scheduled with {future} that have "
                 + "not yet been run.";
     }
     

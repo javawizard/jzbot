@@ -34,7 +34,7 @@ public class FutureFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{future||<key>||<delay>||<factoid>||<argument1>||...}} -- "
+        return "Syntax: {future|<key>|<delay>|<factoid>|<argument1>|...} -- "
                 + "Schedules a factoid to be run some time in the future. <key> is a unique "
                 + "key. Whenever an event is scheduled for a particular key, any events that "
                 + "have been scheduled for that key but not yet run are canceled. <delay> "

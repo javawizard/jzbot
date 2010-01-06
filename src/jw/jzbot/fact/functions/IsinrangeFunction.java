@@ -36,11 +36,11 @@ public class IsinrangeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isinrange||<number>||<min>||<max>}} -- Checks to see if <number> is "
+        return "Syntax: {isinrange|<number>|<min>|<max>} -- Checks to see if <number> is "
                 + "greater than or equal to <min> and less than or equal to <max>. If "
                 + "<number> is not within this range, or if <number> is not a whole "
-                + "integer (or if it's not a number at all), then {{isinrange}} evaluates "
-                + "to 0. Otherwise, {{isinrange}} evaluates to 1.";
+                + "integer (or if it's not a number at all), then {isinrange} evaluates "
+                + "to 0. Otherwise, {isinrange} evaluates to 1.";
     }
     
 }

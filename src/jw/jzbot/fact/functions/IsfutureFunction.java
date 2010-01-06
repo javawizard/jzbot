@@ -21,7 +21,7 @@ public class IsfutureFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isfuture||<key>}} -- Evaluates to 1 if there is currently a "
+        return "Syntax: {isfuture|<key>} -- Evaluates to 1 if there is currently a "
                 + "scheduled future task with the key <key> that has not run yet, "
                 + "or 0 if there is no such scheduled future task.";
     }

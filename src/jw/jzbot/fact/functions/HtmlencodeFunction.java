@@ -19,7 +19,7 @@ public class HtmlencodeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{htmlencode||<text>}} -- Escapes all HTML special characters "
+        return "Syntax: {htmlencode|<text>} -- Escapes all HTML special characters "
                 + "in <text>. For example, \"<\" gets changed to \"&lt;\".";
     }
     

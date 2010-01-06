@@ -19,8 +19,8 @@ public class HtmldecodeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{htmldecode||<text>}} -- Decodes all HTML-escaped characters "
-                + "in the specified text. This is the opposite of {{htmlencode}}.";
+        return "Syntax: {htmldecode|<text>} -- Decodes all HTML-escaped characters "
+                + "in the specified text. This is the opposite of {htmlencode}.";
     }
     
 }

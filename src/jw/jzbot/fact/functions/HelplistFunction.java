@@ -38,10 +38,10 @@ public class HelplistFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{helplist||<page>}} -- Evaluates to a space-separated list "
+        return "Syntax: {helplist|<page>} -- Evaluates to a space-separated list "
                 + "of all subpages of the help page <page>. This also means that you "
                 + "can get a space-separated list of all functions allowed in "
-                + "factoids by using {{helplist||functions}}. {{helplist||}} evaluates "
+                + "factoids by using {helplist|functions}. {helplist|} evaluates "
                 + "to a list of top-level help pages (IE those that you would see \n"
                 + "if you sent \"help\" in a pm to the bot).";
     }

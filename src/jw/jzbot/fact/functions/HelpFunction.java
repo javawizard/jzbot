@@ -28,12 +28,12 @@ public class HelpFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{help||<page>}} -- Evaluates to the contents of the specified help "
+        return "Syntax: {help|<page>} -- Evaluates to the contents of the specified help "
                 + "page. <page> should be a page formatted so that sending \"help <page>\" "
                 + "to the bot in a pm would get the relevant help page. The resulting help "
                 + "page can contain newlines. If the specified help page does not exist, "
-                + "{{help}} evaluates to nothing.\n"
-                + "{{help||}} evaluates to the contents of the top level help page (IE "
+                + "{help} evaluates to nothing.\n"
+                + "{help|} evaluates to the contents of the top level help page (IE "
                 + "the one that you see if you pm \"help\" to the bot). Also, "
                 + "percentHELPCMDpercent (with \"percent\" replaced with \"%\") may "
                 + "appear in the result, which \n"

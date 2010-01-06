@@ -35,7 +35,7 @@ public class GetresourceFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{getresource||<name>}} -- Gets the resource by the specified name. "
+        return "Syntax: {getresource|<name>} -- Gets the resource by the specified name. "
                 + "Resources are files present in the \"resources\" folder under the bot's main "
                 + "folder. If the resource's content is longer than 100KB, an error will occur.";
     }

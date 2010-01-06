@@ -25,8 +25,8 @@ public class IsresourceFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isresource||<name>}} -- Returns 1 if <name> denotes a valid "
-                + "resource (IE {{getresource||<name>}} could be called without an error "
+        return "Syntax: {isresource|<name>} -- Returns 1 if <name> denotes a valid "
+                + "resource (IE {getresource|<name>} could be called without an error "
                 + "occuring), or 0 if <name> does not denote a valid resource.";
     }
     

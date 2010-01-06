@@ -45,10 +45,10 @@ public class IntervalFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{interval||<seconds>}} -- Formats the specified number of seconds "
-                + "as an interval. For example, {{interval||137}} would evaluate to "
+        return "Syntax: {interval|<seconds>} -- Formats the specified number of seconds "
+                + "as an interval. For example, {interval|137} would evaluate to "
                 + "\"2 minutes 17 seconds\". This function supports all the way up to "
-                + "years (meaning {{interval||31536000}} evaluates to \"1 year\").";
+                + "years (meaning {interval|31536000} evaluates to \"1 year\").";
     }
     
 }

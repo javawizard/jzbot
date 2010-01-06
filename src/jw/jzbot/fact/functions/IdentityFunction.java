@@ -36,7 +36,7 @@ public class IdentityFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{identity||<arg1>||<arg2>||...}} -- Evaluates to "
+        return "Syntax: {identity|<arg1>|<arg2>|...} -- Evaluates to "
                 + "all of its arguments, concatenated and with a space inbetween. "
                 + "Essentially the same as \"<arg1> <arg2> ...\". This "
                 + "function is primarily intended for the factoid language interpreter's "

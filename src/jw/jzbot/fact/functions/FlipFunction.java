@@ -18,7 +18,7 @@ public class FlipFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{flip||<text>}} -- Flips the specified text upside-down. This "
+        return "Syntax: {flip|<text>} -- Flips the specified text upside-down. This "
                 + "involves reversing the text and substituting each letter for an "
                 + "equivalent character that is flipped upside-down. This only works "
                 + "correctly if UTF-8 is used as the charset.";
