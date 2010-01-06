@@ -30,10 +30,10 @@ public class FactProps extends HashMap<String, String>
                  * continuation and whether to add a newline according to these rules, in
                  * the order given:
                  * 
-                 * If the line starts with " |", the first two characters are removed and
+                 * If the line starts with " :", the first two characters are removed and
                  * the result is the continuation. A newline is added.
                  * 
-                 * If the line starts with "  |", the first three characters are removed
+                 * If the line starts with "  :", the first three characters are removed
                  * and the result is the continuation. A newline is not added.
                  * 
                  * If the line starts with "  ", the first two characters are removed and
@@ -49,12 +49,12 @@ public class FactProps extends HashMap<String, String>
                 String existingValue = get(lastPropertyKey);
                 String continuation;
                 boolean newline;
-                if (line.startsWith(" |"))
+                if (line.startsWith(" :"))
                 {
                     continuation = line.substring(2);
                     newline = true;
                 }
-                else if (line.startsWith("  |"))
+                else if (line.startsWith("  :"))
                 {
                     continuation = line.substring(3);
                     newline = false;
