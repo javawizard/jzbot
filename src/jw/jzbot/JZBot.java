@@ -399,6 +399,13 @@ public class JZBot
         connectionCycleThread.start();
     }
     
+    /**
+     * This is called about once every 2 minutes. It performs the main connection cycle.
+     * It essentially connects the bot to servers that it's supposed to be connected to,
+     * and disconnects the bot from servers that it's not supposed to be connected to.
+     * 
+     * @throws InterruptedException
+     */
     public static void doSingleConnectionCycle() throws InterruptedException
     {
         connectionCycleQueue.poll(CONNECTION_CYCLE_TIMEOUT, TimeUnit.SECONDS);
