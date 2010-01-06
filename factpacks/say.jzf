@@ -1,8 +1,9 @@
 name local.misc.say
 author Alexander Boyd
-description <-
-Adds a say command, which can be used to get the bot to say something at a particular channel. If the first word of the message to say is <action>, then the message is said as if it started with /me.
--
->say <-
-{ifeq|%channel%|none|You need to specify a channel. Try "/msg %self% #channel say Hello".|{send{ifeq|%1%|<action>|action{lset|m|%2-%}|message{lset|m|%1-%}}|%channel%|%m%}}
--
+description Adds a say command, which can be used to get the bot to say something at 
+  a particular channel. If the first word of the message to say is <action>, then the 
+  message is said as if it started with /me.
+>say -
+ {ifeq|%channel%|none|You need to specify a channel. Try "/msg %self% #channel say Hello".|
+  {send{ifeq|%1%|<action>|action{lset|m|%2-%}|message{lset|m|%1-%}}|%channel%|%m%}}
+
