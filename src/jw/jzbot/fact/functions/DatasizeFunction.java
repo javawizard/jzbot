@@ -18,9 +18,9 @@ public class DatasizeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{datasize||<size>}} -- Formats <size>, which is a size in "
+        return "Syntax: {datasize|<size>} -- Formats <size>, which is a size in "
                 + "bytes, into a more human-readable format. For example, "
-                + "{{datasize||12345}} would result in \"12.1KB\".";
+                + "{datasize|12345} would result in \"12.1KB\".";
     }
     
 }

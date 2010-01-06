@@ -37,7 +37,7 @@ public class EvalFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{eval||<toeval>}} or {{eval||<engine>||<toeval>}} -- "
+        return "Syntax: {eval|<toeval>} or {eval|<engine>|<toeval>} -- "
                 + "Evaluates <toeval> as a mathematical equation. Engine specifies "
                 + "the engine to use. Each engine exhibits different properties "
                 + "and equation syntax.\n"

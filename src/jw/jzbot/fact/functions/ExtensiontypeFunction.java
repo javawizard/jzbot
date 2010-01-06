@@ -25,13 +25,13 @@ public class ExtensiontypeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{extensiontype||<name>}} -- Evaluates to the content type of a number "
+        return "Syntax: {extensiontype|<name>} -- Evaluates to the content type of a number "
                 + "of known file extensions. If name does not contain any \".\" characters, "
                 + "it is taken to be the name of a file extension. If it does contain \".\" "
                 + "characters, the extension is taken to be everything after the last \".\""
-                + " character.\nFor example, {{extensiontype||txt}} and {{extensiontype||"
-                + "myfile.txt}} both evaluate to \"text/plain\", and {{extensiontype||"
-                + "gif}} and {{extensiontype||something.gif}} both evaluate to "
+                + " character.\nFor example, {extensiontype|txt} and {extensiontype|"
+                + "myfile.txt} both evaluate to \"text/plain\", and {extensiontype|"
+                + "gif} and {extensiontype|something.gif} both evaluate to "
                 + "\"image/gif\".";
     }
     

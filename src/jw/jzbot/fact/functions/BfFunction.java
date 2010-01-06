@@ -39,7 +39,7 @@ public class BfFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{bf||<code>||<input>||<size>}} -- Executes <code> as BF code and evaluates "
+        return "Syntax: {bf|<code>|<input>|<size>} -- Executes <code> as BF code and evaluates "
                 + "to whatever the code outputs. The memory bank provided to the code is "
                 + "<size> positions. <size> is optional, and will be 1024 if not present. "
                 + "Each position is a 32-bit signed integer. <input> is also optional, and, if "

@@ -21,7 +21,7 @@ public class AddregexFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{addregex||<desc>}} -- Adds a regex to the current "
+        return "Syntax: {addregex|<desc>} -- Adds a regex to the current "
                 + "channel. This acts as if \"regex add <desc>\" has been run "
                 + "at this channel.";
     }

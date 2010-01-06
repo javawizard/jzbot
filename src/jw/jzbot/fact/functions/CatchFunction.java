@@ -41,7 +41,7 @@ public class CatchFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{catch||<action>||<prefix>||<onerror>}} -- Evaluates to <action>. "
+        return "Syntax: {catch|<action>|<prefix>|<onerror>}} -- Evaluates to <action>. "
                 + "If <action> ends up throwing an exception, <onerror> is run instead. "
                 + "A few local variables are set if an error does occur. Their names "
                 + "are <prefix>-class, which is the name of the class of the error (this "
@@ -53,7 +53,7 @@ public class CatchFunction extends Function
                 + "an error indicating that the factoid used up too much time, for the "
                 + "\nobvious reason that this could lead to factoids that never stop running. "
                 + "This will not allow for circumvention of the message limit, however, as "
-                + "each successive invocation of {{sendmessage}} would just throw another "
+                + "each successive invocation of {sendmessage} would just throw another "
                 + "error instead of sending a message if the quota has been exceeded.";
     }
     

@@ -19,9 +19,9 @@ public class ErrorFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{error||<message>}} -- Causes a syntax error to "
+        return "Syntax: {error|<message>} -- Causes a syntax error to "
                 + "be reported with the specified message. If the error is later caught "
-                + "with {{catch}}, the exception class will be "
+                + "with {catch}, the exception class will be "
                 + "jw.jzbot.fact.CustomFactoidException and the message will be <message>.";
     }
     

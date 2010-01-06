@@ -58,12 +58,12 @@ public class EscapeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{escape||<text>}} -- Escapes <text> with backslashes, \"\\n\", and "
+        return "Syntax: {escape|<text>} -- Escapes <text> with backslashes, \"\\n\", and "
                 + "such, so that the resulting text, when embedded directly within a "
                 + "factoid, would evaluate to <text>. For example, all \"|\" characters, "
                 + "\"{\" characters, and \"}\" characters are prefixed with a \"\\\". "
                 + "<text> can also contain non-ascii-visible characters, and these will "
-                + "\nbe replaced with a call to the {{char}} function. Currently, this "
+                + "\nbe replaced with a call to the {char} function. Currently, this "
                 + "doesn't correctly support UTF-8.";
     }
     

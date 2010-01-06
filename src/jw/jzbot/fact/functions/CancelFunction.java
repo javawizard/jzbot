@@ -18,7 +18,7 @@ public class CancelFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{cancel||<key>}} -- Cancels the future task that was created with "
+        return "Syntax: {cancel|<key>} -- Cancels the future task that was created with "
                 + "the specified key. If there is no such future task, nothing happens.";
     }
     

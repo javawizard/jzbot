@@ -27,7 +27,7 @@ public class CharCodeSpecial extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{" + name + "}} -- " + help;
+        return "Syntax: {" + name + "} -- " + help;
     }
     
 }
