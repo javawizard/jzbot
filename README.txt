@@ -1,3 +1,14 @@
+        s     S  s
+      s s  s  s S
+   _____S___S__S______
+  (==================_)__________
+   \   ...     ...  ´            `
+  /|  : O :   : O : | Welcome to |
+ | |  :___:   :___: |    JZBot   |
+  \_\    _         / ___________-´
+     \    -----´  --´
+      `-----------´
+
 JZBot is an IRC bot. Visit http://jzbot.googlecode.com if
 you have questions.
 
