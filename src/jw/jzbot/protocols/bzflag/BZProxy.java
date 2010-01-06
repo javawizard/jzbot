@@ -69,7 +69,8 @@ public class BZProxy
         ServerSocket ss = new ServerSocket(55443);
         System.out.println("waiting");
         Socket s = ss.accept();
-        BZFlagConnector out = new BZFlagConnector("bzflagr.net", 5154);
+        System.out.println("ok");
+        BZFlagConnector out = new BZFlagConnector("localhost", 5154);
         s.getOutputStream().write("BZFS0026".getBytes());
         s.getOutputStream().write(out.getSlot());
         BZFlagConnector in = new BZFlagConnector(s, false);

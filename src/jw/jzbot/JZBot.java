@@ -559,7 +559,7 @@ public class JZBot
     {
         /*
          * TODO: the protocol list is hard-coded right now; this should ideally be split
-         * into a .props file; consider jw/jzbot/protocols.props.
+         * into a .props file; consider jw/jzbot/protocols/protocols.props.
          */
         Class<? extends Connection> c;
         if (name.equals("irc"))
@@ -583,7 +583,7 @@ public class JZBot
             /*
              * We need to catch Exception instead of just the two Exception types
              * newInstance throws as newInstance propegates checked exceptions too, which
-             * isn't good
+             * isn't good.
              */
             throw new RuntimeException("Exception while instantiating protocol \"" + name
                     + "\" for class " + c.getName(), e);

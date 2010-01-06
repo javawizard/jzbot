@@ -1168,12 +1168,6 @@ public abstract class PircBot implements ReplyConstants
             }
             this.onNickChange(sourceNick, sourceLogin, sourceHostname, newNick);
         }
-        else if (command.equals("INVITE"))
-        {
-        	// Someone is sending an invitation.
-        	this.onInvitation(sourceNick, sourceLogin, sourceHostname, line
-                    .substring(line.indexOf(" :") + 2));
-        }
         else if (command.equals("NOTICE"))
         {
             // Someone is sending a notice.
@@ -1498,26 +1492,6 @@ public abstract class PircBot implements ReplyConstants
      *            The actual message.
      */
     protected void onPrivateMessage(String sender, String login, String hostname,
-            String message)
-    {
-    }
-    
-    /**
-     * This method is called whenever a private message is sent to the PircBot.
-     * <p>
-     * The implementation of this method in the PircBot abstract class performs no actions
-     * and may be overridden as required.
-     * 
-     * @param sender
-     *            The nick of the person who sent the invitation.
-     * @param login
-     *            The login of the person who sent the invitation.
-     * @param hostname
-     *            The hostname of the person who sent the invitation.
-     * @param message
-     *            The actual message which is the channel here.
-     */
-    protected void onInvitation(String sender, String login, String hostname,
             String message)
     {
     }
@@ -3674,6 +3648,5 @@ public abstract class PircBot implements ReplyConstants
     private String _finger = "You ought to be arrested for fingering a bot!";
     
     private String _channelPrefixes = "#&+!";
-
-
+    
 }

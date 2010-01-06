@@ -142,10 +142,10 @@ public class IrcProtocol extends PircBot implements Connection
     }
     
     @Override
-    protected void onInvitation(String channel, String sender, String login, String hostname,
-            String message)
+    protected void onInvitation(String channel, String sender, String login,
+            String hostname, String message)
     {
-        context.onMessage(channel, sender, login, hostname, message);
+        context.onInvitation(channel, sender, login, hostname, message);
     }
     
     @Override
