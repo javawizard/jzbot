@@ -1,0 +1,6 @@
+name local.library.randomresline
+author Alexander Boyd
+description This factpack contains a utility, library.randomresline, which can read a particular resource, split it into lines, and evaluate to a random choice of one of those lines. Lines starting with "#" will be ignored. "WHO" in any lines will be replaced by the second argument to the utility (the first argument is the name of the resource to read).
+preinstall {fpcheckscope|global}
+>library.randomresline {replace|{randomsplit|{getresource|%1%}|\\n|^[^\\#].*$}|WHO|%2-%}
+restrict.library.randomresline=1
