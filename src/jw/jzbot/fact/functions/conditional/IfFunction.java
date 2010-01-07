@@ -58,7 +58,7 @@ public class IfFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{if||<condition>||<trueaction>||<falseaction>}} -- Evalutes to "
+        return "Syntax: {if|<condition>|<trueaction>|<falseaction>} -- Evalutes to "
                 + "<trueaction> if <condition> is one of the \"true\" values, and <falseaction> "
                 + "if <condition> is one of the \"false\" values. If <condition> is neither a "
                 + "true value nor a false value, it is interpreted as an equation (as if "

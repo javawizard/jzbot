@@ -19,12 +19,12 @@ public class IfneFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{ifne||<compare>||<trueaction>||<falseaction>}} -- Evaluates "
+        return "Syntax: {ifne|<compare>|<trueaction>|<falseaction>} -- Evaluates "
                 + "to <trueaction> if <compare> is not empty and is not made up only of "
                 + "whitespace, or <falseaction> if <compare> is empty or made "
                 + "up entirely of whitespace. <falseaction> is optional, and if it's not "
-                + "present {{ifne}} will act as if <falseaction> were empty. This function "
-                + "is the opposite of {{ife}}.";
+                + "present {ifne} will act as if <falseaction> were empty. This function "
+                + "is the opposite of {ife}.";
     }
     
 }

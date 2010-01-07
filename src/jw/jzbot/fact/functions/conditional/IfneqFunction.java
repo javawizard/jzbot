@@ -25,10 +25,10 @@ public class IfneqFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{ifneq||<compare1>||<compare2>||<trueaction>||<falseaction>}} -- "
+        return "Syntax: {ifneq|<compare1>|<compare2>|<trueaction>|<falseaction>} -- "
                 + "Evaluates to <trueaction> if <compare1> is not the same as <compare2>, ignoring "
                 + "case, or <falseaction> if they are equal. <falseaction> is optional, "
-                + "and if not present {{ifneq}} will act as if <falseaction> were empty. This "
-                + "function is essentially the opposite of {{ifeq}}.";
+                + "and if not present {ifneq} will act as if <falseaction> were empty. This "
+                + "function is essentially the opposite of {ifeq}.";
     }
 }
