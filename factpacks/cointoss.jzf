@@ -2,4 +2,4 @@ name local.games.cointoss
 author Maximilian Dirkmann
 description A little demonstartion to show how simple a little game can be
 
-t.cointoss={if| {ifeq|%1%|heads|1|0} \|\| {ifeq|%1%|tails|1|0}  |COINTOSS %1%: {random|it was %1%! %0% tossed a coin and won!|it was %1%! %0% tossed a coin and lost!}|%0%: you can only chose between tails or heads}
+>cointoss {if| {ifeq|%1%|heads|1|0} \|\| {ifeq|%1%|tails|1|0}  |COINTOSS %1%: {random|it was %1%! %0% tossed a coin and won!|it was %1%! %0% tossed a coin and lost!}|%0%: you can only chose between tails or heads}
