@@ -1,0 +1,4 @@
+name local.misc.dice
+author Jonas Höglund
+description Adds a factoid, ~dice, which rolls a die and sends the result to the channel.
+>dice {char|{eval|9856+{randomint|6}}}

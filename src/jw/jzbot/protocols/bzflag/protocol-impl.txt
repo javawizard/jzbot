@@ -2,7 +2,7 @@ So, we have the actual protocol connector in the form of ServerLink. Now it's ti
 
 First off, I'm thinking there will be 4 threads:
 
-    The input thread, which reads packets from the server and sends them to either the immediate queue or the deferred queue, and also sends them to any listeners that may be waiting for them (such as when a connection is to be established, a MsgAccept and MsgJoin have to be waited for)
+    The input thread, which reads packets from the server and sends them to either the immediate queue or the deferred queue, and also sends them to any listeners that may be waiting for them (such as when a connection is to be established, a MsgAccept and MsgJoin have to be waited for; TODO: have the deferred dispatcher do these so that we dont' get an incorrect state because the deferred dispatcher hasn't processed the full player list yet)
     
     The output threads, which pulls messages off of a queue and sends them to the server
     
@@ -14,7 +14,7 @@ The deferred dispatcher is in charge of receiving and processing all packets exc
 
 Messages from the server are sent as irc notices so that the bot doesn't process them as normal commands. The last two messages from the server are also remembered for later, since the only way to detect a kick at present is to detect the last two server messages being "You have been kicked off of the server by ..." and "Reason given: ..." when a MsgSuperKill is received.
 
-The protocol maintains three boolean values, corresponding to three special channels: #all, #admin, and #team. #all represents the channel that all players can talk at. #admin represents the admin channel. #team represents fellow observers. Everyone at the server is at #all, All admins at the server are at #admin, and all observers are at #team. An attempt to join another channel will act as if the bot is banned from that channel.
+The protocol maintains three boolean values, corresponding to three special channels: #all, #admin, and #team. #all represents the channel that all players can talk at. #admin represents the admin channel. #team represents fellow observers. Everyone at the server is at #all, All admins at the server are at #admin (and a person who successfully identifies with /password appears to join #admin as soon as they do), and all observers are at #team. An attempt to join another channel will act as if the bot is banned from that channel. (TODO: throw an exception instead?)
 
 All identified users are mode +v, that is, they appear as having voice. All (non-hidden) admins are mode +o, that is, they appear as being a channel op. I haven't worked out a mode yet for users that are registered but specifically not identified.
 
@@ -26,7 +26,11 @@ Kicked by "javawizard2539" Please stop spamming. We don't like it at this server
 
 A ban from the server is somewhat different, as IRC bans cannot carry ban messages. Currently, the way this is implemented is as an "apparent kick", but "Kicked by" is replaced with "Banned by".
 
-A kick by the bot causes a normal kick to occur. A "/mode +b"-style ban causes the user to be banned from the server for an amount of time specified by a bot config variable; the default is 30 minutes. (TODO: do we really need this?) To have precise control over BZFlag bans, the extended ipban function can be called, which allows for specification of a user to ban, a duration to ban them, and the reason for the ban. Bans are soley ip-based right now. For example, "{p|ipban|javawizard2539|30m|I don't like you. Come back in 30 minutes}" would ban javawizard2539 for 30 minutes with the specified message.
+A kick by the bot causes a normal kick to occur. A "/mode +b"-style ban causes the user to be banned from the server for an amount of time specified by a bot config variable; the default is 30 minutes. (TODO: do we really need this?) To have precise control over BZFlag bans, the extended ipban function can be called, which allows for specification of a user to ban, a duration to ban them, and the reason for the ban. Bans are soley ip-based right now. For example, "{p|ipban|javawizard2539|30m|I don't like you. Come back in 30 minutes}" would ban javawizard2539's ip address for 30 minutes with the specified message.
+
+The extended set command can be used to set a particular variable or read its current value. Variable searching will also be allowed in the future.
+
+The syntax is either {p|set|<name>} (which reads the value of that variable), {p|set} (which gets a newline-separated list of all variables), or {p|set|<name>|<value>}, which sets the value of a variable (assuming we have permission to perform such an action). A plugin that could be done with this, for example, is one that sets the sky color to which ever team is "winning", or tints it toward which ever team is winning by how much they're winning by. "winning" is subjective, so such a factpack would have to decide if that's based on points, flag captures, or even points/captures in the last few minutes as opposed to overall. This also seems to call for a preinstall factpack function that can check the protocol of a server to which it is being installed (and server protocols should not be editable by the "~server" command), to restrict that factpack to bzflag servers only.
 
 
 

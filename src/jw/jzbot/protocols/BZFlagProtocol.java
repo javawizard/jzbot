@@ -80,10 +80,13 @@ public class BZFlagProtocol implements Connection
      * Doesn't particularly matter what type of message this is
      */
     public static final Message HALT_QUEUE_MESSAGE = new MsgSuperKill();
+    private static final int OBSERVER = 5;
     
     private ServerLink serverLink;
     
-    private static class DispatchThread extends Thread
+    private Queue outQueue
+    
+    private class DispatchThread extends Thread
     {
         private BlockingQueue<Message> dispatchQueue;
         
@@ -104,6 +107,10 @@ public class BZFlagProtocol implements Connection
         {
             while (running)// TODO: this blocks sync'ing of messages after a disconnect.
             // Should we do this, or should we just wait for HALT_QUEUE_MESSAGE to arrive?
+            // If we do that, we'll have to make sure we don't ever forget to send
+            // HALT_QUEUE_MESSAGE since that could cause the thread to essentially never
+            // stop running until a restart. We could also do something where we exit when
+            // we're not running and the queue has become empty.
             {
                 Message message;
                 try
@@ -122,6 +129,70 @@ public class BZFlagProtocol implements Connection
                 dispatch(message);
             }
         }
+    }
+    
+    public static class Player implements User
+    {
+        public int playerId;
+        public String callsign;
+        public String email;
+        public int team;
+        public int wins;
+        public int losses;
+        public int tks;
+        public boolean admin;
+        public boolean registered;
+        public boolean verified;
+        
+        @Override
+        public String getNick()
+        {
+            return callsign;
+        }
+        
+        @Override
+        public boolean hasVoice()
+        {
+            return registered && verified;
+        }
+        
+        @Override
+        public boolean isAdmin()
+        {
+            return false;
+        }
+        
+        @Override
+        public boolean isFounder()
+        {
+            // TODO: if we can get this information from the server, it might be cool to
+            // have this be true when the user has authenticated with the server by use of
+            // the server password. It's not critical or anything, though, since
+            // authenticating via a server password is a fairly rare event nowadays.
+            return false;
+        }
+        
+        @Override
+        public boolean isHalfop()
+        {
+            return false;
+        }
+        
+        @Override
+        public boolean isOp()
+        {
+            return verified;
+        }
+        
+    }
+    
+    private Player[] players = new Player[256];
+    private ConnectionContext context;
+    
+    public void dispatch(Message message)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     @Override
@@ -163,36 +234,56 @@ public class BZFlagProtocol implements Connection
     @Override
     public String getNick()
     {
-        // TODO Auto-generated method stub
-        return null;
+        // BZFlag nicknames can't be changed once connected to the server, and we're not
+        // including any logic for autoswitching nicks if the requested nick is in use, so
+        // we just need to look up our player name and return it.
+        return players[serverLink.getLocalId()].callsign;
     }
     
     @Override
     public int getOutgoingQueueSize()
     {
-        // TODO Auto-generated method stub
         return 0;
     }
     
     @Override
     public int getProtocolDelimitedLength()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        // This could probably be increased to 127, but I'm airing more on the side of
+        // absolute paranoid caution
+        return 112;
     }
     
     @Override
     public User[] getUsers(String channel)
     {
-        // TODO Auto-generated method stub
+        boolean checkAll = channel.equals("#all");
+        boolean checkAdmin = channel.equals("#admin");
+        boolean checkTeam = channel.equals("#team");
+        if ((checkAll && joinedAll) || (checkAdmin && joinedAdmin)
+                || (checkTeam && joinedTeam))
+        {
+            ArrayList<User> list = new ArrayList<User>();
+            for (Player player : players)
+            {
+                if (player == null)
+                    continue;
+                if (checkAll)
+                    list.add(player);
+                else if (checkAdmin && player.admin)
+                    list.add(player);
+                else if (checkTeam && player.team == OBSERVER)
+                    list.add(player);
+            }
+            return list.toArray(new User[0]);
+        }
         return null;
     }
     
     @Override
     public void init(ConnectionContext context)
     {
-        // TODO Auto-generated method stub
-        
+        this.context = context;
     }
     
     @Override
@@ -296,15 +387,12 @@ public class BZFlagProtocol implements Connection
     @Override
     public boolean supportsMessageDelay()
     {
-        // TODO Auto-generated method stub
         return false;
     }
     
     @Override
     public void discard()
     {
-        // TODO Auto-generated method stub
-        
     }
     
 }

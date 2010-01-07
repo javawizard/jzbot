@@ -1143,7 +1143,7 @@ public abstract class PircBot implements ReplyConstants
         {
             // Someone is joining a channel.
             String channel = target;
-            this.addUser(channel, new User("", sourceNick));
+            this.addUser(channel, new IrcUser("", sourceNick));
             this.onJoin(channel, sourceNick, sourceLogin, sourceHostname);
         }
         else if (command.equals("PART"))
@@ -1370,12 +1370,14 @@ public abstract class PircBot implements ReplyConstants
                         c = "~";
                     else if (nick.startsWith("%"))
                         c = "%";
+                    else if (nick.startsWith("&"))
+                        c = "&";
                     else
                         break;
                     nick = nick.substring(prefix.length());
                     prefix += c;
                 }
-                this.addUser(channel, new User(prefix, nick));
+                this.addUser(channel, new IrcUser(prefix, nick));
             }
         }
         else if (code == RPL_ENDOFNAMES)
@@ -3472,7 +3474,7 @@ public abstract class PircBot implements ReplyConstants
      * Add a user to the specified channel in our memory. Overwrite the existing entry if
      * it exists.
      */
-    private final void addUser(String channel, User user)
+    private final void addUser(String channel, IrcUser user)
     {
         channel = channel.toLowerCase();
         synchronized (_channels)
@@ -3490,16 +3492,16 @@ public abstract class PircBot implements ReplyConstants
     /**
      * Remove a user from the specified channel in our memory.
      */
-    private final User removeUser(String channel, String nick)
+    private final IrcUser removeUser(String channel, String nick)
     {
         channel = channel.toLowerCase();
-        User user = new User("", nick);
+        IrcUser user = new IrcUser("", nick);
         synchronized (_channels)
         {
             Hashtable users = (Hashtable) _channels.get(channel);
             if (users != null)
             {
-                return (User) users.remove(user);
+                return (IrcUser) users.remove(user);
             }
         }
         return null;
@@ -3532,10 +3534,10 @@ public abstract class PircBot implements ReplyConstants
             while (enumeration.hasMoreElements())
             {
                 String channel = (String) enumeration.nextElement();
-                User user = this.removeUser(channel, oldNick);
+                IrcUser user = this.removeUser(channel, oldNick);
                 if (user != null)
                 {
-                    user = new User(user.getPrefix(), newNick);
+                    user = new IrcUser(user.getPrefix(), newNick);
                     this.addUser(channel, user);
                 }
             }
@@ -3589,11 +3591,11 @@ public abstract class PircBot implements ReplyConstants
                 Enumeration enumeration = users.elements();
                 while (enumeration.hasMoreElements())
                 {
-                    User userObj = (User) enumeration.nextElement();
+                    IrcUser userObj = (IrcUser) enumeration.nextElement();
                     if (userObj.getNick().equalsIgnoreCase(nick))
                     {
-                        newUser = new User(modifyPrefix(userObj.getPrefix(), prefix, add),
-                                nick);
+                        newUser = new IrcUser(
+                                modifyPrefix(userObj.getPrefix(), prefix, add), nick);
                     }
                 }
             }
@@ -3604,7 +3606,7 @@ public abstract class PircBot implements ReplyConstants
             else
             {
                 // just in case ...
-                newUser = new User("", nick);
+                newUser = new IrcUser("", nick);
                 users.put(newUser, newUser);
             }
         }
