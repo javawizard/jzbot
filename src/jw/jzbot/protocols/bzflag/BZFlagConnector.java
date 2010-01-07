@@ -1,6 +1,7 @@
 package jw.jzbot.protocols.bzflag;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -182,7 +183,7 @@ public class BZFlagConnector
             }
             slot = socket.getInputStream().read();
             String versionString = new String(version, "ASCII");
-            System.out.println("Version: " + versionString);
+            System.out.println("BZFlag Version: " + versionString);
         }
     }
     
@@ -240,6 +241,8 @@ public class BZFlagConnector
             int b2 = socket.getInputStream().read();
             int b3 = socket.getInputStream().read();
             int b4 = socket.getInputStream().read();
+            if (b1 == -1)
+                throw new EOFException();
             Packet packet = new Packet();
             packet.setLayer(layer);
             packet.setType((b3 << 8) | b4);
