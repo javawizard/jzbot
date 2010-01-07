@@ -23,8 +23,7 @@ public class MsgMessage extends Message
     public void pack(DataOutputStream out) throws IOException
     {
         out.writeByte(to);
-        out.writeBytes(message);
-        out.write(0);
+        packStringNull(out, message, 127);
     }
     
     @Override

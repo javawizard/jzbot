@@ -87,14 +87,14 @@ public abstract class Message
     
     /**
      * Packs the specified string, padding with nulls until <tt>length</tt> bytes have
-     * been written. If the string is longer than that, an exception is thrown.
+     * been written. If the string is longer than that, the string will be truncated.
      * 
      * @param out
      * @param string
      * @param length
      * @throws IOException
      */
-    protected void packString(DataOutputStream out, String string, int length)
+    protected void packStringPad(DataOutputStream out, String string, int length)
             throws IOException
     {
         if (string.length() > length)
@@ -107,6 +107,15 @@ public abstract class Message
             out.write(0);
     }
     
+    /**
+     * Packs the specified string and writes a null character. If the string is longer
+     * than <tt>max</tt>, it will be truncated.
+     * 
+     * @param out
+     * @param string
+     * @param max
+     * @throws IOException
+     */
     protected void packStringNull(DataOutputStream out, String string, int max)
             throws IOException
     {

@@ -20,6 +20,7 @@ public class MsgEnter extends Message
     {
         out.writeShort(type);
         out.writeShort(team);
+        packStringPad()
     }
     
     @Override
