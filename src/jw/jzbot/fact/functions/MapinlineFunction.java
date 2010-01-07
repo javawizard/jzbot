@@ -30,7 +30,7 @@ public class MapinlineFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{mapinline||<listregex>||<itemregex>||<text>||<prefix>}} -- "
+        return "Syntax: {mapinline|<listregex>|<itemregex>|<text>|<prefix>} -- "
                 + "Converts <text> into an associative array by splitting it into a list "
                 + "of items around <listregex>, and then by splitting each of those "
                 + "items into two pieces around the first occurence of <itemregex>. "

@@ -27,8 +27,8 @@ public class ListresourcesFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{listresources}} -- Returns a forward-slash-separated list of resources "
-                + "available to the bot. See {{getresource}} for information on what a resource is.";
+        return "Syntax: {listresources} -- Returns a forward-slash-separated list of resources "
+                + "available to the bot. See {getresource} for information on what a resource is.";
     }
     
 }

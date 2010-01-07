@@ -18,7 +18,7 @@ public class UptimeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{uptime}} -- Returns the time, in milliseconds since Midnight "
+        return "Syntax: {uptime} -- Returns the time, in milliseconds since Midnight "
                 + "January 1, 1970, at which the bot started up.";
     }
     

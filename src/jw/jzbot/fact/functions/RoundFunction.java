@@ -22,9 +22,9 @@ public class RoundFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{round||<number>||<precision>}} -- Rounds the specified "
+        return "Syntax: {round|<number>|<precision>} -- Rounds the specified "
                 + "number to have the specified precision. For example, "
-                + "{{round||12345||2}} is \"12000\", and {{round||1.2345||2}} is \"1.2\".";
+                + "{round|12345|2} is \"12000\", and {round|1.2345|2} is \"1.2\".";
     }
     
 }

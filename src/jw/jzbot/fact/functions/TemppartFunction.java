@@ -22,7 +22,7 @@ public class TemppartFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{temppart||<channel>||<reason>}} -- Causes the bot to leave "
+        return "Syntax: {temppart|<channel>|<reason>} -- Causes the bot to leave "
                 + "the specified channel, but without removing the channel from the bot's "
                 + "auto-join list. If <reason>, which is optional, is specified, then "
                 + "that reason is used to leave the channel.";

@@ -17,7 +17,7 @@ public class JoinFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{join||<channel>}} -- Causes the bot to join the specified "
+        return "Syntax: {join|<channel>} -- Causes the bot to join the specified "
                 + "channel and add the specified channel to the bot's auto-join list. "
                 + "This also creates a factoid database for the channel if one does "
                 + "not already exist.";

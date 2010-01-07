@@ -17,7 +17,7 @@ public class TrimFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{trim||<text>}} -- Removes all leading and trailing whitespace from <text>.";
+        return "Syntax: {trim|<text>} -- Removes all leading and trailing whitespace from <text>.";
     }
     
 }

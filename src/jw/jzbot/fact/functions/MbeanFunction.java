@@ -32,7 +32,7 @@ public class MbeanFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{mbean||<object>||<attribute>}} -- Gets the attribute of the "
+        return "Syntax: {mbean|<object>|<attribute>} -- Gets the attribute of the "
                 + "specified mbean object from the platform-local MBean server. To "
                 + "get a list of all valid objects and attributes, start the bot up "
                 + "and attach to it with JConsole, then go to the MBeans tab. Each item "

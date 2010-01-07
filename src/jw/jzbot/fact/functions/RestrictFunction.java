@@ -23,11 +23,11 @@ public class RestrictFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{restrict||<text>||<length>}} -- Evaluates to <text> if its length "
+        return "Syntax: {restrict|<text>|<length>} -- Evaluates to <text> if its length "
                 + "is shorter than <length>. Otherwise, evaluates to the first <length>-3 "
                 + "characters of <text>, with three dot characters on the end to form an "
-                + "ellipsis. For example, {{restrict||Hello everyone||15}} would be \n"
-                + "\"Hello everyone\", but {{restrict||Hello everyone||11}} would be "
+                + "ellipsis. For example, {restrict|Hello everyone|15} would be \n"
+                + "\"Hello everyone\", but {restrict|Hello everyone|11} would be "
                 + "\"Hello ev...\".";
     }
     

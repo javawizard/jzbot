@@ -24,10 +24,10 @@ public class SafeimportFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{safeimport||<factoid>||<arg1>||<arg2>||...}} -- Exactly the "
-                + "same as {{import||<factoid>||<arg1>||<arg2>||...}}, except that this "
+        return "Syntax: {safeimport|<factoid>|<arg1>|<arg2>|...} -- Exactly the "
+                + "same as {import|<factoid>|<arg1>|<arg2>|...}, except that this "
                 + "function won't run restricted or library factoids. If a restricted or "
-                + "library factoid is passed as <factoid>, {{safeimport}} will throw "
+                + "library factoid is passed as <factoid>, {safeimport} will throw "
                 + "an exception.";
     }
     

@@ -41,7 +41,7 @@ public class ReplaceFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{replace||<mode>||<text>||<search>||<replacement>}} -- Replaces "
+        return "Syntax: {replace|<mode>|<text>|<search>|<replacement>} -- Replaces "
                 + "<search> in the text <text> with <replacement> if <mode> is \"text\", or "
                 + "replaces any string that matches the regular expression <search> in the "
                 + "text <text> with <replacement> (which can contain back references) if <mode> "

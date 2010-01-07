@@ -26,9 +26,9 @@ public class TriggerFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{trigger}} or {{trigger||<new>}} -- When invoked as {{trigger}}, "
+        return "Syntax: {trigger} or {trigger|<new>} -- When invoked as {trigger}, "
                 + "evaluates to the current channel's trigger. When invoked as "
-                + "{{trigger||<new>}}, sets the current channel's trigger to <new>. "
+                + "{trigger|<new>}, sets the current channel's trigger to <new>. "
                 + "If there isn't a current channel (IE this is a global factoid and "
                 + "the user pm'ed us), then this does nothing and evaluates to nothing.";
     }

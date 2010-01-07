@@ -23,7 +23,7 @@ public class MatchFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{match||<regex>||<test>}} -- Evaluates to 1 if <test> matches the "
+        return "Syntax: {match|<regex>|<test>} -- Evaluates to 1 if <test> matches the "
                 + "regular expression <regex>, or 0 if it does not.";
     }
     

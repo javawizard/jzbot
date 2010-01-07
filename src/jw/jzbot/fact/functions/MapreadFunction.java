@@ -33,7 +33,7 @@ public class MapreadFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{mapread||<listregex>||<itemregex>||<text>||<key>}} -- Converts "
+        return "Syntax: {mapread|<listregex>|<itemregex>|<text>|<key>} -- Converts "
                 + "<text> into an associative array by splitting it into a list of items "
                 + "around <listregex>, and then by splitting each of those items into two "
                 + "pieces around the first occurence of <itemregex>. The item with the "

@@ -22,7 +22,7 @@ public class TempjoinFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{tempjoin||<channel>}} -- Causes the bot to join the specified "
+        return "Syntax: {tempjoin|<channel>} -- Causes the bot to join the specified "
                 + "channel, but without setting this channel to auto-join or creating "
                 + "a factoid database for the channel. The channel can be a "
                 + "fully-qualified channel if needed.";

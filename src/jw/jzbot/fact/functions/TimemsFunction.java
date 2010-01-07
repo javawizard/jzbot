@@ -22,7 +22,7 @@ public class TimemsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{timems}} -- Returns the server's current time in milliseconds since "
+        return "Syntax: {timems} -- Returns the server's current time in milliseconds since "
                 + "January 1, 1970 Midnight UTC.";
     }
     

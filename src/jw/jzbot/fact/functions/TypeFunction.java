@@ -40,7 +40,7 @@ public class TypeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{type||<factoidname>}} -- Evaluates to the type of factoid that "
+        return "Syntax: {type|<factoidname>} -- Evaluates to the type of factoid that "
                 + "<factoidname> is. This is either \"global\", \"channel\", or \"none\". "
                 + "Global means that the factoid is a global factoid, channel means that the "
                 + "factoid is a channel-specific factoid, and nonexistent means that the "

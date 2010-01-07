@@ -33,16 +33,16 @@ public class SwitchFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{switch||<value>||<test1>||<case1>||<test2>||<case2>||...||<default>}}"
+        return "Syntax: {switch|<value>|<test1>|<case1>|<test2>|<case2>|...|<default>}"
                 + " -- If <value> is equal (this is case-sensitive) to <test1>, then this "
                 + "evaluates to <case1>. If not, then if <value> is equal to <test2>, then "
                 + "this evaluates to <case2>, and so on. If <value> isn't equal to any of "
                 + "the <test> arguments, then the switch function evaluates to <default>.\n"
                 + "<default> is entirely optional. If it's not present, and none of the "
                 + "<test> arguments match <value>, then the switch function will evaluate "
-                + "to nothing. For example, {{switch||2||1||first||2||second||3||third||missing}} "
-                + "would evaluate to \"second\", and {{switch||5||1||first||2||second||"
-                + "3||third||missing}} would evaluate to \"missing\".";
+                + "to nothing. For example, {switch|2|1|first|2|second|3|third|missing}} "
+                + "would evaluate to \"second\", and {switch|5|1|first|2|second|"
+                + "3|third|missing} would evaluate to \"missing\".";
     }
     
 }

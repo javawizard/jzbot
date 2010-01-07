@@ -19,9 +19,9 @@ public class WhileFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{while||<condition>||<action>}} -- Evaluates <condition>, and "
+        return "Syntax: {while|<condition>|<action>} -- Evaluates <condition>, and "
                 + "if it's 1, evaluates <action> and then evaluates <condition> again. This "
-                + "keeps going on and on until <condition> evaluates to 0. {{while}} "
+                + "keeps going on and on until <condition> evaluates to 0. {while} "
                 + "doesn't evaluate to anything, even if its action did, so if you want any "
                 + "output you'll need to use a variable to store it.";
     }

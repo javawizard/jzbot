@@ -30,7 +30,7 @@ public class SdateformatFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{sdateformat||<format>||<date>}} -- Formats the date <date>, which "
+        return "Syntax: {sdateformat|<format>|<date>} -- Formats the date <date>, which "
                 + "is a number of milliseconds since January 1, 1970, using the Java "
                 + "SimpleDateFormat string <format>. See "
                 + "http://java.sun.com/javase/6/docs/api/ for information on the syntax "

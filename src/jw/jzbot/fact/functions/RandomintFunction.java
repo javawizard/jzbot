@@ -25,10 +25,10 @@ public class RandomintFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{randomint||<number>}} -- Returns a number between 0, inclusive, and "
+        return "Syntax: {randomint|<number>} -- Returns a number between 0, inclusive, and "
                 + "<number>, exclusive, chosen at random. The number will always be a whole "
                 + "integer. If you want a number between 1 and <number>, inclusive, you could "
-                + "use {{eval||{{random||<number>}}+1}} to do that.";
+                + "use {eval|{random|<number>}+1} to do that.";
     }
     
 }

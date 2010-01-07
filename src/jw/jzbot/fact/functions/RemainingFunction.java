@@ -22,7 +22,7 @@ public class RemainingFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{remaining||<key>}} -- Evaluates to the number of milliseconds "
+        return "Syntax: {remaining|<key>} -- Evaluates to the number of milliseconds "
                 + "left before the future whose key is <key> will run, or the empty string "
                 + "if there is no future with the specified key.";
     }

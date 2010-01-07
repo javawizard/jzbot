@@ -17,7 +17,7 @@ public class RmselfFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{rmself}} -- Deletes this factoid. This can be used for one-time "
+        return "Syntax: {rmself} -- Deletes this factoid. This can be used for one-time "
                 + "factoids, such as post-install configuration factoids for factpacks.";
     }
     

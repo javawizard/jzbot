@@ -24,7 +24,7 @@ public class WaitFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{wait||<duration>}} -- Waits <duration> milliseconds before continuing. "
+        return "Syntax: {wait|<duration>} -- Waits <duration> milliseconds before continuing. "
                 + "The bot has a built-in timer that won't let a factoid run longer than "
                 + (TimedKillThread.MAX_FACT_RUN_TIME / 1000)
                 + " seconds, so don't make <duration> longer than that.";

@@ -109,7 +109,7 @@ public class TransferFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{transfer||<from>||<to>||<regex>||<varname>||<namegen>}} -- "
+        return "Syntax: {transfer|<from>|<to>|<regex>|<varname>|<namegen>} -- "
                 + "Transfers a set of variables from one variable type to another variable "
                 + "type, or bulk-renames a set of variables. <from> and <to> are one of "
                 + "\"global\", \"local\", \"persistent\", or \"chain\", or the first "

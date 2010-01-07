@@ -22,9 +22,9 @@ public class RandomFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{random||<choice1>||<choice2>||...}} -- Evaluates to one of "
+        return "Syntax: {random|<choice1>|<choice2>|...} -- Evaluates to one of "
                 + "the choices at random. For example, "
-                + "{{random||bye||see ya||laters||so long}} would evaluate to one of "
+                + "{random|bye|see ya|laters|so long} would evaluate to one of "
                 + "\"bye\", \"see ya\", \"laters\", or \"so long\", chosen at random."
                 + "Only the choice that is chosen is evaluated.";
     }

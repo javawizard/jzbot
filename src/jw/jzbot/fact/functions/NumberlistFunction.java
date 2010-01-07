@@ -40,17 +40,17 @@ public class NumberlistFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{numberlist||<start>||<end>||<step>}} -- Evaluates to a "
+        return "Syntax: {numberlist|<start>|<end>|<step>} -- Evaluates to a "
                 + "space-separated list of the whole integers starting with <start> "
                 + "and ending with <end>. <step> is optional, and specifies if numbers "
                 + "should be skipped. Whether or not <step> is positive or negative has "
                 + "no effect on the ordering of numbers; which one (of start and end) "
                 + "is above the other is what determines ordering.\n"
-                + "For example, {{numberlist||1||5}} evaluates to \"1 2 3 4 5\", "
-                + "{{numberlist||5||1}} evaluates to \"5 4 3 2 1\", {{numberlist||3||3}} "
-                + "evaluates to \"3\", {{numberlist||45||8||10}} evaluates to \"45 35 25 15\", "
-                + "{{numberlist||8||45||10}} evaluates to \"8 18 28 38\", and {{numberlist||"
-                + "8||45||-10}} evaluates to \"8 18 28 38\". This can be used with {{split}} "
+                + "For example, {numberlist|1|5} evaluates to \"1 2 3 4 5\", "
+                + "{numberlist|5|1} evaluates to \"5 4 3 2 1\", {numberlist|3|3} "
+                + "evaluates to \"3\", {numberlist|45|8|10} evaluates to \"45 35 25 15\", "
+                + "{numberlist|8|45|10} evaluates to \"8 18 28 38\", and {numberlist|"
+                + "8|45|-10} evaluates to \"8 18 28 38\". This can be used with {split} "
                 + "to create a for loop.";
     }
     

@@ -25,7 +25,7 @@ public class LogsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{logs||<max>}} -- Returns the last few messages that were "
+        return "Syntax: {logs|<max>} -- Returns the last few messages that were "
                 + "sent at this channel. The "
                 + "resulting log events will be separated by a newline character. Each "
                 + "line is of the format <action> <time> <source> <details>. <action> "
