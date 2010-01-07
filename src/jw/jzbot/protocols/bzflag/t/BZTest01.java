@@ -60,6 +60,7 @@ public class BZTest01
                                 send.to = m.from;
                                 send.message = "Hi. I'm a bot that javawizard2539 is testing"
                                         + " out. Ask him if you have questions about me.";
+                                link.send(send);
                             }
                             else
                             {
@@ -68,15 +69,17 @@ public class BZTest01
                                 if (m.message.equals("~ping"))
                                 {
                                     MsgMessage send = new MsgMessage();
-                                    send.to = m.from;
+                                    send.to = m.to;
                                     send.message = "~pong";
+                                    link.send(send);
                                 }
                                 else if (m.message.equals("~date"))
                                 {
                                     MsgMessage send = new MsgMessage();
-                                    send.to = m.from;
+                                    send.to = m.to;
                                     send.message = "The current date/time is " + new Date()
                                             + ".";
+                                    link.send(send);
                                 }
                             }
                         }
