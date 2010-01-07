@@ -25,7 +25,7 @@ public class LcvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lcvars||<regex>}} -- Same as {{lgvars}} but for chain variables "
+        return "Syntax: {lcvars|<regex>} -- Same as {lgvars} but for chain variables "
                 + "instead of global variables.";
     }
     

@@ -24,8 +24,8 @@ public class LgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lget||<varname>}} -- Evaluates to the value of the specified local "
-                + "variable. {{lget||something}} is equivalent to %something%. However, using "
+        return "Syntax: {lget|<varname>} -- Evaluates to the value of the specified local "
+                + "variable. {lget|something} is equivalent to %something%. However, using "
                 + "percent signs doesn't allow for dynamic variable names (as an "
                 + "example, you couldn't do something like %param-%index%% for "
                 + "syntax reasons), which is where this function comes in useful.";

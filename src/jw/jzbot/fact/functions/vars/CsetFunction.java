@@ -17,7 +17,7 @@ public class CsetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{cset||<varname>||<value>}} -- Sets the specified chain variable "
+        return "Syntax: {cset|<varname>|<value>} -- Sets the specified chain variable "
                 + "to the specified value. Chain variables are almost exactly the same "
                 + "as local variables; the only difference is that when a factoid "
                 + "imports another factoid, both factoids (and any that are in turn "

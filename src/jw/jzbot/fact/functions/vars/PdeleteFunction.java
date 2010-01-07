@@ -21,7 +21,7 @@ public class PdeleteFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{pdelete||<varname>}} -- Same as {{delete||<varname>}}, but deletes "
+        return "Syntax: {pdelete|<varname>} -- Same as {delete|<varname>}, but deletes "
                 + "the specified "
                 + "persistent variable instead of the specified global variable. See \"%HELPCMD% "
                 + "functions pset\" for information on the difference between persistent variables "

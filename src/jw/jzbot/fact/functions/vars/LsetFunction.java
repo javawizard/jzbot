@@ -22,9 +22,9 @@ public class LsetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lset||<varname>||<value>}} -- Sets the specified local variable "
+        return "Syntax: {lset|<varname>|<value>} -- Sets the specified local variable "
                 + "to the specified value. Local variables are those that can be read by "
-                + "using percent signs. For example, after {{lset||something||Hello world}} "
+                + "using percent signs. For example, after {lset|something|Hello world} "
                 + "is run in a factoid, %something% could be used and would be replaced with"
                 + " \"Hello world\".";
     }

@@ -24,7 +24,7 @@ public class GetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{get||<varname>}} -- Gets the value of the global "
+        return "Syntax: {get|<varname>} -- Gets the value of the global "
                 + "variable named <varname>.";
     }
     

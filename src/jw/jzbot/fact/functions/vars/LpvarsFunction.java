@@ -27,7 +27,7 @@ public class LpvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lpvars||<regex>}} -- Same as {{lgvars}}, but lists "
+        return "Syntax: {lpvars|<regex>} -- Same as {lgvars}, but lists "
                 + "persistent variables instead of global variables. See \"%HELPCMD% "
                 + "functions pset\" for information on the difference between persistent variables "
                 + "and global variables.";

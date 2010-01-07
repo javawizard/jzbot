@@ -19,7 +19,7 @@ public class CgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{cget||<varname>}} -- Evaluates to the value of the "
+        return "Syntax: {cget|<varname>} -- Evaluates to the value of the "
                 + "specified chain variable.";
     }
     

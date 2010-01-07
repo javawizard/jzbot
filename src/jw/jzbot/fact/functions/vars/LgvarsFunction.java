@@ -29,7 +29,7 @@ public class LgvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lgvars||<regex>}} -- Returns a pipe-delimited list of global variable"
+        return "Syntax: {lgvars|<regex>} -- Returns a pipe-delimited list of global variable"
                 + " names, with pipes in those names escaped (pipes in variable names "
                 + "are still a bad idea anyway) with backslashes. This is mostly for "
                 + "when you're trying to debug stuff and you want to see the list of "

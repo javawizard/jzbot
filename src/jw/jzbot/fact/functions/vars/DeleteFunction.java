@@ -22,7 +22,7 @@ public class DeleteFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{delete||<varname>}} -- Deletes the global variable named <varname>.";
+        return "Syntax: {delete|<varname>} -- Deletes the global variable named <varname>.";
     }
     
 }

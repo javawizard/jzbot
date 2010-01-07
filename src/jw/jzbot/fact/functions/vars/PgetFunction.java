@@ -21,7 +21,7 @@ public class PgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{pget||<varname>}} -- Same as {{get||<varname>}}, but gets the specified "
+        return "Syntax: {pget|<varname>} -- Same as {get|<varname>}, but gets the specified "
                 + "persistent variable instead of the specified global variable. See \"%HELPCMD% "
                 + "functions pset\" for information on the difference between persistent variables "
                 + "and global variables.";

@@ -17,7 +17,7 @@ public class LdeleteFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{ldelete||<varname>}} -- Deletes the local variable with "
+        return "Syntax: {ldelete|<varname>} -- Deletes the local variable with "
                 + "the specified name.";
     }
     

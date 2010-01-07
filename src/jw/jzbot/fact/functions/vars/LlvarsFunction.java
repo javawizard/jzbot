@@ -24,7 +24,7 @@ public class LlvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{llvars||<regex>}} -- Same as {{lgvars}} but for local variables "
+        return "Syntax: {llvars|<regex>} -- Same as {lgvars} but for local variables "
                 + "instead of global variables.";
     }
     
