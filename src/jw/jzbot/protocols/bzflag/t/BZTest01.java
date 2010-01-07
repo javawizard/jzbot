@@ -18,7 +18,7 @@ public class BZTest01
      */
     public static void main(String[] args) throws Throwable
     {
-        final ServerLink link = new ServerLink("localhost", 5154);
+        final ServerLink link = new ServerLink("bzexcess.com", 5154);
         MsgEnter enter = new MsgEnter();
         enter.callsign = "marlen_jackson02";
         enter.clientVersion = "javawizard2539's JZBot, http://jzbot.googlecode.com";
@@ -82,6 +82,11 @@ public class BZTest01
                                     link.send(send);
                                 }
                             }
+                        }
+                        else
+                        {
+                            System.out.println("Ignoring message "
+                                    + message.getClass().getSimpleName());
                         }
                     }
                 }

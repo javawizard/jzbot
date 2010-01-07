@@ -1,0 +1,50 @@
+So, we have the actual protocol connector in the form of ServerLink. Now it's time to get it working in the form of a JZBot protocol.
+
+First off, I'm thinking there will be 4 threads:
+
+    The input thread, which reads packets from the server and sends them to either the immediate queue or the deferred queue, and also sends them to any listeners that may be waiting for them (such as when a connection is to be established, a MsgAccept and MsgJoin have to be waited for)
+    
+    The output threads, which pulls messages off of a queue and sends them to the server
+    
+    The immediate dispatcher and the deferred dispatcher, which both run the same code but the input thread sends immediate, non-state-changing events (such as a server ping) to the immediate 	dispatcher and longer-running, state-changing events to the deferred dispatcher
+    
+When the protocol is instructed to connect to a server, it sets the SO_TIMEOUT on the thread to be 30. It then writes down the current time and opens a connection to the server. It then stores the slot id obtained from the server. It then sets SO_TIMEOUT to 0. It then sends MsgEnter to request admittance to the server as an observer, and waits for the deferred dispatcher to notify it (by means of posting an event to a single notifcation queue) that a MsgAddPlayer has been received for the player. It will only wait for 30 seconds; if this much time passes, it will close the server connection and throw an exception. Note that it will specifically tell the input thread (by means of a volatile boolean field) that it should not notify JZBot about the disconnection. 
+
+The deferred dispatcher is in charge of receiving and processing all packets except MsgLagPing, which the immediate dispatcher handles for speed reasons. It then dispatches the message accordingly, to the dispatch() method.
+
+Messages from the server are sent as irc notices so that the bot doesn't process them as normal commands. The last two messages from the server are also remembered for later, since the only way to detect a kick at present is to detect the last two server messages being "You have been kicked off of the server by ..." and "Reason given: ..." when a MsgSuperKill is received.
+
+The protocol maintains three boolean values, corresponding to three special channels: #all, #admin, and #team. #all represents the channel that all players can talk at. #admin represents the admin channel. #team represents fellow observers. Everyone at the server is at #all, All admins at the server are at #admin, and all observers are at #team. An attempt to join another channel will act as if the bot is banned from that channel.
+
+All identified users are mode +v, that is, they appear as having voice. All (non-hidden) admins are mode +o, that is, they appear as being a channel op. I haven't worked out a mode yet for users that are registered but specifically not identified.
+
+A user's hostmask is determined by whether or not they are identified. Users that are identifed have a hostmask "verified/<modified-name>", and users that are not identified have a hostmask "anonymous/<modified-name>", where <modified-name> is the user's callsign, modified according to these rules: All underscores are replaced with "__", all spaces are replaced with "_0", and the symbols !@#$%^&* are replaced by "_1" through "_8", respectively.
+
+A kick from the server results in a kick from the #all channel, with the message being "Kicked by " followed by the callsign of the kicker in double-quotes, followed by a space and then the kick reason. For example, here's a sample message kicking "annoyinguser" by "javawizard2539" for a spamming-related offense:
+
+Kicked by "javawizard2539" Please stop spamming. We don't like it at this server.
+
+A ban from the server is somewhat different, as IRC bans cannot carry ban messages. Currently, the way this is implemented is as an "apparent kick", but "Kicked by" is replaced with "Banned by".
+
+A kick by the bot causes a normal kick to occur. A "/mode +b"-style ban causes the user to be banned from the server for an amount of time specified by a bot config variable; the default is 30 minutes. (TODO: do we really need this?) To have precise control over BZFlag bans, the extended ipban function can be called, which allows for specification of a user to ban, a duration to ban them, and the reason for the ban. Bans are soley ip-based right now. For example, "{p|ipban|javawizard2539|30m|I don't like you. Come back in 30 minutes}" would ban javawizard2539 for 30 minutes with the specified message.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
