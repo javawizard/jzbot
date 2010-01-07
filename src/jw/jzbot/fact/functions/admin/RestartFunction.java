@@ -23,8 +23,8 @@ public class RestartFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{restart}} -- Causes the bot to restart. The bot will exit "
-                + "immediately when this is called; {{restart}} will be the last "
+        return "Syntax: {restart} -- Causes the bot to restart. The bot will exit "
+                + "immediately when this is called; {restart} will be the last "
                 + "function to run in the current factoid.";
     }
     
