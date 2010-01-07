@@ -20,7 +20,10 @@ public class MsgEnter extends Message
     {
         out.writeShort(type);
         out.writeShort(team);
-        packStringPad()
+        packStringPad(out, callsign, 32);
+        packStringPad(out, email, 128);
+        packStringPad(out, key, 22);
+        packStringPad(out, clientVersion, 60);
     }
     
     @Override

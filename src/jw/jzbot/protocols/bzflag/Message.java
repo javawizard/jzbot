@@ -98,10 +98,7 @@ public abstract class Message
             throws IOException
     {
         if (string.length() > length)
-            throw new IllegalArgumentException("String was \"" + string
-                    + "\" and length was " + length
-                    + "; the string cannot fit within the specified length. "
-                    + "Actual length was " + string.length());
+            string = string.substring(0, length);
         out.writeBytes(string);
         for (int i = 0; i < (length - string.length()); i++)
             out.write(0);
