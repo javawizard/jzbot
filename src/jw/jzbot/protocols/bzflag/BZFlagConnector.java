@@ -1,5 +1,6 @@
 package jw.jzbot.protocols.bzflag;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -221,8 +222,9 @@ public class BZFlagConnector
     }
     
     /**
-     * receives a packet. For TCP, this method blocks until a packet is ready. For UDP,
-     * this method returns null if there isn't a packet ready.
+     * Receives a packet. For TCP, this method blocks until a packet is ready. For UDP,
+     * this method returns null if there isn't a packet ready. TODO: maybe have UDP use a
+     * packet queue in this method so that it blocks?
      * 
      * @return
      * @throws IOException
@@ -243,10 +245,8 @@ public class BZFlagConnector
             packet.setType((b3 << 8) | b4);
             int length = (b1 << 8) | b2;
             byte[] bytes = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                bytes[i] = (byte) socket.getInputStream().read();
-            }
+            DataInputStream dataIn = new DataInputStream(socket.getInputStream());
+            dataIn.readFully(bytes);
             packet.setMessage(bytes);
             return packet;
         }
