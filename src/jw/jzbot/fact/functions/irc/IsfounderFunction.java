@@ -41,14 +41,14 @@ public class IsfounderFunction extends Function
             }
         }
         throw new FactoidException("Isfounder on user \"" + user + "\", channel \""
-                + channel + "\": user is not connected, consider using {{ifjoined}} "
+                + channel + "\": user is not connected, consider using {ifjoined} "
                 + "to see if the user is joined");
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isfounder||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+        return "Syntax: {isfounder|<channel>|<nick>} -- Exactly the same as {isop}, "
                 + "but checks to see if the user is a channel founder. On most servers, "
                 + "this is mode +q.";
     }

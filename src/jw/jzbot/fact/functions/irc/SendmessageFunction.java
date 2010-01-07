@@ -32,7 +32,7 @@ public class SendmessageFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{sendmessage||<to>||<message>}} -- Sends the specified message to "
+        return "Syntax: {sendmessage|<to>|<message>} -- Sends the specified message to "
                 + "the specified recipient, which can be a channel or a nickname.";
     }
     

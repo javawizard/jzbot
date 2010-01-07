@@ -19,15 +19,15 @@ public class ModeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{mode||<arguments>}} -- Sets the specified mode on the channel. "
+        return "Syntax: {mode|<arguments>} -- Sets the specified mode on the channel. "
                 + "For example, to make the person "
-                + "\"jcp\" an op, you could use {{mode||+o jcp}}. To take away ops from jcp, "
-                + "you could use {{mode||-o jcp}}. To add color lock to the channel (a "
-                + "hyperion-specific mode), you could use {{mode||+c}}. If you wanted \n"
+                + "\"jcp\" an op, you could use {mode|+o jcp}. To take away ops from jcp, "
+                + "you could use {mode|-o jcp}. To add color lock to the channel (a "
+                + "hyperion-specific mode), you could use {mode|+c}. If you wanted \n"
                 + "to op both jcp and schrottplatz, but deop Marlen_Jackson, voice "
                 + "MrDudle, add color lock, and ban *!*@1.2.3.4 all at the same time, "
                 + "you could do "
-                + "{{mode||+oo-o+vcb jcp schrottplatz Marlen_Jackson MrDudle *!*@1.2.3.4}}.";
+                + "{mode|+oo-o+vcb jcp schrottplatz Marlen_Jackson MrDudle *!*@1.2.3.4}.";
     }
     
     public String getName()

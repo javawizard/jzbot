@@ -60,7 +60,7 @@ public class ScopeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{scope}}, {{scope||<newscope>}}, or {{scope||<newscope>||<action>}}"
+        return "Syntax: {scope}, {scope|<newscope>}, or {scope|<newscope>|<action>}"
                 + " -- The first version evaluates to the fully-qualified current "
                 + "scope. The second form sets the new scope to be used for the "
                 + "remainder of this factoid; this does not, however, persist to "

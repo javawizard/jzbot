@@ -41,14 +41,14 @@ public class IsadminFunction extends Function
             }
         }
         throw new FactoidException("Isadmin on user \"" + user + "\", channel \"" + channel
-                + "\": user is not connected, consider using {{ifjoined}} "
+                + "\": user is not connected, consider using {ifjoined} "
                 + "to see if the user is joined");
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isadmin||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+        return "Syntax: {isadmin|<channel>|<nick>} -- Exactly the same as {isop}, "
                 + "but checks to see if the user is a channel admin. On most servers, "
                 + "this is mode +a.";
     }

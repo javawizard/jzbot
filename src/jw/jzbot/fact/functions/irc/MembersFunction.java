@@ -22,7 +22,7 @@ public class MembersFunction extends Function
         // TODO: change this to use a delimited sink
         String serverName = context.getServer();
         if (serverName == null)
-            throw new FactoidException("Can't run {{members}} when there is "
+            throw new FactoidException("Can't run {members} when there is "
                     + "no server in the current scope.");
         String channelName = context.getChannel();
         if (arguments.length() > 0)
@@ -53,7 +53,7 @@ public class MembersFunction extends Function
                 + "function specifies the channel to get members from. This form is\n"
                 + "deprecated, and should be replaced with (and is functionally "
                 + "identical to) {scope|<channel>|{members}}.";
-        // return "Syntax: {{members||<channel>}} -- Evaluates to a space-separated list "
+        // return "Syntax: {members|<channel>} -- Evaluates to a space-separated list "
         // + "of the nicknames of the people that are currently in <channel>.";
     }
     

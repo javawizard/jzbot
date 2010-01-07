@@ -29,7 +29,7 @@ public class SendnoticeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{sendnotice||<to>||<message>}} -- Sends the specified notice message to "
+        return "Syntax: {sendnotice|<to>|<message>} -- Sends the specified notice message to "
                 + "the specified recipient, which can be a channel or a nickname.";
     }
     

@@ -36,7 +36,7 @@ public class SendsplitFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{sendsplit||<to>||<regex>||<delimiter>||<message>}} -- Divides <message> "
+        return "Syntax: {sendsplit|<to>|<regex>|<delimiter>|<message>} -- Divides <message> "
                 + "into a list of strings split around the regular expression <regex>, then "
                 + "attempts to reconstruct the string, delimiting each string in the list with "
                 + "<delimiter>, and send the resulting string to <to>. If the resulting string "

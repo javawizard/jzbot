@@ -32,7 +32,7 @@ public class TopicFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{topic}} or {{topic||<newtopic>}} -- If used without any "
+        return "Syntax: {topic} or {topic|<newtopic>} -- If used without any "
                 + "arguments, evaluates to the current channel's topic. If used with "
                 + "one argument, sets the current channel's topic to be <newtopic>. "
                 + "The bot must be a channel operator on most channels before this can "

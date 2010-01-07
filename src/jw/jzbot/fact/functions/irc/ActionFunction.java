@@ -22,7 +22,7 @@ public class ActionFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{action}} -- Causes the factoid to appear using \"/me\". It "
+        return "Syntax: {action} -- Causes the factoid to appear using \"/me\". It "
                 + "essentially causes the bot to do the equivalent of prepending the "
                 + "message with \"/me\" on a typical IRC client.";
     }

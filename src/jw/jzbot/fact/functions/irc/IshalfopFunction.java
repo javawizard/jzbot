@@ -41,7 +41,7 @@ public class IshalfopFunction extends Function
             }
         }
         throw new FactoidException("Ishalfop on user \"" + user + "\", channel \""
-                + channel + "\": user is not connected, consider using {{ifjoined}} "
+                + channel + "\": user is not connected, consider using {ifjoined} "
                 + "to see if the user is joined");
     }
     
@@ -53,7 +53,7 @@ public class IshalfopFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{ishalfop||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+        return "Syntax: {ishalfop|<channel>|<nick>} -- Exactly the same as {isop}, "
                 + "but checks to see if the user is a channel halfop. On most servers, "
                 + "this is mode +h.";
     }

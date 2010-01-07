@@ -41,7 +41,7 @@ public class IsvoicedFunction extends Function
             }
         }
         throw new FactoidException("Isvoiced on user \"" + user + "\", channel \""
-                + channel + "\": user is not connected, consider using {{ifjoined}} "
+                + channel + "\": user is not connected, consider using {ifjoined} "
                 + "to see if the user is joined");
     }
     
@@ -53,7 +53,7 @@ public class IsvoicedFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{isvoiced||<channel>||<nick>}} -- Exactly the same as {{isop}}, "
+        return "Syntax: {isvoiced|<channel>|<nick>} -- Exactly the same as {isop}, "
                 + "but checks to see if the user is voiced. On most servers, "
                 + "this is mode +v.";
     }
