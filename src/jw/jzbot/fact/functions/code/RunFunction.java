@@ -20,8 +20,8 @@ public class RunFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{run||<name>}} -- Runs the stored subroutine with the specified " +
-        		"name that has previously been stored with {{store}}.";
+        return "Syntax: {run|<name>} -- Runs the stored subroutine with the specified " +
+        		"name that has previously been stored with {store}.";
     }
     
 }

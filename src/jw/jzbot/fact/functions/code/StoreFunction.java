@@ -20,9 +20,9 @@ public class StoreFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{store||<name>||<code>}} -- Creates a stored subroutine "
-                + "local to this factoid called <name>. When {{run||<name>}} is called, "
-                + "<code> will be executed. {{run||<name>}} can be called more than "
+        return "Syntax: {store|<name>|<code>} -- Creates a stored subroutine "
+                + "local to this factoid called <name>. When {run|<name>} is called, "
+                + "<code> will be executed. {run|<name>} can be called more than "
                 + "once, which will cause the code to be run multiple times. The "
                 + "subroutine is local to this factoid, which means that when a particular \n"
                 + "factoid is run, all of its subroutines must be defined again.";
