@@ -2,8 +2,14 @@ package jw.jzbot.protocols;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import jw.jzbot.*;
+import jw.jzbot.protocols.bzflag.Message;
+import jw.jzbot.protocols.bzflag.ServerLink;
+import jw.jzbot.protocols.bzflag.pack.MsgSuperKill;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
@@ -66,12 +72,65 @@ import org.jibble.pircbot.User;
  */
 public class BZFlagProtocol implements Connection
 {
+    private boolean joinedAll = false;
+    private boolean joinedTeam = false;
+    private boolean joinedAdmin = false;
+    
+    /*
+     * Doesn't particularly matter what type of message this is
+     */
+    public static final Message HALT_QUEUE_MESSAGE = new MsgSuperKill();
+    
+    private ServerLink serverLink;
+    
+    private static class DispatchThread extends Thread
+    {
+        private BlockingQueue<Message> dispatchQueue;
+        
+        private boolean running = true;
+        
+        public DispatchThread(BlockingQueue queue)
+        {
+            this.dispatchQueue = queue;
+        }
+        
+        public void shutdown()
+        {
+            running = false;
+            dispatchQueue.offer(HALT_QUEUE_MESSAGE);
+        }
+        
+        public void run()
+        {
+            while (running)// TODO: this blocks sync'ing of messages after a disconnect.
+            // Should we do this, or should we just wait for HALT_QUEUE_MESSAGE to arrive?
+            {
+                Message message;
+                try
+                {
+                    message = dispatchQueue.poll(30, TimeUnit.SECONDS);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                    continue;
+                }
+                if (message == null)
+                    continue;
+                if (message == HALT_QUEUE_MESSAGE)
+                    return;
+                dispatch(message);
+            }
+        }
+    }
     
     @Override
     public void changeNick(String newnick)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO: we're doing nothing for now, since bzflag doesn't support switching
+        // nicks. Should we throw an exception instead? (or for that matter, we could
+        // quickly disconnect and re-connect, althought that wouldn't be quite as
+        // transparent)
     }
     
     @Override
@@ -91,8 +150,14 @@ public class BZFlagProtocol implements Connection
     @Override
     public String[] getChannels()
     {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<String> list = new ArrayList<String>();
+        if (joinedAll)
+            list.add("#all");
+        if (joinedAdmin)
+            list.add("#admin");
+        if (joinedTeam)
+            list.add("#team");
+        return list.toArray(new String[0]);
     }
     
     @Override
@@ -234,7 +299,7 @@ public class BZFlagProtocol implements Connection
         // TODO Auto-generated method stub
         return false;
     }
-
+    
     @Override
     public void discard()
     {
