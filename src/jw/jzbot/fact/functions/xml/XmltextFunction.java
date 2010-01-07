@@ -47,7 +47,7 @@ public class XmltextFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{xmltext||<name>||<path>}} -- Finds the element or attribute "
+        return "Syntax: {xmltext|<name>|<path>} -- Finds the element or attribute "
                 + "within the document named by <name> that matches <path>, and evaluates "
                 + "to its text contents if it's an element or its attribute value if it's"
                 + " an attribute.";

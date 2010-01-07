@@ -42,7 +42,7 @@ public class XmlsearchFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{xmlsearch||<name>||<path>}} -- Searches the XML document named "
+        return "Syntax: {xmlsearch|<name>|<path>} -- Searches the XML document named "
                 + "<name> for any elements or attributes that match the XPath <path>, "
                 + "and evaluates to a newline-separated list of unambiguous XPaths that "
                 + "represent each matching item. The search is performed with the root "
