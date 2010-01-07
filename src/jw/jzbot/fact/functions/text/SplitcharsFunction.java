@@ -31,9 +31,9 @@ public class SplitcharsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{splitchars||<text>||<delimiter>}} -- Evaluates to <text>, but "
+        return "Syntax: {splitchars|<text>|<delimiter>} -- Evaluates to <text>, but "
                 + "with <delimiter> inbetween each character in <text>. For example, "
-                + "\"{{splitchars||hello||-}}\" results in \"h-e-l-l-o\".";
+                + "\"{splitchars|hello|-}\" results in \"h-e-l-l-o\".";
     }
     
 }

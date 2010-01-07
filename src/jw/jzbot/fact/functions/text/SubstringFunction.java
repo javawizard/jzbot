@@ -24,11 +24,11 @@ public class SubstringFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{substring||<start>||<end>||<text>}} -- Evaluates to a substring of "
+        return "Syntax: {substring|<start>|<end>|<text>} -- Evaluates to a substring of "
                 + "<text>, which starts at the index specified by <start> and ends at <end>. "
                 + "If the specified indexes are out of bounds, they will be changed to be "
                 + "within bounds. Indexes are 0-based, with start being inclusive and "
-                + "end being exclusive. For example, {{substring||3||6||0123456789}} evaluates "
+                + "end being exclusive. For example, {substring|3|6|0123456789} evaluates "
                 + "to \"345\".";
     }
     

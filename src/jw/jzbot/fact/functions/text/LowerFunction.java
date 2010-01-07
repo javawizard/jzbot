@@ -17,7 +17,7 @@ public class LowerFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lower||<value>}} -- Converts the specified value to lower case.";
+        return "Syntax: {lower|<value>} -- Converts the specified value to lower case.";
     }
     
 }

@@ -17,7 +17,7 @@ public class UpperFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{upper||<value>}} -- Converts the specified value to upper case.";
+        return "Syntax: {upper|<value>} -- Converts the specified value to upper case.";
     }
     
 }

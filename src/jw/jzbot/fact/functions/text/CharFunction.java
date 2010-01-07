@@ -17,10 +17,10 @@ public class CharFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{char||<number>}} -- Evaluates to a single character, which is the "
+        return "Syntax: {char|<number>} -- Evaluates to a single character, which is the "
                 + "ASCII character denoted by the base-10 number <number>. For example, "
-                + "{{char||32}} results in \" \", {{char||49}} results in \"1\", and "
-                + "{{char||65}} results in \"A\".\n"
+                + "{char|32} results in \" \", {char|49} results in \"1\", and "
+                + "{char|65} results in \"A\".\n"
                 + "TODO: Right now, this actually converts the number to a character "
                 + "in the bot's current charset instead of in ASCII. Perhaps consider "
                 + "using two different functions for that, or a separate UTF-8 function.";

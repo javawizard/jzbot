@@ -29,10 +29,10 @@ public class PadFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{pad||<number>||<char>||<value>}} -- Evaluates to <value>, but "
+        return "Syntax: {pad|<number>|<char>|<value>} -- Evaluates to <value>, but "
                 + "with <char> (which must be a single character) prepended until the "
                 + "resulting length is at least equal to <number>. For example, "
-                + "{{pad||7||0||1234}} would evaluate to \"0001234\".";
+                + "{pad|7|0|1234} would evaluate to \"0001234\".";
     }
     
     public String getName()

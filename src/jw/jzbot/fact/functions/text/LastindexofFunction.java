@@ -21,7 +21,7 @@ public class LastindexofFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lastindexof||<substring>||<string>||<from>}} -- Evaluates to the "
+        return "Syntax: {lastindexof|<substring>|<string>|<from>} -- Evaluates to the "
                 + "last index within "
                 + "<string> that <substring> occurs, or -1 if <substring> isn't present "
                 + "anywhere within <string>. <from> is optional, and if it's present it "

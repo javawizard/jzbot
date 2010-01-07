@@ -32,11 +32,11 @@ public class FilterFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{filter||<regex>||<string>||<condition>||<delimiter>}} -- "
+        return "Syntax: {filter|<regex>|<string>|<condition>|<delimiter>} -- "
                 + "Splits <string> around the regular expression <regex>, then reconstructs "
                 + "a string made up of these strings, but delimited by <delimiter>. Only "
                 + "substrings that match the regular expression <condition> will be included. "
-                + "\nFor example, {{filter||,||first,second,third,fourth||^[^i]*$||-}} "
+                + "\nFor example, {filter|,|first,second,third,fourth|^[^i]*$|-} "
                 + "would evaluate to \"second-fourth\".";
     }
     

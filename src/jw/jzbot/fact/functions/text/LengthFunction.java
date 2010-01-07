@@ -17,9 +17,9 @@ public class LengthFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{length||<value>}} -- Evaluates to the number of characters that are "
-                + "in <value>. For example, {{length||hello}} evaluates to \"5\", and "
-                + "{{length||hello world}} evaluates to \"11\".";
+        return "Syntax: {length|<value>} -- Evaluates to the number of characters that are "
+                + "in <value>. For example, {length|hello} evaluates to \"5\", and "
+                + "{length|hello world} evaluates to \"11\".";
     }
     
 }
