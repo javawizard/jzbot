@@ -51,14 +51,14 @@ public class BzflistFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{bzflist||<prefix>||<action>||<delimiter>}} -- Contacts the "
+        return "Syntax: {bzflist|<prefix>|<action>|<delimiter>} -- Contacts the "
                 + "public BZFlag list server and retrieves a list of all servers. For each "
                 + "server, <action> is then invoked, with several variables starting with "
                 + "\"<prefix>-\" set. The best way to get a list of all of these variables "
-                + "is to run {{bzflist}} with the action being {{llvars||<prefix>-}}.\n"
+                + "is to run {bzflist} with the action being {llvars|<prefix>-}.\n"
                 + "If the action sets a variable called <prefix>-quit to the value \"1\", "
-                + "{{bzflist}} will stop iterating over servers and return immediately. "
-                + "{{bzflist}} evaluates to what its actions evaluated to, separated "
+                + "{bzflist} will stop iterating over servers and return immediately. "
+                + "{bzflist} evaluates to what its actions evaluated to, separated "
                 + "by <delimiter>. Unlike most iterating functions, \"<prefix>-\" variables "
                 + "set during iteration will not be deleted afterward.";
     }

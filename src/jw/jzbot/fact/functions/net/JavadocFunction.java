@@ -18,7 +18,7 @@ public class JavadocFunction extends Function
     public String getHelp(String topic)
     {
         if (topic == null || "".equals(topic))
-            return "Syntax: {{javadoc||<action>||<desc>}} -- Performs a javadoc-related "
+            return "Syntax: {javadoc|<action>|<desc>} -- Performs a javadoc-related "
                     + "action on a class or method descriptor <desc>. <desc> can be one "
                     + "of \"<package>.<class>\", \"<class>\" (which will only work if "
                     + "there is only one class named <class> in the javadoc tree that "
@@ -27,7 +27,7 @@ public class JavadocFunction extends Function
                     + "argument types enclosed with parentheses at the end. All "
                     + "subpages of this page are different actions that you can use "
                     + "for <action>, and each subpage describes what that action does.";
-        return "{{javadoc}} doesn't have information about that topic yet.";
+        return "{javadoc} doesn't have information about that topic yet.";
     }
     
     @Override

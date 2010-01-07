@@ -27,7 +27,7 @@ public class StarthttpFunction extends Function
         // Duration.DAY, null);
         // String url = "(TODO, add into StarthttpFunction.java)";
         if (topic == null || "".equals(topic))
-            return "Syntax: {{starthttp||<port>||<factoid>}} -- Starts an HTTP server on the "
+            return "Syntax: {starthttp|<port>|<factoid>} -- Starts an HTTP server on the "
                     + "specified port. Use \"%HELPCMD% functions starthttp details\" "
                     + "for more info.";
         else if (topic.equals("details"))
@@ -53,7 +53,7 @@ public class StarthttpFunction extends Function
                 + " it should contain a decimal number, which is the maximum number of "
                 + "servers that can be running concurrently. If there is no such file, "
                 + "a default of 20 is used.\n"
-                + "Servers can be started with the {{starthttp}} function (which could "
+                + "Servers can be started with the {starthttp} function (which could "
                 + "potentially be called from the server's _onready factoid). This "
                 + "function takes two arguments: <port> and <factoid>. <port> is the "
                 + "port to listen on. <factoid> is a factoid that will be run whenever "
@@ -76,11 +76,11 @@ public class StarthttpFunction extends Function
                 + "don't set a value for this local variable.\n"
                 + "http-resource: Indicates that, instead of sending the text that "
                 + "the factoid evaluates to back as a response, the resource (see "
-                + "the {{getresource}} function for information on resources) whose "
+                + "the {getresource} function for information on resources) whose "
                 + "name is the value of this local variable should be served instead. "
                 + "This is useful when you want your server to serve images and the like. "
                 + "Headers, the content type, and the status code are still specified "
-                + "in the factoid. {{extensiontype}} can be used to look up the "
+                + "in the factoid. {extensiontype} can be used to look up the "
                 + "content type for a number of known file extensions.\n"
                 + "http-content-type: The type of content you're sending to the "
                 + "client. If you don't set this, it defaults to \"text/html\". "
@@ -99,8 +99,8 @@ public class StarthttpFunction extends Function
                 + "were to then visit your page with \"?test=something\" on the end of "
                 + "their URL, they would see \"Hello world! Param test is something.\" "
                 + "in their page.\n\n"
-                + "When you're done with a server, you can use {{stophttp}} to shut "
-                + "it down. You can also use {{listhttp}} to get a list of all servers "
+                + "When you're done with a server, you can use {stophttp} to shut "
+                + "it down. You can also use {listhttp} to get a list of all servers "
                 + "that you're running, in case you forgot their port numbers. "
                 + "Reconnecting the bot (with ~reconnect) shuts down all servers.\n";
     }

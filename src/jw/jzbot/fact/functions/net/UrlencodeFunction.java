@@ -29,7 +29,7 @@ public class UrlencodeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{urlencode||<text>}} -- Encodes the text specified so that it is "
+        return "Syntax: {urlencode|<text>} -- Encodes the text specified so that it is "
                 + "suitable for including in a URL.";
     }
     

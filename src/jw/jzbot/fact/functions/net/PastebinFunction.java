@@ -36,7 +36,7 @@ public class PastebinFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{pastebin||<text>||<duration>}} -- Creates a post at http://pastebin.com "
+        return "Syntax: {pastebin|<text>|<duration>} -- Creates a post at http://pastebin.com "
                 + "with the specified text and the specified duration (which should be either "
                 + "\"day\" or \"month\"). <duration> is optional, and will default to \"day\" if "
                 + "not present.";

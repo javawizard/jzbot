@@ -19,8 +19,8 @@ public class StophttpFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{stophttp||<port>}} -- Stops an HTTP server running on the "
-                + "specified port. See {{starthttp}} for more information on what "
+        return "Syntax: {stophttp|<port>} -- Stops an HTTP server running on the "
+                + "specified port. See {starthttp} for more information on what "
                 + "HTTP servers are.";
     }
     

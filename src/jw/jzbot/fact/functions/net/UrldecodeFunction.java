@@ -30,7 +30,7 @@ public class UrldecodeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{urldecode||<text>}} -- Decodes the url-encoded text specified.";
+        return "Syntax: {urldecode|<text>} -- Decodes the url-encoded text specified.";
     }
     
 }

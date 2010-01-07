@@ -66,7 +66,7 @@ public class GoogleFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{google||<search>}} -- Uses the Google search engine to search "
+        return "Syntax: {google|<search>} -- Uses the Google search engine to search "
                 + "for <search>, and returns the results with each result separated with "
                 + "a \"|\" character. Each result is made up of the URL for that result, "
                 + "a space, and a summary of that result.";

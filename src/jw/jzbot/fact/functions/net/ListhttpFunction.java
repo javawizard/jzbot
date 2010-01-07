@@ -26,9 +26,9 @@ public class ListhttpFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{listhttp}} -- Returns a pipe-separated list of server "
+        return "Syntax: {listhttp} -- Returns a pipe-separated list of server "
                 + "port numbers representing all currently-running HTTP servers. See "
-                + "{{starthttp}} for information on what HTTP servers are.";
+                + "{starthttp} for information on what HTTP servers are.";
     }
     
 }

@@ -49,7 +49,7 @@ public class TwiliocallFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{twiliocall||<target>||<callback>}} -- Uses the Twilio service"
+        return "Syntax: {twiliocall|<target>|<callback>} -- Uses the Twilio service"
                 + " to place a call to the phone number <target>, calling back to <callback> "
                 + "when the call has been put through. This function then evaluates to"
                 + " an XML document describing the result. Note that the file "

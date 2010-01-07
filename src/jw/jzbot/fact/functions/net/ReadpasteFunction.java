@@ -19,7 +19,7 @@ public class ReadpasteFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{readpaste||<pasteurl>}} -- Reads a pastebin post made "
+        return "Syntax: {readpaste|<pasteurl>} -- Reads a pastebin post made "
                 + "at any of the enabled pastebin providers. ";
     }
     

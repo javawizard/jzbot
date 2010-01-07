@@ -70,7 +70,7 @@ public class UrlgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{urlget||<url>||<method>||<data>}} -- Gets the page at the specified "
+        return "Syntax: {urlget|<url>|<method>|<data>} -- Gets the page at the specified "
                 + "url. <url> is the url to get. This currently must only be an http or https "
                 + "url. <method> and <data> are both optional, but <method> is required "
                 + "if <data> is to be used. <method> is the HTTP method to use, which "
