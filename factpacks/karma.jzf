@@ -1,6 +1,6 @@
 name local.stats.karma
 author Alexander Boyd
-description=Adds a karma system into the bot. Particularly, this adds a karma command that 
+description Adds a karma system into the bot. Particularly, this adds a karma command that 
   can be used to view a user's current karma. Then, at each channel where karma should be 
   used, "karma-config add" should be run to add support for karma at that channel. 
  This factpack will also install a page that can be used to view karma over the internet. 

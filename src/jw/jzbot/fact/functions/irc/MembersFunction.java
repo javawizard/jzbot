@@ -41,18 +41,18 @@ public class MembersFunction extends Function
             {
                 return object.getNick();
             }
-        }, " "));
+        }, "\n"));
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{members}} or {{members||<channel>}} -- Evaluates to a "
-                + "space-separated list of the nicknames of the people in the current "
+        return "Syntax: {members} or {members|<channel>} -- Evaluates to a "
+                + "newline-separated list of the nicknames of the people in the current "
                 + "channel. The second form is deprecated; the additional argument to the "
                 + "function specifies the channel to get members from. This form is\n"
                 + "deprecated, and should be replaced with (and is functionally "
-                + "identical to) {{scope||<channel>||{{members}}}}.";
+                + "identical to) {scope|<channel>|{members}}.";
         // return "Syntax: {{members||<channel>}} -- Evaluates to a space-separated list "
         // + "of the nicknames of the people that are currently in <channel>.";
     }
