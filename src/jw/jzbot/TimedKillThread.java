@@ -19,7 +19,12 @@ public class TimedKillThread extends Thread
     {
         try
         {
-            Thread.sleep(maxRunTime);
+            for (int i = 0; i < (maxRunTime / 5000); i++)
+            {
+                Thread.sleep(5000);
+                if (!active)
+                    return;
+            }
         }
         catch (InterruptedException e)
         {
@@ -28,7 +33,7 @@ public class TimedKillThread extends Thread
         if (active)
             target.stop(new FactTimeExceededError(
                     "This factoid or command took too long to run. Factoids and "
-                            + "commands can only run for "
-                            + (MAX_FACT_RUN_TIME / 1000) + " seconds."));
+                            + "commands can only run for " + (maxRunTime / 1000)
+                            + " seconds."));
     }
 }

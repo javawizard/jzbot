@@ -1,6 +1,8 @@
 package jw.jzbot.protocols.bzflag;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.ServerSocket;
@@ -9,6 +11,8 @@ import java.net.Socket;
 public class BZProxy
 {
     private static final Object lock = new Object();
+    
+    private static PrintStream log;
     
     public static class ConnectorPipe extends Thread
     {
@@ -33,22 +37,21 @@ public class BZProxy
                     Packet packet = in.receive(Packet.Layer.TCP);
                     synchronized (lock)
                     {
-                        System.out.println(indicator);
-                        System.out.println(dereferenceCode(packet.getType()));
-                        System.out.print("hex     : ");
+                        log.println(indicator);
+                        log.println(dereferenceCode(packet.getType()));
+                        log.print("hex     : ");
                         for (byte b : packet.getMessage())
                         {
-                            System.out.print("" + Integer.toHexString((b + 512) % 256)
-                                    + " ");
+                            log.print("" + Integer.toHexString((b + 512) % 256) + " ");
                         }
-                        System.out.println();
-                        System.out.print("ascii   : ");
+                        log.println();
+                        log.print("ascii   : ");
                         for (byte b : packet.getMessage())
                         {
-                            System.out.print("" + (char) ((b + 512) % 256) + "");
+                            log.print("" + (char) ((b + 512) % 256) + "");
                         }
-                        System.out.println();
-                        System.out.println(indicator);
+                        log.println();
+                        log.println(indicator);
                     }
                     out.send(packet);
                 }
@@ -66,6 +69,7 @@ public class BZProxy
      */
     public static void main(String[] args) throws IOException
     {
+        log = new PrintStream(new FileOutputStream("storage/logdump.txt"));
         ServerSocket ss = new ServerSocket(55443);
         System.out.println("waiting");
         Socket s = ss.accept();
