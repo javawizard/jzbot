@@ -62,7 +62,7 @@ public class IfFunction extends Function
                 + "<trueaction> if <condition> is one of the \"true\" values, and <falseaction> "
                 + "if <condition> is one of the \"false\" values. If <condition> is neither a "
                 + "true value nor a false value, it is interpreted as an equation (as if "
-                + "it were passed to {{eval}}), and then compared again.\n"
+                + "it were passed to {eval}), and then compared again.\n"
                 + "The true values are y, yes, t, true, 1, and 1.0, and the false values "
                 + "are n, no, f, false, 0, and 0.0. These values are case-insensitive. "
                 + "<falseaction> is also optional.";
