@@ -40,7 +40,7 @@ public class CompareFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{compare||<first>||<second>||<case>||<if>}} -- Compares <first> with "
+        return "Syntax: {compare|<first>|<second>|<case>|<if>} -- Compares <first> with "
                 + "<second> to see which would come first in a dictionary. This function then "
                 + "evaluates to -1 if <first> comes before <second>, 0 if they are the same, "
                 + "and 1 if <first> comes after <second>. <case> and <if> are optional, and "
@@ -48,7 +48,7 @@ public class CompareFunction extends Function
                 + "(IE \"A\" comes before \"a\"), and when\n"
                 + "it is 0, case is ignored (IE \"A\" and \"a\" are the same). When <if> is 1, "
                 + "this function evaluates to 0 instead of -1 if <first> comes before <second>, "
-                + "thereby making the output suitable for directly passing to the {{if}} function. "
+                + "thereby making the output suitable for directly passing to the {if} function. "
                 + "When <if> is 0, -1, 0, and 1 are returned as specified above.";
     }
     

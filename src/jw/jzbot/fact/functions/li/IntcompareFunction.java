@@ -33,11 +33,11 @@ public class IntcompareFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{intcompare||<first>||<second>||<if>}} -- Same as {{compare}}, "
+        return "Syntax: {intcompare|<first>|<second>|<if>} -- Same as {compare}, "
                 + "but compares whole numbers for numerical ordering. For example, "
-                + "{{intcompare||1||3}} evaluates to -1, {{intcompare||7||12}} "
-                + "evaluates to -1 (whereas {{compare||7||12}} would evaluate to 1), "
-                + "and {{intcompare||13||8}} evaluates to 1. <if> is optional, and defaults "
+                + "{intcompare|1|3} evaluates to -1, {intcompare|7|12} "
+                + "evaluates to -1 (whereas {compare|7|12} would evaluate to 1), "
+                + "and {intcompare|13|8} evaluates to 1. <if> is optional, and defaults "
                 + "to false.";
     }
     

@@ -36,7 +36,7 @@ public class RandomsplitFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{randomsplit||<text>||<delimiter>||<regex>}} -- Splits <text> around "
+        return "Syntax: {randomsplit|<text>|<delimiter>|<regex>} -- Splits <text> around "
                 + "the delimiter <delimiter> (which is a regular expression), and then chooses "
                 + "one of the resulting strings at random and evaluates to that string. If <regex> "
                 + "is present (<regex> is entirely optional), then only strings that exactly "

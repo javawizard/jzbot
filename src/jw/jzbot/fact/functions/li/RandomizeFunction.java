@@ -33,11 +33,11 @@ public class RandomizeFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{randomize||<regex>||<string>||<delimiter>}} -- Splits "
+        return "Syntax: {randomize|<regex>|<string>|<delimiter>} -- Splits "
                 + "<string> around the regular expression <regex>, shuffles the resulting "
                 + "list of strings, and then evaluates to a <delimiter>-separated list "
-                + "of those strings. For example, {{randomize||\\\\\\.||"
-                + "first.second.third.fourth||-}} could evaluate to \"third-second-"
+                + "of those strings. For example, {randomize|\\\\\\.|"
+                + "first.second.third.fourth|-} could evaluate to \"third-second-"
                 + "first-fourth\" or maybe \"second-fourth-first-third\".";
     }
     

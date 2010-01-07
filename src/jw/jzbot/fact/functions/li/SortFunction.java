@@ -49,13 +49,13 @@ public class SortFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{sort||<regex>||<string>||<delimiter>||<case>}} -- "
+        return "Syntax: {sort|<regex>|<string>|<delimiter>|<case>} -- "
                 + " Splits <string> around the regular expression <regex>, sorts this resulting "
                 + "list of substrings (case-sensitively if <case> is 1, otherwise "
                 + "case-insensitively), then reconstructs a new string by delimiting the "
                 + "substrings with <delimiter>. <case> is optional, and defaults to 1 "
                 + "if not present.\n"
-                + "If you want a more customized sort, consider using {{comparesort}}.";
+                + "If you want a more customized sort, consider using {comparesort}.";
     }
     
 }

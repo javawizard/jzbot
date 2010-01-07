@@ -40,10 +40,10 @@ public class ForFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{for||<from>||<to>||<varname>||<action>||<delimiter>}} -- "
+        return "Syntax: {for|<from>|<to>|<varname>|<action>|<delimiter>} -- "
                 + "Exactly the same as "
-                + "{{split|| ||{{numberlist||<from>||<to>}}||<varname>||<action>"
-                + "||<delimiter>}}, but this function runs around six times faster than "
+                + "{split| |{numberlist|<from>|<to>}|<varname>|<action>"
+                + "|<delimiter>}, but this function runs around six times faster than "
                 + "the split/numberlist combination function. Essentially, this function "
                 + "runs <action> once for every number between <from> and <to>\n"
                 + "with the local variable <varname> set to the current number. "

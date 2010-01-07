@@ -27,11 +27,11 @@ public class ArgsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{args||<regex>||<text>}} -- Splits <text> around the regular "
+        return "Syntax: {args|<regex>|<text>} -- Splits <text> around the regular "
                 + "expression <regex>, then runs the function named by the first string "
                 + "in this sublist, passing the rest of the strings as arguments. For "
-                + "example, \"{{args||,||sendmessage,%0%,Hello}}\" would function exactly "
-                + "the same as \"{{sendmessage||%0%||Hello}}\", assuming %0% does not "
+                + "example, \"{args|,|sendmessage,%0%,Hello}\" would function exactly "
+                + "the same as \"{sendmessage|%0%|Hello}\", assuming %0% does not "
                 + "contain any commas.";
     }
     

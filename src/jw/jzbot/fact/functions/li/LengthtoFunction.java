@@ -22,7 +22,7 @@ public class LengthtoFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{lengthto||<regex>||<text>||<length>||<delimiter>}} -- Splits "
+        return "Syntax: {lengthto|<regex>|<text>|<length>|<delimiter>} -- Splits "
                 + "<text> around <regex>, then reconstrucs the resulting items into a new "
                 + "string, with each item being delimited by <delimiter>. Items will "
                 + "be added until the total size of the string would be more than <length>. "

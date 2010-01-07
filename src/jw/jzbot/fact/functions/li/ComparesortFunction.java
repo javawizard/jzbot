@@ -54,7 +54,7 @@ public class ComparesortFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{comparesort||<regex>||<string>||<delimiter>||<prefix>||<comparator>}}"
+        return "Syntax: {comparesort|<regex>|<string>|<delimiter>|<prefix>|<comparator>}"
                 + " -- Splits <string> around the regular expression <regex>, then applies "
                 + "a comparison sort to the resulting sublist. This comparison sort is "
                 + "currently a modified mergesort. Pairs of items are compared by setting the "
@@ -62,7 +62,7 @@ public class ComparesortFunction extends Function
                 + "second value, and then evaluating <comparator>.\n"
                 + "The result of this evaluation should be negative, 0, or positive if "
                 + "the first item comes before, is the same as, or comes after, the second "
-                + "item, respectively. Once the list is sorted, {{comparesort}} evaluates "
+                + "item, respectively. Once the list is sorted, {comparesort} evaluates "
                 + "to a <delimiter>-separated list of the sorted items.";
     }
     

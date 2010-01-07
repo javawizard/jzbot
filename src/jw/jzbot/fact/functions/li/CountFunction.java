@@ -20,7 +20,7 @@ public class CountFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{count||<regex>||<string>}} -- Splits <string> around <regex>, "
+        return "Syntax: {count|<regex>|<string>} -- Splits <string> around <regex>, "
                 + "and then counts the number of items in this list. This essentially "
                 + "counts how many times <regex> appears in <string>, and then returns "
                 + "this number plus 1, or 0 if <string> is empty. Trailing blank items "
