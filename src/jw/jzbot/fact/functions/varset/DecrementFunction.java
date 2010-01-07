@@ -17,7 +17,7 @@ public class DecrementFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{decrement||<varname>}} -- Gets the numeric value in the specified "
+        return "Syntax: {decrement|<varname>} -- Gets the numeric value in the specified "
                 + "local variable, subtracts one from it, and sets it back into the local variable. "
                 + "If the specified local variable does not exist, this function will instead "
                 + "set it to -1. If the specified local variable does exist but is not a "

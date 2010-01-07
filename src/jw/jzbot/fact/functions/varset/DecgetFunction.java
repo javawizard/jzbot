@@ -17,10 +17,10 @@ public class DecgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{decget||<varname>}} -- Same as {{decrement||<varname>}}, but "
+        return "Syntax: {decget|<varname>} -- Same as {decrement|<varname>}, but "
                 + "evaluates to the new value of the variable. This would be the same "
-                + "as \"{{decrement||<varname>}}{{lget||<varname>}}\" or \""
-                + "{{decrement||<varname>}}%<varname>%\".";
+                + "as \"{decrement|<varname>}{lget|<varname>}\" or \""
+                + "{decrement|<varname>}%<varname>%\".";
     }
     
 }

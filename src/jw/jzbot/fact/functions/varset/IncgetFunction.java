@@ -17,10 +17,10 @@ public class IncgetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{incget||<varname>}} -- Same as {{increment||<varname>}}, but "
+        return "Syntax: {incget|<varname>} -- Same as {increment|<varname>}, but "
                 + "evaluates to the new value of the variable. This would be the same "
-                + "as \"{{increment||<varname>}}{{lget||<varname>}}\" or \""
-                + "{{increment||<varname>}}%<varname>%\".";
+                + "as \"{increment|<varname>}{lget|<varname>}\" or \""
+                + "{increment|<varname>}%<varname>%\".";
     }
     
 }

@@ -43,7 +43,7 @@ public class IncrementFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {{increment||<varname>}} -- Gets the numeric value in the specified "
+        return "Syntax: {increment|<varname>} -- Gets the numeric value in the specified "
                 + "local variable, adds one to it, and sets it back into the local variable. "
                 + "If the specified local variable does not exist, this function will instead "
                 + "set it to 1. If the specified local variable does exist but is not a "
