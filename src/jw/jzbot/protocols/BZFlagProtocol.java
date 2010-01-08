@@ -807,6 +807,8 @@ public class BZFlagProtocol implements Connection
     @Override
     public boolean isConnected()
     {
+        if (serverLink == null)
+            return false;
         return serverLink.isConnected();
     }
     
