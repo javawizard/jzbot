@@ -824,8 +824,8 @@ public class JZBot
                     logQueueRunning = false;
                     int discarded = (logQueue == null ? 0 : logQueue.size());
                     System.out.println("Log queue has shut down. " + discarded
-                            + " log event" + (discarded == 1 ? "" : "s")
-                            + " were discarded.");
+                            + " log event" + (discarded == 1 ? " was" : "s were")
+                            + " discarded.");
                 }
                 System.out.println("JZBot has terminated.");
             }
