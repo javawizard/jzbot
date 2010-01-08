@@ -15,6 +15,7 @@ import jw.jzbot.*;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.protocols.bzflag.BZFlagConnector;
 import jw.jzbot.protocols.bzflag.Message;
 import jw.jzbot.protocols.bzflag.ServerLink;
 import jw.jzbot.protocols.bzflag.pack.MsgAccept;
@@ -537,64 +538,86 @@ public class BZFlagProtocol implements Connection
     @Override
     public void sendMessage(String target, String message)
     {
-        // TODO Auto-generated method stub
-        
+        // TODO: we really should check to make sure that we're connected, but for now, we
+        // won't bother.
+        MsgMessage m = new MsgMessage();
+        m.message = message;
+        if (target.equals("#all"))
+        {
+            if (!joinedAll)
+                return;
+            m.to = BZFlagConnector.MsgToAllPlayers;
+        }
+        else if (target.equals("#admin"))
+        {
+            if (!joinedAdmin)
+                return;
+            m.to = BZFlagConnector.MsgToAdmins;
+        }
+        else if (target.equals("#team"))
+        {
+            if (!joinedTeam)
+                return;
+            m.to = BZFlagConnector.MsgToObserverTeam;
+        }
+        serverLink.send(m);
     }
     
     @Override
     public void sendNotice(String target, String message)
     {
-        // TODO Auto-generated method stub
-        
+        // BZFlag doesn't have a separate idea of notices from messages, so we'll just
+        // send this as a message. In the future, we might want to prefix it with (notice)
+        // or something, or make it user-configurable in the bot what notices should be
+        // prefixed with on protocols that don't support them.
+        sendMessage(target, message);
     }
     
     @Override
     public void setEncoding(String string) throws UnsupportedEncodingException
     {
-        // TODO Auto-generated method stub
-        
+        // BZFlag always uses ASCII as the encoding, so we'll ignore this.
     }
     
     @Override
     public void setLogin(String nick)
     {
-        // TODO Auto-generated method stub
-        
+        // BZFlag doesn't allow for a login separate from the nick (meaning it uses the
+        // nick as the login), so we'll ignore this.
     }
     
     @Override
     public void setMessageDelay(long ms)
     {
-        // TODO Auto-generated method stub
-        
+        // Messages delays aren't supported yet.
     }
     
     @Override
     public void setMode(String channel, String mode)
     {
-        // TODO Auto-generated method stub
-        
+        // Mode changes aren't specific enough for BZFlag's purposes. If the user wants to
+        // change other users' groups, they'll have to do it with a protocol-specific
+        // function for now.
     }
     
     @Override
     public void setName(String nick)
     {
-        // TODO Auto-generated method stub
-        
+        // Name changes aren't supported by BZFlag, so we'll just ignore this.
     }
     
     @Override
     public void setTopic(String channel, String topic)
     {
-        // TODO Auto-generated method stub
-        
+        // Topics aren't supported by BZFlag, so we'll just ignore this.
     }
     
     @Override
     public void setVersion(String string)
     {
-        // TODO Auto-generated method stub
-        
+        // Not supported right now, although we could potentially use this as our email
+        // string in the future. We need to make this user-configurable before we do that,
+        // though. Perhaps this could be an additional server property in the data store.
     }
     
     @Override
@@ -606,6 +629,7 @@ public class BZFlagProtocol implements Connection
     @Override
     public void discard()
     {
+        doShutdown();
     }
     
     @Override
