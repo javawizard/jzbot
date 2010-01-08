@@ -497,17 +497,49 @@ public class BZFlagProtocol implements Connection
                 player.verified = info.verified;
                 if (isAdmin && !wasAdmin)
                 {
-                    
+                    tryMode("#all", "SERVER", "SERVER", "SERVER", "+o " + player.callsign);
+                    tryJoin("#admin", player.callsign, getPlayerLogin(player),
+                            getPlayerHostname(player));
+                    tryMode("#admin", "SERVER", "SERVER", "SERVER", "+o " + player.callsign);
+                }
+                if (!isAdmin && wasAdmin)
+                {
+                    tryMode("#all", "SERVER", "SERVER", "SERVER", "-o " + player.callsign);
+                    tryPart("#admin", player.callsign, getPlayerLogin(player),
+                            getPlayerHostname(player));
+                }
+                if (isVerified && !wasVerified)
+                {
+                    tryMode("#all", "SERVER", "SERVER", "SERVER", "+v " + player.callsign);
+                }
+                if (!isVerified && wasVerified)
+                {
+                    tryMode("#all", "SERVER", "SERVER", "SERVER", "-v " + player.callsign);
                 }
             }
         }
         else if (message instanceof MsgReject)
         {
-            
+            MsgReject m = (MsgReject) message;
+            doShutdown();
+            initialConnectQueue.offer(new RuntimeException(
+                    "Connection rejected by the server: " + m.reason + " " + m.message));
         }
         else if (message instanceof MsgRemovePlayer)
         {
-            
+            MsgRemovePlayer m = (MsgRemovePlayer) message;
+            Player player = players[m.playerId];
+            if (player == null)
+            {
+                System.err.println("WARNING: attempted to remove a non-existent player: "
+                        + m.playerId);
+                return;
+            }
+            if (player.admin)
+                tryPart("#admin", player.callsign, getPlayerLogin(player),
+                        getPlayerHostname(player));
+            tryPart("#all", player.callsign, getPlayerLogin(player),
+                    getPlayerHostname(player));
         }
         else if (message instanceof MsgSetVar)
         {
@@ -523,6 +555,16 @@ public class BZFlagProtocol implements Connection
         }
     }
     
+    private String getLocalHostname()
+    {
+        return getPlayerHostname(getLocalPlayer());
+    }
+    
+    private String getLocalLogin()
+    {
+        return getPlayerLogin(getLocalPlayer());
+    }
+    
     private void tryMode(String channel, String source, String sourceLogin,
             String sourceHostname, String mode)
     {
@@ -534,6 +576,12 @@ public class BZFlagProtocol implements Connection
     {
         if (areWeAt(channel))
             context.onJoin(channel, sender, login, hostname);
+    }
+    
+    private void tryPart(String channel, String sender, String login, String hostname)
+    {
+        if (areWeAt(channel))
+            context.onPart(channel, sender, login, hostname);
     }
     
     private boolean areWeAt(String channel)
