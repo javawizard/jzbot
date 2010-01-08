@@ -3,5 +3,5 @@ author Alexander Boyd
 scope any
 description Adds a factoid, ~restart, that restarts the bot when run. Any arguments provided 
   to ~restart will be sent as the quit message. 
->restart {{restart||%1-%}}
+>restart {restart|%1-%}
 restrict.t.restart 1
