@@ -150,4 +150,9 @@ public class ServerLink
             }
         }
     }
+    
+    public boolean isConnected()
+    {
+        return connector.isConnected();
+    }
 }

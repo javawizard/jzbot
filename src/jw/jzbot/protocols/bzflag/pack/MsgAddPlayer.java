@@ -8,14 +8,14 @@ import jw.jzbot.protocols.bzflag.Message;
 
 public class MsgAddPlayer extends Message
 {
-    private int id;
-    private int type;
-    private int team;
-    private int wins;
-    private int losses;
-    private int tks;
-    private String callsign;
-    private String email;
+    public int id;
+    public int type;
+    public int team;
+    public int wins;
+    public int losses;
+    public int tks;
+    public String callsign;
+    public String email;
     
     @Override
     public void pack(DataOutputStream out) throws IOException

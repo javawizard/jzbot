@@ -259,4 +259,9 @@ public class BZFlagConnector
     {
         socket.close();
     }
+    
+    public boolean isConnected()
+    {
+        return socket.isConnected();
+    }
 }

@@ -355,7 +355,22 @@ public class BZFlagProtocol implements Connection
         }
         else if (message instanceof MsgAddPlayer)
         {
-            
+            // We just need to update the player list accordingly.
+            MsgAddPlayer m = (MsgAddPlayer) message;
+            Player player = new Player();
+            player.callsign = m.callsign;
+            player.email = m.email;
+            player.losses = m.losses;
+            player.playerId = m.id;
+            player.team = m.team;
+            player.tks = m.tks;
+            player.wins = m.wins;
+            if (players[m.id] != null)
+                // This shouldn't happen, so we'll log a warning if it does
+                System.err.println("WARNING: overwriting player at index " + m.id);
+            players[m.id] = player;
+            boolean isObserver = player.team == OBSERVER;
+            context.onJoin("#all")
         }
         else if (message instanceof MsgGameTime)
         {
@@ -391,6 +406,22 @@ public class BZFlagProtocol implements Connection
         }
     }
     
+    public String getPlayerHostname(Player player)
+    {
+        String callsign = player.callsign;
+        callsign = callsign.replace("_", "__");
+        callsign = callsign.replace(" ", "_0");
+        callsign = callsign.replace("!", "_1");
+        callsign = callsign.replace("@", "_2");
+        callsign = callsign.replace("#", "_3");
+        callsign = callsign.replace("$", "_4");
+        callsign = callsign.replace("%", "_5");
+        callsign = callsign.replace("^", "_6");
+        callsign = callsign.replace("&", "_7");
+        callsign = callsign.replace("*", "_8");
+        return callsign;
+    }
+    
     @Override
     public void changeNick(String newnick)
     {
@@ -411,6 +442,46 @@ public class BZFlagProtocol implements Connection
         socket.connect(new InetSocketAddress(host, port), 30 * 1000);
         serverLink = new ServerLink(socket, true);
         initThreads();
+        MsgEnter enter = new MsgEnter();
+        enter.callsign = context.getNick();
+        enter.clientVersion = "javawizard2539's JZBot, http://jzbot.googlecode.com";
+        enter.email = "";
+        enter.key = "";
+        enter.team = OBSERVER;
+        enter.type = 0;
+        outQueue.offer(enter);
+        Object status;
+        try
+        {
+            status = initialConnectQueue.poll(30, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+            status = e;
+        }
+        if (status == null)
+        {
+            doShutdown();
+            throw new IOException("The server didn't accept our "
+                    + "connect request within 30 seconds, so we're disconnecting.");
+        }
+        else if (status instanceof Throwable)
+        {
+            doShutdown();
+            throw new IOException("An error occurred while connecting to the server",
+                    (Throwable) status);
+        }
+        else if (status == CONNECTION_SUCCESSFUL)
+        {
+            // We've successfully connected.
+            return;
+        }
+        else
+        {
+            doShutdown();
+            throw new IOException("An unknown error occurred while connecting.");
+        }
     }
     
     private void initThreads()
@@ -428,8 +499,9 @@ public class BZFlagProtocol implements Connection
     @Override
     public void disconnect(String message)
     {
-        // TODO Auto-generated method stub
-        
+        // FIXME: This totally ignores the quit message. We should make it so that it
+        // doesn't ignore it.
+        doShutdown();
     }
     
     @Override
@@ -451,7 +523,7 @@ public class BZFlagProtocol implements Connection
         // BZFlag nicknames can't be changed once connected to the server, and we're not
         // including any logic for autoswitching nicks if the requested nick is in use, so
         // we just need to look up our player name and return it.
-        return players[serverLink.getLocalId()].callsign;
+        return getLocalPlayer().callsign;
     }
     
     @Override
@@ -503,36 +575,51 @@ public class BZFlagProtocol implements Connection
     @Override
     public boolean isConnected()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return serverLink.isConnected();
     }
     
     @Override
     public void joinChannel(String channel)
     {
-        // TODO Auto-generated method stub
-        
+        if (channel.equals("#all"))
+            joinedAll = true;
+        else if (channel.equals("#admin"))
+            joinedAdmin = true;
+        else if (channel.equals("#team"))
+            joinedTeam = true;
+        // TODO: we should probably report a ban or something via an event, although we'll
+        // want to do it on a new thread to prevent deadlocks
     }
     
     @Override
     public void kick(String channel, String user, String reason)
     {
-        // TODO Auto-generated method stub
-        
+        // Doesn't matter what channel we're kicking from, the format is the same. And
+        // kicking in bzflag is just sending a modified message.
+        sendMessage("SERVER", "/kick \"" + user + "\" " + reason);
     }
     
     @Override
     public void partChannel(String channel, String reason)
     {
-        // TODO Auto-generated method stub
-        
+        if (channel.equals("#all"))
+            joinedAll = false;
+        else if (channel.equals("#admin"))
+            joinedAdmin = false;
+        else if (channel.equals("#team"))
+            joinedTeam = false;
     }
     
     @Override
     public void sendAction(String target, String message)
     {
-        // TODO Auto-generated method stub
-        
+        // Actions are messages with a specialized format.
+        sendMessage(target, "* " + getLocalPlayer().callsign + " " + message + "\t*");
+    }
+    
+    private Player getLocalPlayer()
+    {
+        return players[serverLink.getLocalId()];
     }
     
     @Override
@@ -542,7 +629,11 @@ public class BZFlagProtocol implements Connection
         // won't bother.
         MsgMessage m = new MsgMessage();
         m.message = message;
-        if (target.equals("#all"))
+        if (target.equals("SERVER"))
+        {
+            m.to = BZFlagConnector.MsgToServerPlayer;
+        }
+        else if (target.equals("#all"))
         {
             if (!joinedAll)
                 return;
@@ -559,6 +650,20 @@ public class BZFlagProtocol implements Connection
             if (!joinedTeam)
                 return;
             m.to = BZFlagConnector.MsgToObserverTeam;
+        }
+        else
+        {
+            m.to = -1;
+            for (Player player : players)
+            {
+                if (player.callsign.equalsIgnoreCase(target))
+                {
+                    m.to = player.playerId;
+                    break;
+                }
+            }
+            if (m.to == -1)// No such player
+                return;
         }
         serverLink.uncheckedSend(m);
     }
