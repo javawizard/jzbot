@@ -616,8 +616,9 @@ public class BZFlagProtocol implements Connection
         return false;
     }
     
-    public String getPlayerHostname(String callsign)
+    public String getPlayerHostname(Player player)
     {
+        String callsign = player.callsign;
         callsign = callsign.replace("_", "__");
         callsign = callsign.replace(" ", "_0");
         callsign = callsign.replace("!", "_1");
@@ -628,30 +629,43 @@ public class BZFlagProtocol implements Connection
         callsign = callsign.replace("^", "_6");
         callsign = callsign.replace("&", "_7");
         callsign = callsign.replace("*", "_8");
-        return callsign;
+        return (player.verified ? "verified/" : "anonymous/") + callsign;
     }
     
-    public String getPlayerLogin(String callsign)
+    public String getPlayerLogin(Player player)
     {
         // If anyone has any idea more useful than this...
         // The length of 10, though, was chosen by jcp because it would trim his callsign
         // ("javawizard2539") to exactly "javawizard", which is sorta cool.
         // TODO: if we have the ability to get the player's bzid from the server, then we
         // could use that as the player's login if they're verified.
-        String hostname = getPlayerHostname(callsign);
+        String hostname = getPlayerHostname(player);
+        hostname = hostname.substring(hostname.indexOf("/") + 1);
         if (hostname.length() > 10)
             hostname = hostname.substring(0, 10);
         return hostname;
     }
     
-    public String getPlayerHostname(Player p)
+    public String getPlayerHostname(String callsign)
     {
-        return getPlayerHostname(p.callsign);
+        return getPlayerHostname(getPlayerByCallsign(callsign));
     }
     
-    public String getPlayerLogin(Player p)
+    public String getPlayerLogin(String callsign)
     {
-        return getPlayerLogin(p.callsign);
+        return getPlayerLogin(getPlayerByCallsign(callsign));
+    }
+    
+    private Player getPlayerByCallsign(String callsign)
+    {
+        for (Player player : players)
+        {
+            if (player == null)
+                continue;
+            if (player.callsign.equalsIgnoreCase(callsign))
+                return player;
+        }
+        return null;
     }
     
     @Override
@@ -807,9 +821,16 @@ public class BZFlagProtocol implements Connection
     @Override
     public boolean isConnected()
     {
+        System.out.println("Asked if a bzflag connector is connected");
         if (serverLink == null)
+        {
+            System.out.println("No server link, so we aren't connected");
             return false;
-        return serverLink.isConnected();
+        }
+        boolean connected = serverLink.isConnected();
+        System.out.println("We have a server link, and we are" + (connected ? "" : " not")
+                + " connected");
+        return connected;
     }
     
     @Override
