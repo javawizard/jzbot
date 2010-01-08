@@ -840,6 +840,7 @@ public class BZFlagProtocol implements Connection
     @Override
     public void joinChannel(final String channel)
     {
+        System.out.println("Requested BZFlag part for " + channel);
         boolean joinWorked = true;
         if (channel.equals("#all"))
             joinedAll = true;
@@ -874,6 +875,7 @@ public class BZFlagProtocol implements Connection
     @Override
     public void partChannel(final String channel, String reason)
     {
+        System.out.println("Requested BZFlag part for " + channel);
         boolean partWorked = true;
         if (channel.equals("#all"))
             joinedAll = false;

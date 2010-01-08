@@ -33,7 +33,10 @@ public class MembersFunction extends Function
                             + "and no channel was specified as an argument");
         ConnectionWrapper wrapper = JZBot.getConnection(serverName);
         Connection con = wrapper.getContext().getConnection();
-        sink.write(StringUtils.delimited(con.getUsers(channelName), new ToString<User>()
+        User[] users = con.getUsers(channelName);
+        if (users == null)
+            users = new User[0];
+        sink.write(StringUtils.delimited(users, new ToString<User>()
         {
             
             @Override
