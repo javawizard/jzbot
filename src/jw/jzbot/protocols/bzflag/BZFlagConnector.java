@@ -262,6 +262,6 @@ public class BZFlagConnector
     
     public boolean isConnected()
     {
-        return socket.isConnected();
+        return socket.isConnected() && !socket.isClosed();
     }
 }

@@ -412,11 +412,13 @@ public class JZBot
         connectionCycleQueue.clear();
         // We'll wait a bit, mostly for the heck of it
         Thread.sleep(2000);
+        System.out.println("Connection cycle");
         /*
          * First step: create a connection object for all servers in the list
          */
         synchronized (connectionCycleLock)
         {
+            System.out.println("Synchronized on connection cycle");
             for (Server server : storage.getServers().isolate())
             {
                 String serverName = server.getName();
@@ -2473,7 +2475,7 @@ public class JZBot
     
     public static void startLogSinkThread()
     {
-        Thread thread = new Thread()
+        Thread thread = new Thread("log-sink-thread")
         {
             public void run()
             {

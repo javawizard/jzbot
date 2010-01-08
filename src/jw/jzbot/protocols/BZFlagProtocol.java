@@ -453,6 +453,10 @@ public class BZFlagProtocol implements Connection
             // We can now dispatch the message.
             if (fromServer)
             {
+                System.out.println("Server message: " + m.message);
+                if (getLocalPlayer() == null)// Server message before we get added to the
+                    // player list
+                    return;
                 context.onNotice("SERVER", "SERVER", "SERVER", channel != null ? channel
                         : getLocalPlayer().callsign, m.message);
             }

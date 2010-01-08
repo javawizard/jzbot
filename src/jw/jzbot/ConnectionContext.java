@@ -123,6 +123,7 @@ public class ConnectionContext
     
     public void onPart(String channel, String sender, String login, String hostname)
     {
+        // TODO: change this to pass along the reason that the user parted for
         JZBot.onPart(datastoreServer, serverName, channel, sender, login, hostname);
     }
     

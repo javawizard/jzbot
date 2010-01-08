@@ -47,9 +47,10 @@ public class JoinCommand implements Command
             }
             else
             {
-                throw new ResponseException("I'm already a member of that channel. If "
-                        + "I seem to have left it, you could try sending \"restart\" in "
-                        + "a pm to me to get me to restart.");
+                JZBot.getServer(server).joinChannel(name);
+                source
+                        .sendMessage("I'm already at that channel, but I just made an attempt "
+                                + "to rejoin it, just in case.");
             }
             return;
         }
@@ -58,7 +59,7 @@ public class JoinCommand implements Command
         c.setTrigger("~");
         dServer.getChannels().add(c);
         JZBot.getServer(server).joinChannel(name);
-        sender.sendMessage("Successful. I'm only allowing superops to create stuff here.");
+        source.sendMessage("Successful. I'm only allowing superops to create stuff here.");
         // JZBot.bot.sendMessage(name, "Here I am (courtesy of " + sender
         // + "). I'm only allowing ops to create factoids here.");
     }
