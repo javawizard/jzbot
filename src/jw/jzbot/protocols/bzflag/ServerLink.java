@@ -94,6 +94,26 @@ public class ServerLink
         }
     }
     
+    /**
+     * Same as {@link #send(Message)}, but wraps the send call in a try/catch block that
+     * wraps any exception that might be thrown with a RuntimeException and throws it
+     * again.
+     * 
+     * @param message
+     */
+    public void uncheckedSend(Message message)
+    {
+        try
+        {
+            send(message);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(
+                    "Exception occurred while running uncheckedSend() in ServerLink", e);
+        }
+    }
+    
     public void send(Message message) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

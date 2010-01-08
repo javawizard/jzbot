@@ -560,7 +560,7 @@ public class BZFlagProtocol implements Connection
                 return;
             m.to = BZFlagConnector.MsgToObserverTeam;
         }
-        serverLink.send(m);
+        serverLink.uncheckedSend(m);
     }
     
     @Override
