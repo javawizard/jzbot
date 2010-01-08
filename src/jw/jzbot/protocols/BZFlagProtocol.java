@@ -523,14 +523,17 @@ public class BZFlagProtocol implements Connection
         }
     }
     
-    private void tryMode(String channel, String source, String sourceLogin, String sourceHostname, String mode)
+    private void tryMode(String channel, String source, String sourceLogin,
+            String sourceHostname, String mode)
     {
-        context.onm
+        if (areWeAt(channel))
+            context.onMode(channel, source, sourceLogin, sourceHostname, mode);
     }
     
     private void tryJoin(String channel, String sender, String login, String hostname)
     {
-        context.onJoin()
+        if (areWeAt(channel))
+            context.onJoin(channel, sender, login, hostname);
     }
     
     private boolean areWeAt(String channel)
@@ -739,14 +742,27 @@ public class BZFlagProtocol implements Connection
     }
     
     @Override
-    public void joinChannel(String channel)
+    public void joinChannel(final String channel)
     {
+        boolean joinWorked = true;
         if (channel.equals("#all"))
             joinedAll = true;
         else if (channel.equals("#admin"))
             joinedAdmin = true;
         else if (channel.equals("#team"))
             joinedTeam = true;
+        else
+            joinWorked = false;
+        if (joinWorked)
+            new Thread()
+            {
+                public void run()
+                {
+                    context.onJoin(channel, getLocalPlayer().callsign,
+                            getPlayerLogin(getLocalPlayer()),
+                            getPlayerHostname(getLocalPlayer()));
+                }
+            }.start();
         // TODO: we should probably report a ban or something via an event, although we'll
         // want to do it on a new thread to prevent deadlocks
     }
@@ -760,14 +776,28 @@ public class BZFlagProtocol implements Connection
     }
     
     @Override
-    public void partChannel(String channel, String reason)
+    public void partChannel(final String channel, String reason)
     {
+        boolean partWorked = true;
         if (channel.equals("#all"))
             joinedAll = false;
         else if (channel.equals("#admin"))
             joinedAdmin = false;
         else if (channel.equals("#team"))
             joinedTeam = false;
+        else
+            partWorked = false;
+        if (partWorked)
+            new Thread()
+            {
+                public void run()
+                {
+                    context.onPart(channel, getLocalPlayer().callsign,
+                            getPlayerLogin(getLocalPlayer()),
+                            getPlayerHostname(getLocalPlayer()));
+                }
+            }.start();
+        
     }
     
     @Override
