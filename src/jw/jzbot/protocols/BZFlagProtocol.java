@@ -173,7 +173,7 @@ public class BZFlagProtocol implements Connection
     
     private class InputThread extends Thread
     {
-        private volatile boolean running;
+        private volatile boolean running = true;
         
         public void shutdown()
         {
@@ -201,7 +201,7 @@ public class BZFlagProtocol implements Connection
     
     private class OutputThread extends Thread
     {
-        private volatile boolean running;
+        private volatile boolean running = true;
         
         public void shutdown()
         {
