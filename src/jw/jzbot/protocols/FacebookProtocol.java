@@ -8,6 +8,9 @@ import org.jibble.pircbot.User;
 
 import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
 
 public class FacebookProtocol implements Connection
 {
@@ -179,9 +182,17 @@ public class FacebookProtocol implements Connection
         // TODO Auto-generated method stub
         return false;
     }
-
+    
     @Override
     public void discard()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    @Override
+    public void processProtocolFunction(Sink sink, ArgumentList arguments,
+            FactContext context)
     {
         // TODO Auto-generated method stub
         

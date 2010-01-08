@@ -12,6 +12,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import jw.jzbot.*;
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
 import jw.jzbot.protocols.bzflag.Message;
 import jw.jzbot.protocols.bzflag.ServerLink;
 import jw.jzbot.protocols.bzflag.pack.MsgAccept;
@@ -603,6 +606,14 @@ public class BZFlagProtocol implements Connection
     @Override
     public void discard()
     {
+    }
+    
+    @Override
+    public void processProtocolFunction(Sink sink, ArgumentList arguments,
+            FactContext context)
+    {
+        throw new UnsupportedOperationException("There aren't yet any "
+                + "protocol-specific functions for the BZFlag protocol.");
     }
     
 }

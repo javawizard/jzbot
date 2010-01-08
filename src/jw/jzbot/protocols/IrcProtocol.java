@@ -5,6 +5,9 @@ import java.io.IOException;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
 import jw.jzbot.Connection;
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.PircBot;
@@ -217,6 +220,14 @@ public class IrcProtocol extends PircBot implements Connection
     public void discard()
     {
         super.dispose();
+    }
+    
+    @Override
+    public void processProtocolFunction(Sink sink, ArgumentList arguments,
+            FactContext context)
+    {
+        throw new UnsupportedOperationException("IrcProtocol doesn't support any "
+                + "protocol-specific functions at the moment.");
     }
     
 }
