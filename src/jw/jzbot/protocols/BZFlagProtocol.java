@@ -2,14 +2,30 @@ package jw.jzbot.protocols;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import jw.jzbot.*;
 import jw.jzbot.protocols.bzflag.Message;
 import jw.jzbot.protocols.bzflag.ServerLink;
+import jw.jzbot.protocols.bzflag.pack.MsgAccept;
+import jw.jzbot.protocols.bzflag.pack.MsgAddPlayer;
+import jw.jzbot.protocols.bzflag.pack.MsgEnter;
+import jw.jzbot.protocols.bzflag.pack.MsgGameTime;
+import jw.jzbot.protocols.bzflag.pack.MsgLagPing;
+import jw.jzbot.protocols.bzflag.pack.MsgMessage;
+import jw.jzbot.protocols.bzflag.pack.MsgPlayerInfo;
+import jw.jzbot.protocols.bzflag.pack.MsgReject;
+import jw.jzbot.protocols.bzflag.pack.MsgRemovePlayer;
+import jw.jzbot.protocols.bzflag.pack.MsgSetVar;
 import jw.jzbot.protocols.bzflag.pack.MsgSuperKill;
+import jw.jzbot.protocols.bzflag.pack.MsgTeamUpdate;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
@@ -72,6 +88,8 @@ import org.jibble.pircbot.User;
  */
 public class BZFlagProtocol implements Connection
 {
+    private boolean hasShutdown = false;
+    
     private boolean joinedAll = false;
     private boolean joinedTeam = false;
     private boolean joinedAdmin = false;
@@ -80,11 +98,28 @@ public class BZFlagProtocol implements Connection
      * Doesn't particularly matter what type of message this is
      */
     public static final Message HALT_QUEUE_MESSAGE = new MsgSuperKill();
+    public static final Object CONNECTION_SUCCESSFUL = new Object();
     private static final int OBSERVER = 5;
     
     private ServerLink serverLink;
     
-    private Queue outQueue
+    private Map<String, String> serverVariables = new HashMap<String, String>();
+    
+    private BlockingQueue<Message> outQueue = new LinkedBlockingQueue<Message>(800);
+    
+    private BlockingQueue<Message> deferredQueue = new LinkedBlockingQueue<Message>(800);
+    
+    private BlockingQueue<Message> immediateQueue = new LinkedBlockingQueue<Message>(800);
+    
+    private BlockingQueue<Object> initialConnectQueue = new LinkedBlockingQueue<Object>(50);
+    
+    private OutputThread outputThread;
+    
+    private InputThread inputThread;
+    
+    private DispatchThread immediateDispatcher;
+    
+    private DispatchThread deferredDispatcher;
     
     private class DispatchThread extends Thread
     {
@@ -92,7 +127,7 @@ public class BZFlagProtocol implements Connection
         
         private boolean running = true;
         
-        public DispatchThread(BlockingQueue queue)
+        public DispatchThread(BlockingQueue<Message> queue)
         {
             this.dispatchQueue = queue;
         }
@@ -127,6 +162,65 @@ public class BZFlagProtocol implements Connection
                 if (message == HALT_QUEUE_MESSAGE)
                     return;
                 dispatch(message);
+            }
+        }
+    }
+    
+    private class InputThread extends Thread
+    {
+        private volatile boolean running;
+        
+        public void shutdown()
+        {
+            running = false;
+        }
+        
+        public void run()
+        {
+            while (running)
+            {
+                try
+                {
+                    Message message = serverLink.receive();
+                    syncToDispatch(message);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    shutdownOnError(e);
+                    return;
+                }
+            }
+        }
+    }
+    
+    private class OutputThread extends Thread
+    {
+        private volatile boolean running;
+        
+        public void shutdown()
+        {
+            running = false;
+        }
+        
+        public void run()
+        {
+            while (running)
+            {
+                Message message;
+                try
+                {
+                    message = outQueue.poll(30, TimeUnit.SECONDS);
+                    if (message == null)
+                        continue;
+                    serverLink.send(message);
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    shutdownOnError(e);
+                    return;
+                }
             }
         }
     }
@@ -188,11 +282,109 @@ public class BZFlagProtocol implements Connection
     
     private Player[] players = new Player[256];
     private ConnectionContext context;
+    private Socket socket;
+    
+    public void syncToDispatch(Message message)
+    {
+        if (message instanceof MsgLagPing)
+            immediateQueue.offer(message);
+        else
+            deferredQueue.offer(message);
+    }
+    
+    public synchronized void shutdownOnError(Exception e)
+    {
+        if (hasShutdown)
+            return;
+        doShutdown();
+        initialConnectQueue.offer(e);
+    }
+    
+    private void doShutdown()
+    {
+        serverLink.closeIgnore();
+        try
+        {
+            inputThread.shutdown();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        try
+        {
+            outputThread.shutdown();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        try
+        {
+            deferredDispatcher.shutdown();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        try
+        {
+            immediateDispatcher.shutdown();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
     
     public void dispatch(Message message)
     {
-        // TODO Auto-generated method stub
-        
+        if (message instanceof MsgLagPing)
+        {
+            // Send the message right back to the server
+            outQueue.offer(message);
+        }
+        else if (message instanceof MsgAccept)
+        {
+            // We'll ignore this for now. We're going to rely on receiving a MsgAdd with
+            // our id in it to signal that we got accepted.
+        }
+        else if (message instanceof MsgAddPlayer)
+        {
+            
+        }
+        else if (message instanceof MsgGameTime)
+        {
+            
+        }
+        else if (message instanceof MsgMessage)
+        {
+            
+        }
+        else if (message instanceof MsgPlayerInfo)
+        {
+            
+        }
+        else if (message instanceof MsgReject)
+        {
+            
+        }
+        else if (message instanceof MsgRemovePlayer)
+        {
+            
+        }
+        else if (message instanceof MsgSetVar)
+        {
+            
+        }
+        else if (message instanceof MsgSuperKill)
+        {
+            
+        }
+        else if (message instanceof MsgTeamUpdate)
+        {
+            
+        }
     }
     
     @Override
@@ -200,15 +392,33 @@ public class BZFlagProtocol implements Connection
     {
         // TODO: we're doing nothing for now, since bzflag doesn't support switching
         // nicks. Should we throw an exception instead? (or for that matter, we could
-        // quickly disconnect and re-connect, althought that wouldn't be quite as
+        // quickly disconnect and re-connect, althought tha t wouldn't be quite as
         // transparent)
     }
     
     @Override
     public void connect() throws IOException, IrcException
     {
-        // TODO Auto-generated method stub
-        
+        long startTime = System.currentTimeMillis();
+        socket = new Socket();
+        socket.setSoTimeout(30 * 1000);
+        String host = context.getServer();
+        int port = context.getPort();
+        socket.connect(new InetSocketAddress(host, port), 30 * 1000);
+        serverLink = new ServerLink(socket, true);
+        initThreads();
+    }
+    
+    private void initThreads()
+    {
+        inputThread = new InputThread();
+        outputThread = new OutputThread();
+        immediateDispatcher = new DispatchThread(immediateQueue);
+        deferredDispatcher = new DispatchThread(deferredQueue);
+        inputThread.start();
+        outputThread.start();
+        immediateDispatcher.start();
+        deferredDispatcher.start();
     }
     
     @Override

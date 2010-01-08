@@ -216,6 +216,7 @@ public class IrcProtocol extends PircBot implements Connection
     @Override
     public void discard()
     {
+        super.dispose();
     }
     
 }

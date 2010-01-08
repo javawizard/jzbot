@@ -446,7 +446,12 @@ public class JZBot
         /*
          * Second step: iterate through all connection objects and check to see if they
          * are disconnected. If they are, check to see if their database server object is
-         * active. If it is, attempt to connect the connection.
+         * active. If it is, attempt to connect the connection. However, if the connection
+         * has been connected at least once before (as determined by the connection
+         * context), then the connection should be discarded and the connection cycle
+         * thread notified. This will cause this whole method to run again, and that time
+         * through it will create a new connection and connect it. This ensures that a
+         * given connection object is never re-used.
          */
         for (ConnectionContext context : connectionMap.values())
         {
@@ -454,38 +459,38 @@ public class JZBot
             {
                 if (context.getDatastoreServer().isActive())
                 {
-                    try
+                    if (context.hasConnected())
                     {
-                        System.out.println("Running pre-connect actions for server "
-                                + context.getServerName());
-                        runPreConnectActions(context);
-                        System.out.println("Connecting to server "
-                                + context.getServerName());
-                        context.getConnection().connect();
-                        System.out.println("Connection established.");
-                        connectionLastErrorMap.remove(context.getServerName());
+                        context.markDiscardNeeded();
+                        notifyConnectionCycleThread();
                     }
-                    catch (Exception e)
+                    else
                     {
-                        e.printStackTrace();
-                        connectionLastErrorMap.put(context.getServerName(), e);
-                        // FIXME: log this so that the jzbot user can see that the
-                        // connection
-                        // failed, and allow them to see why. Maybe add a global
-                        // notification
-                        // for when a server fails to connect (or maybe a server
-                        // notification;
-                        // figure out how that would work with disconnected servers
-                        // running
-                        // factoids etc)
+                        try
+                        {
+                            System.out.println("Running pre-connect actions for server "
+                                    + context.getServerName());
+                            runPreConnectActions(context);
+                            System.out.println("Connecting to server "
+                                    + context.getServerName());
+                            context.getConnection().connect();
+                            context.markConnected();
+                            System.out.println("Connection established.");
+                            connectionLastErrorMap.remove(context.getServerName());
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            connectionLastErrorMap.put(context.getServerName(), e);
+                        }
                     }
                 }
             }
         }
         /*
          * Third step: disconnect all connections if they are connected but their server
-         * object is inactive or their server object is no longer present in the server
-         * objects list
+         * object is inactive, their server object is no longer present in the server
+         * objects list, or the connection has been marked as needing to be discarded
          */
         synchronized (connectionCycleLock)
         {
@@ -494,7 +499,8 @@ public class JZBot
                 if (context.getConnection().isConnected())
                 {
                     if ((!context.getDatastoreServer().isActive())
-                            || !storage.getServers().contains(context.getDatastoreServer()))
+                            || !storage.getServers().contains(context.getDatastoreServer())
+                            || context.discardNeeded())
                     // if the server is not active or the server is no longer in the list
                     {
                         System.out.println("Disconnecting from server "
@@ -507,13 +513,15 @@ public class JZBot
         }
         /*
          * Fourth step: find all connection objects whose server objects are not in the
-         * list anymore and delete them.
+         * list anymore, or that are marked as needing to be discarded, and delete them.
          */
         synchronized (connectionCycleLock)
         {
-            for (ConnectionContext context : connectionMap.values())
+            for (ConnectionContext context : new ArrayList<ConnectionContext>(connectionMap
+                    .values()))
             {
-                if (!storage.getServers().contains(context.getDatastoreServer()))
+                if ((!storage.getServers().contains(context.getDatastoreServer()))
+                        || context.discardNeeded())
                 {
                     System.out.println("Discarding connection for server "
                             + context.getServerName());
@@ -792,7 +800,7 @@ public class JZBot
         System.out.println("This is JZBot, http://jzbot.googlecode.com");
         System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
                 + "and Jonathon Kloster");
-        System.out.println("A.k.a.s, respectively, javawizard2539/jcp, "
+        System.out.println("A.K.A.s, respectively, javawizard2539/jcp, "
                 + "schrottplatz, and MrDudle");
         System.out.println("With contributions from others; send \"help authors\"");
         System.out.println("and \"help packwriters\" to your bot in a pm for ");
@@ -1043,6 +1051,7 @@ public class JZBot
         System.out.println();
         System.out.println("JZBot has successfully started up. Server "
                 + "connections will be established in a few seconds.");
+        System.out.println();
     }
     
     private static void initProxyStorage()
@@ -1282,8 +1291,19 @@ public class JZBot
                     if (pseudoServer == null || pseudoChannel == null)
                     {
                         String primary = ConfigVars.primary.get();
-                        pseudoServer = extractServerName(primary);
-                        pseudoChannel = extractChannelName(primary);
+                        try
+                        {
+                            pseudoServer = extractServerName(primary);
+                            pseudoChannel = extractChannelName(primary);
+                        }
+                        catch (Exception e)
+                        {
+                            new Exception(
+                                    "Exception occurred while extracting "
+                                            + "primary channel in notification factoid. The notification "
+                                            + "will run, but output generated by it will be silently discarded.",
+                                    e).printStackTrace();
+                        }
                     }
                     String factValue = safeRunFactoid(f, server, serverName, channelName,
                             new ServerUser(serverName, sender, null), new ServerChannel(
@@ -2026,8 +2046,18 @@ public class JZBot
                 {
                     e.printStackTrace();
                 }
-                runNotificationFactoid(serverName, datastoreServer, null, null, con
-                        .getConnection().getNick(), "_onconnect", new String[0], true, true);
+                try
+                {
+                    runNotificationFactoid(serverName, datastoreServer, null, null, con
+                            .getConnection().getNick(), "_onconnect", new String[0], true,
+                            true);
+                }
+                catch (Throwable e)
+                {
+                    new Exception("Exception occurred while running "
+                            + "_onconnect for server \"" + serverName + "\"", e)
+                            .printStackTrace();
+                }
                 try
                 {
                     Thread.sleep(3500);

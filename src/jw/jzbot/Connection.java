@@ -3,6 +3,10 @@ package jw.jzbot;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
+
 import org.jibble.pircbot.User;
 import org.jibble.pircbot.IrcException;
 
@@ -93,6 +97,19 @@ public interface Connection
      * @param newnick
      */
     public void changeNick(String newnick);
+    
+    /**
+     * Execute a protocol-specific function.
+     * 
+     * @param sink
+     *            The sink to which the function's output should be written
+     * @param arguments
+     *            The arguments provided in the function
+     * @param context
+     *            The context that the function is being run under
+     */
+    public void processProtocolFunction(Sink sink, ArgumentList arguments,
+            FactContext context);
     
     /**
      * Called once when JZBot is about to discard this connection. No other methods will

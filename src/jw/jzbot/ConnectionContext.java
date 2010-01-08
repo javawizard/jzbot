@@ -146,4 +146,27 @@ public class ConnectionContext
         JZBot.onTopic(datastoreServer, serverName, channel, topic, setBy, date, changed);
     }
     
+    private boolean hasConnected = false;
+    private boolean discardNeeded = false;
+    
+    public void markDiscardNeeded()
+    {
+        discardNeeded = true;
+    }
+    
+    public void markConnected()
+    {
+        hasConnected = true;
+    }
+    
+    public boolean hasConnected()
+    {
+        return hasConnected;
+    }
+    
+    public boolean discardNeeded()
+    {
+        return discardNeeded;
+    }
+    
 }
