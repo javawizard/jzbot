@@ -371,6 +371,7 @@ public class BZFlagProtocol implements Connection
             players[m.id] = player;
             boolean isObserver = player.team == OBSERVER;
             String hostname = getPlayerHostname(player);
+            String login = getPlayerLogin(player);
             context.onJoin("#all", player.callsign, hostname, hostname);
         }
         else if (message instanceof MsgGameTime)
@@ -428,6 +429,8 @@ public class BZFlagProtocol implements Connection
         // If anyone has any idea more useful than this...
         // The length of 10, though, was chosen by jcp because it would trim his callsign
         // ("javawizard2539") to exactly "javawizard", which is sorta cool.
+        // TODO: if we have the ability to get the player's bzid from the server, then we
+        // could use that as the player's login if they're verified.
         String hostname = getPlayerHostname(player);
         if (hostname.length() > 10)
             hostname = hostname.substring(0, 10);
