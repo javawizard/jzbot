@@ -7,7 +7,7 @@ public class DefaultPastebinProviders
 {
     public static void installDefaultSet()
     {
-        //FIXME: add paste.icefyre.org
+        // FIXME: add paste.icefyre.org
         PastebinService.installProvider(new PDPastebin("pastebin.com", true,
                 "pastebin.php", true));
         // p.baf.cc added a captcha, so removed for now.
@@ -15,8 +15,9 @@ public class DefaultPastebinProviders
         // "pastebin.php"));
         PastebinService.installProvider(new PDPastebin("pastebin.flamingspork.com", false,
                 "pastebin.php", true));
-        PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
-                "pastebin.php", false));
+        // This one is commented out at the request of Amahi
+        // PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
+        // "pastebin.php", false));
         PastebinService.installProvider(new PDPastebin("pastebin.hu", false,
                 "pastebin.php", true));
         PastebinService.installProvider(new PDPastebin("ampaste.net", true, "pastebin.php",
@@ -28,6 +29,8 @@ public class DefaultPastebinProviders
                 false));
         PastebinService.installProvider(new PDPastebin("ospaste.com", false, "index.php",
                 true));
+        PastebinService.installProvider(new PDPastebin("spartabin.co.cc", false,
+                "pastebin.php", true));
         // PastebinService.installProvider(new PDPastebin("paste.uberdragon.net", false,
         // "index.php"));
         
