@@ -451,12 +451,20 @@ public class BZFlagProtocol implements Connection
                 // message.
                 return;
             // We can now dispatch the message.
-            if (channel == null)
-                context.onPrivateMessage(from, getPlayerLogin(from),
-                        getPlayerHostname(from), m.message);
+            if (fromServer)
+            {
+                context.onNotice("SERVER", "SERVER", "SERVER", channel != null ? channel
+                        : getLocalPlayer().callsign, m.message);
+            }
             else
-                context.onMessage(channel, from, getPlayerLogin(from),
-                        getPlayerHostname(from), m.message);
+            {
+                if (channel == null)
+                    context.onPrivateMessage(from, getPlayerLogin(from),
+                            getPlayerHostname(from), m.message);
+                else
+                    context.onMessage(channel, from, getPlayerLogin(from),
+                            getPlayerHostname(from), m.message);
+            }
         }
         else if (message instanceof MsgPlayerInfo)
         {
@@ -543,7 +551,15 @@ public class BZFlagProtocol implements Connection
         }
         else if (message instanceof MsgSetVar)
         {
-            
+            MsgSetVar m = (MsgSetVar) message;
+            for (Map.Entry<String, String> entry : m.vars.entrySet())
+            {
+                if (entry.getValue().equals(""))
+                    serverVariables.remove(entry.getKey());
+                else
+                    serverVariables.put(entry.getKey(), entry.getValue());
+            }
+            // TODO: run some sort of factoid notification when this occurs
         }
         else if (message instanceof MsgSuperKill)
         {
