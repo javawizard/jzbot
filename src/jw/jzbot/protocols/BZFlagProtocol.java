@@ -370,7 +370,8 @@ public class BZFlagProtocol implements Connection
                 System.err.println("WARNING: overwriting player at index " + m.id);
             players[m.id] = player;
             boolean isObserver = player.team == OBSERVER;
-            context.onJoin("#all")
+            String hostname = getPlayerHostname(player);
+            context.onJoin("#all", player.callsign, hostname, hostname);
         }
         else if (message instanceof MsgGameTime)
         {
@@ -420,6 +421,17 @@ public class BZFlagProtocol implements Connection
         callsign = callsign.replace("&", "_7");
         callsign = callsign.replace("*", "_8");
         return callsign;
+    }
+    
+    public String getPlayerLogin(Player player)
+    {
+        // If anyone has any idea more useful than this...
+        // The length of 10, though, was chosen by jcp because it would trim his callsign
+        // ("javawizard2539") to exactly "javawizard", which is sorta cool.
+        String hostname = getPlayerHostname(player);
+        if (hostname.length() > 10)
+            hostname = hostname.substring(0, 10);
+        return hostname;
     }
     
     @Override
