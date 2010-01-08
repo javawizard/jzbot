@@ -1,6 +1,0 @@
-name=local.misc.ping
-author=Alexander Boyd
-scope=any
-description=Provides a command, "ping", which responds with "<user>: pong", where <user> \
-is the name of the user that sent the command.
-t.ping=%0%: pong
