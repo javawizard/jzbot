@@ -563,11 +563,12 @@ public class BZFlagProtocol implements Connection
         }
         else if (message instanceof MsgSuperKill)
         {
-            
+            doShutdown();
+            // FIXME: need to call onDisconnect here
         }
         else if (message instanceof MsgTeamUpdate)
         {
-            
+            // We're ignoring this for now
         }
     }
     
