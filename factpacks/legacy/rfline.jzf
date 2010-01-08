@@ -1,8 +1,0 @@
-name=local.library.randomfromline
-author=Alexander Boyd
-scope=global
-description=This factpack contains a utility, library.randomfromline, which is identical \
-to that provided by local.library.randomresline, except that instead of specifying the \
-name of a resource to read, the text is provided as the argument.
-g.library.randomfromline={{replace||{{randomsplit||{{replace||text||%1-%||\\r||}}||\\\\n||^[^\\\\#].*\\$}}||WHO||%2-%}}
-restrict.g.library.randomfromline=1
