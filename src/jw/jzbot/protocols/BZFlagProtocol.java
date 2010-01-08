@@ -490,6 +490,8 @@ public class BZFlagProtocol implements Connection
             for (Info info : m.info)
             {
                 Player player = players[info.playerId];
+                boolean isUs = info.playerId == serverLink.getLocalId();
+                boolean isOther = !isUs;
                 if (player == null)
                 {
                     System.err.println("WARNING: missing player spec for id "
@@ -506,15 +508,17 @@ public class BZFlagProtocol implements Connection
                 if (isAdmin && !wasAdmin)
                 {
                     tryMode("#all", "SERVER", "SERVER", "SERVER", "+o " + player.callsign);
-                    tryJoin("#admin", player.callsign, getPlayerLogin(player),
-                            getPlayerHostname(player));
+                    if (!isUs)
+                        tryJoin("#admin", player.callsign, getPlayerLogin(player),
+                                getPlayerHostname(player));
                     tryMode("#admin", "SERVER", "SERVER", "SERVER", "+o " + player.callsign);
                 }
                 if (!isAdmin && wasAdmin)
                 {
                     tryMode("#all", "SERVER", "SERVER", "SERVER", "-o " + player.callsign);
-                    tryPart("#admin", player.callsign, getPlayerLogin(player),
-                            getPlayerHostname(player));
+                    if (!isUs)
+                        tryPart("#admin", player.callsign, getPlayerLogin(player),
+                                getPlayerHostname(player));
                 }
                 if (isVerified && !wasVerified)
                 {
