@@ -369,18 +369,51 @@ public class BZFlagProtocol implements Connection
                 // This shouldn't happen, so we'll log a warning if it does
                 System.err.println("WARNING: overwriting player at index " + m.id);
             players[m.id] = player;
-            boolean isObserver = player.team == OBSERVER;
-            String hostname = getPlayerHostname(player);
-            String login = getPlayerLogin(player);
-            context.onJoin("#all", player.callsign, hostname, hostname);
+            if (m.id != serverLink.getLocalId())
+            {
+                // This is another player
+                boolean isObserver = player.team == OBSERVER;
+                String hostname = getPlayerHostname(player);
+                String login = getPlayerLogin(player);
+                context.onJoin("#all", player.callsign, login, hostname);
+                if (isObserver)
+                    context.onJoin("#team", player.callsign, login, hostname);
+            }
+            else
+            {
+                // This is us
+                initialConnectQueue.add(CONNECTION_SUCCESSFUL);
+            }
         }
         else if (message instanceof MsgGameTime)
         {
-            
+            // We're ignoring this for now. In the future, we could store this and make it
+            // available as an extended function or something. Or have a standard function
+            // for all protocols, and IRC's version of it asks the server for its time, or
+            // maybe asks the server for its time periodically and returns the stored
+            // value compensated for when it was received.
         }
         else if (message instanceof MsgMessage)
         {
-            
+            MsgMessage m = (MsgMessage) message;
+            // Server messages we'll send as notices to avoid the bot trying to respond to
+            // periodic messages sent out by the server.
+            if (m.from == serverLink.getLocalId())
+                // We're ignoring messages that appear to be from us for now.
+                return;
+            boolean fromServer = m.from == BZFlagConnector.MsgToServerPlayer;
+            String channel = null;
+            if (m.to == BZFlagConnector.MsgToAllPlayers)
+                channel = "#all";
+            else if (m.to == BZFlagConnector.MsgToAdmins)
+                channel = "#admin";
+            else if (m.to == BZFlagConnector.MsgToObserverTeam)
+                channel = "#team";
+            else if (m.to != serverLink.getLocalId())
+                // Ignore messages sent from someone else to someone else. There's no
+                // reason we should receive this, but just in case...
+                return;
+            // If this was a pm, channel will be null at this point
         }
         else if (message instanceof MsgPlayerInfo)
         {
