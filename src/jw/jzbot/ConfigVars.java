@@ -26,11 +26,11 @@ public enum ConfigVars
     {
         public String getDescription()
         {
-            return "See \"~help functions eval\" for information. When {{eval}} is "
+            return "See \"~help functions eval\" for information. When {eval} is "
                     + "used without an engine specified, whatever engine is set in this "
                     + "config variable is the engine that will be used. For example, if "
-                    + "this config variable is \"jeval\", then running {{eval||5+3}} "
-                    + "will function the same as {{eval||jeval||5+3}}.";
+                    + "this config variable is \"jeval\", then running {eval||5+3} "
+                    + "will function the same as {eval|jeval|5+3}.";
         }
         
     },
@@ -52,7 +52,7 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    keys("", "A pipe-separated list of hashes (as obtained from the {{hash}} function). "
+    keys("", "A pipe-separated list of hashes (as obtained from the {hash} function). "
             + "If a user runs \"~op key <text>\", and then has of <text> is equal to "
             + "one of the hashes in this list, the user will be made a superop. Note that "
             + "keys cannot contain spaces."), notfound(
@@ -103,7 +103,7 @@ public enum ConfigVars
         }
     },
     logsize("0", "This config variable is the maximum size, in bytes, of the logs to "
-            + "keep for each channel on a per-channel basis. Use the {{logs}} function "
+            + "keep for each channel on a per-channel basis. Use the {logs} function "
             + "to actually read these logs. 0 disables logging. This doesn't take effect "
             + "until the bot is restarted. A channel-specific log size "
             + "will be coming soon."), nolog("",
@@ -132,7 +132,7 @@ public enum ConfigVars
             + "display with ~help before pastebinning the list of subpages. 0 disables "
             + "using the pastebin service for this list. TODO: implement this"), lqdelay(
             "30000", "This config var is the delay, in milliseconds, that the bot "
-                    + "will wait between writing new logs to the log file. The {{log}} "
+                    + "will wait between writing new logs to the log file. The {log} "
                     + "function will typically lag behind the actual channel contents "
                     + "by this many milliseconds. A restart is needed for this "
                     + "to take effect.")

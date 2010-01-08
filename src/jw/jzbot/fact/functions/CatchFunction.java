@@ -41,7 +41,7 @@ public class CatchFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {catch|<action>|<prefix>|<onerror>}} -- Evaluates to <action>. "
+        return "Syntax: {catch|<action>|<prefix>|<onerror>} -- Evaluates to <action>. "
                 + "If <action> ends up throwing an exception, <onerror> is run instead. "
                 + "A few local variables are set if an error does occur. Their names "
                 + "are <prefix>-class, which is the name of the class of the error (this "

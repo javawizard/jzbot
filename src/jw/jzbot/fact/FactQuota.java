@@ -59,7 +59,7 @@ public class FactQuota
         importCount += 1;
         if (importCount > maxImportCount)
             throw new FactoidException("Maximum limit of " + MAX_IMPORT_COUNT
-                    + " {{import}} and {{run}} calls per " + "factoid invocation exceeded.");
+                    + " {import} and {run} calls per " + "factoid invocation exceeded.");
     }
     
     public int getMessageCount()

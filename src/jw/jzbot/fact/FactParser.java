@@ -19,7 +19,7 @@ import org.jibble.pircbot.Colors;
  * lines:<br/>
  * 
  * <pre>
- * String factoid = &quot;The numbers from 1 to 5 are {{numberlist||1||5}} and the var 1 is %1%&quot;;
+ * String factoid = &quot;The numbers from 1 to 5 are {numberlist|1|5} and the var 1 is %1%&quot;;
  * FactContext context = new FactContext();
  * context.getLocalVars().put(&quot;1&quot;, &quot;Hello world!&quot;);
  * FactEntity entity = FactParser.parse(factoid, &quot;my_test_program&quot;);
@@ -427,8 +427,8 @@ public class FactParser
                         "Inserts the IRC color change character. Immediately following "
                                 + "this should be two digits, which represent the color of text "
                                 + "that should show up.\n"
-                                + "Create a factoid with the text \"{{split|| ||{{numberlist||1||15}}||"
-                                + "c||{{c}}{{lset||c||{{pad||2||0||%c%}}}}%c%%c%|| }}\" (without "
+                                + "Create a factoid with the text \"{split| |{numberlist|1|15}|"
+                                + "c|{c}{lset|c|{pad|2|0|%c%}}%c%%c%| }\" (without "
                                 + "quotes), then run it; the result will be a list of numbers and "
                                 + "the color they represent.\n"
                                 + "This function is deprecated, and \"\\c\" should be used instead."));
@@ -475,7 +475,7 @@ public class FactParser
     }
     
     /**
-     * Parses the specified text and then explains it, omitting the default {{identity}}
+     * Parses the specified text and then explains it, omitting the default {identity}
      * function.
      * 
      * @param factoid

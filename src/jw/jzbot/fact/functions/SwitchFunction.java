@@ -14,7 +14,7 @@ public class SwitchFunction extends Function
         String value = arguments.resolveString(0);
         arguments = arguments.subList(1);
         int cases = arguments.length() / 2;
-        System.out.println("" + cases + " cases in {{switch}}");
+        System.out.println("" + cases + " cases in {switch}");
         for (int i = 0; i < cases; i++)
         {
             if (value.equals(arguments.resolveString(i * 2)))
@@ -40,7 +40,7 @@ public class SwitchFunction extends Function
                 + "the <test> arguments, then the switch function evaluates to <default>.\n"
                 + "<default> is entirely optional. If it's not present, and none of the "
                 + "<test> arguments match <value>, then the switch function will evaluate "
-                + "to nothing. For example, {switch|2|1|first|2|second|3|third|missing}} "
+                + "to nothing. For example, {switch|2|1|first|2|second|3|third|missing} "
                 + "would evaluate to \"second\", and {switch|5|1|first|2|second|"
                 + "3|third|missing} would evaluate to \"missing\".";
     }

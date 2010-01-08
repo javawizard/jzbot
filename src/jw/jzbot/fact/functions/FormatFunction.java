@@ -48,7 +48,7 @@ public class FormatFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {format|<formatstring>|<arg1>|<arg2>|...}} -- Applies C-style "
+        return "Syntax: {format|<formatstring>|<arg1>|<arg2>|...} -- Applies C-style "
                 + "printf formatting to <formatstring> with <arg1>, <arg2>, etc. being "
                 + "the format arguments. This could be considered an equivalent to "
                 + "C's printf(<formatstring>,<arg1>,<arg2>,...), but output, instead "

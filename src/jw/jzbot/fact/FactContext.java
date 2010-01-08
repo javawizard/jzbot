@@ -24,7 +24,7 @@ public class FactContext implements Scope
             + "scope does not have an associated "
             + "server, but a server was needed. Consider "
             + "wrapping this function call with a call to "
-            + "the {{scope}} function to add a server to the current scope.";
+            + "the {scope} function to add a server to the current scope.";
     
     public FactContext()
     {

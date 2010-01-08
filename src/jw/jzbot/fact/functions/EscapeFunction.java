@@ -39,9 +39,9 @@ public class EscapeFunction extends Function
                 delegate.write("\\n");
             else if (c < 32 || c > 126)
             {
-                delegate.write("{{char||");
+                delegate.write("{char|");
                 delegate.write((int) c);
-                delegate.write("}}");
+                delegate.write("}");
             }
             else
                 delegate.write(c);

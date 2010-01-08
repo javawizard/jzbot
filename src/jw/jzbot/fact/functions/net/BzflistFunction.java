@@ -39,7 +39,7 @@ public class BzflistFunction extends Function
         }
         catch (Exception e)
         {
-            throw new FactoidException("Exception occured while running {{bzflist}}", e);
+            throw new FactoidException("Exception occured while running {bzflist}", e);
         }
     }
     

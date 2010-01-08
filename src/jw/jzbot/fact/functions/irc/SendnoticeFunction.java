@@ -1,5 +1,6 @@
 package jw.jzbot.fact.functions.irc;
 
+import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -13,9 +14,11 @@ public class SendnoticeFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (!context.checkedGetConnection().getConnection().isConnected())
-            throw new FactoidException("Can't send notices when the bot is disconnected");
         String to = arguments.resolveString(0);
+        String serverName = JZBot.extractRelativeServer(to, context);
+        ConnectionWrapper con = JZBot.getCheckedConnection(serverName);
+        if (!context.checkedGetConnection().getConnection().isConnected())
+            throw new FactoidException("Can't send messages when the bot is disconnected");
         String message = arguments.resolveString(1);
         context.incrementMessageCount();
         context.checkedGetConnection().getConnection().sendNotice(to, message);

@@ -36,7 +36,7 @@ public class CascadeFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {cascade|<regex>|<factoid>|<argument1>|...} -- Identical to the "
-                + "{{import}} function, with one exception: any local variable in this factoid "
+                + "{import} function, with one exception: any local variable in this factoid "
                 + "whose name matches the regular expression <regex> will be handed down to "
                 + "<factoid> when it is run. Note that changes to the variable inside that "
                 + "factoid will not prepegate up to this factoid. Also, special local variables "

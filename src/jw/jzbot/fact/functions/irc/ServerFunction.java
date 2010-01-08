@@ -29,7 +29,7 @@ public class ServerFunction extends Function
         return "Syntax: {server|<scope>} -- Extracts the server name from the specified "
                 + "scope and evaluates to it. If there is no server in the specified scope, "
                 + "evaluates to nothing. <scope> is optional, and if not present, {server} "
-                + "functions as if it had been invoked as \"{server|{scope}}\".";
+                + "functions as if it had been invoked as \"{server|{scope}\".";
     }
     
 }

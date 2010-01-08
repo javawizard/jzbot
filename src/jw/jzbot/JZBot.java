@@ -341,7 +341,7 @@ public class JZBot
                     + "\" was expected to contain a server name, but it "
                     + "did not and the current scope doesn't contain "
                     + "a server name either. Consider wrapping this "
-                    + "function call with a call to the {{scope}} "
+                    + "function call with a call to the {scope} "
                     + "function to add a server to the current scope, "
                     + "or just specify a server in the target string "
                     + "that you're using.");

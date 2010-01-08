@@ -7,7 +7,7 @@ import jw.jzbot.fact.FactContext;
  * to be scoped to. The primary implementations of this interface are
  * {@link ServerChannel}, which returns the server and channel that it was passed during
  * construction, and {@link FactContext}, which returns the server and channel that it has
- * been scoped to with the {{scope}} function or the server and channel at which the
+ * been scoped to with the {scope} function or the server and channel at which the
  * factoid was run.
  * 
  * @author Alexander Boyd

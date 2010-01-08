@@ -172,7 +172,7 @@ public abstract class FactEntity
     /**
      * Gets the character index for this fact entity. The character index is the position,
      * in number of characters, within the factoid that the start of this entity appears.
-     * For example, in the factoid "{{pset||something||{{pget||somethingelse}}}}", the
+     * For example, in the factoid "{pset|something|{pget|somethingelse}}", the
      * character index of the function reference corresponding to the "pget" function call
      * would be 19, since that's the position at which the first opening-brace of the
      * function call occurs. The literal entity "pget", however, would have a character

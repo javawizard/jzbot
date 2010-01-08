@@ -29,7 +29,7 @@ public class ReplaceFunction extends Function
                     arguments.resolveString(2)));
         }
         else
-            throw new FactoidException("Mode to {{replace}} was " + mode
+            throw new FactoidException("Mode to {replace} was " + mode
                     + ", not \"regex\" or \"text\"");
     }
     
