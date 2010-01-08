@@ -30,6 +30,7 @@ import jw.jzbot.protocols.bzflag.pack.MsgRemovePlayer;
 import jw.jzbot.protocols.bzflag.pack.MsgSetVar;
 import jw.jzbot.protocols.bzflag.pack.MsgSuperKill;
 import jw.jzbot.protocols.bzflag.pack.MsgTeamUpdate;
+import jw.jzbot.protocols.bzflag.pack.MsgPlayerInfo.Info;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
@@ -375,9 +376,9 @@ public class BZFlagProtocol implements Connection
                 boolean isObserver = player.team == OBSERVER;
                 String hostname = getPlayerHostname(player);
                 String login = getPlayerLogin(player);
-                context.onJoin("#all", player.callsign, login, hostname);
+                tryJoin("#all", player.callsign, login, hostname);
                 if (isObserver)
-                    context.onJoin("#team", player.callsign, login, hostname);
+                    tryJoin("#team", player.callsign, login, hostname);
             }
             else
             {
@@ -404,20 +405,101 @@ public class BZFlagProtocol implements Connection
             boolean fromServer = m.from == BZFlagConnector.MsgToServerPlayer;
             String channel = null;
             if (m.to == BZFlagConnector.MsgToAllPlayers)
+            {
+                if (!joinedAll)
+                    return;
                 channel = "#all";
+            }
             else if (m.to == BZFlagConnector.MsgToAdmins)
+            {
+                if (!joinedAdmin)
+                    return;
                 channel = "#admin";
+            }
             else if (m.to == BZFlagConnector.MsgToObserverTeam)
+            {
+                if (!joinedTeam)
+                    return;
                 channel = "#team";
+            }
             else if (m.to != serverLink.getLocalId())
                 // Ignore messages sent from someone else to someone else. There's no
                 // reason we should receive this, but just in case...
                 return;
-            // If this was a pm, channel will be null at this point
+            // If this was a pm, channel will be null at this point. Either way, we need
+            // to figure out the name of the user that sent the message.
+            String from = null;
+            if (fromServer)
+                from = "SERVER";
+            else
+            {
+                for (Player p : players)
+                {
+                    if (p != null)
+                    {
+                        if (p.playerId == m.from)
+                        {
+                            from = p.callsign;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (from == null)
+                // For some reason, we don't have the player's name. This is where it
+                // shows up as "UNKNOWN" in the BZFlag client, but we'll just discard the
+                // message.
+                return;
+            // We can now dispatch the message.
+            if (channel == null)
+                context.onPrivateMessage(from, getPlayerLogin(from),
+                        getPlayerHostname(from), m.message);
+            else
+                context.onMessage(channel, from, getPlayerLogin(from),
+                        getPlayerHostname(from), m.message);
         }
         else if (message instanceof MsgPlayerInfo)
         {
-            
+            /*
+             * This one is tricky. We need to get the previous status of the player and
+             * compare it with the new status. Specifically:
+             * 
+             * If the player is now an admin and was not before, they receive mode +o at
+             * #all, and they join #admin and receive mode +o there
+             * 
+             * If the player is no longer an admin but was before, they receive mode -o at
+             * #all, and they part #admin
+             * 
+             * If the player is verified and was not before, they receive mode +v at #all.
+             * They do not receive any such flag at #admin if they happen to be joined
+             * there.
+             * 
+             * If the player is no longer verified but was before, they receive mode -v at
+             * #all. They do not receive any such flag change at #admin if they happen to
+             * be joined there.
+             */
+            MsgPlayerInfo m = (MsgPlayerInfo) message;
+            for (Info info : m.info)
+            {
+                Player player = players[info.playerId];
+                if (player == null)
+                {
+                    System.err.println("WARNING: missing player spec for id "
+                            + info.playerId);
+                    continue;
+                }
+                boolean wasAdmin = player.admin;
+                boolean wasVerified = player.verified;
+                boolean isAdmin = info.admin;
+                boolean isVerified = info.verified;
+                player.admin = info.admin;
+                player.registered = info.registered;
+                player.verified = info.verified;
+                if (isAdmin && !wasAdmin)
+                {
+                    
+                }
+            }
         }
         else if (message instanceof MsgReject)
         {
@@ -441,9 +523,29 @@ public class BZFlagProtocol implements Connection
         }
     }
     
-    public String getPlayerHostname(Player player)
+    private void tryMode(String channel, String source, String sourceLogin, String sourceHostname, String mode)
     {
-        String callsign = player.callsign;
+        context.onm
+    }
+    
+    private void tryJoin(String channel, String sender, String login, String hostname)
+    {
+        context.onJoin()
+    }
+    
+    private boolean areWeAt(String channel)
+    {
+        if (channel.equals("#all"))
+            return joinedAll;
+        if (channel.equals("#admin"))
+            return joinedAdmin;
+        if (channel.equals("#team"))
+            return joinedTeam;
+        return false;
+    }
+    
+    public String getPlayerHostname(String callsign)
+    {
         callsign = callsign.replace("_", "__");
         callsign = callsign.replace(" ", "_0");
         callsign = callsign.replace("!", "_1");
@@ -457,17 +559,27 @@ public class BZFlagProtocol implements Connection
         return callsign;
     }
     
-    public String getPlayerLogin(Player player)
+    public String getPlayerLogin(String callsign)
     {
         // If anyone has any idea more useful than this...
         // The length of 10, though, was chosen by jcp because it would trim his callsign
         // ("javawizard2539") to exactly "javawizard", which is sorta cool.
         // TODO: if we have the ability to get the player's bzid from the server, then we
         // could use that as the player's login if they're verified.
-        String hostname = getPlayerHostname(player);
+        String hostname = getPlayerHostname(callsign);
         if (hostname.length() > 10)
             hostname = hostname.substring(0, 10);
         return hostname;
+    }
+    
+    public String getPlayerHostname(Player p)
+    {
+        return getPlayerHostname(p.callsign);
+    }
+    
+    public String getPlayerLogin(Player p)
+    {
+        return getPlayerLogin(p.callsign);
     }
     
     @Override
