@@ -9,6 +9,8 @@ description Adds a "lart" command, which chooses from one of 133 creative respon
  A lot of the responses (such as the "rm -rf" one or the "/dev/urandom" one) are of a technical 
  nature, and all of them are sent as actions (IE as if they were prefixed with "/me").
 
+preinstall {fpcheckdep||local.library.randomfromline}
+
 >lart {action}{cset|person|{ife|%1-%|%0%|%1-%}}{global|library.randomfromline|{import|lart-generate-content}}
 >lart-generate-content
  --purges WHO\n
