@@ -82,7 +82,8 @@ public class HelpCommand implements Command
             else
                 helpCommand = "~help";
         }
-        text = text.replace("%HELPCMD%", helpCommand);
+        String nick = JZBot.getRealConnection(server).getConnection().getNick();
+        text = text.replace("%HELPCMD%", helpCommand).replace("%SELFNICK%", nick);
         if (!allSubpages)
         {
             String[] messages = text.split("\n");
