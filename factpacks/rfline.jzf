@@ -4,6 +4,6 @@ scope global
 description This factpack contains a utility, library.randomfromline, which is identical 
   to that provided by local.library.randomresline, except that instead of specifying the
   name of a resource to read, the text is provided as the argument.
-preinstall {fpcheckscope|global
+preinstall {fpcheckscope|global}
 >library.randomfromline {replace|text|{randomsplit|{replace|text|%1-%|\r|}|\n|^[^#].*$}|WHO|{cget|person}}
 restrict.library.randomfromline 1
