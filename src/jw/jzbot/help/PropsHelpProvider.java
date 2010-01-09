@@ -43,10 +43,6 @@ public class PropsHelpProvider implements HelpProvider
         if (s != null)
         {
             s = s.trim();
-            // FIXME: enable this. We need to figure out how to get access to the user's
-            // current bot at this point, and how to resolve this depending on where the
-            // user is targeting. Consider using the source messenger.
-            // s = s.replace("%SELFNICK%", JZBot.bot.getNick());
         }
         return s;
     }
