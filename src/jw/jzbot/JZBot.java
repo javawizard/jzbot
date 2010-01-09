@@ -800,6 +800,8 @@ public class JZBot
     public static void main(String[] args) throws Throwable
     {
         System.out.println("This is JZBot, http://jzbot.googlecode.com");
+        System.out.println("Revision " + VersionInfo.revision + ", built on "
+                + VersionInfo.shortDateString);
         System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
                 + "and Jonathon Kloster");
         System.out.println("A.K.A.s, respectively, javawizard2539/jcp, "
