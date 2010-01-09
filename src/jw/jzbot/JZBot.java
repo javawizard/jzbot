@@ -1996,6 +1996,7 @@ public class JZBot
     
     public static void onConnect(final Server datastoreServer, final String serverName)
     {
+        System.out.println("running onConnect() for server " + serverName);
         final ConnectionWrapper con = getConnection(serverName);
         new Thread()
         {

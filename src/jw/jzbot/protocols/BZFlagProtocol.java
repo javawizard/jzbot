@@ -397,6 +397,8 @@ public class BZFlagProtocol implements Connection
         else if (message instanceof MsgMessage)
         {
             MsgMessage m = (MsgMessage) message;
+            System.out.println("Message from #" + m.from + " to #" + m.to + ": "
+                    + m.message);
             // Server messages we'll send as notices to avoid the bot trying to respond to
             // periodic messages sent out by the server.
             if (m.from == serverLink.getLocalId())
@@ -537,6 +539,7 @@ public class BZFlagProtocol implements Connection
         else if (message instanceof MsgReject)
         {
             MsgReject m = (MsgReject) message;
+            System.out.println("BZFlag Rejected: " + m.reason + " " + m.message);
             doShutdown();
             initialConnectQueue.offer(new RuntimeException(
                     "Connection rejected by the server: " + m.reason + " " + m.message));
@@ -544,6 +547,7 @@ public class BZFlagProtocol implements Connection
         else if (message instanceof MsgRemovePlayer)
         {
             MsgRemovePlayer m = (MsgRemovePlayer) message;
+            System.out.println("Player #" + m.playerId + " removed.");
             Player player = players[m.playerId];
             if (player == null)
             {
@@ -571,6 +575,7 @@ public class BZFlagProtocol implements Connection
         }
         else if (message instanceof MsgSuperKill)
         {
+            System.out.println("BZFlag MsgSuperKill received; disconnecting.");
             doShutdown();
             // FIXME: need to call onDisconnect here
         }
@@ -724,7 +729,7 @@ public class BZFlagProtocol implements Connection
         }
         else if (status == CONNECTION_SUCCESSFUL)
         {
-            // We've successfully connected.
+            startOnConnectThread();
             return;
         }
         else
@@ -732,6 +737,26 @@ public class BZFlagProtocol implements Connection
             doShutdown();
             throw new IOException("An unknown error occurred while connecting.");
         }
+    }
+    
+    private void startOnConnectThread()
+    {
+        new Thread("bzflag-onconnect-thread")
+        {
+            public void run()
+            {
+                try
+                {
+                    Thread.sleep(2000);// Wait for some time so that we get the full list
+                    // of server players
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+                context.onConnect();
+            }
+        }.start();
     }
     
     private void initThreads()
