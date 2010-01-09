@@ -190,11 +190,12 @@ public class MMCommand implements Command
             if (pm)
                 sender.sendMessage("You won! That was the correct answer.");
             JZBot.getServer(server).sendMessage(channel,
-                    sender + " won! " + answer + " was the correct answer.");
+                    sender.getNick() + " won! " + answer + " was the correct answer.");
             return;
         }
-        source.sendMessage(sender + ": " + rightPosition + " right place, " + rightNumber
-                + " right number wrong place. " + state.guesses + " guesses so far.");
+        source.sendMessage(sender.getNick() + ": " + rightPosition + " right place, "
+                + rightNumber + " right number wrong place. " + state.guesses
+                + " guesses so far.");
     }
     
     private void removeOne(ArrayList<Integer> correct, int guess)
