@@ -65,4 +65,21 @@ public class JZUtils
             messenger.sendMessage(s);
         }
     }
+    
+    public static void sendSpaced(Messenger messenger, String string)
+    {
+        String[] data = spaced(messenger, string);
+        for (String s : data)
+            messenger.sendMessage(s);
+    }
+    
+    public static String[] spaced(Messenger messenger, String string)
+    {
+        return spaced(messenger.getProtocolDelimitedLength(), string);
+    }
+    
+    public static String[] spaced(int max, String string)
+    {
+        return delimitedLengthRestricted(string.split(" "), " ", max);
+    }
 }

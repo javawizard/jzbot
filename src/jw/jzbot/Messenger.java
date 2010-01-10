@@ -7,4 +7,6 @@ public interface Messenger
     public void sendAction(String action);
     
     public int getProtocolDelimitedLength();
+    
+    public void sendSpaced(String message);
 }

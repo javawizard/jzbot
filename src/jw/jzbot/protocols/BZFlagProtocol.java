@@ -399,6 +399,7 @@ public class BZFlagProtocol implements Connection
             MsgMessage m = (MsgMessage) message;
             System.out.println("Message from #" + m.from + " to #" + m.to + ": "
                     + m.message);
+            debugDumpMessage("BZFlag inbound message: ", m.message);
             // Server messages we'll send as notices to avoid the bot trying to respond to
             // periodic messages sent out by the server.
             if (m.from == serverLink.getLocalId())
@@ -927,7 +928,7 @@ public class BZFlagProtocol implements Connection
     public void sendAction(String target, String message)
     {
         // Actions are messages with a specialized format.
-        sendMessage(target, "* " + getLocalPlayer().callsign + " " + message + "\t*");
+        sendMessage(target, "/me " + message);
     }
     
     private Player getLocalPlayer()
@@ -940,6 +941,7 @@ public class BZFlagProtocol implements Connection
     {
         // TODO: we really should check to make sure that we're connected, but for now, we
         // won't bother.
+        debugDumpMessage("BZFlag outbound message: ", message);
         MsgMessage m = new MsgMessage();
         m.message = message;
         if (target.equals("SERVER"))
@@ -979,6 +981,15 @@ public class BZFlagProtocol implements Connection
                 return;
         }
         serverLink.uncheckedSend(m);
+    }
+    
+    private void debugDumpMessage(String string, String message)
+    {
+        // for (char c : message.toCharArray())
+        // {
+        // string += ((int) c) + " ";
+        // }
+        // System.out.println(string);
     }
     
     @Override
