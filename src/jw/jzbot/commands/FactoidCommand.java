@@ -262,13 +262,63 @@ public class FactoidCommand implements Command
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
         {
-            // FIXME: need to implement these
-            throw new ResponseException("Not implemented yet.");
+            String factoidName = afterCommand;
+            Factoid f;
+            if (scope == FactScope.global)
+                f = JZBot.storage.getFactoid(factoidName);
+            else if (scope == FactScope.server)
+                f = s.getFactoid(factoidName);
+            else
+                f = c.getFactoid(factoidName);
+            if (f == null)
+            {
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist at that scope.");
+            }
+            sender.verifySuperop();
+            if (command.equals("restrict"))
+            {
+                if (f.isRestricted())
+                    throw new ResponseException("That factoid is already restricted.");
+                f.setRestricted(true);
+                source.sendMessage("That factoid is now restricted.");
+            }
+            else
+            {
+                if (!f.isRestricted())
+                    throw new ResponseException("That factoid is not currently restricted.");
+                f.setRestricted(false);
+                source.sendMessage("That factoid is now unrestricted.");
+            }
+            
         }
         if (command.equals("isrestricted"))
         {
-            // FIXME: need to implement these
-            throw new ResponseException("Not implemented yet.");
+            String factoidName = afterCommand;
+            Factoid f;
+            if (scope == FactScope.global)
+                f = JZBot.storage.getFactoid(factoidName);
+            else if (scope == FactScope.server)
+                f = s.getFactoid(factoidName);
+            else
+                f = c.getFactoid(factoidName);
+            if (f == null)
+            {
+                // if ((!isGlobal) && JZBot.storage.getFactoid(afterCommand) != null)
+                // throw new ResponseException(
+                // "That factoid doesn't exist. However, there is a global "
+                // + "factoid with that name. Use \"factoid global\" instead "
+                // + "of \"factoid\" in the command to do stuff with "
+                // + "the global factoid.");
+                throw new ResponseException("That factoid doesn't exist at that scope.");
+            }
+            source.sendMessage("That factoid is " + (f.isRestricted() ? "not " : "")
+                    + "restricted.");
         }
         if (command.equals("export"))
         {
