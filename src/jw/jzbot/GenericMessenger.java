@@ -1,5 +1,7 @@
 package jw.jzbot;
 
+import jw.jzbot.utils.JZUtils;
+
 /**
  * A generic messenger that can be used when only a connection wrapper and a recipient
  * name are available. Generally, ServerUser and ServerChannel should be used in
@@ -36,6 +38,12 @@ public class GenericMessenger implements Messenger
     public void sendMessage(String message)
     {
         con.sendMessage(recipient, message);
+    }
+    
+    @Override
+    public void sendSpaced(String message)
+    {
+        JZUtils.sendSpaced(this, message);
     }
     
 }

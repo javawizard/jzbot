@@ -1,5 +1,7 @@
 package jw.jzbot;
 
+import jw.jzbot.utils.JZUtils;
+
 public class ServerUser implements Messenger
 {
     private String serverName;
@@ -107,6 +109,12 @@ public class ServerUser implements Messenger
     public void sendAction(String action)
     {
         JZBot.getConnection(serverName).sendAction(nick, action);
+    }
+    
+    @Override
+    public void sendSpaced(String message)
+    {
+        JZUtils.sendSpaced(this, message);
     }
     
 }

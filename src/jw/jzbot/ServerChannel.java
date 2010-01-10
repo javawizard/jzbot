@@ -1,5 +1,7 @@
 package jw.jzbot;
 
+import jw.jzbot.utils.JZUtils;
+
 public class ServerChannel implements Messenger, Scope
 {
     private String serverName;
@@ -49,6 +51,12 @@ public class ServerChannel implements Messenger, Scope
     public void sendAction(String action)
     {
         JZBot.getConnection(serverName).sendAction(channel, action);
+    }
+    
+    @Override
+    public void sendSpaced(String message)
+    {
+        JZUtils.sendSpaced(this, message);
     }
     
 }

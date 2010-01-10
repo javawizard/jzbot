@@ -166,7 +166,15 @@ public class BZFlagProtocol implements Connection
                     continue;
                 if (message == HALT_QUEUE_MESSAGE)
                     return;
-                dispatch(message);
+                try
+                {
+                    dispatch(message);
+                }
+                catch (Exception e)
+                {
+                    new Exception("Exception while dispatching message", e)
+                            .printStackTrace();
+                }
             }
         }
     }
@@ -465,12 +473,21 @@ public class BZFlagProtocol implements Connection
             }
             else
             {
-                if (channel == null)
-                    context.onPrivateMessage(from, getPlayerLogin(from),
-                            getPlayerHostname(from), m.message);
+                if (isActionMessage(m.message, from))
+                {
+                    String actual = getRawAction(m.message, from);
+                    context.onAction(from, getPlayerLogin(from), getPlayerHostname(from),
+                            channel == null ? from : channel, actual);
+                }
                 else
-                    context.onMessage(channel, from, getPlayerLogin(from),
-                            getPlayerHostname(from), m.message);
+                {
+                    if (channel == null)
+                        context.onPrivateMessage(from, getPlayerLogin(from),
+                                getPlayerHostname(from), m.message);
+                    else
+                        context.onMessage(channel, from, getPlayerLogin(from),
+                                getPlayerHostname(from), m.message);
+                }
             }
         }
         else if (message instanceof MsgPlayerInfo)
@@ -584,6 +601,16 @@ public class BZFlagProtocol implements Connection
         {
             // We're ignoring this for now
         }
+    }
+    
+    private boolean isActionMessage(String message, String callsign)
+    {
+        return message.startsWith("* " + callsign + " ") && message.endsWith("\t*");
+    }
+    
+    private String getRawAction(String message, String callsign)
+    {
+        return message.substring(3 + callsign.length(), message.length() - 2);
     }
     
     private String getLocalHostname()
