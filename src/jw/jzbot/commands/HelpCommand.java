@@ -86,11 +86,12 @@ public class HelpCommand implements Command
         text = text.replace("%HELPCMD%", helpCommand).replace("%SELFNICK%", nick);
         if (!allSubpages)
         {
+            text = text.replace("\n", " ");
             String[] messages = text.split("\n");
             for (String s : messages)
             {
                 if (!s.trim().equals(""))
-                    source.sendMessage(s);
+                    source.sendSpaced(s);
             }
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
