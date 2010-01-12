@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.esolang;
 
 import java.io.ByteArrayInputStream;
 

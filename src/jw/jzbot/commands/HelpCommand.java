@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.HelpProvider;
@@ -96,35 +98,17 @@ public class HelpCommand implements Command
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
                 pageWithSpace = " " + pageWithSpace;
-            String startText = (subpages.size() > 0 ? "Subpages (\"" + helpCommand
-                    + pageWithSpace + " <pagename>\" to show a page): " : "No subpages.");
-            String prefix = "---> ";
+            String pageListText = (subpages.size() > 0 ? "---> Subpages ("
+                    + subpages.size() + " pages; use \"" + helpCommand + pageWithSpace
+                    + " <pagename>\" to show a page):  " : "");
             // TODO: have it pastebin the list of subpages if there are more than, say, 20
             // subpages. Also have it omit "---> No subpages." if there aren't any.
             // UPDATE: this might already be disabled, see the comment about 15 lines
             // down from here.
-            String[] delimited = JZUtils.delimitedLengthRestricted(subpages
-                    .toArray(new String[0]), "   ", 320);
-            boolean sentFirst = false;
-            if (delimited.length > 0)
+            pageListText += StringUtils.delimited(subpages.toArray(new String[0]), "   ");
+            if (pageListText.length() > 0)
             {
-                for (String s : delimited)
-                {
-                    if (sentFirst)
-                    {
-                        source.sendMessage(prefix + s);
-                    }
-                    else
-                    {
-                        sentFirst = true;
-                        if (subpages.size() > 0)// disables "no subpages" message for now
-                            source.sendMessage(prefix + startText + s);
-                    }
-                }
-            }
-            else
-            {
-                source.sendMessage(prefix + startText);
+                source.sendSpaced(pageListText);
             }
         }
         else
