@@ -39,20 +39,20 @@ public class SplitFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {split|<regex>|<string>|<varname>|<action>|<delimiter>}"
-                + " -- Splits <string> into a list of strings around the regular "
-                + "expression <regex>, then evaluates <action> once for each item "
-                + "in the list of strings, with the local variable <varname> set to "
-                + "the current item in the list. {split} then evaluates to what "
-                + "each of the evaluations of <action> evaluated to, separated by "
-                + "<delimiter>.\nAs an example, {split|\\\\.|first.second.third|"
-                + "thevalue|This is the %thevalue%| -- } would result in \"This is "
-                + "the first -- This is the second -- This is the third\". <delimiter>"
-                + " is optional.\n"
-                + "Currently, empty values at the end of the list are ignored. This "
-                + "means that in the above example, if \"first.second.third\" were replaced "
-                + "with \"first.second.third...\", the output would still be the same. {split} "
-                + "can be used with <string> being the {numberlist} function to effectively "
-                + "create a for loop. Also, if <string> is empty, <action> is not evaluated.";
+            + " -- Splits <string> into a list of strings around the regular "
+            + "expression <regex>, then evaluates <action> once for each item "
+            + "in the list of strings, with the local variable <varname> set to "
+            + "the current item in the list. {split} then evaluates to what "
+            + "each of the evaluations of <action> evaluated to, separated by "
+            + "<delimiter>.\nAs an example, {split|\\\\.|first.second.third|"
+            + "thevalue|This is the %thevalue%| -- } would result in \"This is "
+            + "the first -- This is the second -- This is the third\". <delimiter>"
+            + " is optional.\n"
+            + "Currently, empty values at the end of the list are ignored. This "
+            + "means that in the above example, if \"first.second.third\" were replaced "
+            + "with \"first.second.third...\", the output would still be the same. {split} "
+            + "can be used with <string> being the {numberlist} function to effectively "
+            + "create a for loop. Also, if <string> is empty, <action> is not evaluated.";
     }
     
     public String getName()
