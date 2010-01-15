@@ -1,5 +1,6 @@
 package jw.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Length;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -7,6 +8,7 @@ import net.sf.opengroove.common.proxystorage.ProxyBean;
 public interface Regex
 {
     @Property
+    @Length(4096)
     public String getExpression();
     
     public void setExpression(String expression);

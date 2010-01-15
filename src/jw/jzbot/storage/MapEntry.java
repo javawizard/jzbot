@@ -9,6 +9,7 @@ import net.sf.opengroove.common.proxystorage.ProxyBean;
 public interface MapEntry
 {
     @Property
+    @Length(4096)
     public String getKey();
     
     public void setKey(String key);
