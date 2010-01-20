@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions.li;
+package jw.jzbot.fact.functions.collections;
 
 import java.math.BigInteger;
 
