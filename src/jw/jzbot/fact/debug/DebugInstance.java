@@ -1,8 +1,8 @@
 package jw.jzbot.fact.debug;
 
-import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.VarSet;
 import jw.jzbot.fact.VarSet.Type;
+import jw.jzbot.fact.ast.FactEntity;
 
 public interface DebugInstance
 {

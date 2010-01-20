@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import jw.jzbot.fact.ast.FactEntity;
+
 public class FactoidException extends RuntimeException
 {
     private Map<String, String> factContents = new HashMap<String, String>();

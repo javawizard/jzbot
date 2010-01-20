@@ -3,10 +3,10 @@ package jw.jzbot.fact.functions.collections;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
-import jw.jzbot.fact.FunctionReference;
-import jw.jzbot.fact.Literal;
-import jw.jzbot.fact.Sequence;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.ast.FunctionReference;
+import jw.jzbot.fact.ast.Literal;
+import jw.jzbot.fact.ast.Sequence;
 
 public class ArgsFunction extends Function
 {

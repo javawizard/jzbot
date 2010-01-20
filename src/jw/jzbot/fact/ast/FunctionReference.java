@@ -1,4 +1,12 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.ast;
+
+import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.FactoidException;
+import jw.jzbot.fact.FactoidStackFrame;
+import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Sink;
 
 public class FunctionReference extends FactEntity
 {

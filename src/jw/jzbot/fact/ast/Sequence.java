@@ -1,6 +1,9 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.ast;
 
 import java.util.ArrayList;
+
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
 
 public class Sequence extends FactEntity
 {

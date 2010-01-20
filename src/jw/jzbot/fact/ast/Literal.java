@@ -1,4 +1,7 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.ast;
+
+import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.Sink;
 
 public class Literal extends FactEntity
 {

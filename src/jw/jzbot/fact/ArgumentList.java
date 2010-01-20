@@ -1,5 +1,8 @@
 package jw.jzbot.fact;
 
+import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.ast.Sequence;
+
 /**
  * A list of arguments. This is primarily used when calling function implementations. An
  * argument list is passed into each such invocation, and the function can use it to

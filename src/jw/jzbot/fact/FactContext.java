@@ -8,6 +8,7 @@ import jw.jzbot.Scope;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
+import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
 import jw.jzbot.storage.Server;

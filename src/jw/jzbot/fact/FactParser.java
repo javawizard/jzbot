@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.ast.FunctionReference;
+import jw.jzbot.fact.ast.Literal;
+import jw.jzbot.fact.ast.Sequence;
+import jw.jzbot.fact.ast.VarReference;
 import jw.jzbot.fact.functions.*;
 
 import org.jibble.pircbot.Colors;
