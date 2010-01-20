@@ -6,11 +6,11 @@ import java.util.Map;
 import jw.jzbot.bzf.ListservConnector;
 import jw.jzbot.bzf.Server;
 import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.output.DelimitedSink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 

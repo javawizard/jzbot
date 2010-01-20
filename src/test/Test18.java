@@ -1,9 +1,9 @@
 package test;
 
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
-import jw.jzbot.fact.StreamSink;
+import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.output.StreamSink;
 
 public class Test18
 {

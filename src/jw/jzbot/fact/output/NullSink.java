@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
 
 /**
  * A sink that discards all input given to it.

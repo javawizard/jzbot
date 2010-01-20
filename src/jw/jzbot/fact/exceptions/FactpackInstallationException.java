@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.exceptions;
 
 /**
  * A factoid exception that is treated normally unless it occurs while running a

@@ -1,10 +1,10 @@
 package jw.jzbot.fact.functions.text;
 
 import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.output.DelimitedSink;
 
 public class FilterFunction extends Function
 {

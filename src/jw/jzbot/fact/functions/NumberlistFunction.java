@@ -1,12 +1,12 @@
 package jw.jzbot.fact.functions;
 
 import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.BufferedSink;
-import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.output.BufferedSink;
+import jw.jzbot.fact.output.DelimitedSink;
 
 public class NumberlistFunction extends Function
 {

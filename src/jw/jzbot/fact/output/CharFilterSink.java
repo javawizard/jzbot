@@ -1,4 +1,6 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that wraps another sink, and applies some character-level filtering to

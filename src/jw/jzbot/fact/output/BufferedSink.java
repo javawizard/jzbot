@@ -1,4 +1,6 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that buffers all data sent to it until {@link #flush()} is called.

@@ -8,9 +8,9 @@ import java.net.URL;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.FactoidException;
 
 import net.sf.opengroove.common.utils.StringUtils;
 

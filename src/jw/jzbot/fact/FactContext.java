@@ -11,6 +11,7 @@ import jw.jzbot.ServerUser;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
+import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.storage.Server;
 
 import org.jdom.Document;

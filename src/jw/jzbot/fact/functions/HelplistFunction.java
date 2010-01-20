@@ -6,10 +6,10 @@ import java.util.Arrays;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.output.DelimitedSink;
 
 import net.sf.opengroove.common.utils.StringUtils;
 

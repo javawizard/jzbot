@@ -1,5 +1,5 @@
 #!/bin/bash
-CMD="java -ea -cp classes:lib/* -Dsun.net.inetaddr.ttl=10 jw.jzbot.JZBot $*"
+CMD="java -ea -cp classes:lib/* -Dh2.allowedClasses=java.lang.Math -Dsun.net.inetaddr.ttl=10 jw.jzbot.JZBot $*"
 echo 
 echo Running with command $CMD
 echo 

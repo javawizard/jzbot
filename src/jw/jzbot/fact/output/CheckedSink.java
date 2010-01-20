@@ -1,4 +1,6 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that can report whether or not anything has been written to it. Writing the

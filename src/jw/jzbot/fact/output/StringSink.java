@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
 
 /**
  * A sink that stores its output in a StringBuffer. The current value of the StringBuffer

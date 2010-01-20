@@ -12,7 +12,9 @@ import jw.jzbot.fact.ast.FunctionReference;
 import jw.jzbot.fact.ast.Literal;
 import jw.jzbot.fact.ast.Sequence;
 import jw.jzbot.fact.ast.VarReference;
+import jw.jzbot.fact.exceptions.ParseException;
 import jw.jzbot.fact.functions.*;
+import jw.jzbot.fact.output.StringSink;
 
 import org.jibble.pircbot.Colors;
 
@@ -485,7 +487,7 @@ public class FactParser
         return sink.toString();
     }
     
-    static long nextId()
+    public static long nextId()
     {
         return idSequence.incrementAndGet();
     }

@@ -2,6 +2,8 @@ package jw.jzbot.fact;
 
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.ast.Sequence;
+import jw.jzbot.fact.output.ForkedSink;
+import jw.jzbot.fact.output.StringSink;
 
 /**
  * A list of arguments. This is primarily used when calling function implementations. An

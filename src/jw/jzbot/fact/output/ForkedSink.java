@@ -1,4 +1,6 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that forks the data stream. In other words, this sink will send all received

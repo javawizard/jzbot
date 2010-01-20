@@ -3,10 +3,10 @@ package jw.jzbot.fact.functions.factpack;
 import jw.jzbot.FactScope;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactoidException;
-import jw.jzbot.fact.FactpackInstallationException;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.exceptions.FactpackInstallationException;
 
 public class FpcheckscopeFunction extends Function
 {

@@ -1,6 +1,8 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
 
 import java.io.OutputStream;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that sends its output to an OutputStream.

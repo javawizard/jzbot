@@ -1,4 +1,6 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.output;
+
+import jw.jzbot.fact.Sink;
 
 /**
  * A sink that internally buffers data written to it and makes it available as a String.

@@ -8,10 +8,10 @@ import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.FactQuota;
-import jw.jzbot.fact.StringSink;
+import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.output.StringSink;
 
 public class ExecCommand implements Command
 {

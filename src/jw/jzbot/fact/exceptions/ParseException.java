@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.exceptions;
 
 public class ParseException extends RuntimeException
 {

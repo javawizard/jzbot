@@ -1,5 +1,7 @@
 package jw.jzbot.fact;
 
+import jw.jzbot.fact.exceptions.ParseException;
+
 /**
  * A stack of characters. Instances of this class are created by passing in a string. The
  * class essentially is an iterator over that string with methods that allow it to act

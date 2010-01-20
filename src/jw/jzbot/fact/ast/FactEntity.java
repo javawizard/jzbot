@@ -2,9 +2,9 @@ package jw.jzbot.fact.ast;
 
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactParser;
-import jw.jzbot.fact.FactoidException;
 import jw.jzbot.fact.Sink;
-import jw.jzbot.fact.StringSink;
+import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.output.StringSink;
 
 /**
  * A part of a factoid (or even a whole factoid). This represents the factoid in compiled

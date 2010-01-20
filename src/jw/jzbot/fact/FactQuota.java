@@ -3,6 +3,8 @@ package jw.jzbot.fact;
 import java.util.HashMap;
 import java.util.Map;
 
+import jw.jzbot.fact.exceptions.FactoidException;
+
 public class FactQuota
 {
     private int messageCount = 0;

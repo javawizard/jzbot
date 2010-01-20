@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.exceptions;
 
 public class CustomFactoidException extends FactoidException
 {

@@ -1,9 +1,10 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.exceptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import jw.jzbot.fact.FactoidStackFrame;
 import jw.jzbot.fact.ast.FactEntity;
 
 public class FactoidException extends RuntimeException

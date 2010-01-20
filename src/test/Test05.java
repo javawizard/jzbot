@@ -1,7 +1,7 @@
 package test;
 
-import jw.jzbot.fact.FactEntity;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.ast.FactEntity;
 
 public class Test05
 {
