@@ -1064,10 +1064,11 @@ public class JZBot
     
     public static java.sql.Connection relationalStore;
     
-    private static void startRelationalStore()
+    public static void startRelationalStore()
     {
         try
         {
+            Class.forName("org.h2.Driver");
             File location = new File("storage/relational/rs");
             relationalStore =
                     DriverManager.getConnection("jdbc:h2:" + location.getPath()
