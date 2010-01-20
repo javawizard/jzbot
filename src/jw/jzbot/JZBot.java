@@ -15,6 +15,7 @@ import java.math.MathContext;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -93,7 +94,8 @@ import sun.misc.Unsafe;
 public class JZBot
 {
     // public static Connection bot;
-    public static Map<String, ConnectionContext> connectionMap = new HashMap<String, ConnectionContext>();
+    public static Map<String, ConnectionContext> connectionMap =
+            new HashMap<String, ConnectionContext>();
     
     public static File logsFolder = new File("storage/logs");
     
@@ -113,32 +115,33 @@ public class JZBot
     
     public static int logQueueDelay;
     
-    public static Thread notificationThread = new Thread("bot-internal-notification-thread")
-    {
-        public void run()
-        {
-            while (true)
+    public static Thread notificationThread =
+            new Thread("bot-internal-notification-thread")
             {
-                try
+                public void run()
                 {
-                    Thread.sleep(1000 * 60 * 5);
-                    notificationSequence += 1;
-                    notificationSequence %= 12;
-                    sendNotificationToAll("fiveminutes");
-                    if ((notificationSequence % 2) == 0)
-                        sendNotificationToAll("tenminutes");
-                    if ((notificationSequence % 6) == 0)
-                        sendNotificationToAll("halfhour");
-                    if ((notificationSequence % 12) == 0)
-                        sendNotificationToAll("hour");
+                    while (true)
+                    {
+                        try
+                        {
+                            Thread.sleep(1000 * 60 * 5);
+                            notificationSequence += 1;
+                            notificationSequence %= 12;
+                            sendNotificationToAll("fiveminutes");
+                            if ((notificationSequence % 2) == 0)
+                                sendNotificationToAll("tenminutes");
+                            if ((notificationSequence % 6) == 0)
+                                sendNotificationToAll("halfhour");
+                            if ((notificationSequence % 12) == 0)
+                                sendNotificationToAll("hour");
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-    };
+            };
     static
     {
         notificationThread.setDaemon(true);
@@ -154,8 +157,8 @@ public class JZBot
                 if (httpServers.get(port) != null)
                     throw new RuntimeException(
                             "A server with that port has already been started, "
-                                    + "serving the factoid "
-                                    + httpServers.get(port).getFactoid());
+                                + "serving the factoid "
+                                + httpServers.get(port).getFactoid());
                 verifyStartServer(port);
                 HttpServer server = new HttpServer(port, factoid);
                 httpServers.put(port, server);
@@ -166,7 +169,7 @@ public class JZBot
         {
             throw new FactoidException(
                     "Exception occured while starting an http server on port " + port
-                            + " with factoid " + factoid, e);
+                        + " with factoid " + factoid, e);
         }
     }
     
@@ -264,7 +267,7 @@ public class JZBot
         if (target.startsWith("@") && target.contains("#"))
             return target.substring(target.indexOf('#'));
         throw new IllegalArgumentException("The target \"" + target
-                + "\" does not contain a valid channel.");
+            + "\" does not contain a valid channel.");
     }
     
     public static String extractServerName(String target)
@@ -274,7 +277,7 @@ public class JZBot
         if (target.startsWith("@"))
             return target.substring(1);
         throw new IllegalArgumentException("The target \"" + target
-                + "\" does not contain a valid server name.");
+            + "\" does not contain a valid server name.");
     }
     
     public static String extractRelativeServer(String target, Scope scope)
@@ -338,18 +341,17 @@ public class JZBot
         String serverName = extractRelativeServer(target, scope);
         if (serverName == null)
             throw new FactoidException("The target \"" + target
-                    + "\" was expected to contain a server name, but it "
-                    + "did not and the current scope doesn't contain "
-                    + "a server name either. Consider wrapping this "
-                    + "function call with a call to the {scope} "
-                    + "function to add a server to the current scope, "
-                    + "or just specify a server in the target string "
-                    + "that you're using.");
+                + "\" was expected to contain a server name, but it "
+                + "did not and the current scope doesn't contain "
+                + "a server name either. Consider wrapping this "
+                + "function call with a call to the {scope} "
+                + "function to add a server to the current scope, "
+                + "or just specify a server in the target string " + "that you're using.");
         ConnectionWrapper con = getConnection(serverName);
         if (con == null)
             throw new FactoidException("There isn't a connection for the server name "
-                    + serverName
-                    + ". This probably means that the server is currently disconnected.");
+                + serverName
+                + ". This probably means that the server is currently disconnected.");
         return con;
     }
     
@@ -384,10 +386,11 @@ public class JZBot
     
     private static ConnectionCycleThread connectionCycleThread;
     
-    private static BlockingQueue<Object> connectionCycleQueue = new LinkedBlockingQueue<Object>(
-            500);
+    private static BlockingQueue<Object> connectionCycleQueue =
+            new LinkedBlockingQueue<Object>(500);
     
-    public static Map<String, Throwable> connectionLastErrorMap = new HashMap<String, Throwable>();
+    public static Map<String, Throwable> connectionLastErrorMap =
+            new HashMap<String, Throwable>();
     
     public static final Object connectionCycleLock = new Object();
     
@@ -429,13 +432,13 @@ public class JZBot
                      * one for it.
                      */
                     System.out.println("Building connection for server " + serverName
-                            + "...");
+                        + "...");
                     ConnectionContext context = new ConnectionContext();
                     context.setServerName(serverName);
                     context.setDatastoreServer(server);
                     System.out.println("Instantiating protocol instance...");
-                    Connection c = instantiateConnectionForProtocol(server.getProtocol(),
-                            true);
+                    Connection c =
+                            instantiateConnectionForProtocol(server.getProtocol(), true);
                     context.setConnection(c);
                     System.out.println("Initializing protocol...");
                     c.init(context);
@@ -471,10 +474,10 @@ public class JZBot
                         try
                         {
                             System.out.println("Running pre-connect actions for server "
-                                    + context.getServerName());
+                                + context.getServerName());
                             runPreConnectActions(context);
                             System.out.println("Connecting to server "
-                                    + context.getServerName());
+                                + context.getServerName());
                             context.getConnection().connect();
                             context.markConnected();
                             System.out.println("Connection established.");
@@ -501,12 +504,12 @@ public class JZBot
                 if (context.getConnection().isConnected())
                 {
                     if ((!context.getDatastoreServer().isActive())
-                            || !storage.getServers().contains(context.getDatastoreServer())
-                            || context.discardNeeded())
+                        || !storage.getServers().contains(context.getDatastoreServer())
+                        || context.discardNeeded())
                     // if the server is not active or the server is no longer in the list
                     {
                         System.out.println("Disconnecting from server "
-                                + context.getServerName());
+                            + context.getServerName());
                         context.getConnection().disconnect(getDefaultDisconnectMessage());
                         System.out.println("Disconnected.");
                     }
@@ -523,10 +526,10 @@ public class JZBot
                     .values()))
             {
                 if ((!storage.getServers().contains(context.getDatastoreServer()))
-                        || context.discardNeeded())
+                    || context.discardNeeded())
                 {
                     System.out.println("Discarding connection for server "
-                            + context.getServerName());
+                        + context.getServerName());
                     context.getConnection().discard();
                     System.out.println("Unregistering connection...");
                     connectionMap.remove(context.getDatastoreServer().getName());
@@ -580,8 +583,8 @@ public class JZBot
             c = FacebookProtocol.class;
         else
             throw new ResponseException("The protocol \"" + name
-                    + "\" is not a valid protocol name. Valid protocol names are, "
-                    + "at present, \"irc\", \"bzflag\", and \"facebook\".");
+                + "\" is not a valid protocol name. Valid protocol names are, "
+                + "at present, \"irc\", \"bzflag\", and \"facebook\".");
         if (!run)
             return null;
         try
@@ -596,7 +599,7 @@ public class JZBot
              * isn't good.
              */
             throw new RuntimeException("Exception while instantiating protocol \"" + name
-                    + "\" for class " + c.getName(), e);
+                + "\" for class " + c.getName(), e);
         }
     }
     
@@ -638,14 +641,14 @@ public class JZBot
     {
         if (!serverPortsFile.exists())
             throw new RuntimeException("HTTP servers are disabled. To enable them, create "
-                    + "a file called serverports.txt in the bot's storage folder, and "
-                    + "set its contents to be a regular expression that will match the "
-                    + "port numbers you want to allow servers to be started on.");
+                + "a file called serverports.txt in the bot's storage folder, and "
+                + "set its contents to be a regular expression that will match the "
+                + "port numbers you want to allow servers to be started on.");
         String regex = StringUtils.readFile(serverPortsFile);
         regex = regex.trim();
         if (!("" + port).matches(regex))
             throw new RuntimeException("Invalid port; the port has to match the regex "
-                    + regex);
+                + regex);
         int maxServers;
         if (maxServersFile.exists())
             maxServers = Integer.parseInt(StringUtils.readFile(maxServersFile).trim());
@@ -653,8 +656,8 @@ public class JZBot
             maxServers = 20;
         if (httpServers.size() >= maxServers)
             throw new RuntimeException("There are already " + httpServers.size()
-                    + " servers started. This bot imposes a " + "maximum limit of "
-                    + maxServers + " at a time.");
+                + " servers started. This bot imposes a " + "maximum limit of "
+                + maxServers + " at a time.");
     }
     
     static
@@ -682,11 +685,9 @@ public class JZBot
     {
         Evaluator engine = evalEngines.get(name);
         if (engine == null)
-            throw new RuntimeException("Invalid evaluator engine name: "
-                    + name
-                    + ", expected one of "
-                    + StringUtils.delimited(evalEngines.keySet().toArray(new String[0]),
-                            ", "));
+            throw new RuntimeException("Invalid evaluator engine name: " + name
+                + ", expected one of "
+                + StringUtils.delimited(evalEngines.keySet().toArray(new String[0]), ", "));
         return engine;
     }
     
@@ -713,13 +714,13 @@ public class JZBot
         {
             if (delay > (86400 * 2))
                 throw new RuntimeException("Futures can't be scheduled more than 2 days ("
-                        + (86400 * 2) + " seconds) into the future. You're "
-                        + "trying to schedule " + "a future to run sooner than that.");
+                    + (86400 * 2) + " seconds) into the future. You're "
+                    + "trying to schedule " + "a future to run sooner than that.");
             // FIXME: This needs to be changed so that future factoids can be scheduled in
             // factoids that are not channel-scoped.
             if (channel == null)
                 throw new RuntimeException("Can't schedule future factoids in pm. "
-                        + "Run this factoid at a channel.");
+                    + "Run this factoid at a channel.");
             this.delay = delay;
             this.server = server;
             this.channel = channel;
@@ -757,8 +758,9 @@ public class JZBot
                 String result;
                 try
                 {
-                    result = doFactImport(server, channel, arguments, sender, source, true,
-                            quota, ImportLevel.any);
+                    result =
+                            doFactImport(server, channel, arguments, sender, source, true,
+                                    quota, ImportLevel.any);
                 }
                 catch (Throwable t)
                 {
@@ -783,10 +785,11 @@ public class JZBot
         }
     }
     
-    public static HashMap<String, FutureFactoid> futureFactoids = new HashMap<String, FutureFactoid>();
+    public static HashMap<String, FutureFactoid> futureFactoids =
+            new HashMap<String, FutureFactoid>();
     public static final Object futureFactoidLock = new Object();
-    public static ScheduledThreadPoolExecutor futureFactoidPool = new ScheduledThreadPoolExecutor(
-            1);
+    public static ScheduledThreadPoolExecutor futureFactoidPool =
+            new ScheduledThreadPoolExecutor(1);
     public static final HashMap<String, Command> commands = new HashMap<String, Command>();
     // numeric 320: is signed on as account
     public static ProxyStorage<Storage> proxyStorage;
@@ -803,9 +806,9 @@ public class JZBot
         // System.out.println("Revision " + VersionInfo.revision + ", built on "
         // + VersionInfo.shortDateString);
         System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
-                + "and Jonathon Kloster");
+            + "and Jonathon Kloster");
         System.out.println("A.K.A.s, respectively, javawizard2539/jcp, "
-                + "schrottplatz, and MrDudle");
+            + "schrottplatz, and MrDudle");
         System.out.println("With contributions from others; send \"help authors\"");
         System.out.println("and \"help packwriters\" to your bot in a pm for ");
         System.out.println("other contributors.");
@@ -826,8 +829,8 @@ public class JZBot
                     logQueueRunning = false;
                     int discarded = (logQueue == null ? 0 : logQueue.size());
                     System.out.println("Log queue has shut down. " + discarded
-                            + " log event" + (discarded == 1 ? " was" : "s were")
-                            + " discarded.");
+                        + " log event" + (discarded == 1 ? " was" : "s were")
+                        + " discarded.");
                 }
                 System.out.println("JZBot has terminated.");
             }
@@ -875,7 +878,7 @@ public class JZBot
             if (args.length < 6 || args.length > 7)
             {
                 System.out.println("\"jzbot setup\" expects either 6 or 7 "
-                        + "arguments, but you provided " + args.length);
+                    + "arguments, but you provided " + args.length);
                 System.out.println("arguments. See \"jzbot help\" for help.");
                 return;
             }
@@ -941,27 +944,26 @@ public class JZBot
             if (args.length == 1)
             {
                 System.out.println("All config var names: "
-                        + StringUtils.delimited(ConfigVars.values(),
-                                new ToString<ConfigVars>()
-                                {
-                                    
-                                    @Override
-                                    public String toString(ConfigVars object)
-                                    {
-                                        return object.name();
-                                    }
-                                }, ", "));
+                    + StringUtils.delimited(ConfigVars.values(), new ToString<ConfigVars>()
+                    {
+                        
+                        @Override
+                        public String toString(ConfigVars object)
+                        {
+                            return object.name();
+                        }
+                    }, ", "));
             }
             else if (args.length == 2)
             {
                 System.out.println("Config variable \"" + args[1]
-                        + "\" is currently set to \"" + ConfigVars.valueOf(args[1]).get());
+                    + "\" is currently set to \"" + ConfigVars.valueOf(args[1]).get());
             }
             else
             {
                 ConfigVars.valueOf(args[1]).set(args[2]);
                 System.out.println("Successfully set the var \"" + args[1]
-                        + "\" to the value \"" + args[2] + "\".");
+                    + "\" to the value \"" + args[2] + "\".");
             }
         }
         // else if (args[0].equals("switchnick"))
@@ -1039,6 +1041,8 @@ public class JZBot
             System.out.println("you'll want to look at the addserver command.");
             System.exit(0);
         }
+        System.out.println("Starting the relational data store...");
+        startRelationalStore();
         System.out.println("Loading core components...");
         loadCommands();
         loadCachedConfig();
@@ -1054,8 +1058,25 @@ public class JZBot
         System.out.println("Connect thread started.");
         System.out.println();
         System.out.println("JZBot has successfully started up. Server "
-                + "connections will be established in a few seconds.");
+            + "connections will be established in a few seconds.");
         System.out.println();
+    }
+    
+    public static java.sql.Connection relationalStore;
+    
+    private static void startRelationalStore()
+    {
+        try
+        {
+            File location = new File("storage/relational/rs");
+            relationalStore =
+                    DriverManager.getConnection("jdbc:h2:" + location.getPath()
+                        + ";FILE_LOCK=SOCKET", "sa", "");
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Could not connect to the relational data store.", e);
+        }
     }
     
     private static void initProxyStorage()
@@ -1082,8 +1103,9 @@ public class JZBot
             e.printStackTrace();
             configLogsize = 0;
         }
-        logQueue = new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
-                .get()));
+        logQueue =
+                new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
+                        .get()));
         logQueueDelay = Integer.parseInt(ConfigVars.lqdelay.get());
     }
     
@@ -1091,7 +1113,7 @@ public class JZBot
             String sender, String login, String hostname)
     {
         System.out.println("join detected at " + serverName + " on " + channel + " by "
-                + sender);
+            + sender);
         Channel chan = datastoreServer.getChannel(channel);
         if (chan == null)
             return;
@@ -1220,11 +1242,11 @@ public class JZBot
             String[] args, boolean timed, boolean cascade)
     {
         System.out.println("Running notification factoid on server " + serverName
-                + " channel " + channelName + ", with sender " + sender + ": " + factname);
+            + " channel " + channelName + ", with sender " + sender + ": " + factname);
         if (!factname.startsWith("_"))
             System.err.println("Factoid notification name \"" + factname
-                    + "\" doesn't start with an underscore. All factoid "
-                    + "notification names must start with an underscore.");
+                + "\" doesn't start with an underscore. All factoid "
+                + "notification names must start with an underscore.");
         if (args == null)
             args = new String[0];
         ArrayList<Factoid> facts = new ArrayList<Factoid>();
@@ -1245,7 +1267,7 @@ public class JZBot
             {
                 facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname)));
                 facts.addAll(Arrays.asList(storage.searchFactoids("_server" + factname
-                        + "_*")));
+                    + "_*")));
             }
         }
         else
@@ -1304,15 +1326,16 @@ public class JZBot
                         {
                             new Exception(
                                     "Exception occurred while extracting "
-                                            + "primary channel in notification factoid. The notification "
-                                            + "will run, but output generated by it will be silently discarded.",
+                                        + "primary channel in notification factoid. The notification "
+                                        + "will run, but output generated by it will be silently discarded.",
                                     e).printStackTrace();
                         }
                     }
-                    String factValue = safeRunFactoid(f, server, serverName, channelName,
-                            new ServerUser(serverName, sender, null), new ServerChannel(
-                                    pseudoServer, pseudoChannel), args, true,
-                            new HashMap<String, String>());
+                    String factValue =
+                            safeRunFactoid(f, server, serverName, channelName,
+                                    new ServerUser(serverName, sender, null),
+                                    new ServerChannel(pseudoServer, pseudoChannel), args,
+                                    true, new HashMap<String, String>());
                     ConnectionWrapper con = getConnection(pseudoServer);
                     if (con != null)
                     {
@@ -1385,8 +1408,8 @@ public class JZBot
             quota = new FactQuota();
         if (allowRestricted == false && factoid.isRestricted())
             throw new FactoidException("The factoid " + factoid.getName()
-                    + " is restricted. Only ops and superops "
-                    + "can run it, as well as the bot itself.");
+                + " is restricted. Only ops and superops "
+                + "can run it, as well as the bot itself.");
         for (int i = 0; i < args.length; i++)
         {
             vars.put("" + (i + 1), args[i]);
@@ -1430,7 +1453,7 @@ public class JZBot
         String result = resultSink.toString();
         long finishedMillis = System.currentTimeMillis();
         System.out.println(factoidName + ": Parsed in " + (parsedMillis - startMillis)
-                + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
+            + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         // The factoid has been run. Now we return the value.
         boolean isAction = context.isAction();
         return (isAction ? "<ACTION>" : "") + result.toString();
@@ -1489,8 +1512,8 @@ public class JZBot
         // Make sure we got one
         if (f == null)
             throw new RuntimeException("That factoid (\"" + arguments.getString(0)
-                    + "\") doesn't exist at the server \"" + server + "\" and channel \""
-                    + channel + "\", so you can't import it.");
+                + "\") doesn't exist at the server \"" + server + "\" and channel \""
+                + channel + "\", so you can't import it.");
         Map<String, String> varMap = new HashMap<String, String>();
         if (cascadingVars != null)
             varMap.putAll(cascadingVars);
@@ -1529,16 +1552,17 @@ public class JZBot
         try
         {
             System.out.println("Message at " + serverName + " channel " + channel
-                    + " from " + sender + ": " + message);
+                + " from " + sender + ": " + message);
             Channel chan = datastoreServer.getChannel(channel);
             if (chan == null)
             {
                 System.out.println("No matching channel, probably means "
-                        + "we've joined a channel without storage");
+                    + "we've joined a channel without storage");
                 return;
             }
-            boolean processFactoids = processChannelRegex(datastoreServer, serverName,
-                    channel, sender, hostname, message, false);
+            boolean processFactoids =
+                    processChannelRegex(datastoreServer, serverName, channel, sender,
+                            hostname, message, false);
             String trigger = chan.getTrigger();
             if (trigger != null && message.startsWith(trigger))
             {
@@ -1555,7 +1579,7 @@ public class JZBot
                             message = message.substring(trigger.length());
                         }
                         if ((message.startsWith("@") || message.startsWith("#"))
-                                && message.contains(" "))
+                            && message.contains(" "))
                         {
                             pseudoTarget = parseFragment(message, pseudoTarget);
                             message = message.substring(message.indexOf(' ') + 1);
@@ -1566,7 +1590,7 @@ public class JZBot
                         getConnection(serverName).sendMessage(
                                 channel,
                                 "You can only instruct the bot to reply to "
-                                        + "the target if the target contains a channel.");
+                                    + "the target if the target contains a channel.");
                         return;
                     }
                     System.out.println("running message command");
@@ -1632,7 +1656,7 @@ public class JZBot
                 source.sendMessage(e.getMessage());
             else
                 source.sendMessage("An error occurred while processing your invitation: "
-                        + pastebinStack(e));
+                    + pastebinStack(e));
         }
     }
     
@@ -1657,8 +1681,9 @@ public class JZBot
                     /*
                      * We found something.
                      */
-                    OverrideStatus override = runRegex(server, serverName, channel, sender,
-                            hostname, message, matcher, regex, action);
+                    OverrideStatus override =
+                            runRegex(server, serverName, channel, sender, hostname,
+                                    message, matcher, regex, action);
                     if (override == OverrideStatus.override)
                         return false;
                     else if (override == OverrideStatus.factoverride)
@@ -1727,9 +1752,10 @@ public class JZBot
             strings[i - 1] = matcher.group(i);
         }
         incrementIndirectRequests(f);
-        String factValue = safeRunFactoid(f, server, serverName, channel, new ServerUser(
-                serverName, sender, hostname), new ServerChannel(serverName, channel),
-                strings, true, vars);
+        String factValue =
+                safeRunFactoid(f, server, serverName, channel, new ServerUser(serverName,
+                        sender, hostname), new ServerChannel(serverName, channel), strings,
+                        true, vars);
         sendActionOrMessage(getConnection(serverName), channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
@@ -1742,7 +1768,7 @@ public class JZBot
             String login, String hostname, String channel, String action)
     {
         System.out.println("action received on @" + serverName + "!" + sender + channel
-                + ": " + action);
+            + ": " + action);
         if (!(channel.startsWith("#")))
             // We don't support actions sent in a pm right now. These might be supported
             // at a later time.
@@ -1814,7 +1840,7 @@ public class JZBot
                 {
                     e.printStackTrace();
                     source.sendMessage("An error occured while running the command "
-                            + command + ": " + pastebinStack(e));
+                        + command + ": " + pastebinStack(e));
                 }
             }
             System.out.println("Finishing command run #1");
@@ -1859,10 +1885,10 @@ public class JZBot
             if (factoid.isLibrary())
             {
                 source.sendMessage("That factoid is a library factoid. It can only be run "
-                        + "by importing it, by creating a regex "
-                        + "that uses it, by using it as "
-                        + "a trigger, and so on. Run \"factoid unlibrary " + command
-                        + "\" if you want to remove this factoid's " + "library status.");
+                    + "by importing it, by creating a regex "
+                    + "that uses it, by using it as "
+                    + "a trigger, and so on. Run \"factoid unlibrary " + command
+                    + "\" if you want to remove this factoid's " + "library status.");
                 System.out.println("Finishing command run #5");
                 return;
             }
@@ -1870,9 +1896,10 @@ public class JZBot
             System.out.println("requests incremented");
             String factValue;
             System.out.println("calculating fact value");
-            factValue = safeRunFactoid(factoid, datastoreServer, serverName, channel,
-                    serverUser, source, commandArguments.split(" "), isSuperop(serverName,
-                            hostname), new HashMap<String, String>());
+            factValue =
+                    safeRunFactoid(factoid, datastoreServer, serverName, channel,
+                            serverUser, source, commandArguments.split(" "), isSuperop(
+                                    serverName, hostname), new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             sendActionOrMessage(source, factValue);
             System.out.println("Finishing command run #6");
@@ -1914,8 +1941,9 @@ public class JZBot
         String factValue;
         try
         {
-            factValue = runFactoid(f, serverName, channel, sender, source, arguments, vars,
-                    allowRestricted, null);
+            factValue =
+                    runFactoid(f, serverName, channel, sender, source, arguments, vars,
+                            allowRestricted, null);
         }
         catch (FactoidException e)
         {
@@ -1927,8 +1955,9 @@ public class JZBot
         }
         catch (StackOverflowError e)
         {
-            factValue = "A stack overflow occurred. This probably means you have an infinitely-recursive loop in your factoid. Details: "
-                    + pastebinStack(e);
+            factValue =
+                    "A stack overflow occurred. This probably means you have an infinitely-recursive loop in your factoid. Details: "
+                        + pastebinStack(e);
         }
         catch (Exception e)
         {
@@ -1944,8 +1973,9 @@ public class JZBot
         e.printStackTrace(new PrintWriter(sw, true));
         String eString = sw.toString();
         if (e instanceof FactoidException)
-            eString = ((FactoidException) e).createFactoidStackTrace()
-                    + "\n\nJava stack trace:\n\n" + eString;
+            eString =
+                    ((FactoidException) e).createFactoidStackTrace()
+                        + "\n\nJava stack trace:\n\n" + eString;
         try
         {
             return pastebinNotice(eString, null);
@@ -1983,9 +2013,10 @@ public class JZBot
                     f = storage.getFactoid(notfoundFact);
                 if (f == null)
                     throw new RuntimeException("The not-found factoid \"" + notfoundFact
-                            + "\" does not exist.");
-                String factValue = safeRunFactoid(f, server, serverName, channel, sender,
-                        source, new String[0], true, new HashMap<String, String>());
+                        + "\" does not exist.");
+                String factValue =
+                        safeRunFactoid(f, server, serverName, channel, sender, source,
+                                new String[0], true, new HashMap<String, String>());
                 if (factValue.trim().equals(""))
                     factValue = "Not-found factoid didn't output anything";
                 sendActionOrMessage(source, factValue);
@@ -2062,7 +2093,7 @@ public class JZBot
                 catch (Throwable e)
                 {
                     new Exception("Exception occurred while running "
-                            + "_onconnect for server \"" + serverName + "\"", e)
+                        + "_onconnect for server \"" + serverName + "\"", e)
                             .printStackTrace();
                 }
                 try
@@ -2188,13 +2219,13 @@ public class JZBot
             if (replyToPseudo && pseudoTarget.getChannel() == null)
             {
                 con.sendMessage(sender, "You can only instruct the bot to reply to "
-                        + "the target if the target contains a channel.");
+                    + "the target if the target contains a channel.");
                 return;
             }
             try
             {
-                Server pseudoDatastoreServer = storage.getServer(pseudoTarget
-                        .getServerName());
+                Server pseudoDatastoreServer =
+                        storage.getServer(pseudoTarget.getServerName());
                 if (replyToPseudo)
                 {
                     runMessageCommand(pseudoDatastoreServer, pseudoTarget.getServerName(),
@@ -2212,7 +2243,7 @@ public class JZBot
             {
                 e.printStackTrace();
                 con.sendMessage(sender, "Internal upper-propegating pm exception: "
-                        + pastebinStack(e));
+                    + pastebinStack(e));
             }
         }
         catch (FactTimeExceededError e)
@@ -2303,7 +2334,7 @@ public class JZBot
         catch (Exception e)
         {
             throw new FactoidException("Exception while evaluating " + toEval
-                    + " with engine " + ConfigVars.evalengine.get(), e);
+                + " with engine " + ConfigVars.evalengine.get(), e);
         }
     }
     
@@ -2383,7 +2414,7 @@ public class JZBot
         {
             throw new ResponseException(
                     "That is not a charset supported on this platform. "
-                            + "(in bot.setEncoding(String))", e);
+                        + "(in bot.setEncoding(String))", e);
         }
     }
     
@@ -2407,7 +2438,7 @@ public class JZBot
         {
             throw new ResponseException(
                     "That is not a charset supported on this platform. "
-                            + "(in new String(byte[],String))", e);
+                        + "(in new String(byte[],String))", e);
         }
     }
     
@@ -2415,7 +2446,8 @@ public class JZBot
      * Maps server names to a map that maps channel names to a list of all regexes at the
      * channel.
      */
-    private static Map<String, Map<String, List<String>>> regexCache = new HashMap<String, Map<String, List<String>>>();
+    private static Map<String, Map<String, List<String>>> regexCache =
+            new HashMap<String, Map<String, List<String>>>();
     
     private static Object regexLock = new Object();
     
@@ -2432,7 +2464,8 @@ public class JZBot
             regexCache.clear();
             for (Server server : storage.getServers().isolate())
             {
-                Map<String, List<String>> thisServerMap = new HashMap<String, List<String>>();
+                Map<String, List<String>> thisServerMap =
+                        new HashMap<String, List<String>>();
                 regexCache.put(server.getName(), thisServerMap);
                 for (Channel c : server.getChannels().isolate())
                 {
@@ -2528,8 +2561,8 @@ public class JZBot
         {
             if (StringUtils.isMemberOf(filename, configNolog.split("\\|")))
                 return;
-            String data = event + " " + System.currentTimeMillis() + " " + nick + " "
-                    + details;
+            String data =
+                    event + " " + System.currentTimeMillis() + " " + nick + " " + details;
             File logFile = new File(logsFolder, filename);
             if (!logFile.exists())
                 if (!logFile.createNewFile())
@@ -2591,7 +2624,7 @@ public class JZBot
             catch (Exception e)
             {
                 throw new RuntimeException("Exception while processing file "
-                        + file.getAbsolutePath(), e);
+                    + file.getAbsolutePath(), e);
             }
             if (pack.name.equals(canonicalName))
                 return file;
@@ -2602,9 +2635,9 @@ public class JZBot
     public static String pastebinNotice(String text, Feature[] features)
     {
         return Pastebin.createPost("jzbot", text
-                + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
-                + "post, or its creator (JZBot), send an email to \"alex"
-                + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
+            + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
+            + "post, or its creator (JZBot), send an email to \"alex"
+            + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
     }
     
     public static MathContext datasizeContext = new MathContext(3);
@@ -2662,7 +2695,7 @@ public class JZBot
         {
             e.printStackTrace();
             return "Exception while getting server via JZBot.failsafeExtractServerName("
-                    + string + ")";
+                + string + ")";
         }
     }
     
@@ -2676,7 +2709,7 @@ public class JZBot
         {
             e.printStackTrace();
             return "Exception while getting channel via JZBot.failsafeExtractChannelName("
-                    + string + ")";
+                + string + ")";
         }
     }
     
@@ -2696,7 +2729,7 @@ public class JZBot
         ConnectionWrapper con = getConnection(serverName);
         if (con == null)
             throw new FactoidException("There is no server for the server name "
-                    + serverName + ", but this command requires a valid server name.");
+                + serverName + ", but this command requires a valid server name.");
         return con;
     }
     
