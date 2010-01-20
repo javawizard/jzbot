@@ -12,8 +12,8 @@ import jw.jzbot.fact.functions.*;
 import org.jibble.pircbot.Colors;
 
 /**
- * A class that can parse factoids. This is the main entry point to the Fact
- * interpreter.<br/><br/>
+ * A class that can parse factoids. This is the main entry point to the Fact interpreter.
+ * The parser is a hand-coded predictive recursive descent parser.<br/><br/>
  * 
  * To run a factoid and put the output into a string, you would do something along these
  * lines:<br/>
@@ -45,8 +45,10 @@ import org.jibble.pircbot.Colors;
 public class FactParser
 {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
-    private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
-    private static Map<Class<? extends Function>, Function> functionsByClass = new HashMap<Class<? extends Function>, Function>();
+    private static Map<Function, String> reverseFunctionMap =
+            new HashMap<Function, String>();
+    private static Map<Class<? extends Function>, Function> functionsByClass =
+            new HashMap<Class<? extends Function>, Function>();
     private static AtomicLong idSequence = new AtomicLong();
     
     /**
@@ -81,10 +83,10 @@ public class FactParser
                     "There are more \"}\" than there are \"{\"");
         if (reference.getArgumentSequence().length() > 2)
             throw new ParseException(stack.at(), "\"|\" is being used "
-                    + "somewhere in your factoid "
-                    + "outside of a function. If you want a literal \"|\" "
-                    + "character included in your text, you need to put "
-                    + "a backslash before it.");
+                + "somewhere in your factoid "
+                + "outside of a function. If you want a literal \"|\" "
+                + "character included in your text, you need to put "
+                + "a backslash before it.");
         FactEntity toplevel = reference.getArgumentSequence().get(1);
         toplevel.setFactText(factoid);
         toplevel.setParent(null);
@@ -225,7 +227,7 @@ public class FactParser
          * closed properly, so we'll throw an exception.
          */
         throw new ParseException(stack.at() - 1, "Function call not closed (IE you have "
-                + "more \"{\" than you have \"}\")");
+            + "more \"{\" than you have \"}\")");
     }
     
     private static <T extends FactEntity> T init(T entity, String factName, int index)
@@ -319,8 +321,9 @@ public class FactParser
     {
         try
         {
-            File factFolder = new File(FactParser.class.getResource("FactParser.class")
-                    .toURI()).getParentFile();
+            File factFolder =
+                    new File(FactParser.class.getResource("FactParser.class").toURI())
+                            .getParentFile();
             File functionsFolder = new File(factFolder, "functions");
             ArrayList<File> fileList = new ArrayList<File>();
             listFunctionFolders(functionsFolder, fileList);
@@ -331,18 +334,22 @@ public class FactParser
                 {
                     if (file.getName().endsWith("Function.class"))
                     {
-                        String className = file.getName().substring(0,
-                                file.getName().length() - ".class".length());
-                        String functionName = className.substring(0,
-                                className.length() - "Function".length()).toLowerCase();
+                        String className =
+                                file.getName().substring(0,
+                                        file.getName().length() - ".class".length());
+                        String functionName =
+                                className.substring(0,
+                                        className.length() - "Function".length())
+                                        .toLowerCase();
                         functionName = functionName.replace("_", ".");
                         String folderName = generateFolderTo(file, functionsFolder);
                         String classNameInFolder = folderName + className;
                         String functionNameInFolder = folderName + functionName;
                         System.out.println("Loading function " + functionNameInFolder);
-                        Class<? extends Function> c = (Class<? extends Function>) Class
-                                .forName("jw.jzbot.fact.functions."
-                                        + classNameInFolder.replaceAll("(/|\\\\)", "."));
+                        Class<? extends Function> c =
+                                (Class<? extends Function>) Class
+                                        .forName("jw.jzbot.fact.functions."
+                                            + classNameInFolder.replaceAll("(/|\\\\)", "."));
                         install(functionName, c.newInstance());
                     }
                     else
@@ -363,9 +370,9 @@ public class FactParser
             if (!new File("classes/jw/jzbot").exists())
             {
                 System.err.println("Couldn't load functions because the function "
-                        + "class folder doesn't exist. This could mean "
-                        + "you've compiled JZBot with gcj, which means that "
-                        + "JZBot won't have any support for functions.");
+                    + "class folder doesn't exist. This could mean "
+                    + "you've compiled JZBot with gcj, which means that "
+                    + "JZBot won't have any support for functions.");
             }
             else
             {
@@ -419,52 +426,32 @@ public class FactParser
      */
     private static void installSpecialSet()
     {
-        install(
-                "c",
-                new CharCodeSpecial(
-                        "c",
-                        "\u0003",
-                        "Inserts the IRC color change character. Immediately following "
-                                + "this should be two digits, which represent the color of text "
-                                + "that should show up.\n"
-                                + "Create a factoid with the text \"{split| |{numberlist|1|15}|"
-                                + "c|{c}{lset|c|{pad|2|0|%c%}}%c%%c%| }\" (without "
-                                + "quotes), then run it; the result will be a list of numbers and "
-                                + "the color they represent.\n"
-                                + "This function is deprecated, and \"\\c\" should be used instead."));
-        install(
-                "n",
-                new CharCodeSpecial(
-                        "n",
-                        Colors.NORMAL,
-                        "Resets any coloring that has been applied in the factoid, so that "
-                                + "all succeeding text has no special formatting.\n"
-                                + "This function is deprecated, and \"\\p\" should be used instead."));
-        install(
-                "b",
-                new CharCodeSpecial(
-                        "b",
-                        Colors.BOLD,
-                        "Inserts the IRC bold character, which causes all following text "
-                                + "to be shown as bold.\n"
-                                + "This function is deprecated, and \"\\b\" should be used instead."));
-        install(
-                "i",
-                new CharCodeSpecial(
-                        "i",
-                        Colors.REVERSE,
-                        "Inserts the IRC reverse character, which, depending on the client, "
-                                + "either reverses the foreground and background colors or shows text"
-                                + " as italic.\n"
-                                + "This function is deprecated, and \"\\i\" should be used instead."));
-        install(
-                "u",
-                new CharCodeSpecial(
-                        "u",
-                        Colors.UNDERLINE,
-                        "Inserts the IRC underline character, which causes all "
-                                + "succeeding text to be underlined.\n"
-                                + "This function is deprecated, and \"\\u\" should be used instead."));
+        install("c", new CharCodeSpecial("c", "\u0003",
+                "Inserts the IRC color change character. Immediately following "
+                    + "this should be two digits, which represent the color of text "
+                    + "that should show up.\n"
+                    + "Create a factoid with the text \"{split| |{numberlist|1|15}|"
+                    + "c|{c}{lset|c|{pad|2|0|%c%}}%c%%c%| }\" (without "
+                    + "quotes), then run it; the result will be a list of numbers and "
+                    + "the color they represent.\n"
+                    + "This function is deprecated, and \"\\c\" should be used instead."));
+        install("n", new CharCodeSpecial("n", Colors.NORMAL,
+                "Resets any coloring that has been applied in the factoid, so that "
+                    + "all succeeding text has no special formatting.\n"
+                    + "This function is deprecated, and \"\\p\" should be used instead."));
+        install("b", new CharCodeSpecial("b", Colors.BOLD,
+                "Inserts the IRC bold character, which causes all following text "
+                    + "to be shown as bold.\n"
+                    + "This function is deprecated, and \"\\b\" should be used instead."));
+        install("i", new CharCodeSpecial("i", Colors.REVERSE,
+                "Inserts the IRC reverse character, which, depending on the client, "
+                    + "either reverses the foreground and background colors or shows text"
+                    + " as italic.\n"
+                    + "This function is deprecated, and \"\\i\" should be used instead."));
+        install("u", new CharCodeSpecial("u", Colors.UNDERLINE,
+                "Inserts the IRC underline character, which causes all "
+                    + "succeeding text to be underlined.\n"
+                    + "This function is deprecated, and \"\\u\" should be used instead."));
     }
     
     public static String[] getFunctionNames()
