@@ -1112,7 +1112,7 @@ public class JZBot
     
     private static void initProxyStorage()
     {
-        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File("storage/db"));
+        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File("storage/db"), 20, 30, 10);
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
         if (config == null)
