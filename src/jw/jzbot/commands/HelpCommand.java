@@ -37,15 +37,15 @@ public class HelpCommand implements Command
             {
                 throw new ResponseException(
                         "You're not allowed to run the help command at a channel. "
-                                + "You can use "
-                                + "http://code.google.com/p/jzbot/wiki/FactoidFunctions "
-                                + "or try sending \"help\" in a pm to the bot instead.");
+                            + "You can use "
+                            + "http://code.google.com/p/jzbot/wiki/FactoidFunctions "
+                            + "or try sending \"help\" in a pm to the bot instead.");
             }
             else
             {
                 throw new ResponseException(
                         "You're not allowed to run the help command at a channel. "
-                                + "Try sending \"help\" in a pm to the bot instead.");
+                            + "Try sending \"help\" in a pm to the bot instead.");
             }
         }
         ArrayList<String> subpages = new ArrayList<String>();
@@ -74,8 +74,9 @@ public class HelpCommand implements Command
             throw new ResponseException("No such help page");
         String helpCommand;
         if (pm)
-            helpCommand = "/msg "
-                    + JZBot.getRealConnection(server).getConnection().getNick() + " help";
+            helpCommand =
+                    "/msg " + JZBot.getRealConnection(server).getConnection().getNick()
+                        + " help";
         else
         {
             Channel c = datastoreServer.getChannel(channel);
@@ -98,9 +99,10 @@ public class HelpCommand implements Command
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
                 pageWithSpace = " " + pageWithSpace;
-            String pageListText = (subpages.size() > 0 ? "---> Subpages ("
-                    + subpages.size() + " pages; use \"" + helpCommand + pageWithSpace
-                    + " <pagename>\" to show a page):  " : "");
+            String pageListText =
+                    (subpages.size() > 0 ? "---> Subpages (" + subpages.size()
+                        + " pages; use \"" + helpCommand + pageWithSpace
+                        + " <pagename>\" to show a page):  " : "");
             // TODO: have it pastebin the list of subpages if there are more than, say, 20
             // subpages. Also have it omit "---> No subpages." if there aren't any.
             // UPDATE: this might already be disabled, see the comment about 15 lines
@@ -108,6 +110,9 @@ public class HelpCommand implements Command
             pageListText += StringUtils.delimited(subpages.toArray(new String[0]), "   ");
             if (pageListText.length() > 0)
             {
+                if (pageListText.length() > (source.getProtocolDelimitedLength() - 4)
+                    && source.likesPastebin())
+                    pageListText = JZBot.pastebinNotice(pageListText, null);
                 source.sendSpaced(pageListText);
             }
         }
@@ -128,11 +133,12 @@ public class HelpCommand implements Command
                 buffer.append(subpage).append(":\n");
                 buffer.append(subtext).append("\n\n");
             }
-            source.sendMessage("All subpages of \""
-                    + page
-                    + "\": "
-                    + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null,
-                            null));
+            source
+                    .sendMessage("All subpages of \""
+                        + page
+                        + "\": "
+                        + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
+                                null, null));
         }
     }
 }
