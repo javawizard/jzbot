@@ -406,7 +406,7 @@ public class BZFlagProtocol implements Connection
         {
             MsgMessage m = (MsgMessage) message;
             System.out.println("Message from #" + m.from + " to #" + m.to + ": "
-                    + m.message);
+                + m.message);
             debugDumpMessage("BZFlag inbound message: ", m.message);
             // Server messages we'll send as notices to avoid the bot trying to respond to
             // periodic messages sent out by the server.
@@ -519,7 +519,7 @@ public class BZFlagProtocol implements Connection
                 if (player == null)
                 {
                     System.err.println("WARNING: missing player spec for id "
-                            + info.playerId);
+                        + info.playerId);
                     continue;
                 }
                 boolean wasAdmin = player.admin;
@@ -570,7 +570,7 @@ public class BZFlagProtocol implements Connection
             if (player == null)
             {
                 System.err.println("WARNING: attempted to remove a non-existent player: "
-                        + m.playerId);
+                    + m.playerId);
                 return;
             }
             if (player.admin)
@@ -747,7 +747,7 @@ public class BZFlagProtocol implements Connection
         {
             doShutdown();
             throw new IOException("The server didn't accept our "
-                    + "connect request within 30 seconds, so we're disconnecting.");
+                + "connect request within 30 seconds, so we're disconnecting.");
         }
         else if (status instanceof Throwable)
         {
@@ -850,7 +850,7 @@ public class BZFlagProtocol implements Connection
         boolean checkAdmin = channel.equals("#admin");
         boolean checkTeam = channel.equals("#team");
         if ((checkAll && joinedAll) || (checkAdmin && joinedAdmin)
-                || (checkTeam && joinedTeam))
+            || (checkTeam && joinedTeam))
         {
             ArrayList<User> list = new ArrayList<User>();
             for (Player player : players)
@@ -886,7 +886,7 @@ public class BZFlagProtocol implements Connection
         }
         boolean connected = serverLink.isConnected();
         System.out.println("We have a server link, and we are" + (connected ? "" : " not")
-                + " connected");
+            + " connected");
         return connected;
     }
     
@@ -1093,7 +1093,19 @@ public class BZFlagProtocol implements Connection
             FactContext context)
     {
         throw new UnsupportedOperationException("There aren't yet any "
-                + "protocol-specific functions for the BZFlag protocol.");
+            + "protocol-specific functions for the BZFlag protocol.");
+    }
+    
+    /**
+     * Returns false. Since copy/paste isn't supported from within BZFlag, and neither is
+     * automatic URL linking, it's extremely difficult to open a pastebin post from within
+     * BZFlag. Coincidentally, BZFlag doesn't have built-in flood protection, so the bot
+     * won't flood itself off for sending large amounts of data to the server.
+     */
+    @Override
+    public boolean likesPastebin()
+    {
+        return false;
     }
     
 }

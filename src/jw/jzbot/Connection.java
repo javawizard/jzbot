@@ -117,4 +117,6 @@ public interface Connection
      * this will always be preceded by a call to disconnect().
      */
     public void discard();
+    
+    public boolean likesPastebin();
 }

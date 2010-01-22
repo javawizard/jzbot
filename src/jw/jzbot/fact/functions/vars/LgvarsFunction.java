@@ -12,10 +12,13 @@ public class LgvarsFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         StringBuffer b = new StringBuffer();
+        String delimiter = "|";
+        if (arguments.length() == 2)
+            delimiter = arguments.resolveString(1);
         for (String s : context.getGlobalVars().keySet())
         {
             if ((arguments.length() == 0) || s.matches(arguments.getString(0)))
-                b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
+                b.append(delimiter).append(s);
         }
         if (b.length() != 0)
             sink.write(b.substring(1));
@@ -29,13 +32,16 @@ public class LgvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {lgvars|<regex>} -- Returns a pipe-delimited list of global variable"
-                + " names, with pipes in those names escaped (pipes in variable names "
-                + "are still a bad idea anyway) with backslashes. This is mostly for "
-                + "when you're trying to debug stuff and you want to see the list of "
-                + "global variables that exist.\n"
-                + "<regex> is optional, but if it's present, only the names of variables "
-                + "that match <regex> will be returned.";
+        return "Syntax: {lgvars|<regex>|<delimiter>} -- Returns a <delimiter>-delimited "
+            + "list of the names of all currently-existing global variables. Variables "
+            + "that have been set to the empty string are included in this list; "
+            + "indeed, checkin members of this list is the only reliable way to see "
+            + "if a particular variable actually exists, as it's impossible to detect "
+            + "with the {get} function if the variable is nonexistent or simply set "
+            + "to the empty string. <regex> is optional, but if it's present, only the "
+            + "names of variables that match <regex> will be returned. <delimiter> is "
+            + "also optional, and defaults to the pipe character (\"|\") if not "
+            + "present.";
     }
     
 }

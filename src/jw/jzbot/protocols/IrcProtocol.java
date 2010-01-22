@@ -227,7 +227,13 @@ public class IrcProtocol extends PircBot implements Connection
             FactContext context)
     {
         throw new UnsupportedOperationException("IrcProtocol doesn't support any "
-                + "protocol-specific functions at the moment.");
+            + "protocol-specific functions at the moment.");
+    }
+    
+    @Override
+    public boolean likesPastebin()
+    {
+        return true;
     }
     
 }

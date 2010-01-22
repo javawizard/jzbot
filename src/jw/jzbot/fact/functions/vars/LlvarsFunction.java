@@ -12,10 +12,13 @@ public class LlvarsFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         StringBuffer b = new StringBuffer();
+        String delimiter = "|";
+        if (arguments.length() == 2)
+            delimiter = arguments.resolveString(1);
         for (String s : context.getLocalVars().keySet())
         {
             if ((arguments.length() == 0) || s.matches(arguments.getString(0)))
-                b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
+                b.append(delimiter).append(s);
         }
         if (b.length() != 0)
             sink.write(b.substring(1));
@@ -24,8 +27,8 @@ public class LlvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {llvars|<regex>} -- Same as {lgvars} but for local variables "
-                + "instead of global variables.";
+        return "Syntax: {llvars|<regex>|<delimiter>} -- Same as {lgvars} but for local variables "
+            + "instead of global variables.";
     }
     
     public String getName()

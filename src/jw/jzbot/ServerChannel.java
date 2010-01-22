@@ -48,6 +48,12 @@ public class ServerChannel implements Messenger, Scope
     }
     
     @Override
+    public boolean likesPastebin()
+    {
+        return JZBot.getServer(serverName).getConnection().likesPastebin();
+    }
+    
+    @Override
     public void sendAction(String action)
     {
         JZBot.getConnection(serverName).sendAction(channel, action);

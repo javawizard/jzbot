@@ -42,7 +42,6 @@ public class SqlforFunction extends Function
                 statement.setObject(i + 1, arguments.resolveString(i + 4));
             }
             results = statement.executeQuery();
-            results.next();
             ResultSetMetaData md = results.getMetaData();
             String[] colNames = new String[md.getColumnCount()];
             for (int i = 0; i < colNames.length; i++)
@@ -55,7 +54,7 @@ public class SqlforFunction extends Function
                 for (String col : colNames)
                 {
                     Object value = results.getObject(col);
-                    String propName = prefix + "-" + col;
+                    String propName = prefix + "-" + col.toLowerCase();
                     String previousValue = context.getLocalVars().get(propName);
                     if (previousValue == null)
                         nullVars.add(propName);
@@ -122,17 +121,24 @@ public class SqlforFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {sqlfor|<query>|<prefix>|<action>|<delimiter>|<arg1>|<arg2>|...}"
-            + " -- Runs the SQL statement <query>, which must be a query (IE it must "
-            + "not be an update). The query can be a prepared statement (IE it can "
-            + "include \"?\" where a particular parameter should be; this allows "
-            + "for automatic input sanitization), in which case the values of "
-            + "positional arguments are given by <arg1>, <arg2>, and so on. Then, "
-            + "for each row in the result, a local variable is set for each non-null "
-            + "column in the row. The local variable's name is <prefix>-<colname>, where "
-            + "<prefix> is the <prefix> argument to the {sqlfor} function and <colname> "
-            + "is the name of the column. <action> is then run for this row. Once {sqlfor} "
-            + "finishes, it evaluates to all of the <action> results separated by "
-            + "<delimiter>. {break} in <action> works correctly.";
+        if (topic == null)
+            return "Syntax: {sqlfor|<query>|<prefix>|<action>|<delimiter>|<arg1>|<arg2>|...}"
+                + " -- Runs the SQL statement <query>, which must be a query (IE it must "
+                + "not be an update). The query can be a prepared statement (IE it can "
+                + "include \"?\" where a particular parameter should be; this allows "
+                + "for automatic input sanitization), in which case the values of "
+                + "positional arguments are given by <arg1>, <arg2>, and so on. Then, "
+                + "for each row in the result, a local variable is set for each non-null "
+                + "column in the row. The local variable's name is <prefix>-<colname>, where "
+                + "<prefix> is the <prefix> argument to the {sqlfor} function and <colname> "
+                + "is the lower-case name of the column. <action> is "
+                + "then run for this row. Once {sqlfor} "
+                + "finishes, it evaluates to all of the <action> results separated by "
+                + "<delimiter>. {break} in <action> works correctly. <query> can be a "
+                + "specially-formatted string to get various metadata from the database; "
+                + "see \"%HELPCMD% functions sqlfor metadata\" for more info.";
+        else if (topic.equals("metadata"))
+            return "More to come soon.";
+        return "Invalid subtopic. Try \"%HELPCMD% functions sqlfor\".";
     }
 }

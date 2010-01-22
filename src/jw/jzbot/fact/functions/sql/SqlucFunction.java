@@ -11,7 +11,7 @@ public class SqlucFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        SqlupdateFunction.doUpdate(sink, arguments, context, false);
+        SqlupdateFunction.doUpdate(sink, arguments, context, true);
     }
     
     @Override

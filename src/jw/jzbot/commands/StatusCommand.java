@@ -41,27 +41,28 @@ public class StatusCommand implements Command
             sender.verifySuperop();
         if (arguments.equals(""))
         {
-            String s = "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
-                    + format(Runtime.getRuntime().freeMemory()) + ","
-                    + format(Runtime.getRuntime().totalMemory()) + ","
-                    + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
-                    + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
-                    + ",functions:" + FactParser.getFunctionNames().length + ",commands:"
-                    + JZBot.commands.size() + ",queue:"
-                    + JZBot.getServer(server).getConnection().getOutgoingQueueSize()
-                    + ",pastebins:" + PastebinService.getProviderCount();
+            String s =
+                    "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
+                        + format(Runtime.getRuntime().freeMemory()) + ","
+                        + format(Runtime.getRuntime().totalMemory()) + ","
+                        + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
+                        + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
+                        + ",functions:" + FactParser.getFunctionNames().length
+                        + ",commands:" + JZBot.commands.size() + ",queue:"
+                        + JZBot.getServer(server).getConnection().getOutgoingQueueSize()
+                        + ",pastebins:" + PastebinService.getProviderCount();
             source.sendMessage(s);
             source.sendMessage("For more info, try \"status gc\", \"status threads\", "
-                    + "\"status facts\". \"status storage\", "
-                    + "\"status mx\", \"status stack\", "
-                    + "\"status os\", or \"status logging\".");
+                + "\"status facts\". \"status storage\", "
+                + "\"status mx\", \"status stack\", "
+                + "\"status os\", \"status logging\", " + "or \"status hostname\".");
         }
         else if (arguments.equals("gc"))
         {
             long t = System.currentTimeMillis();
             System.gc();
             source.sendMessage("Garbage-collected successfully in "
-                    + (System.currentTimeMillis() - t) + " milliseconds.");
+                + (System.currentTimeMillis() - t) + " milliseconds.");
         }
         else if (arguments.equals("threads"))
         {
@@ -78,8 +79,8 @@ public class StatusCommand implements Command
                 if (thread != null)
                 {
                     strings.add("" + thread.getName() + " ("
-                            + thread.getStackTrace().length + " frames, priority "
-                            + thread.getPriority() + ")");
+                        + thread.getStackTrace().length + " frames, priority "
+                        + thread.getPriority() + ")");
                 }
             }
             if (strings.size() != 0)
@@ -95,8 +96,9 @@ public class StatusCommand implements Command
             }
             if (strings.size() > 10)
             {
-                String pastebin = JZBot.pastebinNotice(StringUtils.delimited(strings
-                        .toArray(new String[0]), "\n"), null);
+                String pastebin =
+                        JZBot.pastebinNotice(StringUtils.delimited(strings
+                                .toArray(new String[0]), "\n"), null);
                 source.sendMessage("" + size + " threads: " + pastebin);
             }
             else
@@ -117,7 +119,7 @@ public class StatusCommand implements Command
                 strings.add("" + f.getName() + ":" + format(f.length()));
             }
             JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
-                    + (strings.size() > 0 ? ", per-channel: " : ""), strings
+                + (strings.size() > 0 ? ", per-channel: " : ""), strings
                     .toArray(new String[0]), ", ", source);
         }
         else if (arguments.equals("facts"))
@@ -149,8 +151,8 @@ public class StatusCommand implements Command
             // server-level facts.
             throw new ResponseException(
                     "\"~status facts\" needs to be re-written since the "
-                            + "change to multiple servers. Until this is done, "
-                            + "\"~status facts\" does not work.");
+                        + "change to multiple servers. Until this is done, "
+                        + "\"~status facts\" does not work.");
         }
         else if (arguments.equals("stack"))
         {
@@ -166,7 +168,7 @@ public class StatusCommand implements Command
                 b.append("\n");
             }
             source.sendMessage("Stack traces of all live threads: "
-                    + Pastebin.createPost("jzbot", b.toString(), Duration.DAY, null, null));
+                + Pastebin.createPost("jzbot", b.toString(), Duration.DAY, null, null));
         }
         else if (arguments.equals("storage"))
         {
@@ -176,21 +178,25 @@ public class StatusCommand implements Command
             long resourcesSize = DataUtils.recursiveSizeScan(new File("resources"));
             long entireSize = DataUtils.recursiveSizeScan(new File("."));
             source.sendMessage("Overall storage size: " + format(totalStorageSize)
-                    + ", database size: " + format(databaseSize) + ", logs folder size: "
-                    + format(logsFolderSize) + ", resources size: " + format(resourcesSize)
-                    + ", entire installation size: " + format(entireSize));
+                + ", database size: " + format(databaseSize) + ", logs folder size: "
+                + format(logsFolderSize) + ", resources size: " + format(resourcesSize)
+                + ", entire installation size: " + format(entireSize));
         }
         else if (arguments.equals("os"))
         {
             source.sendMessage("memory: "
-                    + format(getOsAttribute("TotalPhysicalMemorySize")) + ", free: "
-                    + format(getOsAttribute("FreePhysicalMemorySize")) + ", swap: "
-                    + format(getOsAttribute("TotalSwapSpaceSize")) + ", free: "
-                    + format(getOsAttribute("FreeSwapSpaceSize")) + ", open FDs: "
-                    + getOsAttribute("OpenFileDescriptorCount") + ", max FDs: "
-                    + getOsAttribute("MaxFileDescriptorCount") + ", load average: "
-                    + getOsAttribute("SystemLoadAverage") + ", bot CPU time: "
-                    + getOsAttribute("ProcessCpuTime"));
+                + format(getOsAttribute("TotalPhysicalMemorySize")) + ", free: "
+                + format(getOsAttribute("FreePhysicalMemorySize")) + ", swap: "
+                + format(getOsAttribute("TotalSwapSpaceSize")) + ", free: "
+                + format(getOsAttribute("FreeSwapSpaceSize")) + ", open FDs: "
+                + getOsAttribute("OpenFileDescriptorCount") + ", max FDs: "
+                + getOsAttribute("MaxFileDescriptorCount") + ", load average: "
+                + getOsAttribute("SystemLoadAverage") + ", bot CPU time: "
+                + getOsAttribute("ProcessCpuTime"));
+        }
+        else if (arguments.equals("hostname"))
+        {
+            source.sendMessage("Your hostname is " + sender.getHostname() + ".");
         }
         else
         {
@@ -203,8 +209,8 @@ public class StatusCommand implements Command
         try
         {
             return ""
-                    + ManagementFactory.getPlatformMBeanServer().getAttribute(
-                            new ObjectName(object), attribute);
+                + ManagementFactory.getPlatformMBeanServer().getAttribute(
+                        new ObjectName(object), attribute);
         }
         catch (Exception e)
         {

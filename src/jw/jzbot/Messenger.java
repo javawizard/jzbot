@@ -9,4 +9,6 @@ public interface Messenger
     public int getProtocolDelimitedLength();
     
     public void sendSpaced(String message);
+    
+    public boolean likesPastebin();
 }

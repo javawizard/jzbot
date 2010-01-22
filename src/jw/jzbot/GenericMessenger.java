@@ -28,6 +28,11 @@ public class GenericMessenger implements Messenger
         return con.getConnection().getProtocolDelimitedLength();
     }
     
+    public boolean likesPastebin()
+    {
+        return con.getConnection().likesPastebin();
+    }
+    
     @Override
     public void sendAction(String action)
     {

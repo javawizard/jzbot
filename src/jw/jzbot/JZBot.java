@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -16,6 +17,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1073,9 +1076,36 @@ public class JZBot
             relationalStore =
                     DriverManager.getConnection("jdbc:h2:" + location.getPath()
                         + ";FILE_LOCK=SOCKET", "sa", "");
+            Statement statement = relationalStore.createStatement();
+            statement.execute("create user if not exists jzbot password 'pass'");
+            // Now we'll set up aliases to all public static methods in
+            // PublicDatabaseUtils.
+            Method[] methods = PublicDatabaseUtils.class.getMethods();
+            for (Method method : methods)
+            {
+                if (method.getName().startsWith("metadata_"))
+                {
+                    statement.execute("create alias if not exists " + method.getName()
+                        + " for \"jw.jzbot.PublicDatabaseUtils." + method.getName() + "\"");
+                }
+            }
+            statement.close();
+            relationalStore.close();
+            relationalStore =
+                    DriverManager.getConnection("jdbc:h2:" + location.getPath()
+                        + ";FILE_LOCK=SOCKET", "jzbot", "pass");
         }
         catch (Exception e)
         {
+            try
+            {
+                relationalStore.close();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+            relationalStore = null;
             throw new RuntimeException("Could not connect to the relational data store.", e);
         }
     }

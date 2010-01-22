@@ -14,11 +14,14 @@ public class LpvarsFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         StringBuffer b = new StringBuffer();
+        String delimiter = "|";
+        if (arguments.length() == 2)
+            delimiter = arguments.resolveString(1);
         for (MapEntry entry : JZBot.storage.getPersistentVariables())
         {
             String s = entry.getKey();
             if ((arguments.length() == 0) || s.matches(arguments.getString(0)))
-                b.append("|").append(s.replace("\\", "\\\\").replace("|", "\\|"));
+                b.append(delimiter).append(s);
         }
         if (b.length() != 0)
             sink.write(b.substring(1));
@@ -27,10 +30,10 @@ public class LpvarsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {lpvars|<regex>} -- Same as {lgvars}, but lists "
-                + "persistent variables instead of global variables. See \"%HELPCMD% "
-                + "functions pset\" for information on the difference between persistent variables "
-                + "and global variables.";
+        return "Syntax: {lpvars|<regex>|<delimiter>} -- Same as {lgvars}, but lists "
+            + "persistent variables instead of global variables. See \"%HELPCMD% "
+            + "functions pset\" for information on the difference between persistent variables "
+            + "and global variables.";
     }
     
 }

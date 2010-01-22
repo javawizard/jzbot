@@ -106,6 +106,12 @@ public class ServerUser implements Messenger
     }
     
     @Override
+    public boolean likesPastebin()
+    {
+        return JZBot.getServer(serverName).getConnection().likesPastebin();
+    }
+    
+    @Override
     public void sendAction(String action)
     {
         JZBot.getConnection(serverName).sendAction(nick, action);

@@ -60,8 +60,8 @@ public class FacebookProtocol implements Connection
     @Override
     public int getProtocolDelimitedLength()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        // TODO: figure out what the maximum length of a wall post or comment or w/e is.
+        return 300;
     }
     
     @Override
@@ -196,6 +196,12 @@ public class FacebookProtocol implements Connection
     {
         // TODO Auto-generated method stub
         
+    }
+    
+    @Override
+    public boolean likesPastebin()
+    {
+        return true;
     }
     
 }
