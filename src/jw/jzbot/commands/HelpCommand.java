@@ -99,10 +99,10 @@ public class HelpCommand implements Command
             String pageWithSpace = page;
             if (!pageWithSpace.trim().equals(""))
                 pageWithSpace = " " + pageWithSpace;
-            String pageListText =
-                    (subpages.size() > 0 ? "---> Subpages (" + subpages.size()
-                        + " pages; use \"" + helpCommand + pageWithSpace
-                        + " <pagename>\" to show a page):  " : "");
+            String subpagesIntro =
+                    "---> Subpages (" + subpages.size() + " pages; use \"" + helpCommand
+                        + pageWithSpace + " <pagename>\" to show a page):  ";
+            String pageListText = (subpages.size() > 0 ? subpagesIntro : "");
             // TODO: have it pastebin the list of subpages if there are more than, say, 20
             // subpages. Also have it omit "---> No subpages." if there aren't any.
             // UPDATE: this might already be disabled, see the comment about 15 lines
@@ -112,7 +112,7 @@ public class HelpCommand implements Command
             {
                 if (pageListText.length() > (source.getProtocolDelimitedLength() - 4)
                     && source.likesPastebin())
-                    pageListText = JZBot.pastebinNotice(pageListText, null);
+                    pageListText = subpagesIntro + JZBot.pastebinNotice(pageListText, null);
                 source.sendSpaced(pageListText);
             }
         }

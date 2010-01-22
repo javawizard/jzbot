@@ -7,4 +7,5 @@ $CMD
 while [ $? == '17' ]
 do
   $CMD
+  sleep 5
 done
