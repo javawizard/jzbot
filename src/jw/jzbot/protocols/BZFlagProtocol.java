@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,13 @@ import jw.jzbot.protocols.bzflag.pack.MsgSetVar;
 import jw.jzbot.protocols.bzflag.pack.MsgSuperKill;
 import jw.jzbot.protocols.bzflag.pack.MsgTeamUpdate;
 import jw.jzbot.protocols.bzflag.pack.MsgPlayerInfo.Info;
+import jw.jzbot.utils.Pastebin;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
 
@@ -730,6 +737,8 @@ public class BZFlagProtocol implements Connection
         enter.clientVersion = "javawizard2539's JZBot, http://jzbot.googlecode.com";
         enter.email = "";
         enter.key = "";
+        if (context.getPassword() != null && !context.getPassword().equals(""))
+            enter.key = requestPasswordToken(context.getNick(), context.getPassword());
         enter.team = OBSERVER;
         enter.type = 0;
         outQueue.offer(enter);
@@ -765,6 +774,44 @@ public class BZFlagProtocol implements Connection
             doShutdown();
             throw new IOException("An unknown error occurred while connecting.");
         }
+    }
+    
+    /**
+     * Contacts the BZFlag list server and asks it to get a token for us. If a token can't
+     * be retrieved from the server (which, among other reasons, could be because the
+     * server is down or the password is incorrect), an exception is thrown. If the token
+     * is retrieved successfully, it is returned.
+     * 
+     * @param nick
+     * @param password
+     * @return
+     */
+    private String requestPasswordToken(String nick, String password) throws IOException
+    {
+        HttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter("http.socket.timeout", 20 * 1000);
+        HttpPost request = new HttpPost("http://my.bzflag.org/db");
+        request.addHeader("Content-type", "application/x-www-form-urlencoded");
+        request.setEntity(new StringEntity("action=GETTOKEN&version="
+            + URLEncoder.encode("Ask jcp on irc.freenode.net #jzbot")
+            + "&local=1&callsign=" + URLEncoder.encode(nick) + "&password="
+            + URLEncoder.encode(password)));
+        HttpResponse response = client.execute(request);
+        int responseCode = response.getStatusLine().getStatusCode();
+        if (responseCode != 200)
+            throw new RuntimeException("Received response code " + responseCode
+                + " from my.bzflag.og/db (200 should have been sent instead): "
+                + response.getStatusLine().getReasonPhrase() + " with content "
+                + Pastebin.readContent(response));
+        String content = Pastebin.readContent(response);
+        content = content.trim();
+        if (content.startsWith("\""))
+            content = content.substring(1).trim();
+        if (!content.startsWith("TOKEN:"))
+            throw new RuntimeException("Content received from the list "
+                + "server does not start with \"TOKEN:\"; the content was: " + content);
+        content = content.substring("TOKEN:".length());
+        return content.trim();
     }
     
     private void startOnConnectThread()
