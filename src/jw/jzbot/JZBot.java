@@ -867,11 +867,10 @@ public class JZBot
             System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
             System.out.println("");
-            System.out.println("For advanced users, you can configure a protocol ");
-            System.out.println("implementation to use by running \"jzbot protocol ");
-            System.out.println("<class>\", where <class> is the name of a class ");
-            System.out.println("that implements jw.jzbot.Protocol.");
-            System.out.println("Most users will not need to do this.");
+            System.out
+                    .println("Advanced users can also do \"jzbot addsuperop <hostname>\"");
+            System.out.println("or \"jzbot config\" or \"jzbot config <varname>\" or");
+            System.out.println("\"jzbot config <varname> <newvalue>\".");
         }
         else if (args[0].equals("addserver"))
         {
@@ -1112,7 +1111,8 @@ public class JZBot
     
     private static void initProxyStorage()
     {
-        proxyStorage = new ProxyStorage<Storage>(Storage.class, new File("storage/db"), 20, 30, 10);
+        proxyStorage =
+                new ProxyStorage<Storage>(Storage.class, new File("storage/db"), 20, 30, 10);
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
         if (config == null)
