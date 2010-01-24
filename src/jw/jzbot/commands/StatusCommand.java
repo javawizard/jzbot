@@ -196,7 +196,7 @@ public class StatusCommand implements Command
         }
         else if (arguments.equals("hostname"))
         {
-            source.sendMessage("Your hostname is " + sender.getHostname() + ".");
+            source.sendMessage("Your hostname is " + sender.getHostname());
         }
         else
         {
