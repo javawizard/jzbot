@@ -1076,7 +1076,7 @@ public class JZBot
                     DriverManager.getConnection("jdbc:h2:" + location.getPath()
                         + ";FILE_LOCK=SOCKET", "sa", "");
             Statement statement = relationalStore.createStatement();
-            statement.execute("create user if not exists jzbot password 'pass'");
+            // statement.execute("create user if not exists jzbot password 'pass'");
             // Now we'll set up aliases to all public static methods in
             // PublicDatabaseUtils.
             Method[] methods = PublicDatabaseUtils.class.getMethods();
@@ -1089,10 +1089,10 @@ public class JZBot
                 }
             }
             statement.close();
-            relationalStore.close();
-            relationalStore =
-                    DriverManager.getConnection("jdbc:h2:" + location.getPath()
-                        + ";FILE_LOCK=SOCKET", "jzbot", "pass");
+            // relationalStore.close();
+            // relationalStore =
+            // DriverManager.getConnection("jdbc:h2:" + location.getPath()
+            // + ";FILE_LOCK=SOCKET", "jzbot", "pass");
         }
         catch (Exception e)
         {
