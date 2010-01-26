@@ -174,13 +174,15 @@ public class StatusCommand implements Command
         {
             long totalStorageSize = DataUtils.recursiveSizeScan(new File("storage"));
             long databaseSize = new File("storage/db.data.db").length();
+            long relationalStoreSize = new File("storage/relational/rs.data.db").length();
             long logsFolderSize = DataUtils.recursiveSizeScan(new File("storage/logs"));
             long resourcesSize = DataUtils.recursiveSizeScan(new File("resources"));
             long entireSize = DataUtils.recursiveSizeScan(new File("."));
-            source.sendMessage("Overall storage size: " + format(totalStorageSize)
-                + ", database size: " + format(databaseSize) + ", logs folder size: "
-                + format(logsFolderSize) + ", resources size: " + format(resourcesSize)
-                + ", entire installation size: " + format(entireSize));
+            source.sendMessage("Overall storage size:" + format(totalStorageSize)
+                + ";database size:" + format(databaseSize) + ";relational store size:"
+                + relationalStoreSize + ";logs folder size;" + format(logsFolderSize)
+                + ";resources size:" + format(resourcesSize) + ";entire installation size;"
+                + format(entireSize));
         }
         else if (arguments.equals("os"))
         {

@@ -800,7 +800,8 @@ public class BZFlagProtocol implements Connection
         int responseCode = response.getStatusLine().getStatusCode();
         if (responseCode != 200)
             throw new RuntimeException("Received response code " + responseCode
-                + " from my.bzflag.og/db (200 should have been sent instead): "
+                + " from my.bzflag.og/db while trying to authenticate with the "
+                + "list server (200 should have been sent instead): "
                 + response.getStatusLine().getReasonPhrase() + " with content "
                 + Pastebin.readContent(response));
         String content = Pastebin.readContent(response);
@@ -809,7 +810,9 @@ public class BZFlagProtocol implements Connection
             content = content.substring(1).trim();
         if (!content.startsWith("TOKEN:"))
             throw new RuntimeException("Content received from the list "
-                + "server does not start with \"TOKEN:\"; the content was: " + content);
+                + "server while attempting to authenticate does "
+                + "not start with \"TOKEN:\" (which it should have started with that); "
+                + "the content was: " + content);
         content = content.substring("TOKEN:".length());
         return content.trim();
     }

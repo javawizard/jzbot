@@ -112,7 +112,9 @@ public class HelpCommand implements Command
             {
                 if (pageListText.length() > (source.getProtocolDelimitedLength() - 4)
                     && source.likesPastebin())
-                    pageListText = subpagesIntro + JZBot.pastebinNotice(pageListText, null);
+                    pageListText =
+                            subpagesIntro
+                                + JZBot.tryPastebin(pageListText, null, pageListText);
                 source.sendSpaced(pageListText);
             }
         }

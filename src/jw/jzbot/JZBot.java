@@ -44,6 +44,7 @@ import jw.jzbot.commands.FactoidCommand;
 import jw.jzbot.commands.HelpCommand;
 import jw.jzbot.commands.JoinCommand;
 import jw.jzbot.commands.LeaveCommand;
+import jw.jzbot.commands.ListChannelsCommand;
 import jw.jzbot.commands.MMCommand;
 import jw.jzbot.commands.RedefineCommand;
 import jw.jzbot.commands.RegexCommand;
@@ -1006,6 +1007,7 @@ public class JZBot
         loadCommand(new JoinCommand());
         loadCommand(new LeaveCommand());
         // loadCommand(new LengthCommand());
+        loadCommand(new ListChannelsCommand());
         loadCommand(new MMCommand());
         loadCommand(new RedefineCommand());
         loadCommand(new RegexCommand());
@@ -2669,6 +2671,32 @@ public class JZBot
             + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
             + "post, or its creator (JZBot), send an email to \"alex"
             + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
+    }
+    
+    /**
+     * Calls {@link #pastebinNotice(String, Feature[])}. If an exception is thrown,
+     * <tt>alternative</tt> is returned, with "(pastebin unavailable) " prefixed.
+     * 
+     * @param text
+     *            The text to pastebin
+     * @param features
+     *            The features that the target pastebin should have
+     * @param alternative
+     *            The text to return if the pastebin service is unavailable
+     * @return the return value of pastebinNotice(String, Feature[]), or
+     *         <tt>"(pastebin unavailable) " + alternative</tt> if the pastebin service is
+     *         currently unavailable
+     */
+    public static String tryPastebin(String text, Feature[] features, String alternative)
+    {
+        try
+        {
+            return pastebinNotice(text, features);
+        }
+        catch (Exception e)
+        {
+            return "(pastebin unavailable) " + alternative;
+        }
     }
     
     public static MathContext datasizeContext = new MathContext(3);

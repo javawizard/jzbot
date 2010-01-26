@@ -27,7 +27,6 @@ public class ServerCommand implements Command
     {
         // TODO: make a config var that, when set to a certain value, allows the list of
         // servers to be read by non-superops, too.
-        sender.verifySuperop();
         if (arguments.equals(""))
         {
             source
@@ -49,6 +48,7 @@ public class ServerCommand implements Command
                     + "<hostname> <port> "
                     + "<nick> <password>\" <password> is optional. <protocol> "
                     + "is one of irc, bzflag, TODO: complete this list");
+            sender.verifySuperop();
             verifyOkChars(serverName);
             if (JZBot.storage.getServer(serverName) != null)
                 throw new ResponseException("A server with that name already exists.");
@@ -69,6 +69,7 @@ public class ServerCommand implements Command
         }
         else if (subcommand.equals("delete"))
         {
+            sender.verifySuperop();
             Server s = server(serverName);
             JZBot.storage.getServers().remove(s);
             JZBot.notifyConnectionCycleThread();
@@ -92,6 +93,7 @@ public class ServerCommand implements Command
         }
         else if (subcommand.equals("activate"))
         {
+            sender.verifySuperop();
             Server s = server(serverName);
             if (s.isActive())
                 throw new ResponseException("That server is already active.");
@@ -102,6 +104,7 @@ public class ServerCommand implements Command
         }
         else if (subcommand.equals("deactivate"))
         {
+            sender.verifySuperop();
             Server s = server(serverName);
             if (!s.isActive())
                 throw new ResponseException("That server is not active.");
@@ -112,6 +115,7 @@ public class ServerCommand implements Command
         }
         else if (subcommand.equals("edit"))
         {
+            sender.verifySuperop();
             Server s = JZBot.storage.getServer(serverName);
             if (s == null)
                 throw new ResponseException(
@@ -159,7 +163,7 @@ public class ServerCommand implements Command
         }
         else if (subcommand.equals("list"))
         {
-            source.sendMessage("Here's the list. Servers in this list are in the format "
+            source.sendSpaced("Here's the list. Servers in this list are in the format "
                 + "<flags>:<name>, where <flags> are some flags and <name> is the "
                 + "name of the server. Flags are 1: active, 2: has a connection "
                 + "object, 3: currently connected, 4: error occurred during last "
