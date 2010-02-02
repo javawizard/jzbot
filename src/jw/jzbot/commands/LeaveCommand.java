@@ -39,8 +39,9 @@ public class LeaveCommand implements Command
         {
             if (server.equals(sender.getServerName()))
             {
-                User user = JZBot.getUser(JZBot.getRealConnection(server).getConnection(),
-                        channel, sender.getNick());
+                User user =
+                        JZBot.getUser(JZBot.getRealConnection(server).getConnection(),
+                                channel, sender.getNick());
                 if (!user.isOp())
                     throw e;
             }
@@ -52,15 +53,15 @@ public class LeaveCommand implements Command
         Channel c = dServer.getChannel(channel);
         if (c == null)
             throw new ResponseException("I'm not a member of that channel. You might "
-                    + "want to pm \"restart\" if I'm joined there for some reason.");
+                + "want to pm \"restart\" if I'm joined there for some reason.");
         if (c.isSuspended())
             throw new ResponseException("I've already left that channel. You might "
-                    + "want to pm \"restart\" if I seem not to have left it.");
+                + "want to pm \"restart\" if I seem not to have left it.");
         c.setSuspended(true);
-        sender.sendMessage("Ok, I'll leave now. I'll remember this channel's "
-                + "settings, though. Use \"/msg "
-                + JZBot.getServer(server).getConnection().getNick() + " join " + channel
-                + "\" to have me join the channel again.");
+        source.sendSpaced("Ok, I'll leave now. I'll remember this channel's "
+            + "settings, though. Use \"/msg "
+            + JZBot.getServer(server).getConnection().getNick() + " join " + channel
+            + "\" to have me join the channel again.");
         JZBot.getServer(server).partChannel(channel,
                 "Leaving on request from " + sender.nick());
     }

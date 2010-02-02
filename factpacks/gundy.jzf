@@ -4,7 +4,7 @@ description A collection of quotes from my choir teacher, Jay Gunderson. Running
   command randomly picks a quote. Note that these are almost exclusively humorous, 
   as opposed to practical choir advice, as I tend to like the humor side of things 
   considerably more than the serious side.
->gundy={random
+>gundy {random
  |Sing now, flirt later
  |Yeah, you guys are loaded up on cough drops, and it isn't because you're sick
  |Memorize your crap!

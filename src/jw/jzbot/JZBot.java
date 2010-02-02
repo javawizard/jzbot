@@ -1394,7 +1394,7 @@ public class JZBot
     {
         if (message.equals(""))
             ;
-        if (message.startsWith("<ACTION>"))
+        else if (message.startsWith("<ACTION>"))
             target.sendAction(channel, message.substring("<ACTION>".length()));
         else
             target.sendMessage(channel, message);
@@ -1404,7 +1404,7 @@ public class JZBot
     {
         if (message.equals(""))
             ;
-        if (message.startsWith("<ACTION>"))
+        else if (message.startsWith("<ACTION>"))
             target.sendAction(message.substring("<ACTION>".length()));
         else
             target.sendMessage(message);
@@ -1921,7 +1921,7 @@ public class JZBot
                     + "by importing it, by creating a regex "
                     + "that uses it, by using it as "
                     + "a trigger, and so on. Run \"factoid unlibrary " + command
-                    + "\" if you want to remove this factoid's " + "library status.");
+                    + "\" if you want to remove this factoid's library status.");
                 System.out.println("Finishing command run #5");
                 return;
             }
