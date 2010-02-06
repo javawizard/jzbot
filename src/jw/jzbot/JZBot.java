@@ -1686,9 +1686,9 @@ public class JZBot
         catch (Throwable e)
         {
             if (e instanceof ResponseException)
-                source.sendMessage(e.getMessage());
+                source.sendSpaced(e.getMessage());
             else
-                source.sendMessage("An error occurred while processing your invitation: "
+                source.sendSpaced("An error occurred while processing your invitation: "
                     + pastebinStack(e));
         }
     }
@@ -1867,12 +1867,12 @@ public class JZBot
                 if (e instanceof ResponseException)
                 {
                     if (!(e instanceof DieException))
-                        source.sendMessage(((ResponseException) e).getMessage());
+                        source.sendSpaced(((ResponseException) e).getMessage());
                 }
                 else
                 {
                     e.printStackTrace();
-                    source.sendMessage("An error occured while running the command "
+                    source.sendSpaced("An error occured while running the command "
                         + command + ": " + pastebinStack(e));
                 }
             }
