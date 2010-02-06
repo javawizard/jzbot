@@ -5,45 +5,45 @@ package jw.jzbot.eval.jexec.node;
 import jw.jzbot.eval.jexec.analysis.*;
 
 @SuppressWarnings("nls")
-public final class ANextUnmp extends PUnmp
+public final class AVarNmep extends PNmep
 {
-    private PNmep _next_;
+    private TName _name_;
 
-    public ANextUnmp()
+    public AVarNmep()
     {
         // Constructor
     }
 
-    public ANextUnmp(
-        @SuppressWarnings("hiding") PNmep _next_)
+    public AVarNmep(
+        @SuppressWarnings("hiding") TName _name_)
     {
         // Constructor
-        setNext(_next_);
+        setName(_name_);
 
     }
 
     @Override
     public Object clone()
     {
-        return new ANextUnmp(
-            cloneNode(this._next_));
+        return new AVarNmep(
+            cloneNode(this._name_));
     }
 
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseANextUnmp(this);
+        ((Analysis) sw).caseAVarNmep(this);
     }
 
-    public PNmep getNext()
+    public TName getName()
     {
-        return this._next_;
+        return this._name_;
     }
 
-    public void setNext(PNmep node)
+    public void setName(TName node)
     {
-        if(this._next_ != null)
+        if(this._name_ != null)
         {
-            this._next_.parent(null);
+            this._name_.parent(null);
         }
 
         if(node != null)
@@ -56,23 +56,23 @@ public final class ANextUnmp extends PUnmp
             node.parent(this);
         }
 
-        this._next_ = node;
+        this._name_ = node;
     }
 
     @Override
     public String toString()
     {
         return ""
-            + toString(this._next_);
+            + toString(this._name_);
     }
 
     @Override
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._next_ == child)
+        if(this._name_ == child)
         {
-            this._next_ = null;
+            this._name_ = null;
             return;
         }
 
@@ -83,9 +83,9 @@ public final class ANextUnmp extends PUnmp
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._next_ == oldChild)
+        if(this._name_ == oldChild)
         {
-            setNext((PNmep) newChild);
+            setName((TName) newChild);
             return;
         }
 

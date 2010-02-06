@@ -5,17 +5,17 @@ package jw.jzbot.eval.jexec.node;
 import jw.jzbot.eval.jexec.analysis.*;
 
 @SuppressWarnings("nls")
-public final class ANextUnmp extends PUnmp
+public final class ANextNmep extends PNmep
 {
-    private PNmep _next_;
+    private PTerm _next_;
 
-    public ANextUnmp()
+    public ANextNmep()
     {
         // Constructor
     }
 
-    public ANextUnmp(
-        @SuppressWarnings("hiding") PNmep _next_)
+    public ANextNmep(
+        @SuppressWarnings("hiding") PTerm _next_)
     {
         // Constructor
         setNext(_next_);
@@ -25,21 +25,21 @@ public final class ANextUnmp extends PUnmp
     @Override
     public Object clone()
     {
-        return new ANextUnmp(
+        return new ANextNmep(
             cloneNode(this._next_));
     }
 
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseANextUnmp(this);
+        ((Analysis) sw).caseANextNmep(this);
     }
 
-    public PNmep getNext()
+    public PTerm getNext()
     {
         return this._next_;
     }
 
-    public void setNext(PNmep node)
+    public void setNext(PTerm node)
     {
         if(this._next_ != null)
         {
@@ -85,7 +85,7 @@ public final class ANextUnmp extends PUnmp
         // Replace child
         if(this._next_ == oldChild)
         {
-            setNext((PNmep) newChild);
+            setNext((PTerm) newChild);
             return;
         }
 

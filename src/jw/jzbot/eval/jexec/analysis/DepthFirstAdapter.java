@@ -303,6 +303,127 @@ public class DepthFirstAdapter extends AnalysisAdapter
         outAInUnmp(node);
     }
 
+    public void inANextNmep(ANextNmep node)
+    {
+        defaultIn(node);
+    }
+
+    public void outANextNmep(ANextNmep node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseANextNmep(ANextNmep node)
+    {
+        inANextNmep(node);
+        if(node.getNext() != null)
+        {
+            node.getNext().apply(this);
+        }
+        outANextNmep(node);
+    }
+
+    public void inAPreNmep(APreNmep node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAPreNmep(APreNmep node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAPreNmep(APreNmep node)
+    {
+        inAPreNmep(node);
+        if(node.getName() != null)
+        {
+            node.getName().apply(this);
+        }
+        if(node.getSecond() != null)
+        {
+            node.getSecond().apply(this);
+        }
+        outAPreNmep(node);
+    }
+
+    public void inAInNmep(AInNmep node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAInNmep(AInNmep node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAInNmep(AInNmep node)
+    {
+        inAInNmep(node);
+        if(node.getFirst() != null)
+        {
+            node.getFirst().apply(this);
+        }
+        if(node.getName() != null)
+        {
+            node.getName().apply(this);
+        }
+        if(node.getSecond() != null)
+        {
+            node.getSecond().apply(this);
+        }
+        outAInNmep(node);
+    }
+
+    public void inAVarNmep(AVarNmep node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAVarNmep(AVarNmep node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAVarNmep(AVarNmep node)
+    {
+        inAVarNmep(node);
+        if(node.getName() != null)
+        {
+            node.getName().apply(this);
+        }
+        outAVarNmep(node);
+    }
+
+    public void inAPostNmep(APostNmep node)
+    {
+        defaultIn(node);
+    }
+
+    public void outAPostNmep(APostNmep node)
+    {
+        defaultOut(node);
+    }
+
+    @Override
+    public void caseAPostNmep(APostNmep node)
+    {
+        inAPostNmep(node);
+        if(node.getFirst() != null)
+        {
+            node.getFirst().apply(this);
+        }
+        if(node.getName() != null)
+        {
+            node.getName().apply(this);
+        }
+        outAPostNmep(node);
+    }
+
     public void inANumberTerm(ANumberTerm node)
     {
         defaultIn(node);

@@ -124,6 +124,31 @@ public class AnalysisAdapter implements Analysis
         defaultCase(node);
     }
 
+    public void caseANextNmep(ANextNmep node)
+    {
+        defaultCase(node);
+    }
+
+    public void caseAPreNmep(APreNmep node)
+    {
+        defaultCase(node);
+    }
+
+    public void caseAInNmep(AInNmep node)
+    {
+        defaultCase(node);
+    }
+
+    public void caseAVarNmep(AVarNmep node)
+    {
+        defaultCase(node);
+    }
+
+    public void caseAPostNmep(APostNmep node)
+    {
+        defaultCase(node);
+    }
+
     public void caseANumberTerm(ANumberTerm node)
     {
         defaultCase(node);
@@ -174,12 +199,7 @@ public class AnalysisAdapter implements Analysis
         defaultCase(node);
     }
 
-    public void caseTInt(TInt node)
-    {
-        defaultCase(node);
-    }
-
-    public void caseTRound(TRound node)
+    public void caseTName(TName node)
     {
         defaultCase(node);
     }

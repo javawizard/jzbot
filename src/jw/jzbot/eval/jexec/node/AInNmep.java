@@ -5,22 +5,26 @@ package jw.jzbot.eval.jexec.node;
 import jw.jzbot.eval.jexec.analysis.*;
 
 @SuppressWarnings("nls")
-public final class AInUnmp extends PUnmp
+public final class AInNmep extends PNmep
 {
-    private TMinus _minus_;
-    private PNmep _second_;
+    private PNmep _first_;
+    private TName _name_;
+    private PTerm _second_;
 
-    public AInUnmp()
+    public AInNmep()
     {
         // Constructor
     }
 
-    public AInUnmp(
-        @SuppressWarnings("hiding") TMinus _minus_,
-        @SuppressWarnings("hiding") PNmep _second_)
+    public AInNmep(
+        @SuppressWarnings("hiding") PNmep _first_,
+        @SuppressWarnings("hiding") TName _name_,
+        @SuppressWarnings("hiding") PTerm _second_)
     {
         // Constructor
-        setMinus(_minus_);
+        setFirst(_first_);
+
+        setName(_name_);
 
         setSecond(_second_);
 
@@ -29,26 +33,27 @@ public final class AInUnmp extends PUnmp
     @Override
     public Object clone()
     {
-        return new AInUnmp(
-            cloneNode(this._minus_),
+        return new AInNmep(
+            cloneNode(this._first_),
+            cloneNode(this._name_),
             cloneNode(this._second_));
     }
 
     public void apply(Switch sw)
     {
-        ((Analysis) sw).caseAInUnmp(this);
+        ((Analysis) sw).caseAInNmep(this);
     }
 
-    public TMinus getMinus()
+    public PNmep getFirst()
     {
-        return this._minus_;
+        return this._first_;
     }
 
-    public void setMinus(TMinus node)
+    public void setFirst(PNmep node)
     {
-        if(this._minus_ != null)
+        if(this._first_ != null)
         {
-            this._minus_.parent(null);
+            this._first_.parent(null);
         }
 
         if(node != null)
@@ -61,15 +66,40 @@ public final class AInUnmp extends PUnmp
             node.parent(this);
         }
 
-        this._minus_ = node;
+        this._first_ = node;
     }
 
-    public PNmep getSecond()
+    public TName getName()
+    {
+        return this._name_;
+    }
+
+    public void setName(TName node)
+    {
+        if(this._name_ != null)
+        {
+            this._name_.parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.parent() != null)
+            {
+                node.parent().removeChild(node);
+            }
+
+            node.parent(this);
+        }
+
+        this._name_ = node;
+    }
+
+    public PTerm getSecond()
     {
         return this._second_;
     }
 
-    public void setSecond(PNmep node)
+    public void setSecond(PTerm node)
     {
         if(this._second_ != null)
         {
@@ -93,7 +123,8 @@ public final class AInUnmp extends PUnmp
     public String toString()
     {
         return ""
-            + toString(this._minus_)
+            + toString(this._first_)
+            + toString(this._name_)
             + toString(this._second_);
     }
 
@@ -101,9 +132,15 @@ public final class AInUnmp extends PUnmp
     void removeChild(@SuppressWarnings("unused") Node child)
     {
         // Remove child
-        if(this._minus_ == child)
+        if(this._first_ == child)
         {
-            this._minus_ = null;
+            this._first_ = null;
+            return;
+        }
+
+        if(this._name_ == child)
+        {
+            this._name_ = null;
             return;
         }
 
@@ -120,15 +157,21 @@ public final class AInUnmp extends PUnmp
     void replaceChild(@SuppressWarnings("unused") Node oldChild, @SuppressWarnings("unused") Node newChild)
     {
         // Replace child
-        if(this._minus_ == oldChild)
+        if(this._first_ == oldChild)
         {
-            setMinus((TMinus) newChild);
+            setFirst((PNmep) newChild);
+            return;
+        }
+
+        if(this._name_ == oldChild)
+        {
+            setName((TName) newChild);
             return;
         }
 
         if(this._second_ == oldChild)
         {
-            setSecond((PNmep) newChild);
+            setSecond((PTerm) newChild);
             return;
         }
 

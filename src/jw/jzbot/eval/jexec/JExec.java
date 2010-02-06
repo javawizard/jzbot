@@ -1,36 +1,117 @@
 package jw.jzbot.eval.jexec;
 
+import java.io.PushbackReader;
+import java.io.StringReader;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
-import jw.jzbot.Evaluator;
+import jw.jzbot.eval.jexec.lexer.Lexer;
+import jw.jzbot.eval.jexec.node.Node;
+import jw.jzbot.eval.jexec.node.Start;
+import jw.jzbot.eval.jexec.parser.Parser;
 
-public class JExec extends Evaluator
+public class JExec
 {
-    /**
-     * Returns <tt>run(value).toPlainString()</tt>.
-     */
-    @Override
-    public String evaluate(String value)
+    public interface Function
     {
-        return "";
+        /**
+         * Runs this function and returns the result. If this function is being run as a
+         * variable, <tt>first</tt> and <tt>second</tt> will be null. If this function is
+         * being run as a unary prefix function, <tt>first</tt> will be the argument and
+         * <tt>second</tt> will be null. If this function is being run as a binary infix
+         * function, <tt>first</tt> will be the first argument and <tt>second</tt> will be
+         * the second argument. If this function is being run as a unary postfix function,
+         * <tt>first</tt> will be null and <tt>second</tt> will be the argument.
+         * 
+         * @param first
+         *            the first argument
+         * @param second
+         *            the second argument
+         * @return the result
+         */
+        public BigDecimal run(BigDecimal first, BigDecimal second);
+    }
+    
+    public class VariableFunction implements Function
+    {
+        private BigDecimal v;
+        
+        public VariableFunction(BigDecimal v)
+        {
+            this.v = v;
+        }
+        
+        @Override
+        public BigDecimal run(BigDecimal first, BigDecimal second)
+        {
+            return v;
+        }
+    }
+    
+    private Map<String, Function> functions = new HashMap<String, Function>();
+    
+    public JExec()
+    {
+        installDefaultFunctions();
+    }
+    
+    public void addVariable(String name, BigDecimal value)
+    {
+        addFunction(name, new VariableFunction(value));
+    }
+    
+    private void addFunction(String name, Function function)
+    {
+        functions.put(name, function);
+    }
+    
+    private void installDefaultFunctions()
+    {
+    }
+    
+    private BigDecimal runFunction(String name, BigDecimal first, BigDecimal second)
+    {
+        Function function = functions.get(name);
+        if (function == null)
+            throw new IllegalArgumentException("There is no function or "
+                + "variable named " + name + ".");
+        return function.run(first, second);
     }
     
     /**
      * Runs the specified value (which could, for example, be "(5+3)*4"), as an arithmetic
-     * expression and returns the result.
+     * equation and returns the result.
      * 
-     * @param value
+     * @param text
+     *            the equation to run
      * @return
      */
-    public static BigDecimal run(String value)
+    public static BigDecimal run(String text)
     {
-        return BigDecimal.ZERO;
+        try
+        {
+            Lexer lexer = new Lexer(new PushbackReader(new StringReader(text)));
+            Parser parser = new Parser(lexer);
+            Start start = parser.parse();
+            return run(start.getPExpr());
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Exception occurred while evaluating the equation "
+                + text, e);
+        }
     }
     
-    @Override
-    public String getName()
+    private static BigDecimal run(Node node)
     {
-        return "jexec";
+        if (false)
+            return null;
+        else
+            throw new IllegalArgumentException("Invalid node class " + node
+                + ". This means that the JExec equation parser grammar "
+                + "has been updated without updating JExec.java to "
+                + "contain the logic necessary to compute the new grammar.");
     }
     
 }

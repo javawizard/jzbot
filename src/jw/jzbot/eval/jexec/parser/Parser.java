@@ -241,16 +241,46 @@ public class Parser
 			push(goTo(5), list, false);
 		    }
 		    break;
-                    case 11: /* reduce ANumberTerm */
+                    case 11: /* reduce ANextNmep */
 		    {
 			ArrayList list = new11();
 			push(goTo(6), list, false);
 		    }
 		    break;
-                    case 12: /* reduce AParensTerm */
+                    case 12: /* reduce APreNmep */
 		    {
 			ArrayList list = new12();
 			push(goTo(6), list, false);
+		    }
+		    break;
+                    case 13: /* reduce AInNmep */
+		    {
+			ArrayList list = new13();
+			push(goTo(6), list, false);
+		    }
+		    break;
+                    case 14: /* reduce AVarNmep */
+		    {
+			ArrayList list = new14();
+			push(goTo(6), list, false);
+		    }
+		    break;
+                    case 15: /* reduce APostNmep */
+		    {
+			ArrayList list = new15();
+			push(goTo(6), list, false);
+		    }
+		    break;
+                    case 16: /* reduce ANumberTerm */
+		    {
+			ArrayList list = new16();
+			push(goTo(7), list, false);
+		    }
+		    break;
+                    case 17: /* reduce AParensTerm */
+		    {
+			ArrayList list = new17();
+			push(goTo(7), list, false);
 		    }
 		    break;
                     }
@@ -485,10 +515,10 @@ public class Parser
         PUnmp punmpNode1;
         {
             // Block
-        PTerm ptermNode2;
-        ptermNode2 = (PTerm)nodeArrayList1.get(0);
+        PNmep pnmepNode2;
+        pnmepNode2 = (PNmep)nodeArrayList1.get(0);
 
-        punmpNode1 = new ANextUnmp(ptermNode2);
+        punmpNode1 = new ANextUnmp(pnmepNode2);
         }
 	nodeList.add(punmpNode1);
         return nodeList;
@@ -507,11 +537,11 @@ public class Parser
         {
             // Block
         TMinus tminusNode2;
-        PTerm ptermNode3;
+        PNmep pnmepNode3;
         tminusNode2 = (TMinus)nodeArrayList1.get(0);
-        ptermNode3 = (PTerm)nodeArrayList2.get(0);
+        pnmepNode3 = (PNmep)nodeArrayList2.get(0);
 
-        punmpNode1 = new AInUnmp(tminusNode2, ptermNode3);
+        punmpNode1 = new AInUnmp(tminusNode2, pnmepNode3);
         }
 	nodeList.add(punmpNode1);
         return nodeList;
@@ -520,7 +550,119 @@ public class Parser
 
 
     @SuppressWarnings("unchecked")
-    ArrayList new11() /* reduce ANumberTerm */
+    ArrayList new11() /* reduce ANextNmep */
+    {
+        @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
+
+        @SuppressWarnings("unused") ArrayList nodeArrayList1 = pop();
+        PNmep pnmepNode1;
+        {
+            // Block
+        PTerm ptermNode2;
+        ptermNode2 = (PTerm)nodeArrayList1.get(0);
+
+        pnmepNode1 = new ANextNmep(ptermNode2);
+        }
+	nodeList.add(pnmepNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    ArrayList new12() /* reduce APreNmep */
+    {
+        @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
+
+        @SuppressWarnings("unused") ArrayList nodeArrayList2 = pop();
+        @SuppressWarnings("unused") ArrayList nodeArrayList1 = pop();
+        PNmep pnmepNode1;
+        {
+            // Block
+        TName tnameNode2;
+        PTerm ptermNode3;
+        tnameNode2 = (TName)nodeArrayList1.get(0);
+        ptermNode3 = (PTerm)nodeArrayList2.get(0);
+
+        pnmepNode1 = new APreNmep(tnameNode2, ptermNode3);
+        }
+	nodeList.add(pnmepNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    ArrayList new13() /* reduce AInNmep */
+    {
+        @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
+
+        @SuppressWarnings("unused") ArrayList nodeArrayList3 = pop();
+        @SuppressWarnings("unused") ArrayList nodeArrayList2 = pop();
+        @SuppressWarnings("unused") ArrayList nodeArrayList1 = pop();
+        PNmep pnmepNode1;
+        {
+            // Block
+        PNmep pnmepNode2;
+        TName tnameNode3;
+        PTerm ptermNode4;
+        pnmepNode2 = (PNmep)nodeArrayList1.get(0);
+        tnameNode3 = (TName)nodeArrayList2.get(0);
+        ptermNode4 = (PTerm)nodeArrayList3.get(0);
+
+        pnmepNode1 = new AInNmep(pnmepNode2, tnameNode3, ptermNode4);
+        }
+	nodeList.add(pnmepNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    ArrayList new14() /* reduce AVarNmep */
+    {
+        @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
+
+        @SuppressWarnings("unused") ArrayList nodeArrayList1 = pop();
+        PNmep pnmepNode1;
+        {
+            // Block
+        TName tnameNode2;
+        tnameNode2 = (TName)nodeArrayList1.get(0);
+
+        pnmepNode1 = new AVarNmep(tnameNode2);
+        }
+	nodeList.add(pnmepNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    ArrayList new15() /* reduce APostNmep */
+    {
+        @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
+
+        @SuppressWarnings("unused") ArrayList nodeArrayList2 = pop();
+        @SuppressWarnings("unused") ArrayList nodeArrayList1 = pop();
+        PNmep pnmepNode1;
+        {
+            // Block
+        PNmep pnmepNode2;
+        TName tnameNode3;
+        pnmepNode2 = (PNmep)nodeArrayList1.get(0);
+        tnameNode3 = (TName)nodeArrayList2.get(0);
+
+        pnmepNode1 = new APostNmep(pnmepNode2, tnameNode3);
+        }
+	nodeList.add(pnmepNode1);
+        return nodeList;
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    ArrayList new16() /* reduce ANumberTerm */
     {
         @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
 
@@ -540,7 +682,7 @@ public class Parser
 
 
     @SuppressWarnings("unchecked")
-    ArrayList new12() /* reduce AParensTerm */
+    ArrayList new17() /* reduce AParensTerm */
     {
         @SuppressWarnings("hiding") ArrayList nodeList = new ArrayList();
 
@@ -567,53 +709,61 @@ public class Parser
 
     private static int[][][] actionTable;
 /*      {
-			{{-1, ERROR, 0}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
-			{{-1, REDUCE, 11}, },
-			{{-1, ERROR, 2}, {0, SHIFT, 1}, {6, SHIFT, 3}, },
-			{{-1, ERROR, 3}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
-			{{-1, ERROR, 4}, {10, ACCEPT, -1}, },
-			{{-1, REDUCE, 0}, {1, SHIFT, 13}, },
-			{{-1, REDUCE, 1}, {2, SHIFT, 14}, },
-			{{-1, REDUCE, 3}, {3, SHIFT, 15}, },
-			{{-1, REDUCE, 5}, {4, SHIFT, 16}, },
+			{{-1, ERROR, 0}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, REDUCE, 16}, },
+			{{-1, ERROR, 2}, {0, SHIFT, 1}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, ERROR, 3}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, REDUCE, 14}, {0, SHIFT, 1}, {6, SHIFT, 3}, },
+			{{-1, ERROR, 5}, {9, ACCEPT, -1}, },
+			{{-1, REDUCE, 0}, {1, SHIFT, 16}, },
+			{{-1, REDUCE, 1}, {2, SHIFT, 17}, },
+			{{-1, REDUCE, 3}, {3, SHIFT, 18}, },
+			{{-1, REDUCE, 5}, {4, SHIFT, 19}, },
 			{{-1, REDUCE, 7}, },
-			{{-1, REDUCE, 9}, },
-			{{-1, REDUCE, 10}, },
-			{{-1, ERROR, 12}, {7, SHIFT, 17}, },
-			{{-1, ERROR, 13}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
-			{{-1, ERROR, 14}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
-			{{-1, ERROR, 15}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
-			{{-1, ERROR, 16}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, },
+			{{-1, REDUCE, 9}, {8, SHIFT, 20}, },
+			{{-1, REDUCE, 11}, },
+			{{-1, REDUCE, 10}, {8, SHIFT, 20}, },
+			{{-1, ERROR, 14}, {7, SHIFT, 21}, },
 			{{-1, REDUCE, 12}, },
-			{{-1, REDUCE, 2}, {2, SHIFT, 14}, },
-			{{-1, REDUCE, 4}, {3, SHIFT, 15}, },
-			{{-1, REDUCE, 6}, {4, SHIFT, 16}, },
+			{{-1, ERROR, 16}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, ERROR, 17}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, ERROR, 18}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, ERROR, 19}, {0, SHIFT, 1}, {2, SHIFT, 2}, {6, SHIFT, 3}, {8, SHIFT, 4}, },
+			{{-1, REDUCE, 15}, {0, SHIFT, 1}, {6, SHIFT, 3}, },
+			{{-1, REDUCE, 17}, },
+			{{-1, REDUCE, 2}, {2, SHIFT, 17}, },
+			{{-1, REDUCE, 4}, {3, SHIFT, 18}, },
+			{{-1, REDUCE, 6}, {4, SHIFT, 19}, },
 			{{-1, REDUCE, 8}, },
+			{{-1, REDUCE, 13}, },
         };*/
     private static int[][][] gotoTable;
 /*      {
-			{{-1, 4}, {3, 12}, },
-			{{-1, 5}, },
-			{{-1, 6}, {13, 18}, },
-			{{-1, 7}, {14, 19}, },
-			{{-1, 8}, {15, 20}, },
-			{{-1, 9}, {16, 21}, },
-			{{-1, 10}, {2, 11}, },
+			{{-1, 5}, {3, 14}, },
+			{{-1, 6}, },
+			{{-1, 7}, {16, 22}, },
+			{{-1, 8}, {17, 23}, },
+			{{-1, 9}, {18, 24}, },
+			{{-1, 10}, {19, 25}, },
+			{{-1, 11}, {2, 13}, },
+			{{-1, 12}, {4, 15}, {20, 26}, },
         };*/
     private static String[] errorMessages;
 /*      {
-			"expecting: number, '-', '('",
-			"expecting: '+', '-', '*', '/', ')', EOF",
-			"expecting: number, '('",
+			"expecting: number, '-', '(', name",
+			"expecting: '+', '-', '*', '/', ')', name, EOF",
+			"expecting: number, '(', name",
+			"expecting: number, '+', '-', '*', '/', '(', ')', name, EOF",
 			"expecting: EOF",
 			"expecting: '+', ')', EOF",
 			"expecting: '+', '-', ')', EOF",
 			"expecting: '+', '-', '*', ')', EOF",
+			"expecting: '+', '-', '*', '/', ')', EOF",
 			"expecting: ')'",
         };*/
     private static int[] errors;
 /*      {
-			0, 1, 2, 0, 3, 4, 5, 6, 1, 1, 1, 1, 7, 0, 0, 0, 0, 1, 5, 6, 1, 1, 
+			0, 1, 2, 0, 3, 4, 5, 6, 7, 8, 8, 1, 1, 1, 9, 1, 0, 0, 0, 0, 3, 1, 6, 7, 8, 8, 1, 
         };*/
 
     static 

@@ -23,6 +23,11 @@ public interface Analysis extends Switch
     void caseAInDivp(AInDivp node);
     void caseANextUnmp(ANextUnmp node);
     void caseAInUnmp(AInUnmp node);
+    void caseANextNmep(ANextNmep node);
+    void caseAPreNmep(APreNmep node);
+    void caseAInNmep(AInNmep node);
+    void caseAVarNmep(AVarNmep node);
+    void caseAPostNmep(APostNmep node);
     void caseANumberTerm(ANumberTerm node);
     void caseAParensTerm(AParensTerm node);
 
@@ -34,8 +39,7 @@ public interface Analysis extends Switch
     void caseTMod(TMod node);
     void caseTLPar(TLPar node);
     void caseTRPar(TRPar node);
-    void caseTInt(TInt node);
-    void caseTRound(TRound node);
+    void caseTName(TName node);
     void caseTBlank(TBlank node);
     void caseEOF(EOF node);
 }
