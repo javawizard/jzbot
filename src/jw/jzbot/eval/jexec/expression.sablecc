@@ -1,0 +1,32 @@
+Package expression;
+
+Tokens
+// Numbers
+ number = ['0' .. '9']+;
+// Operators
+ plus = '+';
+ minus = '-';
+ mult = '*';
+ div = '/';
+ mod = '%';
+// Parentheses
+ l_par = '(';
+ r_par = ')';
+// Functions
+ int   = 'int';
+ round = 'round';
+ blank = (' ' | 13 | 10)+;
+
+Ignored Tokens
+ blank;
+ 
+Productions
+
+ expr      = addp;
+ addp      = {next}  [next]:subp  | {in}  [first]:addp  plus   [second]:subp  ;
+ subp      = {next}  [next]:mulp  | {in}  [first]:subp  minus  [second]:mulp  ;
+ mulp      = {next}  [next]:divp  | {in}  [first]:mulp  mult   [second]:divp  ;
+ divp      = {next}  [next]:unmp  | {in}  [first]:divp  div    [second]:unmp  ;
+ unmp      = {next}  [next]:term  | {in}                minus  [second]:term  ;
+
+ term     = {number} number | {parens} l_par expr r_par ;
