@@ -196,7 +196,7 @@ public class XmppProtocol implements Connection
     @Override
     public int getProtocolDelimitedLength()
     {
-        return 10000;
+        return 1200;// For gmail this is actually 2000, but idk about other providers
     }
     
     @Override
@@ -257,7 +257,7 @@ public class XmppProtocol implements Connection
     @Override
     public void sendAction(String target, String message)
     {
-        sendMessage(target, "* " + message);
+        sendMessage(target, message);
     }
     
     @Override
