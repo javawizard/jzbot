@@ -4,8 +4,12 @@ echo
 echo Running with command $CMD
 echo 
 $CMD
-while [ $? == '17' ]
+lastvalue=$?
+echo Exit status was $lastvalue
+while [ $lastvalue == '17' ]
 do
-  $CMD
   sleep 5
+  $CMD
+  lastvalue=$?
+  echo Exit status was $lastvalue
 done

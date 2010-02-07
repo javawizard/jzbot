@@ -1678,13 +1678,13 @@ public class JZBot
     }
     
     public static void onInvitation(Server datastoreServer, String serverName,
-            String channel, String sender, String login, String hostname, String message)
+            String channel, String sender, String login, String hostname, String toChannel)
     {
         ServerUser source = new ServerUser(serverName, sender, hostname);
         try
         {
             Command command = commands.get("join");
-            command.run(serverName, channel, true, source, source, message);
+            command.run(serverName, channel, true, source, source, toChannel + " frominvite");
         }
         catch (Throwable e)
         {

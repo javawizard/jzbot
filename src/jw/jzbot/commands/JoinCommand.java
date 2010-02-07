@@ -25,11 +25,20 @@ public class JoinCommand implements Command
         // JZBot.bot.sendMessage(sender, "Join only works in a pm");
         // return;
         // }
-        sender.verifySuperop();
-        String name = arguments;
+        if (arguments.endsWith(" frominvite"))
+        {
+            if (!sender.isSuperop())
+                throw new ResponseException("You're not a superop. Right now, I "
+                    + "will only join channels when the person that invited me "
+                    + "is a superop. For reference, the room you just invited "
+                    + "me to is " + arguments.split(" ")[0]);
+        }
+        else
+            sender.verifySuperop();
+        String name = arguments.split(" ")[0];
         if (!name.startsWith("#"))
             throw new ResponseException("Right now, only channel names that "
-                    + "start with a \"#\" sign are supported.");
+                + "start with a \"#\" sign are supported.");
         if (dServer.getChannel(name) != null)
         {
             Channel c = dServer.getChannel(name);
@@ -37,7 +46,7 @@ public class JoinCommand implements Command
             {
                 c.setSuspended(false);
                 source.sendMessage("Ok, I'll come back to that channel. I remember all "
-                        + "of my factoids and such from there.");
+                    + "of my factoids and such from there.");
                 JZBot.getServer(server).joinChannel(name);
                 // JZBot.bot.sendMessage(name, "I've come back (courtesy of " + sender
                 // + ")");
@@ -50,7 +59,7 @@ public class JoinCommand implements Command
                 JZBot.getServer(server).joinChannel(name);
                 source
                         .sendMessage("I'm already at that channel, but I just made an attempt "
-                                + "to rejoin it, just in case.");
+                            + "to rejoin it, just in case.");
             }
             return;
         }
