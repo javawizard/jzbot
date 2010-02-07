@@ -34,6 +34,18 @@ import jw.jzbot.eval.jexec.parser.Parser;
 
 public class JExec
 {
+    /**
+     * A class that allows function access to functions in java.lang.Math. This function
+     * operates correctly on nullary functions, unary functions (both prefix and postfix),
+     * and binary functions. Thus, if a MathFunction with the name of "cos" is installed
+     * into a JExec instance, one could evaluate "cos0", "cos(0)", "cos 0", "0 cos",
+     * "(0)cos", and so on, all of which would evaluate to "1" as the cosine of 0 is 1.
+     * This demonstrates that invoking a function in prefix and postfix form does not have
+     * any differences.
+     * 
+     * @author Alexander Boyd
+     * 
+     */
     public class MathFunction implements Function
     {
         private Method method;
@@ -56,7 +68,16 @@ public class JExec
         {
             try
             {
-                return new BigDecimal((Double) method.invoke(null, second.doubleValue()));
+                Object result;
+                if (first == null && second == null)
+                    result = method.invoke(null);
+                else if (first == null && second != null)
+                    result = method.invoke(null, second.doubleValue());
+                else if (first != null && second == null)
+                    result = method.invoke(null, first.doubleValue());
+                else
+                    result = method.invoke(null, first.doubleValue(), second.doubleValue());
+                return new BigDecimal((Double) result);
             }
             catch (Exception e)
             {
@@ -129,9 +150,35 @@ public class JExec
     private void installDefaultFunctions()
     {
         addVariable("pi", new BigDecimal(pi()));
-        addFunction("sin", new MathFunction("sin"));
-        addFunction("cos", new MathFunction("cos"));
-        addFunction("tan", new MathFunction("tan"));
+        addFunction("abs", new MathFunction("abs"));
+        addFunction("", new MathFunction("acos"));
+        addFunction("", new MathFunction("asin"));
+        addFunction("", new MathFunction("atan"));
+        addFunction("", new MathFunction("atan2"));
+        addFunction("", new MathFunction("cbrt"));
+        addFunction("", new MathFunction("ceil"));
+        addFunction("", new MathFunction("copysign"));
+        addFunction("", new MathFunction("cos"));
+        addFunction("", new MathFunction("cosh"));
+        addFunction("", new MathFunction("exp"));
+        addFunction("", new MathFunction("expm"));
+        addFunction("", new MathFunction("floor"));
+        addFunction("", new MathFunction("hypot"));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction(""));
     }
     
     private String pi()

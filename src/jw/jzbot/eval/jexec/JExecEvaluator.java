@@ -7,13 +7,15 @@ import jw.jzbot.eval.jexec.node.Node;
 
 public class JExecEvaluator extends Evaluator
 {
+    private static final JExec je = new JExec();
+    
     /**
      * Returns <tt>run(value).toPlainString()</tt>.
      */
     @Override
     public String evaluate(String value)
     {
-        BigDecimal result = new JExec().run(value);
+        BigDecimal result = je.run(value);
         if (result.signum() == 0)
             return "0";
         return result.toPlainString();
