@@ -2,7 +2,7 @@ Package jw.jzbot.eval.jexec;
 
 Tokens
 // Numbers
- number = ['0' .. '9']+;
+ number = ( ['0' .. '9']+ ( '.' ['0' .. '9']+ )? ) | ( '.' ['0' .. '9']+ );
 // Operators
  plus = '+';
  minus = '-';
@@ -13,9 +13,8 @@ Tokens
  l_par = '(';
  r_par = ')';
 // Functions
- int   = 'int';
- round = 'round';
- blank = (' ' | 13 | 10)+;
+ name = (['a' .. 'z'] | ['A' .. 'Z'])+ ;
+ blank = (' ' | 13 | 10 | 9)+;
 
 Ignored Tokens
  blank;
@@ -23,10 +22,14 @@ Ignored Tokens
 Productions
 
  expr      = addp;
- addp      = {next}  [next]:subp  | {in}  [first]:addp  plus   [second]:subp  ;
- subp      = {next}  [next]:mulp  | {in}  [first]:subp  minus  [second]:mulp  ;
- mulp      = {next}  [next]:divp  | {in}  [first]:mulp  mult   [second]:divp  ;
- divp      = {next}  [next]:unmp  | {in}  [first]:divp  div    [second]:unmp  ;
- unmp      = {next}  [next]:term  | {in}                minus  [second]:term  ;
+ addp      = {next}  [next]:subp  | {in}   [first]:addp  plus           [second]:subp  ;
+ subp      = {next}  [next]:mulp  | {in}   [first]:subp  minus          [second]:mulp  ;
+ mulp      = {next}  [next]:divp  | {in}   [first]:mulp  mult           [second]:divp  ;
+ divp      = {next}  [next]:unmp  | {in}   [first]:divp  div            [second]:unmp  ;
+ unmp      = {next}  [next]:nmep  | {in}                 minus          [second]:nmep  ;
+ nmep      = {next}  [next]:term  | {pre}                [name]:name    [second]:term
+                                  | {in}   [first]:nmep  [name]:name    [second]:term  
+                                  | {var}                [name]:name                   
+                                  | {post} [first]:nmep  [name]:name                   ;
 
  term     = {number} number | {parens} l_par expr r_par ;

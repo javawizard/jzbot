@@ -29,7 +29,7 @@ public class JExecEvaluator extends Evaluator
     {
         JExec e = new JExec();
         e.addVariable("pi", new BigDecimal("3.1415926"));
-        String text = "pi+3";
+        String text = "pi3";
         System.out.println(e.run(text));
     }
 }
