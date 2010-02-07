@@ -1,0 +1,11 @@
+In the XMPP JZBot protocol, when things are "escaped" and "unescaped", this refers to a special encoding scheme. Encoding into this scheme involves replacing special characters with escaped equivalents. Each escaped equivalent is made up of an underscore, a name, and another underscore. Here's the list of escaped characters and their corresponding escaped equivalents:
+
+   Character         Escaped Equivalent
+   .                 _dot_
+   @                 _at_
+   <space>           _sp_
+   #                 _hash_
+   _                 _u_
+   |                 _pipe_
+   
+Decoding is simply the inverse of encoding.
