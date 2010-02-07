@@ -36,6 +36,8 @@ public interface Connection
     
     public void sendNotice(String target, String message);
     
+    public void sendInvite(String nick, String channel);
+    
     public void setMessageDelay(long ms);
     
     public boolean supportsMessageDelay();

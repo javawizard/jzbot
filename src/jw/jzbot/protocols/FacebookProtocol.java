@@ -204,4 +204,11 @@ public class FacebookProtocol implements Connection
         return true;
     }
     
+    @Override
+    public void sendInvite(String nick, String channel)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }

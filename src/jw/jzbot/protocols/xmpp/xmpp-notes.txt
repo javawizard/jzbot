@@ -3,7 +3,7 @@ In the XMPP JZBot protocol, when things are "escaped" and "unescaped", this refe
    Character         Escaped Equivalent
    .                 _dot_
    @                 _at_
-   <space>           _sp_
+   <space>           _space_
    #                 _hash_
    _                 _u_
    |                 _pipe_
@@ -25,7 +25,7 @@ The nickname specified on the server to connect to is the name of the account to
 
 Each person in a chat room shows up with their nick being their escaped canonical jid instead of their handle. It isn't possible to obtain a user's handle at the moment, although there will hopefully be a custom protocol function for doing so. The bot's handle as seen by other users is its account name (so "marlen" in the examples above).
 
-Modifying the roster can be done with custom protocol messages. However, there is a certain level of automatic roster control: if the bot attempts to send a message to a user that it hasn't subscribed to yet, it will first request a subscription. It will then buffer all messages (in memory, and up to a size of probably 100 messages per user) until the user accepts the chat request. It then forwards all of the messages to the user.
+Modifying the roster can only be done with custom protocol functions. Gmail appears to have no problem with communicating with users not on the account owner's roster, so we shouldn't have any problems with messages needing to be delayed and so on.
 
 None of the chat room moderation commands (such as {kick}, {ban}, and {mode}) are supported at present.
 

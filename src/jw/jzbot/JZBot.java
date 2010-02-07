@@ -75,6 +75,7 @@ import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.protocols.BZFlagProtocol;
 import jw.jzbot.protocols.FacebookProtocol;
 import jw.jzbot.protocols.IrcProtocol;
+import jw.jzbot.protocols.xmpp.XmppProtocol;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -585,6 +586,8 @@ public class JZBot
             c = BZFlagProtocol.class;
         else if (name.equals("facebook"))
             c = FacebookProtocol.class;
+        else if (name.equals("xmpp"))
+            c = XmppProtocol.class;
         else
             throw new ResponseException("The protocol \"" + name
                 + "\" is not a valid protocol name. Valid protocol names are, "

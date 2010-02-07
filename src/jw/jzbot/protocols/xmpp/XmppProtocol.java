@@ -2,9 +2,24 @@ package jw.jzbot.protocols.xmpp;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
+import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.MessageListener;
+import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.XMPPConnection;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.Roster.SubscriptionMode;
+import org.jivesoftware.smack.filter.PacketTypeFilter;
+import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.Packet;
 
 import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
@@ -14,82 +29,194 @@ import jw.jzbot.fact.Sink;
 
 public class XmppProtocol implements Connection
 {
+    private ConnectionContext context;
+    
+    private XMPPConnection connection;
+    
+    private Map<String, Chat> chatMap = new HashMap<String, Chat>();
     
     @Override
     public void changeNick(String newnick)
     {
-        // TODO Auto-generated method stub
-        
+        // silently ignore nick changes
     }
     
     @Override
     public void connect() throws IOException, IrcException
     {
-        // TODO Auto-generated method stub
-        
+        try
+        {
+            connection = new XMPPConnection(context.getServer());
+            connection.connect();
+            installConnectionListener();
+            connection.login(context.getNick(), context.getPassword());
+            connection.getRoster().setSubscriptionMode(SubscriptionMode.accept_all);
+            installMessageListener();
+        }
+        catch (Exception e)
+        {
+            discard();
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private void installMessageListener()
+    {
+        connection.addPacketListener(new PacketListener()
+        {
+            
+            @Override
+            public void processPacket(Packet packet)
+            {
+                Message message = (Message) packet;
+                doReceiveMessage(null, message);
+            }
+        }, new PacketTypeFilter(Message.class));
+    }
+    
+    private void installConnectionListener()
+    {
+        connection.addConnectionListener(new ConnectionListener()
+        {
+            
+            @Override
+            public void connectionClosed()
+            {
+                context.onDisconnect();
+            }
+            
+            @Override
+            public void connectionClosedOnError(Exception arg0)
+            {
+                try
+                {
+                    connection.disconnect();
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                context.onDisconnect();
+            }
+            
+            @Override
+            public void reconnectingIn(int arg0)
+            {
+            }
+            
+            @Override
+            public void reconnectionFailed(Exception arg0)
+            {
+            }
+            
+            @Override
+            public void reconnectionSuccessful()
+            {
+            }
+        });
+    }
+    
+    private synchronized Chat getChat(String jid)
+    {
+        Chat chat = chatMap.get(jid);
+        if (chat == null)
+            chat = connection.getChatManager().createChat(jid, new MessageListener()
+            {
+                
+                @Override
+                public void processMessage(Chat chat, Message message)
+                {
+                }
+            });
+        return chat;
+    }
+    
+    protected void doReceiveMessage(Chat chat, Message message)
+    {
+        System.out.println("Incoming XMPP Message from " + message.getFrom() + ": "
+            + message.getBody());
+        context.onPrivateMessage(escape(message.getFrom()), "user",
+                escapeOnlyAccount(message.getFrom()), message.getBody());
+    }
+    
+    private String escapeOnlyAccount(String from)
+    {
+        if (from.indexOf("/") != -1)
+            from = from.substring(0, from.indexOf("/"));
+        return escape(from);
     }
     
     @Override
     public void discard()
     {
-        // TODO Auto-generated method stub
-        
+        try
+        {
+            connection.disconnect();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        try
+        {
+            // Maybe not do this as it could result in double connection disconnect
+            // notifications
+            context.onDisconnect();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
     
     @Override
     public void disconnect(String message)
     {
-        // TODO Auto-generated method stub
-        
+        discard();
     }
     
     @Override
     public String[] getChannels()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new String[0];
     }
     
     @Override
     public String getNick()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return escape(connection.getUser());
     }
     
     @Override
     public int getOutgoingQueueSize()
     {
-        // TODO Auto-generated method stub
         return 0;
     }
     
     @Override
     public int getProtocolDelimitedLength()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return 10000;
     }
     
     @Override
     public User[] getUsers(String channel)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new User[0];
     }
     
     @Override
     public void init(ConnectionContext context)
     {
-        // TODO Auto-generated method stub
-        
+        this.context = context;
     }
     
     @Override
     public boolean isConnected()
     {
-        // TODO Auto-generated method stub
-        return false;
+        if (connection == null)
+            return false;
+        return connection.isConnected();
     }
     
     @Override
@@ -109,8 +236,7 @@ public class XmppProtocol implements Connection
     @Override
     public boolean likesPastebin()
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
     
     @Override
@@ -131,22 +257,26 @@ public class XmppProtocol implements Connection
     @Override
     public void sendAction(String target, String message)
     {
-        // TODO Auto-generated method stub
-        
+        sendMessage(target, "* " + message);
     }
     
     @Override
-    public void sendMessage(String target, String message)
+    public void sendMessage(String target, String text)
     {
-        // TODO Auto-generated method stub
-        
+        try
+        {
+            getChat(unescape(target)).sendMessage(text);
+        }
+        catch (XMPPException e)
+        {
+            e.printStackTrace();
+        }
     }
     
     @Override
     public void sendNotice(String target, String message)
     {
-        // TODO Auto-generated method stub
-        
+        sendMessage(target, "(notice) " + message);
     }
     
     @Override
@@ -212,4 +342,28 @@ public class XmppProtocol implements Connection
         
     }
     
+    private static final String escapeTable =
+            "_u-.dot-@at- space-#hash-|pipe-!bang-*star-%percent-"
+                + "\"dquote-'quote-/slash-\\backslash";
+    
+    public static String escape(String jid)
+    {
+        for (String s : escapeTable.split("-"))
+        {
+            jid = jid.replace(s.substring(0, 1), "_" + s.substring(1) + "_");
+        }
+        return jid;
+    }
+    
+    public static String unescape(String escaped)
+    {
+        ArrayList<String> list =
+                new ArrayList<String>(Arrays.asList(escapeTable.split("-")));
+        Collections.reverse(list);
+        for (String s : list)
+        {
+            escaped = escaped.replace("_" + s.substring(1) + "_", s.substring(0, 1));
+        }
+        return escaped;
+    }
 }

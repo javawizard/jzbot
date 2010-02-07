@@ -928,15 +928,16 @@ public class BZFlagProtocol implements Connection
     @Override
     public boolean isConnected()
     {
-        System.out.println("Asked if a bzflag connector is connected");
+        // System.out.println("Asked if a bzflag connector is connected");
         if (serverLink == null)
         {
-            System.out.println("No server link, so we aren't connected");
+            // System.out.println("No server link, so we aren't connected");
             return false;
         }
         boolean connected = serverLink.isConnected();
-        System.out.println("We have a server link, and we are" + (connected ? "" : " not")
-            + " connected");
+        // System.out.println("We have a server link, and we are" + (connected ? "" :
+        // " not")
+        // + " connected");
         return connected;
     }
     
@@ -1156,6 +1157,13 @@ public class BZFlagProtocol implements Connection
     public boolean likesPastebin()
     {
         return false;
+    }
+    
+    @Override
+    public void sendInvite(String nick, String channel)
+    {
+        // TODO: we might want to throw an exception here for now, since BZFlag doesn't
+        // really support invites
     }
     
 }
