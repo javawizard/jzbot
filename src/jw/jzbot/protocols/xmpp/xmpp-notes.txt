@@ -9,3 +9,11 @@ In the XMPP JZBot protocol, when things are "escaped" and "unescaped", this refe
    |                 _pipe_
    
 Decoding is simply the inverse of encoding.
+
+When an XMPP server is specified, this doesn't refer to the actual hostname to connect to; it simply refers to the name of the domain to connect to. This domain's SRV records will be looked up as normal.
+
+It's not currently possible to specify a resource; the resource always defaults to a random string of numbers with "jzbot" prepended. Similarly, the priority always defaults to 1.
+
+The username that has to be specified 
+
+    !superop add priya_dot_challa_at_gmail_dot_com
