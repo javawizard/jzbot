@@ -1,6 +1,7 @@
 package jw.jzbot.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import jw.jzbot.Command;
@@ -94,24 +95,68 @@ public class ServerCommand implements Command
         else if (subcommand.equals("activate"))
         {
             sender.verifySuperop();
-            Server s = server(serverName);
-            if (s.isActive())
-                throw new ResponseException("That server is already active.");
-            s.setActive(true);
+            String[] serverNames = buildIntoMultipleServers(serverName, arguments);
+            boolean serversWereActivated = false;
+            boolean multipleServersWereActivated = false;
+            for (String name : serverNames)
+            {
+                Server s = server(name);
+                if (s.isActive())
+                {
+                    source.sendSpaced("That server (" + name + ") is already active.");
+                    continue;
+                }
+                s.setActive(true);
+                if (serversWereActivated)
+                    multipleServersWereActivated = true;
+                else
+                    serversWereActivated = true;
+            }
+            if (serversWereActivated)
+            {
+                if (multipleServersWereActivated)
+                    source.sendMessage("Those servers were successfully "
+                        + "activated. The bot will connect to them within a few seconds.");
+                else
+                    source.sendMessage("The server was successfully "
+                        + "activated. The bot will connect to it within a few seconds.");
+            }
             JZBot.notifyConnectionCycleThread();
-            source.sendMessage("The server was successfully activated. The bot will "
-                + "connect to it within a few seconds.");
         }
         else if (subcommand.equals("deactivate"))
         {
             sender.verifySuperop();
-            Server s = server(serverName);
-            if (!s.isActive())
-                throw new ResponseException("That server is not active.");
-            s.setActive(false);
+            String[] serverNames = buildIntoMultipleServers(serverName, arguments);
+            boolean serversWereDeactivated = false;
+            boolean multipleServersWereDeactivated = false;
+            for (String name : serverNames)
+            {
+                Server s = server(name);
+                if (!s.isActive())
+                {
+                    source
+                            .sendSpaced("That server (" + name
+                                + ") is not currently active.");
+                    continue;
+                }
+                s.setActive(false);
+                if (serversWereDeactivated)
+                    multipleServersWereDeactivated = true;
+                else
+                    serversWereDeactivated = true;
+            }
+            if (serversWereDeactivated)
+            {
+                if (multipleServersWereDeactivated)
+                    source.sendMessage("Those servers were successfully "
+                        + "deactivated. The bot will disconnect "
+                        + "from them within a few seconds.");
+                else
+                    source.sendMessage("The server was successfully "
+                        + "deactivated. The bot will disconnect "
+                        + "from it within a few seconds.");
+            }
             JZBot.notifyConnectionCycleThread();
-            source.sendMessage("The server was successfully deactivated. The bot will "
-                + "disconnect from it within a few seconds.");
         }
         else if (subcommand.equals("edit"))
         {
@@ -216,6 +261,16 @@ public class ServerCommand implements Command
                     "Invalid command. Try running the \"server\" command "
                         + "without arguments to see a list of all valid commands.");
         }
+    }
+    
+    private String[] buildIntoMultipleServers(String serverName, String arguments)
+    {
+        ArrayList<String> list = new ArrayList<String>();
+        list.add(serverName);
+        String[] argumentSplit = arguments.split(" ");
+        if (argumentSplit.length > 1 || !argumentSplit[0].equals(""))
+            list.addAll(Arrays.asList(argumentSplit));
+        return list.toArray(new String[0]);
     }
     
     private void verifyOkChars(String serverName)
