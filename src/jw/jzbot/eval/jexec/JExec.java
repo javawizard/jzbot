@@ -164,9 +164,10 @@ public class JExec
         addFunction("", new MathFunction("expm"));
         addFunction("", new MathFunction("floor"));
         addFunction("", new MathFunction("hypot"));
-        addFunction("", new MathFunction(""));
-        addFunction("", new MathFunction(""));
-        addFunction("", new MathFunction(""));
+        addFunction("", new MathFunction("log"));
+        addFunction("", new MathFunction("logten"));
+        addFunction("", new MathFunction("logp"));
+        // FIXME: finish here, we need grammar functions for >, <, etc
         addFunction("", new MathFunction(""));
         addFunction("", new MathFunction(""));
         addFunction("", new MathFunction(""));
