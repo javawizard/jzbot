@@ -205,4 +205,11 @@ public class XmppProtocol implements Connection
         return false;
     }
     
+    @Override
+    public void sendInvite(String nick, String channel)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }

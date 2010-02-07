@@ -7,13 +7,49 @@ In the XMPP JZBot protocol, when things are "escaped" and "unescaped", this refe
    #                 _hash_
    _                 _u_
    |                 _pipe_
+   !                 _bang_
+   *                 _star_
+   %                 _percent_
+   "                 _dquote_
+   '                 _quote_
+   /                 _slash_
+   \                 _backslash_
    
 Decoding is simply the inverse of encoding.
 
 When an XMPP server is specified, this doesn't refer to the actual hostname to connect to; it simply refers to the name of the domain to connect to. This domain's SRV records will be looked up as normal.
 
-It's not currently possible to specify a resource; the resource always defaults to a random string of numbers with "jzbot" prepended. Similarly, the priority always defaults to 1.
+It's not currently possible to specify a resource; the resource always defaults to the string "jzbot" (which does prevent multiple bots from connecting at the same time on the same account; this is intentional as this messes up gmail if bots do that). Similarly, the priority always defaults to 1.
 
-The username that has to be specified 
+The nickname specified on the server to connect to is the name of the account to connect to. For example, if the bot were connecting as marlen@gmail.com, the nickname would be marlen and the hostname would be gmail.com. The port is ignored. However, the bot does not use that nickname, or so it sees, when it joins. From the bot's perspective, the IRC server forcenicks it to the escaped form of its canonical jid, complete with resource name. For example, if the nickname was marlen and the hostname was gmail.com, then the nickname the bot would see once it had connected would be "marlen_at_gmail_dot_com_slash_jzbot".
 
-    !superop add priya_dot_challa_at_gmail_dot_com
+Each person in a chat room shows up with their nick being their escaped canonical jid instead of their handle. It isn't possible to obtain a user's handle at the moment, although there will hopefully be a custom protocol function for doing so. The bot's handle as seen by other users is its account name (so "marlen" in the examples above).
+
+Modifying the roster can be done with custom protocol messages. However, there is a certain level of automatic roster control: if the bot attempts to send a message to a user that it hasn't subscribed to yet, it will first request a subscription. It will then buffer all messages (in memory, and up to a size of probably 100 messages per user) until the user accepts the chat request. It then forwards all of the messages to the user.
+
+None of the chat room moderation commands (such as {kick}, {ban}, and {mode}) are supported at present.
+
+A user's nick as seen by the network is the escaped form of their canonical jid, including their resource (but sending a message to the "invisible" nick made up of just their account name without their resource works too, and results in the message being forwarded as per normal xmpp rules). A user's username is always "user". A user's hostname is the escaped form of just their account jid without their resource name.
+
+When a user that we've subscribed to changes presence, a custom notification, _onpresence, is run.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
