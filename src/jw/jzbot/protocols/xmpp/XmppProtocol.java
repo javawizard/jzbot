@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
 import org.jivesoftware.smack.Chat;
@@ -263,6 +264,7 @@ public class XmppProtocol implements Connection
     @Override
     public void sendMessage(String target, String text)
     {
+        text = Colors.removeFormattingAndColors(text).replaceAll("[\\x00-\\x1f]", "");
         try
         {
             getChat(unescape(target)).sendMessage(text);
