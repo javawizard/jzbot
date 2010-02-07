@@ -13,7 +13,7 @@ public class JExecEvaluator extends Evaluator
     @Override
     public String evaluate(String value)
     {
-        BigDecimal result = run(value);
+        BigDecimal result = new JExec().run(value);
         if (result.signum() == 0)
             return "0";
         return result.toPlainString();
@@ -27,7 +27,9 @@ public class JExecEvaluator extends Evaluator
     
     public static void main(String[] args)
     {
-        String text = "5+3";
-        System.out.println(new JExec().evaluate(text));
+        JExec e = new JExec();
+        e.addVariable("pi", new BigDecimal("3.1415926"));
+        String text = "pi+3";
+        System.out.println(e.run(text));
     }
 }
