@@ -402,21 +402,12 @@ public class XmppProtocol implements Connection
             room = null;
         if (room == null)
             return new User[0];
-        ArrayList<Occupant> occupants = new ArrayList<Occupant>();
-        try
-        {
-            occupants.addAll(room.getParticipants());
-            occupants.addAll(room.getModerators());
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException("An exception occurred while getting "
-                + "the member list for the channel " + channel, e);
-        }
+        Iterator<String> occupants = room.getOccupants();
         ArrayList<User> results = new ArrayList<User>();
-        for (Occupant o : occupants)
+        while (occupants.hasNext())
         {
-            String occupantName = room.getRoom() + "/" + o.getNick();
+            String occupantName = occupants.next();
+            Occupant o = room.getOccupant(occupantName);
             String nameToUse = o.getJid();// Try the user's full jid first
             if (nameToUse == null || nameToUse.equals(""))// If we don't know their full
                 // jid (such as in anonymous rooms), fall back to their MUC name
