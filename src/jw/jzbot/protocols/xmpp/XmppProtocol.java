@@ -530,6 +530,7 @@ public class XmppProtocol implements Connection
         });
         room.addParticipantStatusListener(new ParticipantStatusListener()
         {
+            private Map<String, String> roomNamesToJids = new HashMap<String, String>();
             
             @Override
             public void adminGranted(String arg0)
@@ -550,7 +551,9 @@ public class XmppProtocol implements Connection
             @Override
             public void joined(String user)
             {
+                String oldUser = user;
                 user = getJidOrNick(room, user);
+                roomNamesToJids.put(oldUser, user);
                 context.onJoin(escapedRoomName, escape(user), "user",
                         escapeOnlyAccount(user));
             }
@@ -558,17 +561,27 @@ public class XmppProtocol implements Connection
             @Override
             public void kicked(String user, String kicker, String reason)
             {
-                user = getJidOrNick(room, user);
+                String jid = roomNamesToJids.remove(user);
+                if (jid == null)
+                    jid = user;
+                kicker = getJidOrNick(room, kicker);
                 context.onKick(escapedRoomName, escape(kicker), "user",
-                        escapeOnlyAccount(kicker), escape(user), reason);
+                        escapeOnlyAccount(kicker), escape(jid), reason);
             }
             
             @Override
             public void left(String user)
             {
-                user = getJidOrNick(room, user);
-                context.onPart(escapedRoomName, escape(user), "user",
-                        escapeOnlyAccount(user));
+                String jid = roomNamesToJids.remove(user);
+                if (jid == null)
+                    jid = user;
+                System.out.println("XMPP Left room");
+                System.out.println("    Room:      " + room.getRoom());
+                System.out.println("    JID:       " + jid);
+                System.out.println("    User:      " + user);
+                context
+                        .onPart(escapedRoomName, escape(jid), "user",
+                                escapeOnlyAccount(jid));
             }
             
             @Override
@@ -592,7 +605,7 @@ public class XmppProtocol implements Connection
             }
             
             @Override
-            public void nicknameChanged(String arg0, String arg1)
+            public void nicknameChanged(String from, String to)
             {
             }
             
