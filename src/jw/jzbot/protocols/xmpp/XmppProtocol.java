@@ -100,32 +100,6 @@ public class XmppProtocol implements Connection
                     else
                         throw new XmlPullParserException("Invalid event type "
                             + parser.TYPES[eventType]);
-                    break;
-                }
-                
-                // OLD STUFF
-                int eventType = parser.next();
-                if (eventType == parser.TEXT)
-                {
-                    final String result = parser.getText();
-                    eventType = parser.next();
-                    if (eventType != parser.END_TAG)
-                    {
-                        throw new XmlPullParserException(
-                                "TEXT must be immediately followed by END_TAG and not "
-                                    + parser.TYPES[parser.getEventType()], parser, null);
-                    }
-                    return result;
-                }
-                else if (eventType == parser.END_TAG)
-                {
-                    return "";
-                }
-                else
-                {
-                    throw new XmlPullParserException(
-                            "parser must be on START_TAG or TEXT to read text, but was "
-                                + parser.TYPES[eventType], parser, null);
                 }
             }
         };
