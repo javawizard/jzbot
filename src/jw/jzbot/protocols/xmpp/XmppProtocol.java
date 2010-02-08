@@ -650,7 +650,6 @@ public class XmppProtocol implements Connection
             return;
         if (room.isJoined())
             room.leave();
-        multiChatMap.remove(unescapeChannel(channel));
     }
     
     @Override
