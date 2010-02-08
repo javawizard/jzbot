@@ -1684,7 +1684,8 @@ public class JZBot
         try
         {
             Command command = commands.get("join");
-            command.run(serverName, channel, true, source, source, toChannel + " frominvite");
+            command.run(serverName, channel, true, source, source, toChannel
+                + " frominvite");
         }
         catch (Throwable e)
         {
