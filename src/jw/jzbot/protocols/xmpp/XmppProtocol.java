@@ -26,6 +26,8 @@ import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
+import org.xmlpull.mxp1.MXParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
@@ -35,6 +37,100 @@ import jw.jzbot.fact.Sink;
 
 public class XmppProtocol implements Connection
 {
+    static
+    {
+        installMXP1Hack();
+    }
+    
+    /**
+     * Installs a hack into the custom version of MXP1 that JZBot uses. The hack modifies
+     * a method of MXP1 that is only supposed to return textual content within an XML
+     * element and throw an exception if the content is mixed. This would work if all XMPP
+     * clients conformed to the XMPP protocol. Pidgin doesn't, however, and frequently
+     * includes mixed content in a message body.
+     */
+    private static void installMXP1Hack()
+    {
+        MXParser.nextTextHack = new MXParser.NextTextHack()
+        {
+            
+            @Override
+            public String nextText(MXParser parser) throws XmlPullParserException,
+                    IOException
+            {
+                if (parser.getEventType() != parser.START_TAG)
+                {
+                    throw new XmlPullParserException(
+                            "parser must be on START_TAG to read next text", parser, null);
+                }
+                StringBuffer buffer = new StringBuffer();
+                boolean lastWasTag = false;
+                int nestingLevel = 1;
+                while (true)
+                {
+                    int eventType = parser.next();
+                    if (eventType == parser.START_TAG)
+                    {
+                        lastWasTag = true;
+                        nestingLevel += 1;
+                        if (buffer.length() == 0
+                            || buffer.charAt(buffer.length() - 1) != ' ')
+                            buffer.append(" ");
+                    }
+                    else if (eventType == parser.END_TAG)
+                    {
+                        lastWasTag = true;
+                        nestingLevel -= 1;
+                        if (buffer.length() == 0
+                            || buffer.charAt(buffer.length() - 1) != ' ')
+                            buffer.append(" ");
+                        if (nestingLevel == 0)
+                        {
+                            String result = buffer.toString();
+                            if (lastWasTag && result.endsWith(" "))
+                                result = result.substring(0, result.length() - 1);
+                            return result;
+                        }
+                    }
+                    else if (eventType == parser.TEXT)
+                    {
+                        lastWasTag = false;
+                        buffer.append(parser.getText());
+                    }
+                    else
+                        throw new XmlPullParserException("Invalid event type "
+                            + parser.TYPES[eventType]);
+                    break;
+                }
+                
+                // OLD STUFF
+                int eventType = parser.next();
+                if (eventType == parser.TEXT)
+                {
+                    final String result = parser.getText();
+                    eventType = parser.next();
+                    if (eventType != parser.END_TAG)
+                    {
+                        throw new XmlPullParserException(
+                                "TEXT must be immediately followed by END_TAG and not "
+                                    + parser.TYPES[parser.getEventType()], parser, null);
+                    }
+                    return result;
+                }
+                else if (eventType == parser.END_TAG)
+                {
+                    return "";
+                }
+                else
+                {
+                    throw new XmlPullParserException(
+                            "parser must be on START_TAG or TEXT to read text, but was "
+                                + parser.TYPES[eventType], parser, null);
+                }
+            }
+        };
+    }
+    
     public class XmppUser implements User
     {
         private String nick;
@@ -112,6 +208,13 @@ public class XmppProtocol implements Connection
             connection.getRoster().setSubscriptionMode(SubscriptionMode.accept_all);
             installMessageListener();
             installInvitationListener();
+            new Thread()
+            {
+                public void run()
+                {
+                    context.onConnect();
+                }
+            }.start();
         }
         catch (Exception e)
         {
@@ -211,14 +314,24 @@ public class XmppProtocol implements Connection
     
     protected void doReceiveMessage(Chat chat, final Message message)
     {
+        if (message.getType() != Message.Type.chat)
+        {
+            System.out.println("Direct message with a non-chat type "
+                + "was received and will be ignored.");
+            return;
+        }
         if (message.getBody() == null)
         {
             System.out.println("Null XMPP message from " + message.getFrom()
                 + ". This message will be ignored.");
             return;
         }
-        System.out.println("Incoming XMPP Message from " + message.getFrom() + " type "
-            + message.getType() + ": " + message.getBody());
+        System.out.println("Incoming XMPP Direct Message");
+        System.out.println("    From:         " + message.getFrom());
+        System.out.println("    To:           " + message.getTo());
+        System.out.println("    Type:         " + message.getType());
+        System.out.println("    Subject:      " + message.getSubject());
+        System.out.println("    Body:         " + message.getBody());
         context.onPrivateMessage(escape(message.getFrom()), "user",
                 escapeOnlyAccount(message.getFrom()), message.getBody());
         new Thread()
@@ -343,13 +456,12 @@ public class XmppProtocol implements Connection
     @Override
     public synchronized void joinChannel(String channel)
     {
+        System.out.println("XMPP join for " + channel);
         String unescapedChannel = unescapeChannel(channel);
         if (multiChatMap.get(unescapedChannel) != null)
         {
-            if (multiChatMap.get(unescapedChannel).isJoined())
-                // We're already joined
-                return;
-            else
+            if (!multiChatMap.get(unescapedChannel).isJoined())
+                // Existing channel that we're not joined to, so we'll get rid of it
                 multiChatMap.remove(unescapedChannel);
         }
         MultiUserChat room = new MultiUserChat(connection, unescapeChannel(channel));
@@ -402,6 +514,17 @@ public class XmppProtocol implements Connection
             public void processPacket(Packet packet)
             {
                 Message message = (Message) packet;
+                if (message.getFrom().endsWith("/" + room.getNickname()))
+                {
+                    System.out.println("Ignoring our own room "
+                        + "message being sent back to us");
+                    return;
+                }
+                System.out.println("XMPP Room Message:");
+                System.out.println("    Room:         " + escapedRoomName);
+                System.out.println("    From (XMPP):  " + message.getFrom());
+                System.out.println("    To   (XMPP):  " + message.getTo());
+                System.out.println("    Body:         " + message.getBody());
                 context.onMessage(escapedRoomName, escape(message.getFrom()), "user",
                         escapeOnlyAccount(message.getFrom()), message.getBody());
             }
@@ -525,7 +648,7 @@ public class XmppProtocol implements Connection
     @Override
     public void sendAction(String target, String message)
     {
-        sendMessage(target, message);
+        sendMessage(target, "<- " + message);
     }
     
     @Override
