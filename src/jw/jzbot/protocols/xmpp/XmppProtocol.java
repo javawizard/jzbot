@@ -24,6 +24,7 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.Occupant;
 import org.jivesoftware.smackx.muc.ParticipantStatusListener;
 import org.jivesoftware.smackx.muc.UserStatusListener;
 import org.xmlpull.mxp1.MXParser;
@@ -110,6 +111,13 @@ public class XmppProtocol implements Connection
         private String nick;
         
         // FIXME: admin/op/w/e stuff needs to be implemented
+        /**
+         * @param nick
+         *            The user's full escaped name. This is *not* their nickname as
+         *            visible to XMPP, unless the room is anonymous. If the room is not
+         *            anonymous, then this is the user's escaped name complete with
+         *            resource.
+         */
         public XmppUser(String nick)
         {
             this.nick = nick;
@@ -160,7 +168,9 @@ public class XmppProtocol implements Connection
     private Map<String, Chat> chatMap = new HashMap<String, Chat>();
     /**
      * A mapping of XMPP chat names to XMPP chat rooms. The names are in XMPP format,
-     * *not* escaped format.
+     * *not* escaped format. When a chat room is joined, a single MultiUserChat object is
+     * added here. This object is *not* removed when the chat room is parted; instead, the
+     * object is re-used if the user tries to join again.
      */
     private Map<String, MultiUserChat> multiChatMap = new HashMap<String, MultiUserChat>();
     
@@ -362,8 +372,6 @@ public class XmppProtocol implements Connection
         {
             if (entry.getValue().isJoined())
                 list.add("#" + escape(entry.getKey()));
-            else
-                multiChatMap.remove(entry.getKey());
         }
         return list.toArray(new String[0]);
     }
@@ -391,16 +399,19 @@ public class XmppProtocol implements Connection
     {
         MultiUserChat room = multiChatMap.get(unescapeChannel(channel));
         if (!room.isJoined())
-        {
-            multiChatMap.remove(unescapeChannel(channel));
             room = null;
-        }
         if (room == null)
             return new User[0];
         Iterator<String> occupants = room.getOccupants();
         ArrayList<User> results = new ArrayList<User>();
         while (occupants.hasNext())
         {
+            String occupantName = occupants.next();
+            Occupant o = room.getOccupant(occupantName);
+            String nameToUse = o.getJid();// Try the user's full jid first
+            if (nameToUse == null || nameToUse.equals(""))// If we don't know their full
+                // jid (such as in anonymous rooms), fall back to their MUC name
+                nameToUse = occupantName;
             results.add(new XmppUser(escape(occupants.next())));
         }
         return results.toArray(new User[0]);
@@ -432,14 +443,18 @@ public class XmppProtocol implements Connection
     {
         System.out.println("XMPP join for " + channel);
         String unescapedChannel = unescapeChannel(channel);
+        boolean alreadySetUp = false;
+        MultiUserChat room = null;
         if (multiChatMap.get(unescapedChannel) != null)
         {
-            if (!multiChatMap.get(unescapedChannel).isJoined())
-                // Existing channel that we're not joined to, so we'll get rid of it
-                multiChatMap.remove(unescapedChannel);
+            alreadySetUp = true;
+            room = multiChatMap.get(unescapedChannel);
         }
-        MultiUserChat room = new MultiUserChat(connection, unescapeChannel(channel));
-        installRoomListeners(room);
+        if (!alreadySetUp)
+        {
+            room = new MultiUserChat(connection, unescapeChannel(channel));
+            installRoomListeners(room);
+        }
         String requestedNickname = escapeOnlyAccount(connection.getUser());
         try
         {
@@ -475,7 +490,8 @@ public class XmppProtocol implements Connection
                     + " (a.k.a " + unescapedChannel + ")", e);
             }
         }
-        multiChatMap.put(room.getRoom(), room);
+        if (!alreadySetUp)
+            multiChatMap.put(room.getRoom(), room);
     }
     
     private void installRoomListeners(final MultiUserChat room)
@@ -494,13 +510,22 @@ public class XmppProtocol implements Connection
                         + "message being sent back to us");
                     return;
                 }
+                String occupantJid = getJidOrNick(room, message.getFrom());
                 System.out.println("XMPP Room Message:");
                 System.out.println("    Room:         " + escapedRoomName);
                 System.out.println("    From (XMPP):  " + message.getFrom());
                 System.out.println("    To   (XMPP):  " + message.getTo());
+                System.out.println("    From JID:     " + occupantJid);
+                System.out.println("    Type:         " + message.getType());
                 System.out.println("    Body:         " + message.getBody());
-                context.onMessage(escapedRoomName, escape(message.getFrom()), "user",
-                        escapeOnlyAccount(message.getFrom()), message.getBody());
+                if (message.getBody().equals(""))
+                {
+                    System.out
+                            .println("    *** Empty message body. This message will be ignored.");
+                    return;
+                }
+                context.onMessage(escapedRoomName, escape(occupantJid), "user",
+                        escapeOnlyAccount(occupantJid), message.getBody());
             }
         });
         room.addParticipantStatusListener(new ParticipantStatusListener()
@@ -525,6 +550,7 @@ public class XmppProtocol implements Connection
             @Override
             public void joined(String user)
             {
+                user = getJidOrNick(room, user);
                 context.onJoin(escapedRoomName, escape(user), "user",
                         escapeOnlyAccount(user));
             }
@@ -532,6 +558,7 @@ public class XmppProtocol implements Connection
             @Override
             public void kicked(String user, String kicker, String reason)
             {
+                user = getJidOrNick(room, user);
                 context.onKick(escapedRoomName, escape(kicker), "user",
                         escapeOnlyAccount(kicker), escape(user), reason);
             }
@@ -539,6 +566,7 @@ public class XmppProtocol implements Connection
             @Override
             public void left(String user)
             {
+                user = getJidOrNick(room, user);
                 context.onPart(escapedRoomName, escape(user), "user",
                         escapeOnlyAccount(user));
             }
@@ -588,6 +616,18 @@ public class XmppProtocol implements Connection
             {
             }
         });
+    }
+    
+    private static String getJidOrNick(MultiUserChat room, String name)
+    {
+        Occupant o = room.getOccupant(name);
+        if (o == null)
+            return name;
+        if (o.getJid() == null)
+            return name;
+        if (o.getJid().equals(""))
+            return name;
+        return o.getJid();
     }
     
     @Override
