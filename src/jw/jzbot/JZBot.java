@@ -874,7 +874,8 @@ public class JZBot
             System.out
                     .println("Advanced users can also do \"jzbot addsuperop <hostname>\"");
             System.out.println("or \"jzbot config\" or \"jzbot config <varname>\" or");
-            System.out.println("\"jzbot config <varname> <newvalue>\".");
+            System.out.println("\"jzbot config <varname> <newvalue>\" or \"jzbot ");
+            System.out.println("activateserver <servername>\".");
         }
         else if (args[0].equals("addserver"))
         {
@@ -971,6 +972,30 @@ public class JZBot
                 System.out.println("Successfully set the var \"" + args[1]
                     + "\" to the value \"" + args[2] + "\".");
             }
+        }
+        else if (args[0].equals("activateserver"))
+        {
+            if (args.length == 1)
+            {
+                System.out.println("You must specify the name of a server to activate.");
+                return;
+            }
+            initProxyStorage();
+            Server server = storage.getServer(args[1]);
+            if (server == null)
+            {
+                System.out.println("There is no such server with that name. The "
+                    + "servers that are currently in your database are:");
+                for (Server s : storage.getServers().isolate())
+                {
+                    System.out.println("    " + s.getName());
+                }
+                return;
+            }
+            server.setActive(true);
+            System.out.println("The server has been successfully "
+                + "set to active. The next time JZBot starts, "
+                + "it will connect to that server.");
         }
         // else if (args[0].equals("switchnick"))
         // {
