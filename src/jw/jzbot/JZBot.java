@@ -723,11 +723,12 @@ public class JZBot
                 throw new RuntimeException("Futures can't be scheduled more than 2 days ("
                     + (86400 * 2) + " seconds) into the future. You're "
                     + "trying to schedule " + "a future to run sooner than that.");
-            // FIXME: This needs to be changed so that future factoids can be scheduled in
-            // factoids that are not channel-scoped.
-            if (channel == null)
-                throw new RuntimeException("Can't schedule future factoids in pm. "
-                    + "Run this factoid at a channel.");
+            // // FIXME: This needs to be changed so that future factoids can be scheduled
+            // in
+            // // factoids that are not channel-scoped.
+            // if (channel == null)
+            // throw new RuntimeException("Can't schedule future factoids in pm. "
+            // + "Run this factoid at a channel.");
             this.delay = delay;
             this.server = server;
             this.channel = channel;
@@ -782,7 +783,7 @@ public class JZBot
                 // TODO: this doesn't properly catch the case where the server is
                 // nonexistent or the server is not connected. Add code to deal with these
                 // two cases.
-                sendActionOrMessage(getConnection(server), channel, result);
+                sendActionOrMessage(source, result);
             }
         }
         

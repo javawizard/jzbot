@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.eval.jexec.lexer.Lexer;
-import jw.jzbot.eval.jexec.node.AExpr;
 import jw.jzbot.eval.jexec.node.AInAddp;
 import jw.jzbot.eval.jexec.node.AInDivp;
 import jw.jzbot.eval.jexec.node.AInMulp;
@@ -237,7 +236,9 @@ public class JExec
      * 
      * @param text
      *            the equation to run
-     * @return
+     * @return the value of the equation
+     * @throws RuntimeException
+     *             if there is a syntax error in the equation, or if
      */
     public BigDecimal run(String text)
     {
@@ -260,9 +261,10 @@ public class JExec
         // This list is strictly in alphabetical order as it appears in the node package.
         // If you add items to this list, make sure that you place them in the list such
         // that it remains in alphabetical order.
-        if (node instanceof AExpr)
-            return run(((AExpr) node).getAddp());
-        else if (node instanceof AInAddp)
+        // if (node instanceof AExpr)
+        // return run(((AExpr) node).getAddp());
+        // else
+        if (node instanceof AInAddp)
             return run(((AInAddp) node).getFirst()).add(run(((AInAddp) node).getSecond()));
         else if (node instanceof AInDivp)
             return run(((AInDivp) node).getFirst()).divide(

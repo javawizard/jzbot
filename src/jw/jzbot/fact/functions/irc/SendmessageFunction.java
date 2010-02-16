@@ -16,11 +16,13 @@ public class SendmessageFunction extends Function
     {
         String to = arguments.resolveString(0);
         String serverName = JZBot.extractRelativeServer(to, context);
+        if (to.startsWith("@"))
+            to = to.substring(Math.max(to.indexOf("!"), to.indexOf("#")));
         ConnectionWrapper con = JZBot.getCheckedConnection(serverName);
         if (!context.checkedGetConnection().getConnection().isConnected())
             throw new FactoidException("Can't send messages when the bot is disconnected");
         String message = arguments.resolveString(1);
-        context.incrementMessageCount();
+        context.incrementMessageCount(); 
         context.checkedGetConnection().getConnection().sendMessage(to, message);
     }
     
@@ -33,7 +35,7 @@ public class SendmessageFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {sendmessage|<to>|<message>} -- Sends the specified message to "
-                + "the specified recipient, which can be a channel or a nickname.";
+            + "the specified recipient, which can be a channel or a nickname.";
     }
     
 }
