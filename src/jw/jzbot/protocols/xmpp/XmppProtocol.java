@@ -35,6 +35,7 @@ import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.FactoidException;
 
 public class XmppProtocol implements Connection
 {
@@ -669,6 +670,25 @@ public class XmppProtocol implements Connection
     public void processProtocolFunction(Sink sink, ArgumentList arguments,
             FactContext context)
     {
+        if (arguments.length() == 0)
+            throw new FactoidException("Need to specify a command to run, "
+                + "which can be one of account-to-nick or nick-to-account");
+        if (arguments.getString(0).equals("account-to-nick"))
+        {
+            sink.write(escape(arguments.resolveString(1)));
+            return;
+        }
+        else if (arguments.getString(0).equals("nick-to-account"))
+        {
+            sink.write(escape(arguments.resolveString(1)));
+            return;
+        }
+        else
+        {
+            throw new FactoidException("Invalid command \"" + arguments.getString(0)
+                + "\". Try running {p}; the error message issued "
+                + "will contain the list of allowed commands.");
+        }
     }
     
     @Override
