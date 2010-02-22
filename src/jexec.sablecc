@@ -38,8 +38,9 @@ Ignored Tokens
 Productions
 
  expr      = {pre} prefix_expr | {post} postfix_expr | {in} trnp;
- trnp      = {next}  [next]:addp  | {in}   [first]:addp  trnq           [second]:trnp
+ trnp      = {next}  [next]:lcmp  | {in}   [first]:lcmp  trnq           [second]:trnp
                                                          trnc           [third]:trnp   ;
+ lcmp      = {next}  [next]:notp  | {in}   [first]:   
  addp      = {next}  [next]:subp  | {in}   [first]:addp  plus           [second]:subp  ;
  subp      = {next}  [next]:mulp  | {in}   [first]:subp  minus          [second]:mulp  ;
  mulp      = {next}  [next]:divp  | {in}   [first]:mulp  mult           [second]:divp  ;
