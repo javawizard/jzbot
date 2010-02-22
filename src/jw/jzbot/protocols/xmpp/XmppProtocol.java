@@ -16,6 +16,7 @@ import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.Roster.SubscriptionMode;
@@ -42,6 +43,7 @@ public class XmppProtocol implements Connection
     static
     {
         installMXP1Hack();
+        SASLAuthentication.supportSASLMechanism("PLAIN", 0);
     }
     
     /**
@@ -49,7 +51,9 @@ public class XmppProtocol implements Connection
      * a method of MXP1 that is only supposed to return textual content within an XML
      * element and throw an exception if the content is mixed. This would work if all XMPP
      * clients conformed to the XMPP protocol. Pidgin doesn't, however, and frequently
-     * includes mixed content in a message body.
+     * includes mixed content in a message body. The hack essentially removes mixed
+     * content tags and preserves everything else, including the text inside the mixed
+     * content tags.
      */
     private static void installMXP1Hack()
     {
