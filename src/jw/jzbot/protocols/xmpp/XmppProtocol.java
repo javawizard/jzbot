@@ -13,6 +13,7 @@ import org.jibble.pircbot.Colors;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
 import org.jivesoftware.smack.Chat;
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
@@ -190,7 +191,23 @@ public class XmppProtocol implements Connection
     {
         try
         {
-            connection = new XMPPConnection(context.getServer());
+            String serverName = context.getServer();
+            if (serverName.contains(":"))
+            {
+                String[] tokens = serverName.split("\\:");
+                serverName = tokens[0];
+                String hostname = tokens[1];
+                int port = -1;
+                if (tokens.length > 2)
+                    port = Integer.parseInt(tokens[2]);
+                ConnectionConfiguration config =
+                        new ConnectionConfiguration(hostname, port, serverName);
+                connection = new XMPPConnection(config);
+            }
+            else
+            {
+                connection = new XMPPConnection(serverName);
+            }
             connection.connect();
             installConnectionListener();
             connection.login(context.getNick(), context.getPassword());

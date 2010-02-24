@@ -8,8 +8,6 @@ description A game of Werewolf, also known as Mafia or Murder in the Dark. This 
   players required to start a game, the minimum number of players before there will be
  2 wolves instead of 1, if such things as seers, silver bullets, village drunks, etc. are
   enabled, and so on. The bot must be a channel op in order for everything to work.
-  Players must also make sure not to obtain mode +o while a game is in progress, as the bot
- tracks in-game players by those that have mode +v.
 preinstall {fpcheckscope|server} {fpabort|I haven't actually gotten around to 
   writing this factpack yet. Check back later for more updates!}
 
