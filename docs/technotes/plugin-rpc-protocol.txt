@@ -1,0 +1,14 @@
+This page documents the RPC protocol used by JZBot's plugin system. This RPC protocol is not in any way specific to JZBot; it could be used in other applications as well.
+
+The protocol is designed to run over a single, long-lasting TCP connection. It is also designed to allow multiple method calls to be in progress at the same time. And it is also designed to allow calling methods from both ends (IE the client can call methods on the server and the server can call methods on the client).
+
+I haven't yet defined a language for some sort of schema, but I'm leaving the possibility for such a language open.
+
+Anyway, I'll get into the serialization protocol first. In the serialization protocol, there are a variety of entity types:
+
+	Associative Arrays: These are made up of key and value pairs, each of which can be another entity.
+	
+	Objects: These are almost exactly the same as associative arrays. Their only difference is that the keys must be Strings. The distinction between Associative 
+	
+	Lists: These are simply lists of other entities.
+	
