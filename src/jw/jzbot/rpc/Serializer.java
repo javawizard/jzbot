@@ -149,18 +149,94 @@ public class Serializer
      * 
      * @return
      * @throws IOException
+     * @throws IOException
      */
-    // public static Object deserialize(DataInputStream stream) throws IOException
-    // {
-    // int eType = stream.readByte();
-    // if (eType == 1)// Associative Array
-    // {
-    // int count = stream.readInt();
-    // Map<?, ?> map = new HashMap<?, ?>();
-    // for (int i = 0; i < count; i++)
-    // {
-    // map.put(deserialize(stream), deserialize(stream));
-    // }
-    // }
-    // }
+    public static Object deserialize(DataInputStream stream, List<Class> classes)
+            throws IOException
+    {
+        Map<String, Class<?>> map = new HashMap<String, Class<?>>();
+        for (Class<?> c : classes)
+        {
+            String name = c.getSimpleName().toLowerCase();
+            if (c.isAnnotationPresent(Type.class))
+                name = c.getAnnotation(Type.class).getName();
+            map.put(name, c);
+        }
+        return deserialize(stream, map);
+    }
+    
+    private static Object deserialize(DataInputStream stream, Map<String, Class<?>> classMap)
+            throws IOException
+    {
+        int eType = stream.readByte();
+        if (eType == 1)// Associative Array
+        {
+            int count = stream.readInt();
+            Map map = new HashMap();
+            for (int i = 0; i < count; i++)
+            {
+                map.put(deserialize(stream, classMap), deserialize(stream, classMap));
+            }
+            return map;
+        }
+        else if (eType == 2)// Object
+        {
+            String typeName = stream.readUTF();
+            int count = stream.readInt();
+            Class c = classMap.get(typeName);
+            if (c == null)
+                throw new IllegalStateException("Object with type \"" + typeName
+                    + "\" received, but this type name is not known.");
+            try
+            {
+                Object instance = c.newInstance();
+                for (int i = 0; i < count; i++)
+                {
+                    String key = (String) deserialize(stream, classMap);
+                    Object value = deserialize(stream, classMap);
+                    Field f = c.getField(key);
+                    f.set(instance, value);
+                }
+                return instance;
+            }
+            catch (Exception e)
+            {
+                throw new IllegalStateException(
+                        "Exception occurred while reconstructing object", e);
+            }
+        }
+        else if (eType == 3)// List
+        {
+            int count = stream.readInt();
+            ArrayList list = new ArrayList(count);
+            for (int i = 0; i < count; i++)
+                list.add(deserialize(stream, classMap));
+            return list;
+        }
+        else if (eType == 4)// Integer
+        {
+            return stream.readInt();
+        }
+        else if (eType == 5)// Long
+        {
+            return stream.readLong();
+        }
+        else if (eType == 6)// Double
+        {
+            return stream.readDouble();
+        }
+        else if (eType == 7)// String
+        {
+            return stream.readUTF();
+        }
+        else
+            throw new IllegalStateException("Unrecognized eType field "
+                + "while deserializing: " + eType
+                + ", should have been in the range 1-7, inclusive. You "
+                + "probably need to get a newer version of the "
+                + "serialization library, or have the software that "
+                + "created the stuff you're trying to deserialize "
+                + "re-create it while using an older version of the "
+                + "serialization library.");
+    }
 }
