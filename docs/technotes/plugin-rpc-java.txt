@@ -1,0 +1,3 @@
+The JAVA RPC implementation has an idea of a clientInterface and a serverInstance. the clientInterface is a proxy implementation of an interface passed in. When methods are called on this interface, they delegate to the server. The serverInstance is called into when method from the other end's clientInterface are called.
+
+When a method is called on the client interface proxy instance, the method implementation adds a notification queue to a map for responses. The queue has capacity for only one item. It then sends the method request to the outbound queue. It then polls the queue it put in the response map until it gets a response or a certain delay has elapsed.

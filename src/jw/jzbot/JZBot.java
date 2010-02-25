@@ -872,8 +872,8 @@ public class JZBot
             System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
             System.out.println("");
-            System.out
-                    .println("Advanced users can also do \"jzbot addsuperop <hostname>\"");
+            System.out.println("Advanced users can also do \"jzbot addsuperop <server> "
+                + "<hostname>\"");
             System.out.println("or \"jzbot config\" or \"jzbot config <varname>\" or");
             System.out.println("\"jzbot config <varname> <newvalue>\" or \"jzbot ");
             System.out.println("activateserver <servername>\".");
@@ -997,6 +997,31 @@ public class JZBot
             System.out.println("The server has been successfully "
                 + "set to active. The next time JZBot starts, "
                 + "it will connect to that server.");
+        }
+        else if (args[0].equals("addsuperop"))
+        {
+            if (args.length < 3)
+            {
+                System.out.println("You need to specify a server and the hostname");
+                System.out.println("of the superop to add.");
+            }
+            String serverName = args[1];
+            String hostname = args[2];
+            initProxyStorage();
+            Server server = storage.getServer(serverName);
+            if (server == null)
+            {
+                System.out.println("There is no such server.");
+                return;
+            }
+            if (server.getOperator(hostname) != null)
+            {
+                System.out.println("That hostname is already a superop on that server.");
+            }
+            Operator op = storage.createOperator();
+            op.setHostname(hostname);
+            server.getOperators().add(op);
+            System.out.println("That user was successfully added as a superop.");
         }
         // else if (args[0].equals("switchnick"))
         // {
