@@ -8,7 +8,77 @@ Anyway, I'll get into the serialization protocol first. In the serialization pro
 
 	Associative Arrays: These are made up of key and value pairs, each of which can be another entity.
 	
-	Objects: These are almost exactly the same as associative arrays. Their only difference is that the keys must be Strings. The distinction between Associative 
+	Objects: These are almost exactly the same as associative arrays. Their only difference is that the keys must be Strings, and they must start with a letter and consist only of letters, numbers, and underscores, and that the very first piece of data in them is a String (but without the first byte, the value 7, indicating a String entity type) that indicates the type of object (everything after that string is encoded as per Associative Array encoding).
 	
 	Lists: These are simply lists of other entities.
 	
+	Integers: These are 32-bit signed integers.
+	
+	Longs: These are 64-bit signed integers.
+	
+	Doubles: These are 64-bit signed floating-point numbers.
+	
+	Strings: These are UTF-8 encoded pieces of text. They must not contain the null character at present, primarily to ease implementation of this protocol in C and C++.
+	
+So, an entity is serialized by first writing a byte to the stream. This byte specifies the type of entity that follows. The values for this byte are:
+
+    1   Associative Array
+    2   Object
+    3   List
+    4   Integer
+    5   Long
+    6   Double
+    7   String
+    
+Other numbers might be used in future versions of the protocol.
+
+What follows that byte is specific to the type of the entity:
+
+	For Associative Arrays, there is a 4-byte number representing the number of entries in the associative array. Following that number, each entry is given, with its key first and its value last.
+	
+	For Objects, the encoding is exactly the same as for Associative Arrays.
+	
+	For Lists, there is a 4-byte number representing the number of entries present in the list. The entries are then present in order.
+	
+	For Integers, the integer is present as a 4-byte signed integer in network byte order.
+	
+	For Longs, the long is present as an 8-byte signed integer in network byte order.
+	
+	For Doubles, the double is present as an 8-byte double, encoded according to Java specifications (I think this is based on some ISO standard but I can't remember which one at the moment).
+	
+	For Strings, the string is present as a two-byte number representing the number of bytes, not characters, in the string, followed by the string's UTF-8 encoded representation.
+
+So, that's it for the serialization format. Now we get into the actual RPC format.
+
+An RPC packet always starts with one byte. This byte is 1 to indicate a request and 2 to indicate a response.
+
+For requests, what follows is a string, encoded in the same manner as the String entity above with the exception that it does not include the first byte indicating the entity's type. This string is the name of the function to call. Right after this is a string, encoded in the same manner, which represents the request id. This can really be any random piece of text, and will be explained later. Immediately after this is a single byte, which indicates the number of arguments that are to be passed to the function. Then, for each of those arguments, in order, the serialized form of the argument is present.
+
+For responses, what follows is a string, encoded in the same manner as in the request, that contains the request id of the request that this responses is being generated in reply to. This allows requests to be properly paired with their responses, and thereby allows multiple requests to be sent at the same time, and the responses to arrive out-of-order if the method calls on the server finish in a different order than they were invoked in. Immediately following this string is a single byte, which is 0 if the method did not return a value and 1 if it did. If the method did return a value, the value, in its serialized form, immediately follows.
+
+And that's it for the RPC protocol!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

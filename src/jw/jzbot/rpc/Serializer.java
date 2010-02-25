@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -141,15 +142,25 @@ public class Serializer
         stream.writeUTF(s);
     }
     
-    /*
+    /**
      * Reads a single object from the specified stream and returns it.
      * 
      * @param stream
      * 
      * @return
+     * @throws IOException
      */
-    public static Object deserialize(DataInputStream stream)
-    {
-        return null;
-    }
+    // public static Object deserialize(DataInputStream stream) throws IOException
+    // {
+    // int eType = stream.readByte();
+    // if (eType == 1)// Associative Array
+    // {
+    // int count = stream.readInt();
+    // Map<?, ?> map = new HashMap<?, ?>();
+    // for (int i = 0; i < count; i++)
+    // {
+    // map.put(deserialize(stream), deserialize(stream));
+    // }
+    // }
+    // }
 }
