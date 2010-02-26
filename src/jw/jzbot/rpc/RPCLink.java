@@ -126,6 +126,7 @@ public class RPCLink<E>
                     if (bytes == null)
                         continue;
                     output.write(bytes);
+                    output.flush();
                 }
             }
             catch (Exception e)
