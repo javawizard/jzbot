@@ -173,33 +173,43 @@ public class RPCLink<E>
     
     public void processInboundRequest() throws IOException
     {
-        String functionName = input.readUTF();
-        String requestId = input.readUTF();
+        final String functionName = input.readUTF();
+        final String requestId = input.readUTF();
         int argumentCount = input.read();
-        Object[] args = new Object[argumentCount];
+        final Object[] args = new Object[argumentCount];
         for (int i = 0; i < args.length; i++)
         {
             args[i] = Serializer.deserialize(input, classes);
         }
         Method[] methods = serverInterface.getClass().getMethods();
-        for (Method method : methods)
+        for (final Method method : methods)
         {
             if (method.getName().equals(functionName))
             {
-                try
+                // TODO: change this to be run in a thread pool executor, as this will
+                // result in much faster run times than starting a new thread each time.
+                new Thread()
                 {
-                    Object response = method.invoke(serverInterface, args);
-                    encodeResponse(response, requestId);
-                }
-                catch (Exception e)
-                {
-                    RuntimeException e2 =
-                            new RuntimeException(
-                                    "Exception while processing inbound RPC call "
-                                        + functionName + " for request " + requestId, e);
-                    e2.printStackTrace();
-                    throw e2;
-                }
+                    public void run()
+                    {
+                        try
+                        {
+                            Object response = method.invoke(serverInterface, args);
+                            encodeResponse(response, requestId);
+                        }
+                        catch (Exception e)
+                        {
+                            RuntimeException e2 =
+                                    new RuntimeException(
+                                            "Exception while processing inbound RPC call "
+                                                + functionName + " for request "
+                                                + requestId, e);
+                            e2.printStackTrace();
+                            throw e2;
+                        }
+                    }
+                }.start();
+                return;
             }
         }
         throw new IllegalStateException("No such function " + functionName

@@ -76,6 +76,7 @@ import jw.jzbot.protocols.BZFlagProtocol;
 import jw.jzbot.protocols.FacebookProtocol;
 import jw.jzbot.protocols.IrcProtocol;
 import jw.jzbot.protocols.xmpp.XmppProtocol;
+import jw.jzbot.psystem.server.PluginManager;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -826,23 +827,6 @@ public class JZBot
             doWithArguments(args);
             return;
         }
-        Runtime.getRuntime().addShutdownHook(new Thread()
-        {
-            public void run()
-            {
-                System.out.println();
-                System.out.println("Waiting on log queue to shut down...");
-                synchronized (logQueueLock)
-                {
-                    logQueueRunning = false;
-                    int discarded = (logQueue == null ? 0 : logQueue.size());
-                    System.out.println("Log queue has shut down. " + discarded
-                        + " log event" + (discarded == 1 ? " was" : "s were")
-                        + " discarded.");
-                }
-                System.out.println("JZBot has terminated.");
-            }
-        });
         start();
     }
     
@@ -1086,6 +1070,7 @@ public class JZBot
     private static void start() throws Throwable
     {
         System.out.println("Initializing...");
+        addShutdownHook();
         DefaultPastebinProviders.installDefaultSet();
         logsFolder.mkdirs();
         System.out.println("Starting the ProxyStorage system...");
@@ -1106,6 +1091,8 @@ public class JZBot
         loadCachedConfig();
         startLogSinkThread();
         reloadRegexes();
+        System.out.println("Starting the plugin manager...");
+        PluginManager.start();
         System.out.println("Running _onstartup notifications...");
         runNotificationFactoid(null, null, null, null, "", "_onstartup", new String[0],
                 true, false);
@@ -1118,6 +1105,29 @@ public class JZBot
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");
         System.out.println();
+    }
+    
+    private static void addShutdownHook()
+    {
+        Runtime.getRuntime().addShutdownHook(new Thread()
+        {
+            public void run()
+            {
+                System.out.println();
+                System.out.println("Shutting down the plugin manager...");
+                PluginManager.shutdown();
+                System.out.println("Shutting down the log queue...");
+                synchronized (logQueueLock)
+                {
+                    logQueueRunning = false;
+                    int discarded = (logQueue == null ? 0 : logQueue.size());
+                    System.out.println("Log queue has shut down. " + discarded
+                        + " log event" + (discarded == 1 ? " was" : "s were")
+                        + " discarded.");
+                }
+                System.out.println("JZBot has terminated.");
+            }
+        });
     }
     
     public static java.sql.Connection relationalStore;
