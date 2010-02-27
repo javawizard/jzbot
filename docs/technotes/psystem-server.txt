@@ -10,3 +10,6 @@ Then, if, in the map of currently-loaded plugins, there is already a plugin with
 
 If the connection has gotten this far without being rejected, JZBot adds the plugin's connection to the map of currently-connected plugins and wraps it with an RPCLink. It then checks the notification map to see if there's anything waiting to know when the plugin loads, and notifies it that the plugin has loaded.
 
+There are essentially two ways a plugin can be loaded: synchronously and asynchronously. Synchronous unloading means that something such as a function, a superop, or another plugin requested that a particular plugin be unloaded.
+
+There are two ways a plugin can be loaded: due to a specific request, or due to it being sporadically loaded.

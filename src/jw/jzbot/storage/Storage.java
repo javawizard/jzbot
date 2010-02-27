@@ -91,4 +91,11 @@ public interface Storage extends HasFactoids
     
     @Search(listProperty = "factoids", searchProperty = "factpack", exact = true)
     public Factoid[] getFactpackFactoids(String factpack);
+    
+    @Property
+    @ListType(PersistentKey.class)
+    public StoredList<PersistentKey> getPluginKeys();
+    
+    @Search(listProperty = "pluginKeys", searchProperty = "key")
+    public PersistentKey getPluginKey(String key);
 }
