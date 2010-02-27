@@ -46,6 +46,7 @@ import jw.jzbot.commands.JoinCommand;
 import jw.jzbot.commands.LeaveCommand;
 import jw.jzbot.commands.ListChannelsCommand;
 import jw.jzbot.commands.MMCommand;
+import jw.jzbot.commands.PluginCommand;
 import jw.jzbot.commands.RedefineCommand;
 import jw.jzbot.commands.RegexCommand;
 import jw.jzbot.commands.RestartCommand;
@@ -1047,6 +1048,7 @@ public class JZBot
         // loadCommand(new LengthCommand());
         loadCommand(new ListChannelsCommand());
         loadCommand(new MMCommand());
+        loadCommand(new PluginCommand());
         loadCommand(new RedefineCommand());
         loadCommand(new RegexCommand());
         loadCommand(new RestartCommand());
