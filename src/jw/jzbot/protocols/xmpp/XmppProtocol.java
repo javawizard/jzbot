@@ -45,6 +45,7 @@ public class XmppProtocol implements Connection
     {
         installMXP1Hack();
         SASLAuthentication.supportSASLMechanism("PLAIN", 0);
+        SASLAuthentication.supportSASLMechanism("DIGEST-MD5", 0);
     }
     
     /**
