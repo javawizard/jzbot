@@ -24,6 +24,8 @@ import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
+import org.jivesoftware.smack.sasl.SASLPlainMechanism;
 import org.jivesoftware.smackx.muc.InvitationListener;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.Occupant;
@@ -44,6 +46,9 @@ public class XmppProtocol implements Connection
     static
     {
         installMXP1Hack();
+        SASLAuthentication.registerSASLMechanism("PLAIN", SASLPlainMechanism.class);
+        SASLAuthentication
+                .registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
         SASLAuthentication.supportSASLMechanism("PLAIN", 0);
         SASLAuthentication.supportSASLMechanism("DIGEST-MD5", 0);
     }
