@@ -273,6 +273,7 @@ public class ServerCommand implements Command
                     + ".");
                 return;
             }
+            translateMemeNumbers(arguments);
             try
             {
                 s.setPriority(Integer.parseInt(arguments));
@@ -295,6 +296,23 @@ public class ServerCommand implements Command
                     "Invalid command. Try running the \"server\" command "
                         + "without arguments to see a list of all valid commands.");
         }
+    }
+    
+    /**
+     * This implements one of the more cool easter eggs in JZBot. It translates various
+     * non-number strings to corresponding number strings, all legal 32-bit signed integer
+     * values. For example, "Linus Torvalds" gets translated to Integer.MAX_VALUE, since
+     * Linus pwns everything, and "over 9000" gets translated to 9001.
+     * 
+     * @param arguments
+     */
+    private String translateMemeNumbers(String value)
+    {
+        if (value.equalsIgnoreCase("Linus Torvalds"))
+            return "" + Integer.MAX_VALUE;
+        if (value.equalsIgnoreCase("over 9000"))
+            return "9001";
+        return value;
     }
     
     private String[] buildIntoMultipleServers(String serverName, String arguments)
