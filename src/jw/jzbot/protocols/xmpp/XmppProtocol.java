@@ -34,6 +34,7 @@ import org.jivesoftware.smackx.muc.UserStatusListener;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParserException;
 
+import jw.jzbot.ConfigVars;
 import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
@@ -51,6 +52,7 @@ public class XmppProtocol implements Connection
         // .registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
         // SASLAuthentication.supportSASLMechanism("PLAIN", 0);
         // SASLAuthentication.supportSASLMechanism("DIGEST-MD5", 0);
+        XMPPConnection.DEBUG_ENABLED = ConfigVars.xmppdebug.get().equals("1");
     }
     
     /**
