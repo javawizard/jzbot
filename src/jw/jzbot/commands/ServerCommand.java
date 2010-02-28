@@ -315,6 +315,10 @@ public class ServerCommand implements Command
         if (value.equalsIgnoreCase("life, the universe, and everything")
             || value.equalsIgnoreCase("life, the universe and everything"))
             return "42";
+        if (value.equalsIgnoreCase("microsoft"))
+            throw new ResponseException("Sorry, but priorities have to be above "
+                + Integer.MIN_VALUE + ", which precludes using any priority that "
+                + "could remotely be conjectured to represent Microsoft.");
         return value;
     }
     
