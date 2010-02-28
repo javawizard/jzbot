@@ -421,7 +421,9 @@ public class XmppProtocol implements Connection
     @Override
     public int getProtocolDelimitedLength()
     {
-        return 1200;// For gmail this is actually 2000, but idk about other providers
+        return 800;// GMail uses 2000 as the longest allowed message length; Facebook uses
+        // 1023. This seems like a good value to guarantee that everything, including
+        // other providers, works as expected.
     }
     
     @Override
