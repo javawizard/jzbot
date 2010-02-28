@@ -1,5 +1,6 @@
 package jw.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
@@ -126,5 +127,17 @@ public interface Server extends HasFactoids
     public int getPort();
     
     public void setPort(int port);
+    
+    /**
+     * The priority of this server. When the connection cycle thread runs, it will connect
+     * and disconnect higher-priority servers first.
+     * 
+     * @return
+     */
+    @Property
+    @Default(intValue = 0)
+    public int getPriority();
+    
+    public void setPriority(int priority);
     
 }

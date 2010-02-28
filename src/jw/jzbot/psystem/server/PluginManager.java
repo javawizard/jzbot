@@ -52,7 +52,7 @@ public class PluginManager
     {
         public void run()
         {
-            while (JZBot.isRunning)
+            while (JZBot.isRunning && !server.isClosed())
             {
                 try
                 {
@@ -82,7 +82,8 @@ public class PluginManager
                 }
                 catch (Exception ex)
                 {
-                    ex.printStackTrace();
+                    if (!server.isClosed())
+                        ex.printStackTrace();
                 }
             }
         }
@@ -119,7 +120,7 @@ public class PluginManager
         {
             ex.printStackTrace();
         }
-        System.out.println("Unloading plugins...");
+        System.out.println("Unloading " + loadedPlugins.size() + " plugins...");
     }
     
     private static void processConnection(Socket connection) throws IOException
@@ -173,6 +174,8 @@ public class PluginManager
                 loadedPlugin.name = pluginName;
                 loadedPlugin.socket = connection;
                 createRPCLink(loadedPlugin);
+                out.writeInt(0);
+                out.flush();
                 loadedPlugins.put(pluginName, loadedPlugin);
             }
         }

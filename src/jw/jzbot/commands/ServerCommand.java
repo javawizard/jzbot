@@ -32,7 +32,7 @@ public class ServerCommand implements Command
         {
             source
                     .sendMessage("You need to specify one of add, delete, details, activate, "
-                        + "deactivate, edit, list, or current.");
+                        + "deactivate, edit, list, priority, or current.");
             return;
         }
         String[] tokens = arguments.split(" ", 2);
@@ -254,6 +254,40 @@ public class ServerCommand implements Command
         else if (subcommand.equals("current"))
         {
             source.sendMessage("Your current server is " + server + ".");
+        }
+        else if (subcommand.equals("priority"))
+        {
+            if (serverName.equals(""))
+                throw new ResponseException("Use \"server priority <name>\" to get "
+                    + "the current priority of a server or \"server priority "
+                    + "<name> <priority>\" to set a new priority for the specified "
+                    + "server. Servers with higher priority will be connected first "
+                    + "when the bot starts up or restarts.");
+            Server s = JZBot.storage.getServer(serverName);
+            if (s == null)
+                throw new ResponseException("There isn't a server with the name \""
+                    + serverName + "\".");
+            if (arguments.equals(""))
+            {
+                source.sendMessage("That server's current priority is " + s.getPriority()
+                    + ".");
+                return;
+            }
+            try
+            {
+                s.setPriority(Integer.parseInt(arguments));
+                source.sendMessage("That server's priority has been successfully set to "
+                    + s.getPriority() + ".");
+                return;
+            }
+            catch (NumberFormatException e)
+            {
+                throw new ResponseException("The new priority you just tried to set, \""
+                    + arguments + "\", is not a number. The new priority for a server "
+                    + "must be a whole number between " + Integer.MAX_VALUE + " and "
+                    + Integer.MIN_VALUE + ", inclusive. The server's priority has "
+                    + "been left at " + s.getPriority() + ".");
+            }
         }
         else
         {

@@ -79,6 +79,9 @@ public interface Storage extends HasFactoids
     @Constructor
     public Regex createRegex();
     
+    @Constructor
+    public PersistentKey createPersistentKey();
+    
     @Property
     @ListType(Factoid.class)
     public StoredList<Factoid> getFactoids();
@@ -98,4 +101,7 @@ public interface Storage extends HasFactoids
     
     @Search(listProperty = "pluginKeys", searchProperty = "key")
     public PersistentKey getPluginKey(String key);
+    
+    @Search(listProperty = "pluginKeys", searchProperty = "name")
+    public PersistentKey getPluginKeyByName(String string);
 }

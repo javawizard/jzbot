@@ -21,6 +21,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -429,7 +430,7 @@ public class JZBot
         synchronized (connectionCycleLock)
         {
             System.out.println("Synchronized on connection cycle");
-            for (Server server : storage.getServers().isolate())
+            for (Server server : sortByPriority(storage.getServers().isolate()))
             {
                 String serverName = server.getName();
                 if (connectionMap.get(serverName) == null)
@@ -465,7 +466,7 @@ public class JZBot
          * through it will create a new connection and connect it. This ensures that a
          * given connection object is never re-used.
          */
-        for (ConnectionContext context : connectionMap.values())
+        for (ConnectionContext context : sortByPriority(connectionMap.values()))
         {
             if (!context.getConnection().isConnected())
             {
@@ -506,7 +507,7 @@ public class JZBot
          */
         synchronized (connectionCycleLock)
         {
-            for (ConnectionContext context : connectionMap.values())
+            for (ConnectionContext context : sortByPriority(connectionMap.values()))
             {
                 if (context.getConnection().isConnected())
                 {
@@ -547,6 +548,52 @@ public class JZBot
         /*
          * ...and we're done!
          */
+    }
+    
+    private static List<ConnectionContext> sortByPriority(
+            Collection<ConnectionContext> values)
+    {
+        ArrayList<ConnectionContext> list = new ArrayList<ConnectionContext>(values);
+        long start = System.currentTimeMillis();
+        Collections.sort(list, new Comparator<ConnectionContext>()
+        {
+            
+            @Override
+            public int compare(ConnectionContext first, ConnectionContext second)
+            {
+                if (first.getDatastoreServer().getPriority() > second.getDatastoreServer()
+                        .getPriority())
+                    return -1;
+                else if (second.getDatastoreServer().getPriority() > first
+                        .getDatastoreServer().getPriority())
+                    return 1;
+                return 0;
+            }
+        });
+        System.out.println("Sorted server context list in "
+            + (System.currentTimeMillis() - start) + " ms");
+        return list;
+    }
+    
+    private static List<Server> sortByPriority(ArrayList<Server> list)
+    {
+        long start = System.currentTimeMillis();
+        Collections.sort(list, new Comparator<Server>()
+        {
+            
+            @Override
+            public int compare(Server first, Server second)
+            {
+                if (first.getPriority() > second.getPriority())
+                    return -1;
+                else if (second.getPriority() > first.getPriority())
+                    return 1;
+                return 0;
+            }
+        });
+        System.out.println("Sorted server list in " + (System.currentTimeMillis() - start)
+            + " ms");
+        return list;
     }
     
     public static void notifyConnectionCycleThread()
