@@ -273,7 +273,7 @@ public class ServerCommand implements Command
                     + ".");
                 return;
             }
-            translateMemeNumbers(arguments);
+            arguments = translateMemeNumbers(arguments);
             try
             {
                 s.setPriority(Integer.parseInt(arguments));
@@ -312,6 +312,9 @@ public class ServerCommand implements Command
             return "" + Integer.MAX_VALUE;
         if (value.equalsIgnoreCase("over 9000"))
             return "9001";
+        if (value.equalsIgnoreCase("life, the universe, and everything")
+            || value.equalsIgnoreCase("life, the universe and everything"))
+            return "42";
         return value;
     }
     
