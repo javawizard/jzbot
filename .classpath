@@ -36,6 +36,8 @@
 	<classpathentry kind="lib" path="lib/smack.jar" sourcepath="/data/libraries/smack/smack_src_3_1_0/source"/>
 	<classpathentry kind="lib" path="lib/smackx.jar" sourcepath="/data/libraries/smack/smack_src_3_1_0/source"/>
 	<classpathentry kind="lib" path="lib/xpp3-1.1.4c.jar"/>
+	<classpathentry kind="lib" path="lib/smackx-debug.jar"/>
+	<classpathentry kind="lib" path="lib/smackx-jingle.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
