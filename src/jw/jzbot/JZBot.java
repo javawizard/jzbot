@@ -2928,6 +2928,14 @@ public class JZBot
                 if (restartFile.exists())
                 {
                     restartFile.delete();
+                    try
+                    {
+                        Thread.sleep(2000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
                     restart();
                 }
             }
