@@ -19,7 +19,7 @@ public class RestartCommand implements Command
             Messenger source, String arguments)
     {
         sender.verifySuperop();
-        System.exit(17);
+        JZBot.restart();
     }
     
 }

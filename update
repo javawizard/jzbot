@@ -1,0 +1,9 @@
+#!/bin/bash
+svn update
+./build
+echo Updating to the latest version of JZBot... > storage/restart-temp
+rm -rf storage/restart
+mv storage/restart-temp storage/restart
+echo Updates have completed successfully. If your bot
+echo is currently running, it will be restarted momentarily.
+

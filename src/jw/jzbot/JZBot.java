@@ -105,6 +105,8 @@ public class JZBot
     public static Map<String, ConnectionContext> connectionMap =
             new HashMap<String, ConnectionContext>();
     
+    public static File restartFile = new File("storage/restart");
+    
     public static File logsFolder = new File("storage/logs");
     
     public static Map<String, String> globalVariables = new HashMap<String, String>();
@@ -1142,6 +1144,8 @@ public class JZBot
         reloadRegexes();
         System.out.println("Starting the plugin manager...");
         PluginManager.start();
+        System.out.println("Starting the automatic restart thread...");
+        startAutomaticRestart();
         System.out.println("Running _onstartup notifications...");
         runNotificationFactoid(null, null, null, null, "", "_onstartup", new String[0],
                 true, false);
@@ -2904,6 +2908,51 @@ public class JZBot
             throw new FactoidException("There is no server for the server name "
                 + serverName + ", but this command requires a valid server name.");
         return con;
+    }
+    
+    private static Thread restartThread = new Thread("jzbot-restart-thread")
+    {
+        public void run()
+        {
+            while (isRunning)
+            {
+                try
+                {
+                    Thread.sleep(5000);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                    return;
+                }
+                if (restartFile.exists())
+                {
+                    restartFile.delete();
+                    restart();
+                }
+            }
+        }
+    };
+    
+    private static void startAutomaticRestart()
+    {
+        restartFile.delete();
+        restartThread.setDaemon(true);
+        restartThread.start();
+    }
+    
+    public static void restart()
+    {
+        /*
+         * TODO: in the future, maybe have this disconnect all active servers with
+         * whatever message storage/restart contains, if it exists, otherwise a default
+         * error message or one that could be passed into this method. Each protocol
+         * restart should be done in a thread, and then 3 seconds should go by before
+         * exiting, so that each protocol has 3 seconds to exit. This way, protocols will
+         * most likely get the exit message, but a rogue protocol whose quit method blocks
+         * won't cause the restart not to work.
+         */
+        System.exit(17);
     }
     
 }
