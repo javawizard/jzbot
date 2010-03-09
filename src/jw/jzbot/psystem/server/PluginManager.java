@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,16 +23,16 @@ public class PluginManager
 {
     public static class PluginDisconnectRunnable implements Runnable
     {
+        private LoadedPlugin plugin;
         
         public PluginDisconnectRunnable(LoadedPlugin plugin)
         {
-            // TODO Auto-generated constructor stub
+            this.plugin = plugin;
         }
         
         @Override
         public void run()
         {
-            // TODO Auto-generated method stub
             
         }
         
@@ -121,6 +122,43 @@ public class PluginManager
             ex.printStackTrace();
         }
         System.out.println("Unloading " + loadedPlugins.size() + " plugins...");
+        Thread thread = new Thread()
+        {
+            public void run()
+            {
+                unloadPlugins();
+            }
+        };
+        thread.setDaemon(true);
+        thread.start();
+        try
+        {
+            thread.join(45 * 1000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        if (thread.isAlive())
+        {
+            System.out.println("Some plugins failed to unload within 45 seconds.");
+        }
+        /*
+         * TODO: This may result in some plugin processes continuing to run. What should
+         * probably be done is that if the plugins fail to unload after the 45 seconds are
+         * up, all of the plugin processes should be forcibly terminated.
+         */
+    }
+    
+    protected static void unloadPlugins()
+    {
+        synchronized (lock)
+        {
+            for (LoadedPlugin plugin : new ArrayList<LoadedPlugin>(loadedPlugins.values()))
+            {
+                plugin.unload(0);//FIXME: implement
+            }
+        }
     }
     
     private static void processConnection(Socket connection) throws IOException
@@ -140,6 +178,9 @@ public class PluginManager
             else
             {
                 pluginName = tempKeysToNames.get(key);
+                if (pluginName != null)
+                    // The key was valid, so we need to get rid of it now
+                    tempKeysToNames.remove(key);
             }
         }
         if (pluginName == null)

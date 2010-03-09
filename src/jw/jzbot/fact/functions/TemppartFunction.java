@@ -16,7 +16,7 @@ public class TemppartFunction extends Function
         String target = arguments.resolveString(0);
         JZBot.checkedGetExtractedConnection(target, context).partChannel(
                 JZBot.extractRelativeChannel(target, context),
-                (arguments.length() > 1 ? arguments.resolveString(1) : "Laters."));
+                (arguments.length() > 1 ? arguments.resolveString(1) : JZBot.PART_MESSAGE));
     }
     
     @Override

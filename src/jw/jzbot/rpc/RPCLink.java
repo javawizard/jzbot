@@ -50,7 +50,9 @@ public class RPCLink<E>
             dos.writeByte(args.length);
             for (Object arg : args)
             {
-                Serializer.serialize(arg, dos);
+                dos.writeBoolean(arg != null);
+                if (arg != null)
+                    Serializer.serialize(arg, dos);
             }
             BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(1);
             synchronized (responseQueueMap)
@@ -58,7 +60,7 @@ public class RPCLink<E>
                 responseQueueMap.put(requestId, queue);
             }
             outQueue.add(baos.toByteArray());
-            // The request has been sent. Now we wait 15 seconds for a response.
+            // The request has been sent. Now we wait 30 seconds for a response.
             // TODO: make this delay configurable
             Object response = queue.poll(30, TimeUnit.SECONDS);
             synchronized (responseQueueMap)
@@ -161,6 +163,11 @@ public class RPCLink<E>
     public RPCLink(Socket socket, Class<E> clientInterface, Object serverInterface,
             List<Class> classes, Runnable runOnDisconnect) throws IOException
     {
+        if (!clientInterface.isInterface())
+            throw new IllegalArgumentException("The client interface class specified ("
+                + clientInterface.getName()
+                + ") is not an interface. The client interface "
+                + "class object must represent an interface.");
         this.socket = socket;
         this.input = new DataInputStream(socket.getInputStream());
         this.output = new DataOutputStream(socket.getOutputStream());
@@ -168,7 +175,21 @@ public class RPCLink<E>
         this.serverInterface = serverInterface;
         this.classes = classes;
         this.runOnDisconnect = runOnDisconnect;
+        new InputThread().start();
+        new OutputThread().start();
         constructClientProxy();
+        /*
+         * TODO: consider having some format or means whereby a schema of all available
+         * methods on the server interface object could be sent to the RPCLink on the
+         * other end. There are essentially two reasons this would be a good thing: if a
+         * method is called on the client on the other machine, and it doesn't match up
+         * with the schema expected on this end, the other end can catch that before
+         * anything happens to prevent a round-trip delay, and could even throw an
+         * exception the first time the client interface is requested. The other reason is
+         * that for dynamic languages like Python, this would allow them to dynamically
+         * construct the client interface object when the RPCLink is created instead of
+         * having to have it specified as some sort of makeshift interface.
+         */
     }
     
     public void processInboundRequest() throws IOException
@@ -179,7 +200,11 @@ public class RPCLink<E>
         final Object[] args = new Object[argumentCount];
         for (int i = 0; i < args.length; i++)
         {
-            args[i] = Serializer.deserialize(input, classes);
+            boolean isPresent = input.readBoolean();
+            if (isPresent)
+                args[i] = Serializer.deserialize(input, classes);
+            else
+                args[i] = null;
         }
         Method[] methods = serverInterface.getClass().getMethods();
         for (final Method method : methods)
@@ -262,5 +287,18 @@ public class RPCLink<E>
         {
             ex.printStackTrace();
         }
+    }
+    
+    /**
+     * Returns an instance of the client interface. Methods on this instance, when called,
+     * will cause corresponding calls to be made over the RPC connection.
+     * 
+     * @return an instance of the client interface that delegates to the serverInterface
+     *         object on the RPCLink listening on the other end of the Socket used to
+     *         create this RPCLink
+     */
+    public E getClient()
+    {
+        return clientInstance;
     }
 }

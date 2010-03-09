@@ -520,7 +520,7 @@ public class JZBot
                     {
                         System.out.println("Disconnecting from server "
                             + context.getServerName());
-                        context.getConnection().disconnect(getDefaultDisconnectMessage());
+                        context.getConnection().disconnect(PART_MESSAGE);
                         System.out.println("Disconnected.");
                     }
                 }
@@ -617,11 +617,6 @@ public class JZBot
         {
             e.printStackTrace();
         }
-    }
-    
-    private static String getDefaultDisconnectMessage()
-    {
-        return "Laters.";
     }
     
     public static Connection instantiateConnectionForProtocol(String name, boolean run)
@@ -2607,6 +2602,8 @@ public class JZBot
     private static int configLogsize = 0;
     
     public static final long startedAtTime = System.currentTimeMillis();
+    
+    public static final String PART_MESSAGE = "So long, and thanks for all the fish";
     
     public static void reloadRegexes()
     {
