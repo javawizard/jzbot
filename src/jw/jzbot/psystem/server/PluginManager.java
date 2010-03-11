@@ -156,7 +156,7 @@ public class PluginManager
         {
             for (LoadedPlugin plugin : new ArrayList<LoadedPlugin>(loadedPlugins.values()))
             {
-                plugin.unload(0);//FIXME: implement
+                plugin.unload(0);// FIXME: implement
             }
         }
     }

@@ -1708,7 +1708,10 @@ public class JZBot
             boolean processFactoids =
                     processChannelRegex(datastoreServer, serverName, channel, sender,
                             hostname, message, false);
+            ConnectionContext context = getRealConnection(serverName);
             String trigger = chan.getTrigger();
+            if (context != null)
+                message = replaceNamePrefixWithTrigger(context, trigger, message);
             if (trigger != null && message.startsWith(trigger))
             {
                 try
@@ -1767,6 +1770,24 @@ public class JZBot
         {
             tkt.active = false;
         }
+    }
+    
+    public static String NAME_SUFFIXES = ":,";
+    
+    private static String replaceNamePrefixWithTrigger(ConnectionContext context,
+            String trigger, String message)
+    {
+        String oldMessage = message;
+        if (message.startsWith(context.getConnection().getNick()))
+        {
+            message = message.substring(context.getConnection().getNick().length());
+            if (message.length() > 1 && NAME_SUFFIXES.contains("" + message.charAt(0)))
+            {
+                if (message.charAt(1) == ' ')
+                    return trigger + message.substring(2);
+            }
+        }
+        return oldMessage;
     }
     
     public static void onNotice(Server datastoreServer, String serverName,
@@ -2602,7 +2623,7 @@ public class JZBot
     private static int configLogsize = 0;
     
     public static final long startedAtTime = System.currentTimeMillis();
-    
+    // Easter egg
     public static final String PART_MESSAGE = "So long, and thanks for all the fish";
     
     public static void reloadRegexes()
@@ -2957,7 +2978,32 @@ public class JZBot
          * most likely get the exit message, but a rogue protocol whose quit method blocks
          * won't cause the restart not to work.
          */
+        isRunning = false;
+        new Thread()
+        {
+            public void run()
+            {
+                onRestartGlobalDisconnect();
+            }
+        }.start();
+        try
+        {
+            Thread.sleep(5000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
         System.exit(17);
+    }
+    
+    protected static void onRestartGlobalDisconnect()
+    {
+        for (ConnectionContext context : new ArrayList<ConnectionContext>(connectionMap
+                .values()))
+        {
+            context.getConnection().disconnect(PART_MESSAGE);
+        }
     }
     
 }
