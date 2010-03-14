@@ -87,8 +87,8 @@ public class FactoidCommand implements Command
         // + "a channel (unless it is the isglobal command)");
         // return;
         // }
-        String afterCommand = (argumentsTokenized1.length > 1) ? argumentsTokenized1[1]
-                : "";
+        String afterCommand =
+                (argumentsTokenized1.length > 1) ? argumentsTokenized1[1] : "";
         /*
          * command is something like create, delete, isglobal, etc., and afterCommand is
          * the rest
@@ -160,8 +160,8 @@ public class FactoidCommand implements Command
             if (!JZBot.isValidFactoidName(factoidName))
                 throw new ResponseException(
                         "That factoid name contains invalid characters. Factoid "
-                                + "names must not start with \"#\", \"@\", or \"%\", and "
-                                + "must contain at least one character.");
+                            + "names must not start with \"#\", \"@\", or \"%\", and "
+                            + "must contain at least one character.");
             String factoidContents = argumentsTokenized2[1];
             if (scope == FactScope.channel && c.getFactoid(factoidName) != null)
                 throw new ResponseException(
@@ -170,7 +170,7 @@ public class FactoidCommand implements Command
                 throw new ResponseException(
                         "That factoid already exists as a server-specific factoid");
             else if (scope == FactScope.global
-                    && JZBot.storage.getFactoid(factoidName) != null)
+                && JZBot.storage.getFactoid(factoidName) != null)
                 throw new ResponseException(
                         "That factoid already exists as a global factoid");
             boolean fromPastebin = PastebinService.understands(factoidContents);
@@ -189,7 +189,7 @@ public class FactoidCommand implements Command
                 recreate(oldFact, scope, s, c);
                 throw new ResponseException(
                         "There is a syntax error in the contents of the factoid: "
-                                + JZBot.pastebinStack(e));
+                            + JZBot.pastebinStack(e));
             }
             Factoid f = JZBot.storage.createFactoid();
             f.setCreator(sender.getHostname());
@@ -216,7 +216,7 @@ public class FactoidCommand implements Command
                 c.getFactoids().add(f);
             System.out.println("created fact " + factoidName + " " + factoidContents);
             source.sendMessage("Factoid " + factoidName
-                    + (command.equals("replace") ? " replaced. " : " created."));
+                + (command.equals("replace") ? " replaced. " : " created."));
         }
         if (command.equals("list"))
         {
@@ -236,8 +236,9 @@ public class FactoidCommand implements Command
                 String currentList = "";
                 for (Factoid f : list.isolate())
                 {
-                    currentList += (f.isLibrary() ? "%" : "")
-                            + (f.isRestricted() ? "@" : "") + f.getName() + "  ";
+                    currentList +=
+                            (f.isLibrary() ? "%" : "") + (f.isRestricted() ? "@" : "")
+                                + f.getName() + "  ";
                 }
                 if (currentList.length() > source.getProtocolDelimitedLength())
                 {
@@ -252,16 +253,17 @@ public class FactoidCommand implements Command
                 source.sendMessage("End of factoid list.");
             else if (scope == FactScope.server)
                 source.sendMessage("End of factoid list. You should also run "
-                        + "\"factoid global list\" for"
-                        + " global factoids. These were not included " + "in this list.");
+                    + "\"factoid global list\" for"
+                    + " global factoids. These were not included " + "in this list.");
             else
                 source.sendMessage("End of factoid list. You should also run "
-                        + "\"factoid global list\" and \"factoid server list\" for"
-                        + " global factoids and server-specific factoids. These "
-                        + "were not included " + "in this list.");
+                    + "\"factoid global list\" and \"factoid server list\" for"
+                    + " global factoids and server-specific factoids. These "
+                    + "were not included " + "in this list.");
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
         {
+            processed = true;
             String factoidName = afterCommand;
             Factoid f;
             if (scope == FactScope.global)
@@ -299,6 +301,7 @@ public class FactoidCommand implements Command
         }
         if (command.equals("isrestricted"))
         {
+            processed = true;
             String factoidName = afterCommand;
             Factoid f;
             if (scope == FactScope.global)
@@ -317,23 +320,23 @@ public class FactoidCommand implements Command
                 // + "the global factoid.");
                 throw new ResponseException("That factoid doesn't exist at that scope.");
             }
-            source.sendMessage("That factoid is " + (f.isRestricted() ? "not " : "")
-                    + "restricted.");
+            source.sendMessage("That factoid is " + (f.isRestricted() ? "" : "not ")
+                + "restricted.");
         }
         if (command.equals("export"))
         {
             if (scope != FactScope.server)
                 throw new ResponseException(
                         "The export command requires exactly a scope of "
-                                + "\"server\". I'm hoping to add the ability to "
-                                + "export channel-scope and global-scope "
-                                + "factoids soon.");
+                            + "\"server\". I'm hoping to add the ability to "
+                            + "export channel-scope and global-scope " + "factoids soon.");
             processed = true;
             Document export = exportServerFactoids(server);
-            String data = new XMLOutputter(Format.getPrettyFormat().setIndent("    "))
-                    .outputString(export);
+            String data =
+                    new XMLOutputter(Format.getPrettyFormat().setIndent("    "))
+                            .outputString(export);
             source.sendMessage("Export of all factoids in this bot at this server: "
-                    + Pastebin.createPost("jzbot", data, Duration.DAY, null, null));
+                + Pastebin.createPost("jzbot", data, Duration.DAY, null, null));
         }
         if (command.equals("attribute") || command.equals("unattribute"))
         {
@@ -342,7 +345,7 @@ public class FactoidCommand implements Command
             String[] argumentsTokenized2 = afterCommand.split(" ", 2);
             if (argumentsTokenized2.length != 2)
                 throw new ResponseException("You need to specify the name of the factoid "
-                        + "and the person to attribute it to.");
+                    + "and the person to attribute it to.");
             String factoidName = argumentsTokenized2[0];
             if (factoidName.equals(""))
                 throw new ResponseException("You need to specify the factoid");
@@ -361,7 +364,7 @@ public class FactoidCommand implements Command
             {
                 f.setAttribution(argumentsTokenized2[1]);
                 source.sendMessage("The factoid " + f.getName()
-                        + " has been attributed to \"" + f.getAttribution() + "\".");
+                    + " has been attributed to \"" + f.getAttribution() + "\".");
             }
             else
             {
@@ -371,8 +374,8 @@ public class FactoidCommand implements Command
                             "This factoid does not currently have an attribution.");
                 f.setAttribution(null);
                 source.sendMessage("The attribution for " + f.getName()
-                        + " (which was previously \"" + previousAttribution
-                        + "\") has been removed.");
+                    + " (which was previously \"" + previousAttribution
+                    + "\") has been removed.");
             }
         }
         if (command.equals("literal"))
@@ -393,8 +396,8 @@ public class FactoidCommand implements Command
             }
             String value = f.getValue();
             if (value.contains("\n") || value.contains("\r")
-                    || value.length() > source.getProtocolDelimitedLength()
-                    || PastebinService.understands(value))
+                || value.length() > source.getProtocolDelimitedLength()
+                || PastebinService.understands(value))
                 value = Pastebin.createPost("jzbot", value, Duration.DAY, null, null);
             source.sendMessage(value);
         }
@@ -434,11 +437,10 @@ public class FactoidCommand implements Command
                 attributionMessage = "; attributed to \"" + attribution + "\"";
             }
             source.sendMessage("" + f.getName() + " -- created by " + f.getCreatorNick()
-                    + " <" + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
-                    + new Date(f.getCreationTime()).toString() + "; requested "
-                    + totalRequests + " times (" + directRequests + " directly, "
-                    + indirectRequests + " indirectly)" + attributionMessage
-                    + factpackMessage);
+                + " <" + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
+                + new Date(f.getCreationTime()).toString() + "; requested " + totalRequests
+                + " times (" + directRequests + " directly, " + indirectRequests
+                + " indirectly)" + attributionMessage + factpackMessage);
         }
         if (command.equals("pack"))
         {
@@ -450,8 +452,8 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global|server] "
-                            + "<list|create|replace|delete|literal|info|pack"
-                            + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
+                        + "<list|create|replace|delete|literal|info|pack"
+                        + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
         }
     }
     
@@ -509,9 +511,9 @@ public class FactoidCommand implements Command
                 packMap.put(pack.name, pack);
             }
             Arrays.sort(items, 1, items.length);
-            items[0] = "" + files.length
-                    + " factpacks (use \"factoid pack install <name>\" "
-                    + "to install one of these):";
+            items[0] =
+                    "" + files.length + " factpacks (use \"factoid pack install <name>\" "
+                        + "to install one of these):";
             StringBuffer buffer = new StringBuffer();
             for (int i = 1; i < items.length; i++)
             {
@@ -584,7 +586,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "Invalid pack command. Try \"factoid pack\" for a list "
-                            + "of available pack commands.");
+                        + "of available pack commands.");
         }
     }
     
@@ -602,7 +604,7 @@ public class FactoidCommand implements Command
             File file = JZBot.getLocalFactpackFile(location);
             if (file == null)
                 throw new ResponseException("Invalid factpack \"" + location
-                        + "\", must be either a known factpack " + "or a pastebin url");
+                    + "\", must be either a known factpack " + "or a pastebin url");
             packContents = StringUtils.readFile(file);
         }
         Factpack factpack = Factpack.parse(packContents);
@@ -614,11 +616,12 @@ public class FactoidCommand implements Command
             String[] descStrings = factpack.description.split("\n");
             if (descStrings.length > 2)
             {
-                descStrings = new String[]
-                {
-                    "See " + JZBot.pastebinNotice(factpack.description, null)
-                            + " for the full description"
-                };
+                descStrings =
+                        new String[]
+                        {
+                            "See " + JZBot.pastebinNotice(factpack.description, null)
+                                + " for the full description"
+                        };
             }
             for (String l : descStrings)
                 source.sendMessage(l);
@@ -630,8 +633,9 @@ public class FactoidCommand implements Command
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
         boolean hasAnyFactoids = false;
-        HasFactoids target = (scope == FactScope.global ? JZBot.storage
-                : scope == FactScope.server ? s : storedChannel);
+        HasFactoids target =
+                (scope == FactScope.global ? JZBot.storage : scope == FactScope.server ? s
+                        : storedChannel);
         /*
          * Now we do the initial iteration to figure out if there are any factoids, and if
          * they are global.
@@ -645,7 +649,7 @@ public class FactoidCommand implements Command
         }
         if (!hasAnyFactoids)
             throw new ResponseException("There isn't such a factpack installed at that "
-                    + "scope. Try \"factoid pack list all\".");
+                + "scope. Try \"factoid pack list all\".");
         /*
          * Now we check permissions.
          */
@@ -730,11 +734,11 @@ public class FactoidCommand implements Command
             if (file == null)
             {
                 source.sendMessage("Invalid factpack \"" + location
-                        + "\", must be either a known factpack name "
-                        + "or the URL of a pastebin post containing "
-                        + "the factpack to install");
+                    + "\", must be either a known factpack name "
+                    + "or the URL of a pastebin post containing "
+                    + "the factpack to install");
                 source.sendMessage("You could try \"factoid global pack available\" "
-                        + "to get a list of factpacks that are built-in to the bot.");
+                    + "to get a list of factpacks that are built-in to the bot.");
                 return;
             }
             packContents = StringUtils.readFile(file);
@@ -765,8 +769,8 @@ public class FactoidCommand implements Command
          */
         try
         {
-            FactEntity preinstallScript = FactParser.parse(factpack.preinstall,
-                    "__factpack_preinstall");
+            FactEntity preinstallScript =
+                    FactParser.parse(factpack.preinstall, "__factpack_preinstall");
             FactContext context = new FactContext();
             context.setChannel(channel);
             context.getLocalVars().putAll(localVars);
@@ -782,8 +786,9 @@ public class FactoidCommand implements Command
             {
                 String message = e.getMessage();
                 if (message.trim().equals(""))
-                    message = "The factpack's preinstall script aborted the installation "
-                            + "without specifying an error message.";
+                    message =
+                            "The factpack's preinstall script aborted the installation "
+                                + "without specifying an error message.";
                 for (String m : message.split("\n"))
                 {
                     source.sendMessage(m.trim());
@@ -802,7 +807,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "There is a syntax error in this factpack's preinstall script: "
-                            + JZBot.pastebinStack(e));
+                        + JZBot.pastebinStack(e));
         }
         /*
          * Preinstall script has been run, and will have checked for any dependencies if
@@ -830,13 +835,15 @@ public class FactoidCommand implements Command
         Map<String, String> realNameMap = new HashMap<String, String>();
         Map<String, Boolean> restrictedMap = new HashMap<String, Boolean>();
         Map<String, Boolean> libraryMap = new HashMap<String, Boolean>();
-        HasFactoids targetScope = (scope == FactScope.global ? JZBot.storage
-                : (scope == FactScope.server ? s : storedChannel));
+        HasFactoids targetScope =
+                (scope == FactScope.global ? JZBot.storage : (scope == FactScope.server ? s
+                        : storedChannel));
         /*
          * We'll look up the container we're inserting in to.
          */
-        HasFactoids container = scope == FactScope.global ? JZBot.storage
-                : scope == FactScope.server ? s : storedChannel;
+        HasFactoids container =
+                scope == FactScope.global ? JZBot.storage : scope == FactScope.server ? s
+                        : storedChannel;
         for (FactpackEntry entry : factpack.factoids)
         {
             /*
@@ -846,11 +853,11 @@ public class FactoidCommand implements Command
                     entry.rename, server, s, channel, storedChannel, localVars, sender,
                     source));
             restrictedMap.put(entry.name, IfFunction.findValue(runInstallScript("restrict_"
-                    + entry.name, entry.restrict, server, s, channel, storedChannel,
-                    localVars, sender, source)));
+                + entry.name, entry.restrict, server, s, channel, storedChannel, localVars,
+                    sender, source)));
             libraryMap.put(entry.name, IfFunction.findValue(runInstallScript("library_"
-                    + entry.name, entry.library, server, s, channel, storedChannel,
-                    localVars, sender, source)));
+                + entry.name, entry.library, server, s, channel, storedChannel, localVars,
+                    sender, source)));
             /*
              * Now we make sure this wouldn't overwrite anything.
              */
@@ -859,10 +866,10 @@ public class FactoidCommand implements Command
                 if (container.getFactoid(realNameMap.get(entry.name)) != null)
                     throw new ResponseException(
                             "This factpack wants to install a factoid called \""
-                                    + realNameMap.get(entry.name)
-                                    + "\", but such a factoid already exists. You can "
-                                    + "override this with \"+install\" instead "
-                                    + "of \"install\" in your command if you want.");
+                                + realNameMap.get(entry.name)
+                                + "\", but such a factoid already exists. You can "
+                                + "override this with \"+install\" instead "
+                                + "of \"install\" in your command if you want.");
                 
             }
             /*
@@ -875,7 +882,7 @@ public class FactoidCommand implements Command
             catch (Exception e)
             {
                 throw new ResponseException("There is a syntax error in the factoid \""
-                        + entry.name + "\" in that factpack: " + JZBot.pastebinStack(e));
+                    + entry.name + "\" in that factpack: " + JZBot.pastebinStack(e));
             }
         }
         /*
@@ -913,15 +920,16 @@ public class FactoidCommand implements Command
         String response = "";
         try
         {
-            response = runInstallScript("postinstall", factpack.postinstall, server, s,
-                    channel, storedChannel, localVars, sender, source);
+            response =
+                    runInstallScript("postinstall", factpack.postinstall, server, s,
+                            channel, storedChannel, localVars, sender, source);
         }
         catch (Exception e)
         {
             e.printStackTrace();
             source.sendMessage("The postinstall script encountered an error. "
-                    + "The factpack has still been installed. Details: "
-                    + JZBot.pastebinStack(e));
+                + "The factpack has still been installed. Details: "
+                + JZBot.pastebinStack(e));
         }
         if (!response.equals(""))
             source.sendMessage(response);
@@ -950,7 +958,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "There is a syntax error in one of this factpack's scripts: "
-                            + JZBot.pastebinStack(e));
+                        + JZBot.pastebinStack(e));
         }
     }
     
