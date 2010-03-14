@@ -427,14 +427,20 @@ public class JZBot
         // We'll wait a bit, mostly for the heck of it
         Thread.sleep(2000);
         System.out.println("Connection cycle");
+        if (!isRunning)
+            return;
         /*
          * First step: create a connection object for all servers in the list
          */
         synchronized (connectionCycleLock)
         {
             System.out.println("Synchronized on connection cycle");
+            if (!isRunning)
+                return;
             for (Server server : sortByPriority(storage.getServers().isolate()))
             {
+                if (!isRunning)
+                    return;
                 String serverName = server.getName();
                 if (connectionMap.get(serverName) == null)
                 {
