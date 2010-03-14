@@ -57,6 +57,7 @@ import jw.jzbot.commands.StatusCommand;
 import jw.jzbot.commands.SuperopCommand;
 import jw.jzbot.commands.SwitchnickCommand;
 import jw.jzbot.commands.TriggerCommand;
+import jw.jzbot.commands.UpdateCommand;
 import jw.jzbot.eval.CaltechEvaluator;
 import jw.jzbot.eval.JEvalEvaluator;
 import jw.jzbot.eval.JepliteEvaluator;
@@ -1105,6 +1106,7 @@ public class JZBot
         loadCommand(new SwitchnickCommand());
         loadCommand(new TriggerCommand());
         // loadCommand(new TTTCommand());
+        loadCommand(new UpdateCommand());
         // loadCommand(new WeatherCommand());
     }
     
