@@ -1,5 +1,7 @@
 package jw.jzbot.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import jw.jzbot.ConnectionWrapper;
@@ -19,11 +21,11 @@ public class JZUtils
         for (int i = 0; i < items.length; i++)
         {
             String item = items[i];
-            int targetLength = (currentBuffer.length() == 0 ? item.length() : delimiter
-                    .length()
-                    + item.length());
+            int targetLength =
+                    (currentBuffer.length() == 0 ? item.length() : delimiter.length()
+                        + item.length());
             if ((currentBuffer.length() + targetLength) > length
-                    && currentBuffer.length() > 0)
+                && currentBuffer.length() > 0)
             {
                 strings.add(currentBuffer.toString());
                 currentBuffer = new StringBuffer();
@@ -81,5 +83,31 @@ public class JZUtils
     public static String[] spaced(int max, String string)
     {
         return delimitedLengthRestricted(string.split(" "), " ", max);
+    }
+    
+    public static void sinkStream(final InputStream in)
+    {
+        new Thread("input-to-dev-null")
+        {
+            public void run()
+            {
+                try
+                {
+                    while (in.read() != -1)
+                        ;
+                }
+                catch (IOException e)
+                {
+                }
+                try
+                {
+                    in.close();
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }.start();
     }
 }

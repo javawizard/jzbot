@@ -1772,7 +1772,7 @@ public class JZBot
         }
     }
     
-    public static String NAME_SUFFIXES = ":,";
+    public static String NAME_SUFFIXES = ":,!";
     
     private static String replaceNamePrefixWithTrigger(ConnectionContext context,
             String trigger, String message)
@@ -2948,7 +2948,7 @@ public class JZBot
                     restartFile.delete();
                     try
                     {
-                        Thread.sleep(2000);
+                        Thread.sleep(3000);
                     }
                     catch (InterruptedException e)
                     {
