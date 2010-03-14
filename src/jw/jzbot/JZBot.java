@@ -3009,8 +3009,30 @@ public class JZBot
         {
             e.printStackTrace();
         }
+        try
+        {
+            proxyStorage.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        try
+        {
+            Thread.sleep(2000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
         System.out.println("Exiting on restart with status 17...");
-        System.exit(17);
+        /*
+         * FIXME: due to a current bug that I haven't been able to figure out, replacing
+         * this with System.exit(17) causes a hang, where not even Ctrl+C will kill the
+         * bot. So I'm using halt instead, after cleaning everything up. This really
+         * should be changed, but it's the best I can think of for now.
+         */
+        Runtime.getRuntime().halt(17);
     }
     
     protected static void onRestartGlobalDisconnect()
