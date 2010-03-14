@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions;
+package jw.jzbot.fact.functions.text;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -30,7 +30,7 @@ public class ReplaceFunction extends Function
         }
         else
             throw new FactoidException("Mode to {replace} was " + mode
-                    + ", not \"regex\" or \"text\"");
+                + ", not \"regex\" or \"text\"");
     }
     
     public String getName()
@@ -42,10 +42,12 @@ public class ReplaceFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {replace|<mode>|<text>|<search>|<replacement>} -- Replaces "
-                + "<search> in the text <text> with <replacement> if <mode> is \"text\", or "
-                + "replaces any string that matches the regular expression <search> in the "
-                + "text <text> with <replacement> (which can contain back references) if <mode> "
-                + "is \"regex\". <mode> can be omitted, and will default to regex.";
+            + "<search> in the text <text> with <replacement> if <mode> is \"text\", or "
+            + "replaces any string that matches the regular expression <search> in the "
+            + "text <text> with <replacement> (which can contain back references) if <mode> "
+            + "is \"regex\". <mode> can be omitted, and will default to regex.\n"
+            + "This function is deprecated; {regexreplace} and {textreplace} "
+            + "should be used instead.";
     }
     
 }
