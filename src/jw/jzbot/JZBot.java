@@ -2971,6 +2971,7 @@ public class JZBot
     
     public static void restart()
     {
+        System.out.println("Restarting...");
         /*
          * TODO: in the future, maybe have this disconnect all active servers with
          * whatever message storage/restart contains, if it exists, otherwise a default
@@ -2996,6 +2997,7 @@ public class JZBot
         {
             e.printStackTrace();
         }
+        System.out.println("Exiting on restart with status 17...");
         System.exit(17);
     }
     
