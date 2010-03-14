@@ -3004,7 +3004,14 @@ public class JZBot
         for (ConnectionContext context : new ArrayList<ConnectionContext>(connectionMap
                 .values()))
         {
-            context.getConnection().disconnect(PART_MESSAGE);
+            try
+            {
+                context.getConnection().disconnect(PART_MESSAGE);
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
     
