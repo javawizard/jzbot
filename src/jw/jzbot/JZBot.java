@@ -1157,6 +1157,8 @@ public class JZBot
         System.out.println();
     }
     
+    public static boolean shouldRestartOnShutdown = false;
+    
     private static void addShutdownHook()
     {
         Runtime.getRuntime().addShutdownHook(new Thread()
@@ -1176,6 +1178,8 @@ public class JZBot
                         + " discarded.");
                 }
                 System.out.println("JZBot has terminated.");
+                if (shouldRestartOnShutdown)
+                    System.exit(17);
             }
         });
     }
@@ -2971,6 +2975,7 @@ public class JZBot
     
     public static void restart()
     {
+        shouldRestartOnShutdown = true;
         System.out.println("Restarting...");
         /*
          * TODO: in the future, maybe have this disconnect all active servers with
