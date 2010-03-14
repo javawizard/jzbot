@@ -2726,6 +2726,7 @@ public class JZBot
                 }
             }
         };
+        thread.setDaemon(true);
         thread.start();
     }
     
