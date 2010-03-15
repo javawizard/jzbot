@@ -226,8 +226,10 @@ public class IrcProtocol extends PircBot implements Connection
     public void processProtocolFunction(Sink sink, ArgumentList arguments,
             FactContext context)
     {
-        throw new UnsupportedOperationException("IrcProtocol doesn't support any "
-            + "protocol-specific functions at the moment.");
+        if (arguments.getString(0).equalsIgnoreCase("quote"))
+        {
+            super.sendRawLineViaQueue(arguments.getString(1));
+        }
     }
     
     @Override
