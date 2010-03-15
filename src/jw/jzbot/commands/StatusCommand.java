@@ -4,10 +4,15 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.ObjectName;
 
+import org.tmatesoft.svn.core.SVNDepth;
+import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNStatus;
 import org.tmatesoft.svn.core.wc.SVNStatusClient;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
@@ -23,6 +28,7 @@ import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.LongWrapper;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -224,8 +230,20 @@ public class StatusCommand implements Command
         {
             SVNClientManager manager = SVNClientManager.newInstance();
             SVNStatusClient sc = manager.getStatusClient();
-            SVNStatus status = sc.doStatus(new File("."), false);
-            source.sendSpaced("Revision " + status.getRevision().getNumber());
+            final LongWrapper latestLocalRevision = new LongWrapper();
+            sc.doStatus(new File("."), SVNRevision.BASE, SVNDepth.INFINITY, false, true,
+                    false, false, new ISVNStatusHandler()
+                    {
+                        
+                        @Override
+                        public void handleStatus(SVNStatus status) throws SVNException
+                        {
+                            if (status.getRevision().getNumber() > latestLocalRevision.value)
+                                latestLocalRevision.value =
+                                        status.getRevision().getNumber();
+                        }
+                    }, null);
+            source.sendSpaced("Local: " + latestLocalRevision);
         }
         catch (Exception e)
         {
