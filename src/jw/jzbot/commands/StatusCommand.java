@@ -7,6 +7,11 @@ import java.util.Map;
 
 import javax.management.ObjectName;
 
+import org.tmatesoft.svn.core.wc.SVNClientManager;
+import org.tmatesoft.svn.core.wc.SVNStatus;
+import org.tmatesoft.svn.core.wc.SVNStatusClient;
+import org.tmatesoft.svn.core.wc.SVNWCClient;
+
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
@@ -51,11 +56,14 @@ public class StatusCommand implements Command
                         + ",commands:" + JZBot.commands.size() + ",queue:"
                         + JZBot.getServer(server).getConnection().getOutgoingQueueSize()
                         + ",pastebins:" + PastebinService.getProviderCount();
-            source.sendMessage(s);
-            source.sendMessage("For more info, try \"status gc\", \"status threads\", "
+            // FIXME: there are no spaces in the string, we should probably add some in
+            // some manner or something
+            source.sendSpaced(s);
+            source.sendSpaced("For more info, try \"status gc\", \"status threads\", "
                 + "\"status facts\". \"status storage\", "
                 + "\"status mx\", \"status stack\", "
-                + "\"status os\", \"status logging\", " + "or \"status hostname\".");
+                + "\"status os\", \"status logging\", "
+                + "\"status version\", or \"status hostname\".");
         }
         else if (arguments.equals("gc"))
         {
@@ -196,6 +204,10 @@ public class StatusCommand implements Command
                 + getOsAttribute("SystemLoadAverage") + ", bot CPU time: "
                 + getOsAttribute("ProcessCpuTime"));
         }
+        else if (arguments.equals("version"))
+        {
+            sendVersion(source);
+        }
         else if (arguments.equals("hostname"))
         {
             source.sendMessage("Your hostname is " + sender.getHostname());
@@ -203,6 +215,22 @@ public class StatusCommand implements Command
         else
         {
             source.sendMessage("Invalid status command.");
+        }
+    }
+    
+    private void sendVersion(Messenger source)
+    {
+        try
+        {
+            SVNClientManager manager = SVNClientManager.newInstance();
+            SVNStatusClient sc = manager.getStatusClient();
+            SVNStatus status = sc.doStatus(new File("."), false);
+            source.sendSpaced("Revision " + status.getRevision().getNumber());
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Exception occurred while trying to "
+                + "get subversion info", e);
         }
     }
     
