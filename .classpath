@@ -38,6 +38,7 @@
 	<classpathentry kind="lib" path="lib/xpp3-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="lib/smackx-debug.jar"/>
 	<classpathentry kind="lib" path="lib/smackx-jingle.jar"/>
+	<classpathentry kind="lib" path="lib/svnkit.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
