@@ -812,7 +812,8 @@ public class BZFlagProtocol implements Connection
             throw new RuntimeException("Content received from the list "
                 + "server while attempting to authenticate does "
                 + "not start with \"TOKEN:\" (which it should have started with that); "
-                + "the content was: " + content);
+                + "the content was (with username/password info filtered out): "
+                + content.replaceFirst("\\(.*\\:.*\\)$", ""));
         content = content.substring("TOKEN:".length());
         return content.trim();
     }
