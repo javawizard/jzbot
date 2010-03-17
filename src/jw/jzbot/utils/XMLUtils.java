@@ -1,8 +1,12 @@
 package jw.jzbot.utils;
 
+import java.io.StringReader;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
 
 public class XMLUtils
 {
@@ -48,6 +52,48 @@ public class XMLUtils
         else
         {
             return xpath((Attribute) o);
+        }
+    }
+    
+    /**
+     * Parses the specified XML text into an XML document, then returns the text of the
+     * element named by the specified XPath string. This is semantically equivalent to the
+     * Fact program <tt>{xmlparse|doc|&lt;xml>}{xmltext|doc|&lt;xpath>}</tt>, where
+     * <tt>&lt;xml></tt> and <tt>&lt;xpath></tt> are their respective parameters passed to
+     * this method.<br/><br/>
+     * 
+     * If there is no such element or attribute, this method will return <tt>null</tt>
+     * .<br/><br/>
+     * 
+     * If the XPath expression refers to an object that is not an element or an attribute,
+     * a {@link ClassCastException} will be thrown. I might raise this restriction later
+     * to add support for other element types. Patches to add support for other types
+     * would be welcome.
+     * 
+     * @param xml
+     *            The XML text to parse
+     * @param xpath
+     *            The XPath path to search for
+     * @return The text of the element denoted by the specified XPath string or the value
+     *         of the attribute denoted by the specified XPath string
+     */
+    public static String getXpathText(String xml, String xpath)
+    {
+        try
+        {
+            Document doc = new SAXBuilder().build(new StringReader(xml));
+            Object result = XPath.selectSingleNode(doc.getRootElement(), xpath);
+            if (result == null)
+                return null;
+            if (result instanceof Element)
+                return ((Element) result).getText();
+            else
+                return ((Attribute) result).getValue();
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Exception while searching for path \"" + xpath
+                + "\" in xml \"" + xml + "\"", e);
         }
     }
 }

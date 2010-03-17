@@ -3,7 +3,6 @@ package jw.jzbot.eval.jexec;
 import java.math.BigDecimal;
 
 import jw.jzbot.Evaluator;
-import jw.jzbot.eval.jexec.node.Node;
 
 public class JExecEvaluator extends Evaluator
 {

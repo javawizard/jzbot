@@ -813,7 +813,7 @@ public class BZFlagProtocol implements Connection
                 + "server while attempting to authenticate does "
                 + "not start with \"TOKEN:\" (which it should have started with that); "
                 + "the content was (with username/password info filtered out): "
-                + content.replaceFirst("\\(.*\\:.*\\)$", ""));
+                + content.replaceFirst("\\(.*\\:.*\\)", ""));
         content = content.substring("TOKEN:".length());
         return content.trim();
     }

@@ -20,27 +20,22 @@ public class UpdateCommand implements Command
     }
     
     @Override
-    public synchronized void run(String server, String channel, boolean pm,
-            ServerUser sender, Messenger source, String arguments)
+    public void run(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        sender.verifySuperop();
+        startUpdates(source);
+    }
+    
+    public static synchronized void startUpdates(final Messenger source)
     {
         if (startedUpdates)
             throw new ResponseException("Updates are currently being "
                 + "downloaded and installed.");
-        sender.verifySuperop();
         if (!supportsAutoUpdate())
             throw new ResponseException("You're running your bot on "
                 + "a system that doesn't currently support automatic "
                 + "updates. Visit us at jzbot.googlecode.com for help with this.");
-        startUpdates(source);
-        startedUpdates = true;
-        source.sendMessage("Updates have been started. The bot will "
-            + "automatically restart once it has finished updating. "
-            + "Do not attempt to restart the bot in any other way "
-            + "until it restarts itself. This might take a few minutes.");
-    }
-    
-    private void startUpdates(final Messenger source)
-    {
         try
         {
             final Process p = Runtime.getRuntime().exec("./update");
@@ -73,9 +68,14 @@ public class UpdateCommand implements Command
                 + "started successfully, so be very careful about "
                 + "restarting until you're sure it failed.", e);
         }
+        startedUpdates = true;
+        source.sendMessage("Updates have been started. The bot will "
+            + "automatically restart once it has finished updating. "
+            + "Do not attempt to restart the bot in any other way "
+            + "until it restarts itself. This might take a few minutes.");
     }
     
-    private boolean supportsAutoUpdate()
+    private static boolean supportsAutoUpdate()
     {
         if (!new File("update").exists())
             return false;

@@ -8,29 +8,6 @@ import java.math.MathContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import jw.jzbot.eval.jexec.lexer.Lexer;
-import jw.jzbot.eval.jexec.node.AInAddp;
-import jw.jzbot.eval.jexec.node.AInDivp;
-import jw.jzbot.eval.jexec.node.AInMulp;
-import jw.jzbot.eval.jexec.node.AInNmep;
-import jw.jzbot.eval.jexec.node.AInSubp;
-import jw.jzbot.eval.jexec.node.AInUnmp;
-import jw.jzbot.eval.jexec.node.ANextAddp;
-import jw.jzbot.eval.jexec.node.ANextDivp;
-import jw.jzbot.eval.jexec.node.ANextMulp;
-import jw.jzbot.eval.jexec.node.ANextNmep;
-import jw.jzbot.eval.jexec.node.ANextSubp;
-import jw.jzbot.eval.jexec.node.ANextUnmp;
-import jw.jzbot.eval.jexec.node.ANumberTerm;
-import jw.jzbot.eval.jexec.node.AParensTerm;
-import jw.jzbot.eval.jexec.node.APostNmep;
-import jw.jzbot.eval.jexec.node.APreNmep;
-import jw.jzbot.eval.jexec.node.AVarNmep;
-import jw.jzbot.eval.jexec.node.Node;
-import jw.jzbot.eval.jexec.node.Start;
-import jw.jzbot.eval.jexec.node.Token;
-import jw.jzbot.eval.jexec.parser.Parser;
-
 public class JExec
 {
     /**
@@ -153,7 +130,7 @@ public class JExec
         addFunction("", new MathFunction("acos"));
         addFunction("", new MathFunction("asin"));
         addFunction("", new MathFunction("atan"));
-        addFunction("", new MathFunction("atan2"));
+        addFunction("", new MathFunction("atanxy"));
         addFunction("", new MathFunction("cbrt"));
         addFunction("", new MathFunction("ceil"));
         addFunction("", new MathFunction("copysign"));
@@ -212,24 +189,6 @@ public class JExec
             + "1957781857780532171226806613001927876611195";
     }
     
-    private BigDecimal runFunction(Token name, BigDecimal first, BigDecimal second)
-    {
-        try
-        {
-            Function function = functions.get(name.getText());
-            if (function == null)
-                throw new IllegalArgumentException("There is no function or "
-                    + "variable named " + name.getText() + ".");
-            return function.run(first, second);
-        }
-        catch (Exception e)
-        {
-            throw new IllegalArgumentException("At line " + name.getLine() + ", character "
-                + name.getPos() + ": An error occurred while processing the function "
-                + name.getText(), e);
-        }
-    }
-    
     /**
      * Runs the specified value (which could, for example, be "(5+3)*4"), as an arithmetic
      * equation and returns the result.
@@ -244,10 +203,7 @@ public class JExec
     {
         try
         {
-            Lexer lexer = new Lexer(new PushbackReader(new StringReader(text)));
-            Parser parser = new Parser(lexer);
-            Start start = parser.parse();
-            return run(start.getPExpr());
+            throw new RuntimeException("TODO: implement this");
         }
         catch (Exception e)
         {
@@ -256,59 +212,4 @@ public class JExec
         }
     }
     
-    private BigDecimal run(Node node)
-    {
-        // This list is strictly in alphabetical order as it appears in the node package.
-        // If you add items to this list, make sure that you place them in the list such
-        // that it remains in alphabetical order.
-        // if (node instanceof AExpr)
-        // return run(((AExpr) node).getAddp());
-        // else
-        if (node instanceof AInAddp)
-            return run(((AInAddp) node).getFirst()).add(run(((AInAddp) node).getSecond()));
-        else if (node instanceof AInDivp)
-            return run(((AInDivp) node).getFirst()).divide(
-                    run(((AInDivp) node).getSecond()), context);
-        else if (node instanceof AInMulp)
-            return run(((AInMulp) node).getFirst()).multiply(
-                    run(((AInMulp) node).getSecond()), context);
-        else if (node instanceof AInNmep)
-            return runFunction(((AInNmep) node).getName(),
-                    run(((AInNmep) node).getFirst()), run(((AInNmep) node).getSecond()));
-        else if (node instanceof AInSubp)
-            return run(((AInSubp) node).getFirst()).subtract(
-                    run(((AInSubp) node).getSecond()));
-        else if (node instanceof AInUnmp)
-            return run(((AInUnmp) node).getSecond()).negate();
-        else if (node instanceof ANextAddp)
-            return run(((ANextAddp) node).getNext());
-        else if (node instanceof ANextDivp)
-            return run(((ANextDivp) node).getNext());
-        else if (node instanceof ANextMulp)
-            return run(((ANextMulp) node).getNext());
-        else if (node instanceof ANextNmep)
-            return run(((ANextNmep) node).getNext());
-        else if (node instanceof ANextSubp)
-            return run(((ANextSubp) node).getNext());
-        else if (node instanceof ANextUnmp)
-            return run(((ANextUnmp) node).getNext());
-        else if (node instanceof ANumberTerm)
-            return new BigDecimal(((ANumberTerm) node).getNumber().getText());
-        else if (node instanceof AParensTerm)
-            return run(((AParensTerm) node).getExpr());
-        else if (node instanceof APostNmep)
-            return runFunction(((APostNmep) node).getName(), run(((APostNmep) node)
-                    .getFirst()), null);
-        else if (node instanceof APreNmep)
-            return runFunction(((APreNmep) node).getName(), null, run(((APreNmep) node)
-                    .getSecond()));
-        else if (node instanceof AVarNmep)
-            return runFunction(((AVarNmep) node).getName(), null, null);
-        else
-            throw new IllegalArgumentException("Invalid node class \""
-                + node.getClass().getName()
-                + "\". This means that the JExec equation parser grammar "
-                + "has been updated without updating JExec.java to "
-                + "contain the logic necessary to compute the new grammar.");
-    }
 }

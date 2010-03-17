@@ -1,13 +1,20 @@
 package jw.jzbot.commands;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.management.ObjectName;
 
+import org.jdom.Attribute;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
+import org.jdom.xpath.XPath;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
@@ -228,21 +235,36 @@ public class StatusCommand implements Command
     {
         try
         {
-            SVNClientManager manager = SVNClientManager.newInstance();
-            SVNStatusClient sc = manager.getStatusClient();
-            final LongWrapper latestLocalRevision = new LongWrapper();
-            sc.doStatus(new File("."), SVNRevision.BASE, SVNDepth.INFINITY, false, true,
-                    false, false, new ISVNStatusHandler()
-                    {
-                        
-                        @Override
-                        public void handleStatus(SVNStatus status) throws SVNException
-                        {
-                            if (status.getRevision().getNumber() > latestLocalRevision.value)
-                                latestLocalRevision.value =
-                                        status.getRevision().getNumber();
-                        }
-                    }, null);
+            // TODO: exec "svn log --xml -limit 1" to find out log stuff, then parse with
+            // JDom and extract revision with XPath stuff. Then try to contact the remote
+            // server and figure out what the latest head revision is and compare them. If
+            // the remote server can't be contacted, we can show that we can't contact the
+            // remote server so we don't know whether or not we're up to date.
+            Process p =
+                    Runtime.getRuntime().exec("svn info --xml -R .", null, new File("."));
+            JZUtils.sinkStream(p.getErrorStream());
+            Document doc = new SAXBuilder().build(p.getInputStream());
+            int exitCode = p.waitFor();
+            if (exitCode != 0)
+                throw new RuntimeException("Exit code from svn process was " + exitCode
+                    + "; expected 0");
+            List list =
+                    XPath.selectNodes(doc.getRootElement(), "/info/entry/commit/@revision");
+            long latestLocalRevision = 0;
+            for (Object o : list)
+            {
+                if (o instanceof Attribute)
+                {
+                    Attribute att = (Attribute) o;
+                    long revision = Long.parseLong(att.getValue());
+                    if (revision > latestLocalRevision)
+                        latestLocalRevision = revision;
+                }
+                else
+                {
+                    System.out.println("WARNING: XPath element was not an attribute: " + o);
+                }
+            }
             source.sendSpaced("Local: " + latestLocalRevision);
         }
         catch (Exception e)

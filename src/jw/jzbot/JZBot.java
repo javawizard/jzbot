@@ -51,6 +51,7 @@ import jw.jzbot.commands.PluginCommand;
 import jw.jzbot.commands.RedefineCommand;
 import jw.jzbot.commands.RegexCommand;
 import jw.jzbot.commands.RestartCommand;
+import jw.jzbot.commands.ScopeCommand;
 import jw.jzbot.commands.ServerCommand;
 import jw.jzbot.commands.ShutdownCommand;
 import jw.jzbot.commands.StatusCommand;
@@ -117,6 +118,66 @@ public class JZBot
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
     
     public static volatile int notificationSequence = 0;
+    
+    public static Map<String, String> pmUserScopeMap = new HashMap<String, String>();
+    
+    public static Map<String, Long> pmUserScopeTimes = new HashMap<String, Long>();
+    
+    public static Object pmUserScopeLock = new Object();
+    /**
+     * When a user sets their pm scope with the ~scope command, this is the number of
+     * minutes that the scope will stay before being reset to the server scope.
+     */
+    public static final long PM_USER_SCOPE_TIMEOUT = 1000 * 60 * 10;// 10 minutes
+    
+    public static Thread pmUserScopeTimeoutThread = new Thread("pm-user-scope-timeout")
+    {
+        public void run()
+        {
+            while (isRunning)
+            {
+                try
+                {
+                    Thread.sleep(60 * 1000);
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                try
+                {
+                    synchronized (pmUserScopeLock)
+                    {
+                        /*
+                         * First, we'll remove all entries that don't have a time
+                         * associated with them. This generally won't happen, but I'm
+                         * paranoid.
+                         */
+                        pmUserScopeMap.keySet().retainAll(pmUserScopeTimes.keySet());
+                        /*
+                         * Now we check over all of the entries that do have a time entry,
+                         * and remove them if they're too old.
+                         */
+                        for (String key : new ArrayList<String>(pmUserScopeMap.keySet()))
+                        {
+                            Long v = pmUserScopeTimes.get(key);
+                            if (v == null
+                                || (v + PM_USER_SCOPE_TIMEOUT) < System.currentTimeMillis())
+                                pmUserScopeMap.remove(key);
+                        }
+                        /*
+                         * Last, we'll remove all time keys where we don't have
+                         */
+                        pmUserScopeTimes.keySet().retainAll(pmUserScopeMap.keySet());
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
     
     public static BlockingQueue<LogEvent> logQueue;
     
@@ -1105,6 +1166,7 @@ public class JZBot
         loadCommand(new RestartCommand());
         // loadCommand(new RouletteCommand());
         // loadCommand(new SayCommand());
+        loadCommand(new ScopeCommand());
         loadCommand(new ServerCommand());
         loadCommand(new ShutdownCommand());
         loadCommand(new StatusCommand());
@@ -1149,6 +1211,8 @@ public class JZBot
         PluginManager.start();
         System.out.println("Starting the automatic restart thread...");
         startAutomaticRestart();
+        System.out.println("Starting the pm user time thread...");
+        startPmUserTimeThread();
         System.out.println("Running _onstartup notifications...");
         runNotificationFactoid(null, null, null, null, "", "_onstartup", new String[0],
                 true, false);
@@ -1161,6 +1225,12 @@ public class JZBot
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");
         System.out.println();
+    }
+    
+    private static void startPmUserTimeThread()
+    {
+        pmUserScopeTimeoutThread.setDaemon(true);
+        pmUserScopeTimeoutThread.start();
     }
     
     public static boolean shouldRestartOnShutdown = false;
@@ -2376,11 +2446,22 @@ public class JZBot
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
+        String userSetScope = null;
+        synchronized (pmUserScopeLock)
+        {
+            userSetScope = pmUserScopeMap.get("@" + serverName + "!" + sender);
+            if (userSetScope != null)
+            {
+                pmUserScopeTimes.put("@" + serverName + "!" + sender, System
+                        .currentTimeMillis());
+            }
+        }
         ConnectionWrapper con = getConnection(serverName);
         try
         {
             ServerChannel pseudoTarget = new ServerChannel(serverName, null);
             boolean replyToPseudo = false;
+            boolean explicitScope = false;
             System.out.println("pm from " + sender + ": " + message);
             if (message.contains(" ") && isSuperop(serverName, hostname))
             {
@@ -2393,7 +2474,13 @@ public class JZBot
                 {
                     pseudoTarget = parseFragment(message, pseudoTarget);
                     message = message.substring(message.indexOf(" ") + 1);
+                    explicitScope = true;
                 }
+            }
+            if (!explicitScope)
+            {
+                if (userSetScope != null)
+                    pseudoTarget = parseFragment(userSetScope + " ", pseudoTarget);
             }
             if (replyToPseudo && pseudoTarget.getChannel() == null)
             {
@@ -3030,7 +3117,9 @@ public class JZBot
          * FIXME: due to a current bug that I haven't been able to figure out, replacing
          * this with System.exit(17) causes a hang, where not even Ctrl+C will kill the
          * bot. So I'm using halt instead, after cleaning everything up. This really
-         * should be changed, but it's the best I can think of for now.
+         * should be changed, but it's the best I can think of for now. We need, however,
+         * to consider that we need to get plugins unloaded, and I'm not completely sure
+         * that all of the shutdown hooks up to this point will take care of that.
          */
         Runtime.getRuntime().halt(17);
     }
