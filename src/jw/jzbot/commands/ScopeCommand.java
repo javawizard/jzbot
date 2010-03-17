@@ -19,9 +19,6 @@ public class ScopeCommand implements Command
     public void run(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
     {
-        if (channel != null)
-            throw new ResponseException("The scope command can only be used in "
-                + "a pm. You can't use the scope command at a channel.");
         if (server == null)
             throw new ResponseException("The scope command can only be run in "
                 + "the context of a server.");
