@@ -42,6 +42,24 @@ public class ScopeCommand implements Command
                         + "and you can change back to the default scope "
                         + "with \"scope implicit\".");
             }
+            else
+            {
+                if (arguments.equals("implicit"))
+                {
+                    JZBot.pmUserScopeMap.remove(keyName);
+                    source.sendSpaced("Your scope has been reset to \"@"
+                        + sender.getServerName() + "\".");
+                }
+                else
+                {
+                    JZBot.pmUserScopeMap.put(keyName, arguments);
+                    JZBot.pmUserScopeTimes.put(keyName, System.currentTimeMillis());
+                    source.sendSpaced("Your scope has been set to \"" + arguments
+                        + "\". If you stop sending messages for 10 minutes, this "
+                        + "will be reset. You can also reset it with "
+                        + "\"scope implicit\".");
+                }
+            }
         }
     }
 }
