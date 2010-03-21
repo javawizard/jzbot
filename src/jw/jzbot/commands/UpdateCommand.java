@@ -11,7 +11,7 @@ import jw.jzbot.utils.JZUtils;
 
 public class UpdateCommand implements Command
 {
-    private static boolean startedUpdates = false;
+    private static volatile boolean startedUpdates = false;
     
     @Override
     public String getName()
