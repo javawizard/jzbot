@@ -19,6 +19,7 @@ public class SynchronizedFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         ReentrantLock lock = null;
+        //FIXME: figure out how to implement this
         lock.lock();
         try
         {
