@@ -32,13 +32,17 @@ public class UpdateCommand implements Command
         if (startedUpdates)
             throw new ResponseException("Updates are currently being "
                 + "downloaded and installed.");
-        if (!supportsAutoUpdate())
+        String scriptName = getAutoUpdateScriptName();
+        if (scriptName == null)
             throw new ResponseException("You're running your bot on "
                 + "a system that doesn't currently support automatic "
                 + "updates. Visit us at jzbot.googlecode.com for help with this.");
         try
         {
-            final Process p = Runtime.getRuntime().exec("./update");
+            final Process p = Runtime.getRuntime().exec(new String[]
+            {
+                scriptName
+            });
             InputStream in = p.getInputStream();
             InputStream err = p.getErrorStream();
             JZUtils.sinkStream(in);
@@ -75,16 +79,21 @@ public class UpdateCommand implements Command
             + "until it restarts itself. This might take a few minutes.");
     }
     
-    private static boolean supportsAutoUpdate()
+    private static String getAutoUpdateScriptName()
     {
-        if (!new File("update").exists())
-            return false;
+        File file = null;
         String osName = System.getProperty("os.name");
         osName = osName.toLowerCase();
         if (osName.contains("linux"))
-            return true;
+            file = new File("update");
         if (osName.contains("mac"))
-            return true;
-        return false;
+            file = new File("update");
+        if (osName.contains("windows"))
+            file = new File("update.bat");
+        if (file == null)
+            return null;
+        if (!file.exists())
+            return null;
+        return file.getAbsolutePath();
     }
 }
