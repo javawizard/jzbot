@@ -294,7 +294,7 @@ public class StatusCommand implements Command
                     remoteString +=
                             ", which means your version of JZBot is newer "
                                 + "than the newest version available from the update "
-                                + "server. This usually means something's wrong.";
+                                + "server. This usually means something's wrong."; 
             }
             catch (Exception e)
             {
