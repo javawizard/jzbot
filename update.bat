@@ -1,23 +1,14 @@
 
 @echo off
 
-ECHO Searching for Python in the Include Path
-SET HasPython = No
+REM Runs jsvn then creates the restart file.
 
-REM Loop through PATH and see if there is python.exe
-FOR %%P IN (%PATH%) DO IF EXIST %%P\python.exe SET HasPython = Yes
+set PATH=%PATH%;%CD%\lib
 
-IF HasPython == No GOTO NoPython
-IF HasPython == Yes ECHO Found Python
+echo Updating to the latest version of JZBot...
+call jsvn up
 
-REM Run the Python script.
-python update.py
+echo Restart! > storage\restart
 
-GOTO End
-
-:NoPython
-ECHO Python not installed.
-ECHO Get it at www.python.org
-GOTO End
-
-:End
+echo Updates have completed successfully. If your bot
+echo is currently running, it will be restarted momentarily.
