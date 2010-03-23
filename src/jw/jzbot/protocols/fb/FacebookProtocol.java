@@ -1,4 +1,4 @@
-package jw.jzbot.protocols;
+package jw.jzbot.protocols.fb;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

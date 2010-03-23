@@ -77,8 +77,8 @@ import jw.jzbot.help.XMLHelpProvider;
 import jw.jzbot.pastebin.DefaultPastebinProviders;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.protocols.BZFlagProtocol;
-import jw.jzbot.protocols.FacebookProtocol;
 import jw.jzbot.protocols.IrcProtocol;
+import jw.jzbot.protocols.fb.FacebookProtocol;
 import jw.jzbot.protocols.xmpp.XmppProtocol;
 import jw.jzbot.psystem.server.PluginManager;
 import jw.jzbot.storage.*;
@@ -705,7 +705,7 @@ public class JZBot
         else
             throw new ResponseException("The protocol \"" + name
                 + "\" is not a valid protocol name. Valid protocol names are, "
-                + "at present, \"irc\", \"bzflag\", and \"facebook\".");
+                + "at present, \"irc\", \"bzflag\", \"facebook\", and \"xmpp\".");
         if (!run)
             return null;
         try

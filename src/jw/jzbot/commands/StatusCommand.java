@@ -235,11 +235,9 @@ public class StatusCommand implements Command
     {
         try
         {
-            // TODO: exec "svn log --xml -limit 1" to find out log stuff, then parse with
-            // JDom and extract revision with XPath stuff. Then try to contact the remote
-            // server and figure out what the latest head revision is and compare them. If
-            // the remote server can't be contacted, we can show that we can't contact the
-            // remote server so we don't know whether or not we're up to date.
+            /*
+             * First, we figure out our local revision.
+             */
             Process p =
                     Runtime.getRuntime().exec("svn info --xml -R .", null, new File("."));
             JZUtils.sinkStream(p.getErrorStream());
@@ -265,7 +263,52 @@ public class StatusCommand implements Command
                     System.out.println("WARNING: XPath element was not an attribute: " + o);
                 }
             }
-            source.sendSpaced("Local: " + latestLocalRevision);
+            /*
+             * Then we figure out the current revision that the repository's at, which
+             * will tell us if we're out of date.
+             */
+            p = Runtime.getRuntime().exec("svn log --xml -r HEAD .", null, new File("."));
+            JZUtils.sinkStream(p.getErrorStream());
+            String remoteString = null;
+            try
+            {
+                doc = new SAXBuilder().build(p.getInputStream());
+                exitCode = p.waitFor();
+                if (exitCode != 0)
+                    throw new RuntimeException("Remote subversion server info returned "
+                        + "exit code " + exitCode + "; expected 0");
+                Attribute att =
+                        (Attribute) XPath.selectSingleNode(doc.getRootElement(),
+                                "/log/logentry/@revision");
+                long remoteRevision = Long.parseLong(att.getValue());
+                remoteString =
+                        "The latest version available is JZBot revision " + remoteRevision;
+                if (remoteRevision == latestLocalRevision)
+                    remoteString += ", which means I'm up-to-date.";
+                else if (remoteRevision > latestLocalRevision)
+                    remoteString +=
+                            ", which means there's a newer version of "
+                                + "JZBot available. Use the \"update\" command to instruct "
+                                + "me to automatically download and install that version.";
+                else
+                    remoteString +=
+                            ", which means your version of JZBot is newer "
+                                + "than the newest version available from the update "
+                                + "server. This usually means something's wrong.";
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                remoteString =
+                        "I couldn't connect to the subversion update server (because of "
+                            + JZBot.pastebinStack(e)
+                            + ", so I don't know if I'm up-to-date or not.";
+            }
+            /*
+             * Now we send everything back to the user.
+             */
+            source.sendSpaced("I'm running JZBot revision " + latestLocalRevision + ". "
+                + remoteString);
         }
         catch (Exception e)
         {
