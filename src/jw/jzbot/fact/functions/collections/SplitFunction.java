@@ -4,6 +4,9 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.BreakException;
+import jw.jzbot.fact.exceptions.ContinueException;
+import jw.jzbot.fact.exceptions.NestedLoopException;
 import jw.jzbot.fact.output.DelimitedSink;
 
 public class SplitFunction extends Function
@@ -27,7 +30,25 @@ public class SplitFunction extends Function
         {
             result.next();
             context.getLocalVars().put(varname, s);
-            arguments.resolve(3, result);
+            try
+            {
+                arguments.resolve(3, result);
+            }
+            catch (NestedLoopException e)
+            {
+                e.level--;
+                if (e.level == -1)
+                {
+                    if (e instanceof ContinueException)
+                        continue;
+                    else if (e instanceof BreakException)
+                        break;
+                }
+                else
+                {
+                    throw e;
+                }
+            }
         }
         if (previousValue == null)
             context.getLocalVars().remove(varname);
@@ -52,7 +73,7 @@ public class SplitFunction extends Function
             + "means that in the above example, if \"first.second.third\" were replaced "
             + "with \"first.second.third...\", the output would still be the same. {split} "
             + "can be used with <string> being the {numberlist} function to effectively "
-            + "create a for loop. Also, if <string> is empty, <action> is not evaluated.";
+            + "create a for loop. Also, if <string> is empty, <action> is not evaluated. ";
     }
     
     public String getName()
