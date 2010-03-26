@@ -1,5 +1,11 @@
 package jw.jzbot;
 
+/*
+ * TODO: this file really needs to be split into multiple files at some point. 
+ * It's 3149 lines long as of the writing of this comment, and that's a bit 
+ * larger than is practical.
+ */
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
