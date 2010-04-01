@@ -193,33 +193,32 @@ public class JZBot
     
     public static int logQueueDelay;
     
-    public static Thread notificationThread =
-            new Thread("bot-internal-notification-thread")
+    public static Thread notificationThread = new Thread("factoid-cron-thread")
+    {
+        public void run()
+        {
+            while (true)
             {
-                public void run()
+                try
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            Thread.sleep(1000 * 60 * 5);
-                            notificationSequence += 1;
-                            notificationSequence %= 12;
-                            sendNotificationToAll("fiveminutes");
-                            if ((notificationSequence % 2) == 0)
-                                sendNotificationToAll("tenminutes");
-                            if ((notificationSequence % 6) == 0)
-                                sendNotificationToAll("halfhour");
-                            if ((notificationSequence % 12) == 0)
-                                sendNotificationToAll("hour");
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
+                    Thread.sleep(1000 * 60 * 5);
+                    notificationSequence += 1;
+                    notificationSequence %= 12;
+                    sendNotificationToAll("fiveminutes");
+                    if ((notificationSequence % 2) == 0)
+                        sendNotificationToAll("tenminutes");
+                    if ((notificationSequence % 6) == 0)
+                        sendNotificationToAll("halfhour");
+                    if ((notificationSequence % 12) == 0)
+                        sendNotificationToAll("hour");
                 }
-            };
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
     static
     {
         notificationThread.setDaemon(true);
@@ -262,29 +261,39 @@ public class JZBot
     {
         try
         {
+            System.out.println("Running reverse-cascade notification " + name);
             runNotificationFactoid(null, null, null, null, "", "_on" + name, new String[0],
                     true, false);
             synchronized (connectionCycleLock)
             {
+                System.out.println("Reverse-cascade notification locked "
+                    + "on connection cycle lock");
                 for (ConnectionContext context : connectionMap.values())
                 {
                     if (!context.getConnection().isConnected())
-                        return;
+                        continue;
+                    System.out.println("Running reverse-cascade notification " + name
+                        + " at @" + context.getServerName());
                     runNotificationFactoid(context.getServerName(), context
                             .getDatastoreServer(), null, null, context.getConnection()
                             .getNick(), "_on" + name, new String[0], true, false);
-                    for (String channel : context.getConnection().getChannels())
+                    for (Channel channel : context.getDatastoreServer().getChannels()
+                            .isolate())
                     {
+                        System.out.println("Running reverse-cascade notification " + name
+                            + " at @" + context.getServerName() + channel.getName());
                         runNotificationFactoid(context.getServerName(), context
-                                .getDatastoreServer(), channel, null, context
+                                .getDatastoreServer(), channel.getName(), channel, context
                                 .getConnection().getNick(), "_on" + name, new String[0],
                                 true, false);
                     }
                 }
             }
+            System.out.println("Reverse-cascade notification unlocked");
         }
         catch (Throwable e)
         {
+            System.out.println("Reverse-cascade notification " + name + " failed");
             e.printStackTrace();
             try
             {
@@ -295,6 +304,10 @@ public class JZBot
             {
                 e2.printStackTrace();
             }
+        }
+        finally
+        {
+            System.out.println("Finished reverse-cascade notification " + name + ".");
         }
     }
     
