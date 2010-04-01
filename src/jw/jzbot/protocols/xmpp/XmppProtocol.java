@@ -17,6 +17,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.PacketListener;
+import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.SASLAuthentication;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
@@ -707,9 +708,10 @@ public class XmppProtocol implements Connection
             FactContext context)
     {
         if (arguments.length() == 0)
-            throw new FactoidException("Need to specify a command to run, "
-                + "which can be one of account-to-nick, nick-to-account, "
-                + "status, statusmodes, userstatus, or userpresence.");
+            throw new FactoidException("Need to specify a command to run. See "
+                + "http://code.google.com/p/jwutils/source/browse/trunk/projects"
+                + "/jzbot2-old/src/jw/jzbot/protocols/xmpp/XmppProtocol.java and "
+                + "search for \"processProtocolFunction\" for a list of commands.");
         if (arguments.getString(0).equals("account-to-nick"))
         {
             sink.write(escape(arguments.resolveString(1)));
@@ -770,9 +772,20 @@ public class XmppProtocol implements Connection
                 return;
             sink.write(presence.getMode().name());
         }
-        else if(arguments.getString(0).equals("roster"))
+        else if (arguments.getString(0).equals("roster"))
         {
-//            connection.getRoster().
+            DelimitedSink delimited = new DelimitedSink(sink, " ");
+            for (RosterEntry entry : connection.getRoster().getEntries())
+            {
+                delimited.next().write(entry.getUser());
+            }
+        }
+        else if (arguments.equals("rostername"))
+        {
+            RosterEntry entry = connection.getRoster().getEntry(arguments.resolveString(1));
+            if (entry == null)
+                return;
+            sink.write(entry.getName());
         }
         else
         {
