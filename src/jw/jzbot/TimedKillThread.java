@@ -1,5 +1,7 @@
 package jw.jzbot;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class TimedKillThread extends Thread
 {
     public volatile boolean active = true;
@@ -9,8 +11,11 @@ public class TimedKillThread extends Thread
     
     public volatile int maxRunTime = MAX_FACT_RUN_TIME;
     
+    private static final AtomicLong sequencer = new AtomicLong(1);
+    
     public TimedKillThread(Thread target)
     {
+        super("timed-kill-thread-" + sequencer.getAndIncrement());
         this.target = target;
         setDaemon(true);
     }
