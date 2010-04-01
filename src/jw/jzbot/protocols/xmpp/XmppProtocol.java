@@ -24,6 +24,7 @@ import org.jivesoftware.smack.Roster.SubscriptionMode;
 import org.jivesoftware.smack.filter.PacketTypeFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
+import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.sasl.SASLDigestMD5Mechanism;
 import org.jivesoftware.smack.sasl.SASLPlainMechanism;
 import org.jivesoftware.smackx.muc.InvitationListener;
@@ -41,6 +42,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.output.DelimitedSink;
 
 public class XmppProtocol implements Connection
 {
@@ -52,6 +54,9 @@ public class XmppProtocol implements Connection
         // .registerSASLMechanism("DIGEST-MD5", SASLDigestMD5Mechanism.class);
         // SASLAuthentication.supportSASLMechanism("PLAIN", 0);
         // SASLAuthentication.supportSASLMechanism("DIGEST-MD5", 0);
+        
+        // TODO: Make sure that this isn't going to ever get initialized before we set up
+        // the ProxyStorage database, as that could cause problems
         XMPPConnection.DEBUG_ENABLED = ConfigVars.xmppdebug.get().equals("1");
     }
     
@@ -703,7 +708,8 @@ public class XmppProtocol implements Connection
     {
         if (arguments.length() == 0)
             throw new FactoidException("Need to specify a command to run, "
-                + "which can be one of account-to-nick or nick-to-account");
+                + "which can be one of account-to-nick, nick-to-account, "
+                + "status, or statusmodes.");
         if (arguments.getString(0).equals("account-to-nick"))
         {
             sink.write(escape(arguments.resolveString(1)));
@@ -713,6 +719,28 @@ public class XmppProtocol implements Connection
         {
             sink.write(escape(arguments.resolveString(1)));
             return;
+        }
+        else if (arguments.getString(0).equals("status"))
+        {
+            String modeString = arguments.resolveString(1);
+            String status = "";
+            if (arguments.length() > 2)
+                status = arguments.resolveString(2);
+            int priority = 1;
+            if (arguments.length() > 3)
+                priority = Integer.parseInt(arguments.resolveString(3));
+            Presence.Mode mode = Presence.Mode.valueOf(modeString);
+            Presence presence =
+                    new Presence(Presence.Type.available, status, priority, mode);
+            connection.sendPacket(presence);
+        }
+        else if (arguments.getString(0).equals("statusmodes"))
+        {
+            DelimitedSink delimited = new DelimitedSink(sink, " ");
+            for (Presence.Mode mode : Presence.Mode.values())
+            {
+                delimited.next().write(mode.name());
+            }
         }
         else
         {
