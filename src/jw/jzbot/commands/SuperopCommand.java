@@ -44,9 +44,10 @@ public class SuperopCommand implements Command
                 strings.add(op.getHostname());
             }
             JZUtils.ircSendDelimited(strings.toArray(new String[0]), "  ", source);
-            source.sendMessage("End of superop list. These superops are the superops at "
-                    + "this server; this list does not include superops at "
-                    + "other servers.");
+            source
+                    .sendMessage("End of superop list. These superops are the superops at "
+                        + "this server; this list does not include superops at "
+                        + "other servers.");
         }
         else if (subcommand.equals("add"))
         {
@@ -56,12 +57,15 @@ public class SuperopCommand implements Command
                 return;
             }
             String newHostname = tokens[1];
+            if (newHostname.trim().equals(""))
+                throw new ResponseException(
+                        "You can't add the empty hostmask as a superop.");
             Operator op = JZBot.storage.createOperator();
             op.setHostname(newHostname);
             Server dServer = JZBot.storage.getServer(server);
             dServer.getOperators().add(op);
             source.sendMessage("Hostname " + newHostname
-                    + " was successfully added as a superop.");
+                + " was successfully added as a superop.");
         }
         else if (subcommand.equals("delete"))
         {
@@ -90,8 +94,8 @@ public class SuperopCommand implements Command
                 JZBot.elevate(sender.getServerName(), sender.getHostname(),
                         ConfigVars.primary.get());
                 source.sendMessage("That key is correct. Your hostname has now been "
-                        + "added as a superop. This will persist until the "
-                        + "bot is restarted.");
+                    + "added as a superop. This will persist until the "
+                    + "bot is restarted.");
                 return;
             }
             else
