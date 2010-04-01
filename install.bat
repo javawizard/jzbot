@@ -6,9 +6,21 @@ REM Required files are:
 REM   svnkit.jar
 REM   svnkit-cli.jar
 REM   jsvn.bat
+REM   dependencies.js
 
-SET PATH=%PATH%;%CD%\ant\bin
-mkdir .\InstallationLogs
+REM Use this directory as the current working.
+SET CD=%~dp0
+SET PATH=%PATH%;%CD%
+
+echo.
+echo Checking for dependencies...
+
+call cscript //NoLogo dependencies.js
+call temp.bat
+
+if ERRORLEVEL 1 goto eof
+
+mkdir .\InstallationLogs > nul
 
 set SVNRepo=http://jwutils.googlecode.com/svn/trunk/projects/jzbot2-old/
 
@@ -24,6 +36,10 @@ echo   Deleting svnkit-cli.jar
 del svnkit-cli.jar
 echo   Deleting jsvn.bat
 del jsvn.bat
+echo   Deleting dependencies.js
+del dependencies.js
+echo   Deleting temp.bat
+del temp.bat
 
 echo.
 echo Building JZBot
@@ -51,8 +67,13 @@ echo something failed and needs fixing. Be prepared to share the InstallationLog
 echo directory of your new JZBot installation to help track down the problem.
 
 start jzbot
-pause
+goto eof
 
+:NoJDK
+echo The Java Development Kit is not installed on this computer.
+echo Download and install it from:
+echo http://java.sun.com/javase/downloads/widget/jdk6.jsp
+goto eof
 :BuildFailed
 echo ERROR: Build Failed
 echo.
@@ -63,7 +84,7 @@ echo Contact the JZBot developers on #jzbot (freenode)
 echo This problem is serious and needs to be fixed right away.
 echo Be prepared to share the InstallationLogs directory of
 echo your new JZBot installation to help fix the problem.
-pause
 goto eof
 
 :eof
+pause

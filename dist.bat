@@ -24,6 +24,9 @@ copy .\lib\jsvn.bat .\dist\jsvn.bat > nul
 echo Copying install.bat
 copy .\install.bat .\dist\install.bat > nul
 
+echo Copying dependencies.js
+copy .\dependencies.js .\dist\dependencies.js > nul
+
 echo "install" can now be run from dist to install JZBot there.
 
 :eof
