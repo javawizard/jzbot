@@ -709,7 +709,7 @@ public class XmppProtocol implements Connection
         if (arguments.length() == 0)
             throw new FactoidException("Need to specify a command to run, "
                 + "which can be one of account-to-nick, nick-to-account, "
-                + "status, or statusmodes.");
+                + "status, statusmodes, userstatus, or userpresence.");
         if (arguments.getString(0).equals("account-to-nick"))
         {
             sink.write(escape(arguments.resolveString(1)));
@@ -717,7 +717,7 @@ public class XmppProtocol implements Connection
         }
         else if (arguments.getString(0).equals("nick-to-account"))
         {
-            sink.write(escape(arguments.resolveString(1)));
+            sink.write(unescape(arguments.resolveString(1)));
             return;
         }
         else if (arguments.getString(0).equals("status"))
@@ -741,6 +741,38 @@ public class XmppProtocol implements Connection
             {
                 delimited.next().write(mode.name());
             }
+        }
+        else if (arguments.getString(0).equals("userstatus"))
+        {
+            String account = arguments.resolveString(1);
+            Presence presence;
+            if (account.contains("/"))
+                presence = connection.getRoster().getPresenceResource(account);
+            else
+                presence = connection.getRoster().getPresence(account);
+            if (presence == null)
+                return;
+            if (presence.getStatus() == null)
+                return;
+            sink.write(presence.getStatus());
+        }
+        else if (arguments.getString(0).equals("userpresence"))
+        {
+            String account = arguments.resolveString(1);
+            Presence presence;
+            if (account.contains("/"))
+                presence = connection.getRoster().getPresenceResource(account);
+            else
+                presence = connection.getRoster().getPresence(account);
+            if (presence == null)
+                return;
+            if (presence.getMode() == null)
+                return;
+            sink.write(presence.getMode().name());
+        }
+        else if(arguments.getString(0).equals("roster"))
+        {
+//            connection.getRoster().
         }
         else
         {
