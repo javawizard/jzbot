@@ -780,7 +780,7 @@ public class XmppProtocol implements Connection
                 delimited.next().write(entry.getUser());
             }
         }
-        else if (arguments.equals("rostername"))
+        else if (arguments.getString(0).equals("rostername"))
         {
             RosterEntry entry = connection.getRoster().getEntry(arguments.resolveString(1));
             if (entry == null)
