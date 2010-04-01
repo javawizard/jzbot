@@ -2048,6 +2048,49 @@ public class JZBot
         }
     }
     
+    /**
+     * Figures out the commands that should be run for the specified message. The trigger
+     * should be removed from the message before this method is called. This method will
+     * take care of sending responses as needed for the command.
+     * 
+     * @param datastoreServer
+     *            The server at which this command should be run. This is normally the
+     *            same as <tt>senderServer</tt>, but if the server is explicitly specified
+     *            in a message, then this will be the server specified in the message
+     *            instead of the server the user is actually sending the command from.
+     * @param serverName
+     *            The name of the server represented by <tt>datastoreServer</tt>.
+     * @param channel
+     *            The name of the channel that this event should be run at, or null if
+     *            this should be run just at a server.
+     * @param pm
+     *            True if the message was sent in a pm, false if it was sent to a channel
+     * @param senderServer
+     *            The server that the message was actually sent from
+     * @param senderServerName
+     *            The name of the server represented by <tt>senderServer</tt>
+     * @param sender
+     *            The name of the user that actually sent the message
+     * @param source
+     *            The source that the message came from. If the message was sent in a pm,
+     *            then this will be representative of the person that sent the message. If
+     *            the message was sent to a channel, then this will be representative of
+     *            that channel.
+     * @param hostname
+     *            The hostname of the user that actually sent the message
+     * @param username
+     *            The username of the user that actually sent the message
+     * @param message
+     *            The message itself, with the trigger, if any, removed
+     * @param processFactoids
+     *            True if factoids should be processed, false if they should not. If this
+     *            is false, then only commands (if applicable) will be run. Otherwise,
+     *            commands and factoids (if applicable) will be run. Since this method
+     *            does not handle regular expressions, this is generally used when a
+     *            regular expression facility in an invoking method indicates that
+     *            factoids should not be run (such as when a call to {factoverride}
+     *            appears within a factoid).
+     */
     private static void runMessageCommand(Server datastoreServer, String serverName,
             String channel, boolean pm, Server senderServer, String senderServerName,
             String sender, Messenger source, String hostname, String username,

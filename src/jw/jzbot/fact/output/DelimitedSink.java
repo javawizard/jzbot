@@ -19,12 +19,15 @@ public class DelimitedSink implements FilteredSink
     /**
      * Informs the sink that a new item is about to be written. The first time this is
      * called, it does nothing. The rest of the times, this writes out the delimiter.
+     * 
+     * @return <tt>this</tt>. This can be used to chain method calls.
      */
-    public void next()
+    public DelimitedSink next()
     {
         if (written)
             sink.write(delimiter);
         written = true;
+        return this;
     }
     
     /**

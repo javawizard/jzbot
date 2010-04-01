@@ -19,7 +19,7 @@ public class InviteFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {invite|<user>|<channel>} -- Sends an invitation to the "
-            + "specified user to join the specified channel. Most clients require "
+            + "specified user to join the specified channel. Most servers require "
             + "that the bot be an operator at the specified channel in order to "
             + "send out invites.";
     }

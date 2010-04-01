@@ -18,7 +18,7 @@ public class RegexreplaceFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {regexreplace|<text>|<regex>|<replacement>} -- Finds "
+        return "Syntax: {regexreplace|<text>|<regex>|<replacement>|...} -- Finds "
             + "all pieces of text within <text> that match <regex> and replaces "
             + "them with <replacement>. <replacement> can contain references to "
             + "matcher groups within <regex>.";
