@@ -753,9 +753,16 @@ public class XmppProtocol implements Connection
             else
                 presence = connection.getRoster().getPresence(account);
             if (presence == null)
+            {
+                System.out.println("No presence information for " + account);
                 return;
+            }
             if (presence.getStatus() == null)
+            {
+                System.out
+                        .println("Presence does not have a status message for " + account);
                 return;
+            }
             sink.write(presence.getStatus());
         }
         else if (arguments.getString(0).equals("userpresence"))
@@ -767,9 +774,22 @@ public class XmppProtocol implements Connection
             else
                 presence = connection.getRoster().getPresence(account);
             if (presence == null)
+            {
+                System.out.println("No presence information for " + account);
                 return;
+            }
+            System.out.println("Presence type from {p|userpresence} is "
+                + presence.getType().name());
+            if (presence.getMode() == null && presence.getType() == Presence.Type.available)
+            {
+                sink.write(Presence.Mode.available.name());
+                return;
+            }
             if (presence.getMode() == null)
+            {
+                System.out.println("Presence does not have a mode for " + account);
                 return;
+            }
             sink.write(presence.getMode().name());
         }
         else if (arguments.getString(0).equals("roster"))
@@ -785,7 +805,31 @@ public class XmppProtocol implements Connection
             RosterEntry entry = connection.getRoster().getEntry(arguments.resolveString(1));
             if (entry == null)
                 return;
+            if (entry.getName() == null)
+                return;
             sink.write(entry.getName());
+        }
+        else if (arguments.getString(0).equals("rostertype"))
+        {
+            RosterEntry entry = connection.getRoster().getEntry(arguments.resolveString(1));
+            if (entry == null)
+                return;
+            if (entry.getType() == null)
+                return;
+            sink.write(entry.getType().name());
+        }
+        else if (arguments.getString(0).equals("presencerequest"))
+        {
+            String to = arguments.resolveString(1);
+            String typeString = arguments.resolveString(2);
+            Presence.Type type = Presence.Type.valueOf(typeString);
+            if (type == Presence.Type.available)
+                throw new FactoidException("Available presence through "
+                    + "{p|presencerequest} is not supported right now. Use "
+                    + "{p|status} instead.");
+            Presence packet = new Presence(type);
+            packet.setTo(to);
+            connection.sendPacket(packet);
         }
         else
         {
