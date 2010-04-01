@@ -15,14 +15,6 @@ import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
-import org.tmatesoft.svn.core.SVNDepth;
-import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.wc.ISVNStatusHandler;
-import org.tmatesoft.svn.core.wc.SVNClientManager;
-import org.tmatesoft.svn.core.wc.SVNRevision;
-import org.tmatesoft.svn.core.wc.SVNStatus;
-import org.tmatesoft.svn.core.wc.SVNStatusClient;
-import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 import jw.jzbot.Command;
 import jw.jzbot.ConfigVars;
@@ -32,10 +24,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
-import jw.jzbot.storage.Channel;
-import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.JZUtils;
-import jw.jzbot.utils.LongWrapper;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -239,7 +228,8 @@ public class StatusCommand implements Command
              * First, we figure out our local revision.
              */
             Process p =
-                    Runtime.getRuntime().exec("svn info --xml -R .", null, new File("."));
+                    Runtime.getRuntime().exec(getSvnExecutable() + " info --xml -R .",
+                            null, new File("."));
             JZUtils.sinkStream(p.getErrorStream());
             Document doc = new SAXBuilder().build(p.getInputStream());
             int exitCode = p.waitFor();
@@ -267,7 +257,9 @@ public class StatusCommand implements Command
              * Then we figure out the current revision that the repository's at, which
              * will tell us if we're out of date.
              */
-            p = Runtime.getRuntime().exec("svn log --xml -r HEAD .", null, new File("."));
+            p =
+                    Runtime.getRuntime().exec(getSvnExecutable() + " log --xml -r HEAD .",
+                            null, new File("."));
             JZUtils.sinkStream(p.getErrorStream());
             String remoteString = null;
             try
@@ -294,7 +286,7 @@ public class StatusCommand implements Command
                     remoteString +=
                             ", which means your version of JZBot is newer "
                                 + "than the newest version available from the update "
-                                + "server. This usually means something's wrong."; 
+                                + "server. This usually means something's wrong.";
             }
             catch (Exception e)
             {
@@ -353,5 +345,13 @@ public class StatusCommand implements Command
     public static String getOsAttribute(String attribute)
     {
         return getAttribute("java.lang:type=OperatingSystem", attribute);
+    }
+    
+    public static String getSvnExecutable()
+    {
+        if (System.getProperty("os.name").toLowerCase().contains("windows"))
+            return "lib/jsvn.bat";
+        else
+            return "lib/jsvn";
     }
 }
