@@ -1,0 +1,13 @@
+name local.misc.flip
+author Alexander Boyd
+description Adds a command, ~flip, that swaps some UTF-8 characters to make the input
+  text appear as if it were flipped upside-down.
+  
+>flip.charmap a{char|592}bqc{char|596}dpe{char|477}f{char|607}g{char|387}
+  h{char|613}i{char|305}j{char|638}k{char|670}llm{char|623}nuoopdqb
+  r{char|633}sst{char|647}unv{char|652}w{char|653}xxy{char|654}zz
+  .{char|729},'',`,;{char|1563}!{char|161}?{char|191}[]][())(\{\}\}\{<>><_{char|8254}
+library.flip.charmap 1
+>flip.combined-charmap {lset|map|{import|flip.charmap}}%map%{reverse|%map%}
+library.flip.combined-charmap 1
+>flip {reverse|{icharmap|%1-%|{import|flip.combined-charmap}}}
