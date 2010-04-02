@@ -946,13 +946,9 @@ public class JZBot
         System.out.println("This is JZBot, http://jzbot.googlecode.com");
         // System.out.println("Revision " + VersionInfo.revision + ", built on "
         // + VersionInfo.shortDateString);
-        System.out.println("Written by Alexander Boyd, Maximilian Dirkmann, "
-            + "and Jonathon Kloster");
-        System.out.println("A.K.A.s, respectively, javawizard2539/jcp, "
-            + "schrottplatz, and MrDudle");
-        System.out.println("With contributions from others; send \"help authors\"");
-        System.out.println("and \"help packwriters\" to your bot in a pm for ");
-        System.out.println("other contributors.");
+        System.out.println("Written by a whole bunch of people, see");
+        System.out.println("http://code.google.com/p/jzbot/wiki/People for "
+            + "the full list.");
         System.out.println();
         if (args.length > 0)
         {
