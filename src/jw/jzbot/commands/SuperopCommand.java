@@ -51,7 +51,7 @@ public class SuperopCommand implements Command
         }
         else if (subcommand.equals("add"))
         {
-            if (tokens.length == 0)
+            if (tokens.length == 0 || tokens.length == 1)
             {
                 source.sendMessage("You need to specify a hostname.");
                 return;
