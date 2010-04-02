@@ -7,6 +7,7 @@ set PATH=%PATH%;%CD%\lib
 
 echo Updating to the latest version of JZBot...
 call jsvn up
+call build
 
 echo Restart! > storage\restart
 
