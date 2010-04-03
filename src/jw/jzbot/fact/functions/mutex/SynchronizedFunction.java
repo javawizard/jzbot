@@ -7,27 +7,29 @@ import java.util.concurrent.locks.ReentrantLock;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
+import jw.jzbot.fact.Lock;
+import jw.jzbot.fact.LockManager;
 import jw.jzbot.fact.Sink;
 
 public class SynchronizedFunction extends Function
 {
     public static final Object mapLock = new Object();
     
-    public static Map<String, ReentrantLock> lockMap = new HashMap<String, ReentrantLock>();
-    
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        ReentrantLock lock = null;
-        //FIXME: figure out how to implement this
-        lock.lock();
+        String name = arguments.resolveString(0);
+        Lock lock = LockManager.obtain(name);
         try
         {
-            arguments.resolve(1, sink);
+            synchronized (lock)
+            {
+                arguments.resolve(1, sink);
+            }
         }
         finally
         {
-            lock.unlock();
+            lock.release();
         }
     }
     
