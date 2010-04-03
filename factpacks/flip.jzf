@@ -10,4 +10,4 @@ description Adds a command, ~flip, that swaps some UTF-8 characters to make the 
 library.flip.charmap 1
 >flip.combined-charmap {lset|map|{import|flip.charmap}}%map%{reverse|%map%}
 library.flip.combined-charmap 1
->flip {reverse|{icharmap|%1-%|{import|flip.combined-charmap}}}
+>flip {reverse|{icharmap|{lower|%1-%}|{import|flip.combined-charmap}}}

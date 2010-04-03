@@ -13,7 +13,7 @@ public class LockManager
 {
     private static HashMap<String, Lock> lockMap = new HashMap<String, Lock>();
     
-    public Lock obtain(String name)
+    public static Lock obtain(String name)
     {
         synchronized (lockMap)
         {
