@@ -1,4 +1,4 @@
-package jw.jzbot.fact.functions.mutex;
+package jw.jzbot.fact.functions.threading;
 
 import java.util.HashMap;
 import java.util.Map;
