@@ -1,5 +1,6 @@
 package jw.jzbot.fact;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,25 +23,30 @@ public class FactContext implements Scope
      * A message that can be used as exception messages to indicate that a server was
      * needed but the scope does not contain one.
      */
-    private static final String NO_SCOPED_SERVER = "The current "
-            + "scope does not have an associated "
-            + "server, but a server was needed. Consider "
-            + "wrapping this function call with a call to "
-            + "the {scope} function to add a server to the current scope.";
+    private static final String NO_SCOPED_SERVER =
+            "The current " + "scope does not have an associated "
+                + "server, but a server was needed. Consider "
+                + "wrapping this function call with a call to "
+                + "the {scope} function to add a server to the current scope.";
     
     public FactContext()
     {
     }
     
-    private Map<String, String> localVars = new HashMap<String, String>();
-    private Map<String, String> globalVars = JZBot.globalVariables;
-    private Map<String, Document> xmlDocuments = new HashMap<String, Document>();
+    private Map<String, String> localVars =
+            Collections.synchronizedMap(new HashMap<String, String>());
+    private Map<String, String> globalVars =
+            Collections.synchronizedMap(JZBot.globalVariables);
+    private Map<String, Document> xmlDocuments =
+            Collections.synchronizedMap(new HashMap<String, Document>());
     // TODO: replace xmlDocuments with objectStorage. objectStorage is a map that groups
     // of functions can use to register custom storage objects, where the name should be
     // <group>-<whatever>. For example, xml documents will be stored as "xml-<name>",
     // where <name> is the name of the xml document.
-    private Map<String, Object> objectStorage = new HashMap<String, Object>();
-    private Map<String, FactEntity> storedSubroutines = new HashMap<String, FactEntity>();
+    private Map<String, Object> objectStorage =
+            Collections.synchronizedMap(new HashMap<String, Object>());
+    private Map<String, FactEntity> storedSubroutines =
+            Collections.synchronizedMap(new HashMap<String, FactEntity>());
     
     public Map<String, FactEntity> getStoredSubroutines()
     {
