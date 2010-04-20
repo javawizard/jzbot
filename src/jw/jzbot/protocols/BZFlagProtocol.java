@@ -877,7 +877,17 @@ public class BZFlagProtocol implements Connection
         // BZFlag nicknames can't be changed once connected to the server, and we're not
         // including any logic for autoswitching nicks if the requested nick is in use, so
         // we just need to look up our player name and return it.
-        return getLocalPlayer().callsign;
+        
+        // This is a try/catch due to some freak error that I'm trying to figure out.
+        try
+        {
+            return getLocalPlayer().callsign;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException("Exception occurred on " + context.getServerName(),
+                    e);
+        }
     }
     
     @Override

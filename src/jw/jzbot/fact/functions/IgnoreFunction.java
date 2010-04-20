@@ -24,9 +24,11 @@ public class IgnoreFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {ignore|<value>} -- Evaluates <value>, but doesn't insert it into "
-                + "the factoid. For example, \"Hello {ignore|World}\" would produce a factoid "
-                + "that, when run, outputs \"Hello \", not \"Hello World\". This is most useful "
-                + "for including comments in the factoid.";
+            + "the factoid. For example, \"Hello {ignore|World}\" would produce a factoid "
+            + "that, when run, outputs \"Hello \", not \"Hello World\". This is most useful "
+            + "for including comments in the factoid. However, this function is not "
+            + "suitable for commenting out code as the code is still run; you can "
+            + "use the {hide} function for that if you need to.";
     }
     
 }
