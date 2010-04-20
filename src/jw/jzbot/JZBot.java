@@ -298,7 +298,7 @@ public class JZBot
             try
             {
                 sendMessageToTarget(ConfigVars.primary.get(),
-                        "Global notification failure: " + pastebinStack(e));
+                        "Global notification failure for " + name + ": " + pastebinStack(e));
             }
             catch (Throwable e2)
             {
