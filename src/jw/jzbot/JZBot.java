@@ -3021,6 +3021,11 @@ public class JZBot
                 {
                     suffix = "GB";
                     number = number.divide(kilo);
+                    if (number.divide(kilo).compareTo(one) > 0)
+                    {
+                        suffix = "TB";
+                        number = number.divide(kilo);
+                    }
                 }
             }
         }

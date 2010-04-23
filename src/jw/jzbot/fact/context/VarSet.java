@@ -1,4 +1,4 @@
-package jw.jzbot.fact;
+package jw.jzbot.fact.context;
 
 public interface VarSet
 {
