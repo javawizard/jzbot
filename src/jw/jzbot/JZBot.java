@@ -3009,19 +3009,19 @@ public class JZBot
     {
         BigDecimal number = new BigDecimal("" + size);
         String suffix = "B";
-        if (number.divide(kilo).compareTo(one) > 0)
+        if (number.divide(kilo).compareTo(one) >= 0)
         {
             suffix = "KB";
             number = number.divide(kilo);
-            if (number.divide(kilo).compareTo(one) > 0)
+            if (number.divide(kilo).compareTo(one) >= 0)
             {
                 suffix = "MB";
                 number = number.divide(kilo);
-                if (number.divide(kilo).compareTo(one) > 0)
+                if (number.divide(kilo).compareTo(one) >= 0)
                 {
                     suffix = "GB";
                     number = number.divide(kilo);
-                    if (number.divide(kilo).compareTo(one) > 0)
+                    if (number.divide(kilo).compareTo(one) >= 0)
                     {
                         suffix = "TB";
                         number = number.divide(kilo);
