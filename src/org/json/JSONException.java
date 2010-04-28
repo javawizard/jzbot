@@ -2,26 +2,35 @@ package org.json;
 
 /**
  * The JSONException is thrown by the JSON.org classes then things are amiss.
+ * 
+ * UPDATED by javawizard: changed to extend RuntimeException instead of Exception
+ * 
  * @author JSON.org
  * @version 2008-09-18
  */
-public class JSONException extends Exception {
+public class JSONException extends RuntimeException
+{
     private Throwable cause;
-
+    
     /**
      * Constructs a JSONException with an explanatory message.
-     * @param message Detail about the reason for the exception.
+     * 
+     * @param message
+     *            Detail about the reason for the exception.
      */
-    public JSONException(String message) {
+    public JSONException(String message)
+    {
         super(message);
     }
-
-    public JSONException(Throwable t) {
+    
+    public JSONException(Throwable t)
+    {
         super(t.getMessage());
         this.cause = t;
     }
-
-    public Throwable getCause() {
+    
+    public Throwable getCause()
+    {
         return this.cause;
     }
 }
