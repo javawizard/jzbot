@@ -24,7 +24,7 @@ public class FactContext implements Scope
      * needed but the scope does not contain one.
      */
     private static final String NO_SCOPED_SERVER =
-            "The current " + "scope does not have an associated "
+            "The current scope does not have an associated "
                 + "server, but a server was needed. Consider "
                 + "wrapping this function call with a call to "
                 + "the {scope} function to add a server to the current scope.";
@@ -43,7 +43,7 @@ public class FactContext implements Scope
     // of functions can use to register custom storage objects, where the name should be
     // <group>-<whatever>. For example, xml documents will be stored as "xml-<name>",
     // where <name> is the name of the xml document.
-    private Map<String, Object> objectStorage =
+    public final Map<String, Object> objectStorage =
             Collections.synchronizedMap(new HashMap<String, Object>());
     private Map<String, FactEntity> storedSubroutines =
             Collections.synchronizedMap(new HashMap<String, FactEntity>());
