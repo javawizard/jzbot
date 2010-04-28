@@ -28,6 +28,10 @@ public class TheBoard
     private static final String ACCESS_URL = "content.php?area=posts";
     private String baseUrl;
     
+    public static final SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+    public static final SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+    public static final SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
+    
     /**
      * Creates a new TheBoard object that connects to the default 100-hour board,
      * <tt>http://theboard.byu.edu</tt>. This is the same as
@@ -95,7 +99,7 @@ public class TheBoard
     public NormalDate[] getMonths(NormalDate year)
     {
         JSONArray list =
-                query("findDates=1&year=" + year.getNormalYear()).getJSONArray("months");
+                query("findDates=1&year=" + yearFormat.format(year)).getJSONArray("months");
         NormalDate[] dates = new NormalDate[list.length()];
         for (int i = 0; i < dates.length; i++)
         {
@@ -116,8 +120,8 @@ public class TheBoard
     {
         JSONArray list =
                 query(
-                        "findDates=1&year=" + month.getNormalYear() + "&month="
-                            + month.getNormalMonth()).getJSONArray("days");
+                        "findDates=1&year=" + yearFormat.format(month) + "&month="
+                            + monthFormat.format(month)).getJSONArray("days");
         NormalDate[] dates = new NormalDate[list.length()];
         for (int i = 0; i < dates.length; i++)
         {
@@ -140,8 +144,8 @@ public class TheBoard
     public int[] getPostIds(NormalDate day)
     {
         JSONArray list =
-                (JSONArray) queryForArray("date=" + day.getNormalYear() + "-"
-                    + day.getNormalMonth() + "-" + day.getDate());
+                (JSONArray) queryForArray("date=" + yearFormat.format(day) + "-"
+                    + monthFormat.format(day) + "-" + dayFormat.format(day));
         int[] ids = new int[list.length()];
         for (int i = 0; i < ids.length; i++)
         {
