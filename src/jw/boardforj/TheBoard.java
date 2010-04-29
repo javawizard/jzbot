@@ -221,8 +221,8 @@ public class TheBoard
         catch (Exception e)// IOException and JSONException, and I don't really care if it
         // catches everything else, things will still work
         {
-            throw new RuntimeException("Exception occurred while calling parameter set "
-                + params, e);
+            throw new RuntimeException("Exception occurred while calling url " + baseUrl
+                + ACCESS_URL + (params.equals("") ? "" : "&" + params), e);
         }
     }
     
