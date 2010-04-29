@@ -2682,6 +2682,14 @@ public class JZBot
         return d.toPlainString();
     }
     
+    public static String toString(BigDecimal result)
+    {
+        result = result.round(jw.jzbot.eval.jeval.Operator.defaultContext);
+        if (result.signum() == 0)
+            return "0";
+        return result.toPlainString();
+    }
+    
     public static void sendDelimited(ConnectionWrapper bot, String[] array,
             String delimiter, String recipient)
     {
