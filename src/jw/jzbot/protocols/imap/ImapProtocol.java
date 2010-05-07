@@ -2,21 +2,31 @@ package jw.jzbot.protocols.imap;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Properties;
 
+import javax.mail.BodyPart;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Flags.Flag;
+import javax.mail.Message.RecipientType;
 import javax.mail.event.MessageCountEvent;
 import javax.mail.event.MessageCountListener;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.search.FlagTerm;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
 
 import com.sun.mail.imap.IMAPFolder;
+import com.sun.mail.smtp.SMTPTransport;
 
 import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
@@ -46,54 +56,71 @@ public class ImapProtocol implements Connection
 		Properties props = System.getProperties();
 		props.setProperty("mail.store.protocol", "imaps");
 		Session session = Session.getDefaultInstance(props, null);
-		Store store = null;
 		// FIXME: This doesn't do anything to messages sent to us while we're
 		// not connected. We need to support this in the future.
 		try
 		{
-			store = session.getStore("imaps");
-			store.connect(targetImapServer, targetUsername, targetPassword);
-			imapInbox = (IMAPFolder) store.getFolder("Inbox");
+			imapStore = session.getStore("imaps");
+			imapStore.connect(targetImapServer, targetUsername, targetPassword);
+			imapInbox = (IMAPFolder) imapStore.getFolder("Inbox");
 			imapInbox.addMessageCountListener(new MessageCountListener()
 			{
 				public void messagesAdded(MessageCountEvent messageCountEvent)
 				{
-					System.out.println("New message added");
-					Message[] messages = messageCountEvent.getMessages();
-					for (Message message : messages)
+					System.out.println("New messages added");
+					new Thread()
 					{
-						processArrivingMessage(message);
-					}
+						public void run()
+						{
+							readNewMessages();
+						}
+					}.start();
 				}
 				
 				public void messagesRemoved(MessageCountEvent arg0)
 				{
-					System.out.println("Message removed");
+					System.out.println("Messages removed");
 				}
 			});
-			imapInbox.open(Folder.READ_ONLY);
+			imapInbox.open(Folder.READ_WRITE);
 			new Thread()
 			{
 				public void run()
 				{
 					try
 					{
-						imapInbox.idle();
+						while (imapStore.isConnected())
+						{
+							System.out.println("Starting mail IDLE thread");
+							imapInbox.idle();
+							System.out.println("Mail idle thread died, restarting");
+						}
+						System.out.println("MAIL IDLE THREAD SHUTTING DOWN");
+						disconnect(null);
+						context.onDisconnect();
 					}
-					catch (MessagingException e)
+					catch (Exception e)
 					{
 						e.printStackTrace();
+						disconnect(null);
 					}
+				}
+			}.start();
+			new Thread()
+			{
+				public void run()
+				{
+					readNewMessages();
 				}
 			}.start();
 		}
 		catch (Exception e)
 		{
-			if (store != null)
+			if (imapStore != null)
 			{
 				try
 				{
-					store.close();
+					imapStore.close();
 				}
 				catch (Exception e2)
 				{
@@ -105,23 +132,98 @@ public class ImapProtocol implements Connection
 		}
 	}
 	
-	protected void processArrivingMessage(Message message)
+	protected synchronized void readNewMessages()
 	{
 		try
 		{
-			String messageContent = message.getContent().toString();
-			String messageFrom = ((InternetAddress) message.getFrom()[0]).getAddress();
-			String encodedFrom = XmppProtocol.escape(messageFrom);
-			// The split thing makes it so we only get the first line of the
-			// message, which is what we want to nix any signature that might
-			// be on the message and stuff
-			context.onPrivateMessage(encodedFrom, "user", encodedFrom, messageContent
-					.split("\n")[0]);
+			Message[] messages = imapInbox.search(new FlagTerm(new Flags(Flag.SEEN), false));
+			for (Message message : messages)
+			{
+				processArrivingMessage(message);
+				message.setFlag(Flag.SEEN, true);
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	protected void processArrivingMessage(Message message)
+	{
+		try
+		{
+			String messageContent = null;
+			Object contentObject = message.getContent();
+			if (contentObject instanceof String)
+				messageContent = (String) contentObject;
+			else if (contentObject instanceof MimeMultipart)
+			{
+				MimeMultipart multipart = (MimeMultipart) contentObject;
+				messageContent = extractMultipartContent(multipart, false);
+				if (messageContent == null)
+					messageContent = extractMultipartContent(multipart, true);
+			}
+			if (messageContent == null)
+			{
+				System.out.println("Message rejected: content not recognized");
+				return;
+			}
+			String messageFrom = ((InternetAddress) message.getFrom()[0]).getAddress();
+			String encodedFrom = XmppProtocol.escape(messageFrom);
+			// The split thing makes it so we only get the first line of the
+			// message, which is what we want to nix any signature that might
+			// be on the message and stuff
+			if (!messageFrom.equalsIgnoreCase(targetUsername))// prevent against
+				// the bot emailing itself to stop potential infinite loops
+				context.onPrivateMessage(encodedFrom, "user", encodedFrom, messageContent
+						.split("\n")[0]);
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private String extractMultipartContent(MimeMultipart multipart, boolean html)
+			throws MessagingException, IOException
+	{
+		for (int i = 0; i < multipart.getCount(); i++)
+		{
+			BodyPart part = multipart.getBodyPart(i);
+			if (part.getDisposition() == null
+					|| !part.getDisposition().equals(BodyPart.ATTACHMENT))
+			{
+				System.out.println("Content type is " + part.getContentType());
+				System.out.println("Content is " + part.getContent());
+				if ((!html) && part.getContentType().toLowerCase().startsWith("text/plain"))
+				{
+					return part.getContent().toString();
+				}
+				else if (html && part.getContentType().toLowerCase().startsWith("text/html"))
+				{
+					String text = part.getContent().toString().trim();
+					System.out.println("Initial HTML: " + text);
+					text = text.replaceAll("<title>[^<]*</title>", "");
+					text = text.replaceAll("<[^>]*>", "");
+					text = text.replace("&nbsp;", " ").replace("&lt;", "<").replace("&gt;",
+							">").replace("&quot;", "\"").replace("&amp;", "&");
+					text = text.trim();
+					System.out.println("Filtered HTML: " + text);
+					return text;
+				}
+				else if (part.getContentType().toLowerCase().startsWith("multipart/")
+						&& part.getContent() instanceof MimeMultipart)
+				{
+					System.out.println("Got a multipart, " + part.getContentType());
+					String result = extractMultipartContent((MimeMultipart) part
+							.getContent(), html);
+					if (result != null)
+						return result;
+				}
+			}
+		}
+		return null;
 	}
 	
 	@Override
@@ -179,11 +281,19 @@ public class ImapProtocol implements Connection
 	public void init(ConnectionContext context)
 	{
 		this.context = context;
+		String serverSpec = context.getServer();
+		String[] serverSplit = serverSpec.split("\\:");
+		targetImapServer = serverSplit[0];
+		targetSmtpServer = serverSplit[1];
+		targetUsername = context.getNick();
+		targetPassword = context.getPassword();
 	}
 	
 	@Override
 	public boolean isConnected()
 	{
+		if (imapStore == null)
+			return false;
 		return imapStore.isConnected();
 	}
 	
@@ -233,9 +343,42 @@ public class ImapProtocol implements Connection
 	@Override
 	public void sendMessage(String target, String message)
 	{
-		// FIXME: implement this, connect to the specified SMTP server and send
-		// the message
-		System.out.println("Sending message to " + target + ": " + message);
+		try
+		{
+			String recipient = XmppProtocol.unescape(target);
+			System.out.println("Sending email to " + recipient);
+			Properties props = System.getProperties();
+			props.put("mail.transport.protocol", "smtps");
+			props.put("mail.smtps.auth", "true");
+			props.put("mail.smtps.host", targetSmtpServer);
+			Session session = Session.getInstance(props, null);
+			Message m = new MimeMessage(session);
+			m.setFrom(new InternetAddress(targetUsername));
+			m.setRecipient(RecipientType.TO, new InternetAddress(recipient));
+			m.setText(message);
+			m.setSentDate(new Date());
+			SMTPTransport t = (SMTPTransport) session.getTransport("smtps");
+			try
+			{
+				t.connect(targetSmtpServer, targetUsername, targetPassword);
+				t.sendMessage(m, m.getAllRecipients());
+			}
+			finally
+			{
+				try
+				{
+					t.close();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
