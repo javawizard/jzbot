@@ -310,7 +310,7 @@ public class ImapProtocol implements Connection
 	@Override
 	public boolean likesPastebin()
 	{
-		return true;// TODO: change this in the future so that servers intended
+		return false;// TODO: change this in the future so that servers intended
 		// to be used by mms can set this to false
 	}
 	
