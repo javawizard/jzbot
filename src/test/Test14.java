@@ -1,6 +1,6 @@
 package test;
 
-import jw.jzbot.fact.functions.RestrictFunction;
+import jw.jzbot.fact.functions.text.RestrictFunction;
 
 public class Test14
 {
