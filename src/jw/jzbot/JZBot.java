@@ -723,6 +723,8 @@ public class JZBot
             c = FacebookProtocol.class;
         else if (name.equals("xmpp"))
             c = XmppProtocol.class;
+        else if(name.equals("imap"))
+            c = ImapProtocol.class;
         else
             throw new ResponseException("The protocol \"" + name
                 + "\" is not a valid protocol name. Valid protocol names are, "
