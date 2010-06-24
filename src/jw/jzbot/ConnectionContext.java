@@ -141,10 +141,11 @@ public class ConnectionContext
                 sourceHostname, reason);
     }
     
-    public void onTopic(String channel, String topic, String setBy, long date,
-            boolean changed)
+    public void onTopic(String channel, String topic, String setBy, String setByUsername,
+            String setByHostname, long date, boolean changed)
     {
-        JZBot.onTopic(datastoreServer, serverName, channel, topic, setBy, date, changed);
+        JZBot.onTopic(datastoreServer, serverName, channel, topic, setBy, setByUsername,
+                setByHostname, date, changed);
     }
     
     private boolean hasConnected = false;

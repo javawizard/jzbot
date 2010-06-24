@@ -7,6 +7,7 @@ public class ServerUser implements Messenger
     private String serverName;
     private String nick;
     private String hostname;
+    private String username;
     
     public String getHostname()
     {
@@ -16,6 +17,16 @@ public class ServerUser implements Messenger
     public void setHostname(String hostname)
     {
         this.hostname = hostname;
+    }
+    
+    public String getUsername()
+    {
+        return username;
+    }
+    
+    public void setUsername(String username)
+    {
+        this.username = username;
     }
     
     public String getServerName()
@@ -38,12 +49,13 @@ public class ServerUser implements Messenger
         this.nick = nick;
     }
     
-    public ServerUser(String serverName, String nick, String hostname)
+    public ServerUser(String serverName, String nick, String username, String hostname)
     {
         super();
         this.serverName = serverName;
         this.nick = nick;
         this.hostname = hostname;
+        this.username = username;
     }
     
     public boolean isSuperop()

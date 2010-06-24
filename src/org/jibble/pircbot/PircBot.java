@@ -1215,7 +1215,7 @@ public abstract class PircBot implements ReplyConstants
         else if (command.equals("TOPIC"))
         {
             // Someone is changing the topic.
-            this.onTopic(target, line.substring(line.indexOf(" :") + 2), sourceNick, System
+            this.onTopic(target, line.substring(line.indexOf(" :") + 2), sourceNick, sourceLogin, sourceHostname, System
                     .currentTimeMillis(), true);
         }
         else if (command.equals("INVITE"))
@@ -1339,7 +1339,7 @@ public abstract class PircBot implements ReplyConstants
             String topic = (String) _topics.get(channel);
             _topics.remove(channel);
             
-            this.onTopic(channel, topic, setBy, date, false);
+            this.onTopic(channel, topic, setBy, "", "", date, false);
         }
         else if (code == RPL_NAMREPLY)
         {
@@ -1694,7 +1694,7 @@ public abstract class PircBot implements ReplyConstants
      *            there.
      * 
      */
-    protected void onTopic(String channel, String topic, String setBy, long date,
+    protected void onTopic(String channel, String topic, String setBy, String setByLogin, String setByHostname, long date,
             boolean changed)
     {
     }

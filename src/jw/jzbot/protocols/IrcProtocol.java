@@ -186,10 +186,10 @@ public class IrcProtocol extends PircBot implements Connection
     }
     
     @Override
-    protected void onTopic(String channel, String topic, String setBy, long date,
-            boolean changed)
+    protected void onTopic(String channel, String topic, String setBy,
+            String setByUsername, String setByHostname, long date, boolean changed)
     {
-        context.onTopic(channel, topic, setBy, date, changed);
+        context.onTopic(channel, topic, setBy, setByUsername, setByHostname, date, changed);
     }
     
     @Override
