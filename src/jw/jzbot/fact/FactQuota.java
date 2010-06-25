@@ -1,5 +1,6 @@
 package jw.jzbot.fact;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,8 @@ public class FactQuota
      * This is essentially disabled for now.
      */
     public static final int MAX_MESSAGE_COUNT = 9000;
-    private Map<String, String> chainVars = new HashMap<String, String>();
+    private Map<String, String> chainVars =
+            Collections.synchronizedMap(new HashMap<String, String>());
     
     public Map<String, String> getChainVars()
     {
@@ -33,7 +35,7 @@ public class FactQuota
         messageCount += 1;
         if (messageCount > maxMessageCount)
             throw new FactoidException("Maximum limit of " + maxMessageCount
-                    + " messages per factoid invocation exceeded.");
+                + " messages per factoid invocation exceeded.");
     }
     
     public int getMaxMessageCount()
@@ -61,7 +63,7 @@ public class FactQuota
         importCount += 1;
         if (importCount > maxImportCount)
             throw new FactoidException("Maximum limit of " + MAX_IMPORT_COUNT
-                    + " {import} and {run} calls per " + "factoid invocation exceeded.");
+                + " {import} and {run} calls per " + "factoid invocation exceeded.");
     }
     
     public int getMessageCount()

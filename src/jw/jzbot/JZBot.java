@@ -118,7 +118,8 @@ public class JZBot
     
     public static File logsFolder = new File("storage/logs");
     
-    public static Map<String, String> globalVariables = new HashMap<String, String>();
+    public static Map<String, String> globalVariables =
+            Collections.synchronizedMap(new HashMap<String, String>());
     
     public static ArrayList<HelpProvider> helpProviders = new ArrayList<HelpProvider>();
     
@@ -723,7 +724,7 @@ public class JZBot
             c = FacebookProtocol.class;
         else if (name.equals("xmpp"))
             c = XmppProtocol.class;
-        else if(name.equals("imap"))
+        else if (name.equals("imap"))
             c = ImapProtocol.class;
         else
             throw new ResponseException("The protocol \"" + name

@@ -4,6 +4,8 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.output.NullSink;
 
 public class ThreadstartFunction extends Function
 {
@@ -13,13 +15,24 @@ public class ThreadstartFunction extends Function
     {
         // FIXME: maybe support for named threads? (which could then be checked to see if
         // they're alive, forcibly stopped, etc)
-        throw new UnsupportedOperationException();
+        String threadName = arguments.resolveString(0);
+        final FactEntity code = arguments.getEntity(1);
+        String localVarRegex = arguments.resolveString(2);
+        final FactContext newContext = context.cloneForThreading(localVarRegex);
+        new Thread("user-thread-" + threadName)
+        {
+            public void run()
+            {
+                code.resolve(new NullSink(), newContext);
+            }
+        }.start();
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {threadstart|<code>|<regex>} -- Starts <code> running in "
+        return "Syntax: {threadstart|<name>|<code>|<regex>} -- THIS IS STILL REALLY "
+            + "EXPERIMENTAL AND COULD LEAD TO CRASHES. Starts <code> running in "
             + "a separate thread. The output of this code is discarded. This "
             + "code will have its own local variable pool and scope level as "
             + "if it had been run in a separate factoid. Chain variables, "
@@ -31,7 +44,9 @@ public class ThreadstartFunction extends Function
             + "result in a pastebin being issued to the channel of the scope at "
             + "the time the thread was started. If there is no channel in that "
             + "scope, the error message will be dumped to the bot's primary "
-            + "channel, or discarded if there is no primary channel.";
+            + "channel, or discarded if there is no primary channel. Right now, "
+            + "the name is unused (except that it shows up in the output from "
+            + "~status threads), but that could change in the future.";
     }
     
 }
