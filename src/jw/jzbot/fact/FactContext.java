@@ -276,6 +276,7 @@ public class FactContext implements Scope
         context.setQuota(this.getQuota());
         context.setSelf(this.getSelf());
         context.setSender(this.getSender());
+        context.setServer(this.getServer());
         context.setSource(this.getSource());
         for (String name : localVars.keySet())
         {
