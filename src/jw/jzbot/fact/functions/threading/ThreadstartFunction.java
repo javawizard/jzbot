@@ -1,5 +1,8 @@
 package jw.jzbot.fact.functions.threading;
 
+import jw.jzbot.ConfigVars;
+import jw.jzbot.ConnectionWrapper;
+import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
@@ -15,15 +18,44 @@ public class ThreadstartFunction extends Function
     {
         // FIXME: maybe support for named threads? (which could then be checked to see if
         // they're alive, forcibly stopped, etc)
-        String threadName = arguments.resolveString(0);
+        final String threadName = arguments.resolveString(0);
         final FactEntity code = arguments.getEntity(1);
         String localVarRegex = arguments.resolveString(2);
         final FactContext newContext = context.cloneForThreading(localVarRegex);
+        final String oldScope = context.currentScope();
         new Thread("user-thread-" + threadName)
         {
             public void run()
             {
-                code.resolve(new NullSink(), newContext);
+                try
+                {
+                    code.resolve(new NullSink(), newContext);
+                }
+                catch (Throwable t)
+                {
+                    t.printStackTrace();
+                    ConnectionWrapper usableConnection = null;
+                    String usableChannel = null;
+                    try
+                    {
+                        usableConnection =
+                                JZBot.checkedGetExtractedConnection(oldScope, null);
+                        usableChannel = JZBot.extractChannelName(oldScope);
+                    }
+                    catch (Exception e)
+                    {
+                        usableConnection =
+                                JZBot.checkedGetExtractedConnection(ConfigVars.primary
+                                        .get(), null);
+                        usableChannel = JZBot.extractChannelName(ConfigVars.primary.get());
+                    }
+                    if (usableConnection != null && usableChannel != null)
+                    {
+                        usableConnection
+                                .sendMessage(usableChannel, "The user thread " + threadName
+                                    + " threw an exception: " + JZBot.pastebinStack(t));
+                    }
+                }
             }
         }.start();
     }
