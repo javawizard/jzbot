@@ -12,11 +12,11 @@ public class FactQuota
     private int importCount = 0;
     private int maxMessageCount = MAX_MESSAGE_COUNT;
     private int maxImportCount = MAX_IMPORT_COUNT;
-    public static final int MAX_IMPORT_COUNT = 500000;
+    public static final int MAX_IMPORT_COUNT = 900000000;
     /*
      * This is essentially disabled for now.
      */
-    public static final int MAX_MESSAGE_COUNT = 9000;
+    public static final int MAX_MESSAGE_COUNT = 900000000;
     private Map<String, String> chainVars =
             Collections.synchronizedMap(new HashMap<String, String>());
     
