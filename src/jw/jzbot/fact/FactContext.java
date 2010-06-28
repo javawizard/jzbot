@@ -286,4 +286,63 @@ public class FactContext implements Scope
         return context;
     }
     
+    public Function createDynamicFunction(String functionName)
+    {
+        return new DynamicFunction(this, functionName);
+    }
+    
+    /**
+     * Called by the Fact interpreter when the user tries to invoke a function that
+     * doesn't exist. This method tries to resolve it as a dynamic function using several
+     * different methods. If it can't figure out how to run this function, it throws a
+     * FactoidException.
+     * 
+     * @param name
+     *            The name of the function to invoke
+     * @param sink
+     *            The sink to write the function's output to
+     * @param arguments
+     *            The arguments to the function
+     */
+    public void invokeDynamicFunction(String name, Sink sink, ArgumentList arguments)
+    {
+        // First, we'll try to invoke this as a stored subroutine. This essentially
+        // shortcuts {something} for {run|something}, except that arguments to {something}
+        // are set as %f.1%, %f.2%, etc.
+        FactEntity entity = storedSubroutines.get(name);
+        if (entity != null)
+        {
+            invokeDynamicAsStoredSubroutine(entity, sink, arguments);
+            return;
+        }
+        throw new FactoidException("No such function: " + name);
+    }
+    
+    private void invokeDynamicAsStoredSubroutine(FactEntity entity, Sink sink,
+            ArgumentList arguments)
+    {
+        String[] argumentArray = arguments.evalToArray();
+        String[] previousVars = new String[argumentArray.length];
+        for (int i = 0; i < argumentArray.length; i++)
+        {
+            String varName = "f." + (i + 1);
+            previousVars[i] = localVars.get(varName);
+            localVars.put(varName, argumentArray[i]);
+        }
+        try
+        {
+            entity.resolve(sink, this);
+        }
+        finally
+        {
+            for (int i = 0; i < argumentArray.length; i++)
+            {
+                String varName = "f." + (i + 1);
+                if (previousVars[i] == null)
+                    localVars.remove(varName);
+                else
+                    localVars.put(varName, previousVars[i]);
+            }
+        }
+    }
 }

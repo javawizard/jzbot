@@ -26,7 +26,7 @@ public class FunctionReference extends FactEntity
         functionName = list.getString(0);
         Function function = FactParser.getFunction(functionName);
         if (function == null)
-            throw new FactoidException("No such function: " + functionName);
+            function = context.createDynamicFunction(functionName);
         ArgumentList sublist = list.subList(1);
         try
         {
