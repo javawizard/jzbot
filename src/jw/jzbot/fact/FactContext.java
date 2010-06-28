@@ -315,6 +315,8 @@ public class FactContext implements Scope
             invokeDynamicAsStoredSubroutine(entity, sink, arguments);
             return;
         }
+        // Stored subroutine shortcutting is the only form of dynamic invocation we're
+        // supporting for now. Since that didn't work, we'll throw an exception.
         throw new FactoidException("No such function: " + name);
     }
     
