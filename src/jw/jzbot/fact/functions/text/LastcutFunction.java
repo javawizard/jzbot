@@ -13,7 +13,7 @@ public class LastcutFunction extends Function
     {
         String search = arguments.resolveString(0);
         String text = arguments.resolveString(1);
-        int index = text.indexOf(search);
+        int index = text.lastIndexOf(search);
         if(index != -1)
             text = text.substring(0, index);
         sink.write(text);
