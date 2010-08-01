@@ -2964,10 +2964,20 @@ public class JZBot
     
     public static String pastebinNotice(String text, Feature[] features)
     {
-        return Pastebin.createPost("jzbot", text
-            + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
-            + "post, or its creator (JZBot), send an email to \"alex"
-            + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
+        try
+        {
+            return Pastebin.createPost("jzbot", text
+                + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
+                + "post, or its creator (JZBot), send an email to \"alex"
+                + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
+        }
+        catch (RuntimeException e)
+        {
+            System.out.println("Exception occurred while trying to "
+                + "pastebin notice. The text to be sent to the pastebin was: \n\n" + text
+                + "\n\n");
+            throw e;
+        }
     }
     
     /**
