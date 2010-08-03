@@ -1,7 +1,7 @@
 name local.misc.lart
 author Alexander Boyd
 scope any
-description Adds a "lart" command, which chooses from one of 133 creative responses that would 
+description Adds a "lart" command, which chooses from one of 144 creative responses that would 
  generally not be pleasant to the person in question. For example, "~lart jcp" might respond with 
  "/me rm -rf's jcp", "/me smacks jcp upside and over the head with one freakishly huge killer 
  whale named Hugh", "/me shoves avocados down jcp's throat until jcp dies", or "/me cats 
