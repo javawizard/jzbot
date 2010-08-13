@@ -210,28 +210,27 @@ public class ServerCommand implements Command
         {
             source.sendSpaced("Here's the list. Servers in this list are in the format "
                 + "<flags>:<name>, where <flags> are some flags and <name> is the "
-                + "name of the server. Flags are 1: active, 2: has a connection "
-                + "object, 3: currently connected, 4: error occurred during last "
-                + "connection attempt (use \"server error\" to read the error message)"
-                + ", 0: no other flags.");
+                + "name of the server. Flags are a: active, o: has a connection "
+                + "object, c: currently connected, e: error occurred during last "
+                + "connection attempt (use \"server error\" to read the error message).");
             List<String> items = new ArrayList<String>();
             for (Server s : JZBot.storage.getServers().isolate())
             {
                 String sName = s.getName();
                 String flags = "";
                 if (s.isActive())
-                    flags += "1";
+                    flags += "a";
                 ConnectionContext c = JZBot.getRealConnection(sName);
                 if (c != null)
                 {
-                    flags += "2";
+                    flags += "o";
                     if (c.getConnection().isConnected())
-                        flags += "3";
+                        flags += "c";
                 }
                 if (JZBot.connectionLastErrorMap.get(sName) != null)
-                    flags += "4";
-                if (flags.equals(""))
-                    flags = "0";
+                    flags += "e";
+                // if (flags.equals(""))
+                // flags = "0";
                 items.add(flags + ":" + sName);
             }
             JZUtils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
