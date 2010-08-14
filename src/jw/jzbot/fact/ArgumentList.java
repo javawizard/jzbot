@@ -28,6 +28,53 @@ import jw.jzbot.fact.output.StringSink;
  */
 public class ArgumentList
 {
+    public static class Stack
+    {
+        private ArgumentList arguments;
+        private int index = 0;
+        
+        /**
+         * Resolves the next argument, parses it into an integer, and returns the integer.
+         * If the argument cannot be parsed into an integer or if there are no more
+         * arguments, an exception will be thrown.
+         * 
+         * @return
+         */
+        public int nextInt()
+        {
+            return Integer.parseInt(nextString());
+        }
+        
+        public int nextInt(int defaultValue)
+        {
+            String value = nextString();
+            if (value == null || value.trim().equals(""))
+                return defaultValue;
+            return Integer.parseInt(value);
+        }
+        
+        public int nextOptionalInt(int defaultValue, int minRemaining)
+        {
+            if (remaining() <= minRemaining)
+                return defaultValue;
+            return nextInt(defaultValue);
+        }
+        
+        public String nextString()
+        {
+            if (remaining() == 0)
+                return null;
+            String result = arguments.getString(index);
+            index += 1;
+            return result;
+        }
+        
+        public int remaining()
+        {
+            return Math.min(0, arguments.length() - index);
+        }
+    }
+    
     /**
      * A list of arguments that this argument list delegates to, which is only present if
      * we're a delegated list.
@@ -261,5 +308,18 @@ public class ArgumentList
             s[i] = sink.toString();
         }
         return s;
+    }
+    
+    /**
+     * Creates a new stack that can be used to get elements one by one from this argument
+     * list.
+     * 
+     * @return
+     */
+    public Stack stack()
+    {
+        Stack stack = new Stack();
+        stack.arguments = this;
+        return stack;
     }
 }
