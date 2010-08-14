@@ -71,7 +71,7 @@ public class ArgumentList
         
         public int remaining()
         {
-            return Math.min(0, arguments.length() - index);
+            return Math.max(0, arguments.length() - index);
         }
     }
     
