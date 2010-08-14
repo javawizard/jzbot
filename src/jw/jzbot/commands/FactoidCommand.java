@@ -19,6 +19,7 @@ import jw.jzbot.ServerUser;
 import jw.jzbot.Factpack.FactpackEntry;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.fact.Function;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.exceptions.FactpackInstallationException;
 import jw.jzbot.fact.functions.conditional.IfFunction;
@@ -448,13 +449,94 @@ public class FactoidCommand implements Command
                     c);
             processed = true;
         }
+        if (command.equals("function"))
+        {
+            processed = true;
+            if (afterCommand.equals(""))
+                throw new ResponseException("You need to specify the name "
+                    + "of a function. This command will then print out "
+                    + "information on the specified function.");
+            Function function = FactParser.getFunction(afterCommand);
+            if (function == null)
+                throw new ResponseException("There is no such function. "
+                    + "You can get a list of all of the available "
+                    + "functions with \"help functions\".");
+            source.sendSpaced("Function " + afterCommand + ", class: "
+                + function.getClass().getName());
+        }
+        if (command.equals("scope"))
+        {
+            processed = true;
+            if (afterCommand.equals(""))
+                throw new ResponseException("You need to specify the name "
+                    + "of a factoid. This command will then check to see "
+                    + "if there is a factoid with the specified name in "
+                    + "any scope level visible from the current scope, "
+                    + "and if there is, it will print out the scope levels "
+                    + "containing such a factoid.");
+            boolean inGlobal = false;
+            boolean inServer = false;
+            boolean inChannel = false;
+            inGlobal = JZBot.storage.getFactoid(afterCommand) != null;
+            if (s != null)
+            {
+                inServer = s.getFactoid(afterCommand) != null;
+                if (c != null)
+                    inChannel = c.getFactoid(afterCommand) != null;
+            }
+            String result = "";
+            if (inChannel)
+                result += "channel ";
+            if (inServer)
+                result += "server ";
+            if (inGlobal)
+                result += "global ";
+            result = result.trim();
+            if (result.equals(""))
+                result = "none";
+            source.sendMessage(result);
+        }
+        if (command.equals("locate"))
+        {
+            processed = true;
+            doFactoidLocate(pm, sender, source, afterCommand, scope, server, s, channel, c);
+            throw new ResponseException("This is not supported yet. When it "
+                + "is, it will search for factoids with the specified name "
+                + "across the entire database, and their scopes will be printed.");
+        }
+        if (command.equals("search"))
+        {
+            processed = true;
+            doFactoidSearch(pm, sender, source, afterCommand, scope, server, s, channel, c);
+            throw new ResponseException("This is not yet supported. When it "
+                + "is, it will search for factoids whose names or text "
+                + "contain the specified text. The entire database of "
+                + "factoids will be searched.");
+        }
         if (!processed)
         {
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global|server] "
                         + "<list|create|replace|delete|literal|info|pack"
-                        + "|restrict|unrestrict|isrestricted|attribute|unattribute >'");
+                        + "|restrict|unrestrict|isrestricted|attribute"
+                        + "|unattribute|function|scope|locate|search>'");
         }
+    }
+    
+    private void doFactoidSearch(boolean pm, ServerUser sender, Messenger source,
+            String afterCommand, FactScope scope, String server, Server s, String channel,
+            Channel c)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    private void doFactoidLocate(boolean pm, ServerUser sender, Messenger source,
+            String afterCommand, FactScope scope, String server, Server s, String channel,
+            Channel c)
+    {
+        // TODO Auto-generated method stub
+        
     }
     
     private Factoid getScopedFactoid(FactScope scope, Server s, Channel c, String name)
@@ -525,10 +607,8 @@ public class FactoidCommand implements Command
                 buffer.append("\n\n");
             }
             source.sendMessage(JZBot.pastebinNotice(
-                    items[0] + "\n\n\n" + buffer.toString(), new Feature[]
-                    {
-                        Feature.highlight
-                    }));
+                    items[0] + "\n\n\n" + buffer.toString(),
+                    new Feature[] { Feature.highlight }));
         }
         else if (command.equals("list"))
         {
@@ -617,11 +697,9 @@ public class FactoidCommand implements Command
             if (descStrings.length > 2)
             {
                 descStrings =
-                        new String[]
-                        {
-                            "See " + JZBot.pastebinNotice(factpack.description, null)
-                                + " for the full description"
-                        };
+                        new String[] { "See "
+                            + JZBot.pastebinNotice(factpack.description, null)
+                            + " for the full description" };
             }
             for (String l : descStrings)
                 source.sendMessage(l);

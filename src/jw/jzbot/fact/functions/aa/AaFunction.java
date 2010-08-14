@@ -90,7 +90,7 @@ public class AaFunction extends Function
             + "{aa| |a*b=24 a+b=10} would evaluate to \"a=6.0 b=4.0\" "
             + "or \"a=4.0 b=6.0\". This function requires AutoAbacus to be "
             + "on the classpath; AutoAbacus can be purchased from "
-            + "http://www.singularsys.com/autoabacus/ .";
+            + "http://www.singularsys.com/autoabacus/";
     }
     
 }

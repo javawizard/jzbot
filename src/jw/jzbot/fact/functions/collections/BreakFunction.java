@@ -32,7 +32,7 @@ public class BreakFunction extends Function
             + "code in the innermost loop needs to break out of the outermost "
             + "loop. {break} is equivalent to {break|0}, IE it breaks out of the "
             + "innermost loop. {break|1} would break out of the loop surrounding "
-            + "the innermost loop, {break|2} would break out of the loop surrrounding "
+            + "the innermost loop, {break|2} would break out of the loop surrounding "
             + "that one and so on. Currently, this function uses a specially-formed "
             + "error/exception, so a {catch} function call will catch the BreakException "
             + "and prevent this function from working properly.";
