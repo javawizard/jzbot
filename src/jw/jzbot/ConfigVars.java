@@ -101,6 +101,23 @@ public enum ConfigVars
             super.set(value);
         }
     },
+    proxytrace("0", "If this is 1, all ProxyStorage calls will be traced and "
+        + "the statistics made available via \"~status proxytrace\". "
+        + "This tends to decrease performance quite a bit, so it should "
+        + "generally only be used by developers wanting to improve "
+        + "database performance or by people curious as to what queries "
+        + "are being made by the bot. If this is 0, no such tracing will "
+        + "be performed, and performance will be better.")
+    {
+        public void set(String value)
+        {
+            if (!(value.equals("0") || value.equals("1")))
+                throw new ResponseException(
+                        "Invalid value; must be 0 or 1, see \"~config proxytrace\" for help");
+            super.set(value);
+            JZBot.proxyTraceConfigChanged();
+        }
+    },
     logsize("0", "This config variable is the maximum size, in bytes, of the logs to "
         + "keep for each channel on a per-channel basis. Use the {logs} function "
         + "to actually read these logs. 0 disables logging. This doesn't take effect "
