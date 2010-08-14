@@ -63,6 +63,11 @@ public interface Factoid
     public void setCreationTime(long time);
     
     @Property
+    public String getCreatorSource();
+    
+    public void setCreatorSource(String source);
+    
+    @Property
     public int getDirectRequests();
     
     public void setDirectRequests(int count);

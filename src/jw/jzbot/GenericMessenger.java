@@ -51,4 +51,11 @@ public class GenericMessenger implements Messenger
         JZUtils.sendSpaced(this, message);
     }
     
+    @Override
+    public String getScopeName()
+    {
+        throw new IllegalStateException("Generic messengers don't have "
+            + "the ability to provide scope information.");
+    }
+    
 }

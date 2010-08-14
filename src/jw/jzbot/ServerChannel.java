@@ -65,4 +65,10 @@ public class ServerChannel implements Messenger, Scope
         JZUtils.sendSpaced(this, message);
     }
     
+    @Override
+    public String getScopeName()
+    {
+        return "@" + serverName + channel;
+    }
+    
 }

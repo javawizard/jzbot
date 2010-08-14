@@ -201,6 +201,7 @@ public class FactoidCommand implements Command
             f.setCreationTime(System.currentTimeMillis());
             f.setCreatorNick(sender.nick());
             f.setCreatorUsername(JZBot.getThreadLocalUsername());
+            f.setCreatorSource(source.getScopeName());
             f.setDirectRequests(0);
             f.setIndirectRequests(0);
             if (oldFact != null)
@@ -425,11 +426,12 @@ public class FactoidCommand implements Command
             String factpackMessage = "";
             if (factpack != null)
             {
-                factpackMessage += "; installed by ";
-                String[] tokens = factpack.split("\\:", 2);
-                factpackMessage += (tokens.length > 1 ? tokens[1] : "");
-                if (!"".equals(tokens[0]))
-                    factpackMessage += " on " + tokens[0];
+                // factpackMessage += "; installed by ";
+                // String[] tokens = factpack.split("\\:", 2);
+                // factpackMessage += (tokens.length > 1 ? tokens[1] : "");
+                // if (!"".equals(tokens[0]))
+                // factpackMessage += " on " + tokens[0];
+                factpackMessage += "; installed on " + factpack;
             }
             String attribution = f.getAttribution();
             String attributionMessage = "";
@@ -437,9 +439,15 @@ public class FactoidCommand implements Command
             {
                 attributionMessage = "; attributed to \"" + attribution + "\"";
             }
-            source.sendMessage("" + f.getName() + " -- created by " + f.getCreatorNick()
+            String creatorSource = f.getCreatorSource();
+            String creatorSourceMessage = "";
+            if(creatorSource != null)
+            {
+                creatorSourceMessage += " from " + creatorSource;
+            }
+            source.sendSpaced("" + f.getName() + " -- created by " + f.getCreatorNick()
                 + " <" + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
-                + new Date(f.getCreationTime()).toString() + "; requested " + totalRequests
+                + new Date(f.getCreationTime()).toString() + creatorSourceMessage + "; requested " + totalRequests
                 + " times (" + directRequests + " directly, " + indirectRequests
                 + " indirectly)" + attributionMessage + factpackMessage);
         }

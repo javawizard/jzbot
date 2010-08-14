@@ -134,5 +134,11 @@ public class ServerUser implements Messenger
     {
         JZUtils.sendSpaced(this, message);
     }
+
+    @Override
+    public String getScopeName()
+    {
+        return "@" + serverName;
+    }
     
 }
