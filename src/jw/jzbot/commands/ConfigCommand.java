@@ -44,7 +44,7 @@ public class ConfigCommand implements Command
                         + "\". You can use \"~config " + var.name()
                         + " <newvalue>\" to set a new value."
                         + " The variable's description is:");
-                source.sendMessage(var.getDescription());
+                source.sendSpaced(var.getDescription());
             }
             else
             {

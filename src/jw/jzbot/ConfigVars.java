@@ -107,7 +107,9 @@ public enum ConfigVars
         + "generally only be used by developers wanting to improve "
         + "database performance or by people curious as to what queries "
         + "are being made by the bot. If this is 0, no such tracing will "
-        + "be performed, and performance will be better.")
+        + "be performed, and performance will be better. Note that even "
+        + "with tracing enabled, the first few calls needed to figure "
+        + "out whether tracing should be enabled will not be traced.")
     {
         public void set(String value)
         {
