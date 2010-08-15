@@ -1329,6 +1329,7 @@ public class JZBot
     {
         proxyStorage =
                 new ProxyStorage<Storage>(Storage.class, new File("storage/db"), 20, 30, 10);
+        proxyTraceConfigChanged();
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
         if (config == null)
@@ -3216,4 +3217,8 @@ public class JZBot
         }
     }
     
+    public static void proxyTraceConfigChanged()
+    {
+        proxyStorage.setTracingEnabled(ConfigVars.proxytrace.get().equals("1"));
+    }
 }

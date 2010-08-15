@@ -49,23 +49,23 @@ public class StatusCommand implements Command
         if (arguments.equals(""))
         {
             String s =
-                    "Opcount:" + JZBot.proxyStorage.getOpcount() + ";free,total,max:"
+                    "Opcount:" + JZBot.proxyStorage.getOpcount() + "; free,total,max:"
                         + format(Runtime.getRuntime().freeMemory()) + ","
                         + format(Runtime.getRuntime().totalMemory()) + ","
-                        + format(Runtime.getRuntime().maxMemory()) + ";uptime(seconds):"
+                        + format(Runtime.getRuntime().maxMemory()) + "; uptime(seconds):"
                         + ((System.currentTimeMillis() - JZBot.startedAtTime) / 1000)
                         + ",functions:" + FactParser.getFunctionNames().length
                         + ",commands:" + JZBot.commands.size() + ",queue:"
                         + JZBot.getServer(server).getConnection().getOutgoingQueueSize()
                         + ",pastebins:" + PastebinService.getProviderCount();
-            // FIXME: there are no spaces in the string, we should probably add some in
-            // some manner or something
             source.sendSpaced(s);
-            source.sendSpaced("For more info, try \"status gc\", \"status threads\", "
-                + "\"status facts\". \"status storage\", "
-                + "\"status mx\", \"status stack\", "
-                + "\"status os\", \"status logging\", "
-                + "\"status version\", or \"status hostname\".");
+            source
+                    .sendSpaced("For more info, try \"status gc\", \"status threads\", "
+                        + "\"status facts\". \"status storage\", "
+                        + "\"status mx\", \"status stack\", "
+                        + "\"status os\", \"status logging\", "
+                        + "\"status version\", \"status hostname\", "
+                        + "or \"status proxytrace\".");
         }
         else if (arguments.equals("gc"))
         {
@@ -118,19 +118,22 @@ public class StatusCommand implements Command
         }
         else if (arguments.equals("logging"))
         {
-            File logsFolder = new File("storage/logs");
-            long total = 0;
-            ArrayList<String> strings = new ArrayList<String>();
-            for (File f : logsFolder.listFiles())
-            {
-                if (!f.isFile())
-                    continue;
-                total += f.length();
-                strings.add("" + f.getName() + ":" + format(f.length()));
-            }
-            JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
-                + (strings.size() > 0 ? ", per-channel: " : ""), strings
-                    .toArray(new String[0]), ", ", source);
+            // File logsFolder = new File("storage/logs");
+            // long total = 0;
+            // ArrayList<String> strings = new ArrayList<String>();
+            // for (File f : logsFolder.listFiles())
+            // {
+            // if (!f.isFile())
+            // continue;
+            // total += f.length();
+            // strings.add("" + f.getName() + ":" + format(f.length()));
+            // }
+            // JZUtils.ircSendDelimited("Total log size in bytes: " + format(total)
+            // + (strings.size() > 0 ? ", per-channel: " : ""), strings
+            // .toArray(new String[0]), ", ", source);
+            throw new ResponseException("This is disabled due to not "
+                + "pastebinning on large output values. jcp willF fix this "
+                + "at some point; not sure when yet.");
         }
         else if (arguments.equals("facts"))
         {
@@ -208,11 +211,47 @@ public class StatusCommand implements Command
         }
         else if (arguments.equals("version"))
         {
+            if (!sender.isSuperop())
+                throw new ResponseException("Due to the relatively high "
+                    + "level of computational power needed to figure out "
+                    + "the current version, only superops are allowed to "
+                    + "run this command at present.");
             sendVersion(source);
         }
         else if (arguments.equals("hostname"))
         {
             source.sendMessage("Your hostname is " + sender.getHostname());
+        }
+        else if (arguments.equals("proxytrace"))
+        {
+            String initial = "";
+            boolean tracingEnabled = ConfigVars.proxytrace.get().equals("1");
+            Map<String, Long> map = JZBot.proxyStorage.getCurrentTracingInfo();
+            if (tracingEnabled)
+                initial +=
+                        "ProxyStorage tracing is currently enabled. "
+                            + "Current tracing information: ";
+            else
+            {
+                initial +=
+                        "ProxyStorage tracing is currently disabled. "
+                            + "You can enable it with \"config proxytrace 1\". ";
+                if (map.size() > 0)
+                    initial +=
+                            "Tracing information from the last time tracing "
+                                + "was enabled: ";
+            }
+            String pastebinText =
+                    "Here's the ProxyStorage tracing "
+                        + "information. Each line consists of a number "
+                        + "followed by an SQL statement. Parameters are "
+                        + "represented by question marks. The number "
+                        + "represents the number of times that the "
+                        + "statement in question was run since tracing was enabled.\n\n\n";
+            for (Map.Entry<String, Long> entry : map.entrySet())
+                pastebinText += entry.getValue() + "  " + entry.getKey() + "\n";
+            initial += JZBot.pastebinNotice(pastebinText, null);
+            source.sendSpaced(initial);
         }
         else
         {
