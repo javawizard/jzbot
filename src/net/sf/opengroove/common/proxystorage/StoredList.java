@@ -26,6 +26,11 @@ import java.util.Collection;
  */
 public class StoredList<T> extends AbstractList<T>
 {
+    void clearCache()
+    {
+        storage.listSizeCache.remove(id);
+    }
+    
     @Override
     public Object[] toArray()
     {
@@ -157,6 +162,7 @@ public class StoredList<T> extends AbstractList<T>
                 st.setLong(3, object.getProxyStorageId());
                 st.execute();
                 st.close();
+                clearCache();
                 /*
                  * The object has now been added.
                  */
@@ -229,6 +235,7 @@ public class StoredList<T> extends AbstractList<T>
                 dst.setInt(2, index);
                 dst.execute();
                 dst.close();
+                clearCache();
                 return previous;
             }
             catch (Exception e)
@@ -277,6 +284,7 @@ public class StoredList<T> extends AbstractList<T>
                 st.setInt(3, index);
                 st.execute();
                 st.close();
+                clearCache();
                 return previous;
             }
             catch (Exception e)
@@ -297,6 +305,9 @@ public class StoredList<T> extends AbstractList<T>
         {
             try
             {
+                Integer cachedCount = (Integer) storage.listSizeCache.get(id);
+                if(cachedCount != null)
+                    return cachedCount;
                 PreparedStatement st =
                         storage
                                 .prepareStatement("select count(*) from proxystorage_collections where id = ?");
@@ -308,6 +319,7 @@ public class StoredList<T> extends AbstractList<T>
                     count = rs.getInt(1);
                 rs.close();
                 st.close();
+                storage.listSizeCache.put(id, count);
                 return count;
             }
             catch (Exception e)

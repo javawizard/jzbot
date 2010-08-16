@@ -121,9 +121,19 @@ public class ProxyStorage<E>
      */
     Map propertyCache;
     /*
-     * <BeanPropertyKey,Object?
+     * <BeanPropertyKey,Object>
      */
     Map stringCache;
+    
+    /*
+     * <Long,Integer>
+     */
+    Map listSizeCache;
+    
+    /*
+     * TODO, should be a cache map like above
+     */
+    Object listElementCache;
     
     long opcount = 0;
     
@@ -202,17 +212,20 @@ public class ProxyStorage<E>
      */
     public ProxyStorage(Class<E> rootClass, File location)
     {
-        this(rootClass, location, 800, 2000, 400);
+        this(rootClass, location, 800, 2000, 400, 250, 350);
     }
     
     public ProxyStorage(Class<E> rootClass, File location, int objectCacheSize,
-            int propertyCacheSize, int stringCacheSize)
+            int propertyCacheSize, int stringCacheSize, int listSizeCacheSize,
+            int listElementCacheSize)
 
     {
         System.out.println("loading proxystorage on file " + location);
         objectCache = Collections.synchronizedMap(new LRUMap(objectCacheSize));
         propertyCache = Collections.synchronizedMap(new LRUMap(propertyCacheSize));
         stringCache = Collections.synchronizedMap(new LRUMap(stringCacheSize));
+        listSizeCache = Collections.synchronizedMap(new LRUMap(listSizeCacheSize));
+        listElementCache = Collections.synchronizedMap(new LRUMap(listElementCacheSize));
         listenerExecutor.allowCoreThreadTimeOut(true);
         this.rootClass = rootClass;
         try
