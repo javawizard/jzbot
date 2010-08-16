@@ -92,6 +92,7 @@ import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
 
+import net.sf.opengroove.common.proxystorage.ProxyObject;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.proxystorage.StoredList;
 import net.sf.opengroove.common.utils.StringUtils;
@@ -670,15 +671,23 @@ public class JZBot
     private static List<Server> sortByPriority(ArrayList<Server> list)
     {
         long start = System.currentTimeMillis();
+        final Map<Long, Integer> priorityCache = new HashMap<Long, Integer>();
+        for (Server server : list)
+            priorityCache.put(((ProxyObject) server).getProxyStorageId(), server
+                    .getPriority());
         Collections.sort(list, new Comparator<Server>()
         {
             
             @Override
             public int compare(Server first, Server second)
             {
-                if (first.getPriority() > second.getPriority())
+                ProxyObject o1 = (ProxyObject) first;
+                ProxyObject o2 = (ProxyObject) second;
+                if (priorityCache.get(o1.getProxyStorageId()) > priorityCache.get(o2
+                        .getProxyStorageId()))
                     return -1;
-                else if (second.getPriority() > first.getPriority())
+                else if (priorityCache.get(o2.getProxyStorageId()) > priorityCache.get(o1
+                        .getProxyStorageId()))
                     return 1;
                 return 0;
             }
