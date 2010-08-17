@@ -93,7 +93,8 @@ public class StoredList<T> extends AbstractList<T>
                 long ref = rs.getLong("value");
                 rs.close();
                 st.close();
-                Object result = storage.getById(ref, targetClass);
+                // TODO: figure out if not checking for object existence here is sane
+                Object result = storage.getById(ref, targetClass, false);
                 if (result == null)
                 {
                     throw new IllegalStateException("The object at index " + index
@@ -306,7 +307,7 @@ public class StoredList<T> extends AbstractList<T>
             try
             {
                 Integer cachedCount = (Integer) storage.listSizeCache.get(id);
-                if(cachedCount != null)
+                if (cachedCount != null)
                     return cachedCount;
                 PreparedStatement st =
                         storage

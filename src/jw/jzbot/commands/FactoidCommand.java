@@ -331,7 +331,9 @@ public class FactoidCommand implements Command
                 throw new ResponseException(
                         "The export command requires exactly a scope of "
                             + "\"server\". I'm hoping to add the ability to "
-                            + "export channel-scope and global-scope " + "factoids soon.");
+                            + "export channel-scope and global-scope "
+                            + "factoids soon. Server export does, however,"
+                            + "export all channel-scope factoids within the server.");
             processed = true;
             Document export = exportServerFactoids(server);
             String data =
@@ -441,15 +443,15 @@ public class FactoidCommand implements Command
             }
             String creatorSource = f.getCreatorSource();
             String creatorSourceMessage = "";
-            if(creatorSource != null)
+            if (creatorSource != null)
             {
                 creatorSourceMessage += " from " + creatorSource;
             }
-            source.sendSpaced("" + f.getName() + " -- created by " + f.getCreatorNick()
-                + " <" + f.getCreatorUsername() + "@" + f.getCreator() + "> at "
-                + new Date(f.getCreationTime()).toString() + creatorSourceMessage + "; requested " + totalRequests
-                + " times (" + directRequests + " directly, " + indirectRequests
-                + " indirectly)" + attributionMessage + factpackMessage);
+            source.sendSpaced("" + f.getName() + " -- created by " + f.getFullCreatorName()
+                + " at " + new Date(f.getCreationTime()).toString() + creatorSourceMessage
+                + "; requested " + totalRequests + " times (" + directRequests
+                + " directly, " + indirectRequests + " indirectly)" + attributionMessage
+                + factpackMessage);
         }
         if (command.equals("pack"))
         {
@@ -508,18 +510,11 @@ public class FactoidCommand implements Command
         {
             processed = true;
             doFactoidLocate(pm, sender, source, afterCommand, scope, server, s, channel, c);
-            throw new ResponseException("This is not supported yet. When it "
-                + "is, it will search for factoids with the specified name "
-                + "across the entire database, and their scopes will be printed.");
         }
         if (command.equals("search"))
         {
             processed = true;
             doFactoidSearch(pm, sender, source, afterCommand, scope, server, s, channel, c);
-            throw new ResponseException("This is not yet supported. When it "
-                + "is, it will search for factoids whose names or text "
-                + "contain the specified text. The entire database of "
-                + "factoids will be searched.");
         }
         if (!processed)
         {
@@ -535,16 +530,86 @@ public class FactoidCommand implements Command
             String afterCommand, FactScope scope, String server, Server s, String channel,
             Channel c)
     {
-        // TODO Auto-generated method stub
-        
+        if (afterCommand == null)
+            throw new ResponseException("You need to specify the text to "
+                + "search for. This command will then search the entire "
+                + "database of factoids for any factoids whose name, "
+                + "text, or other attributes contain a match to the "
+                + "specified text, which should be a regular expression.");
+        String regex = ".*" + afterCommand + ".*";
+        ArrayList<String> matches = new ArrayList<String>();
+        if (JZBot.storage.getFactoid(afterCommand) != null)
+            matches.add("global");
+        for (Server searchServer : JZBot.storage.getServers().isolate())
+        {
+            String serverName = searchServer.getName();
+            if (searchServer.getFactoid(afterCommand) != null)
+                matches.add("@" + serverName);
+            for (Channel searchChannel : searchServer.getChannels().isolate())
+            {
+                if (searchChannel.getFactoid(afterCommand) != null)
+                    matches.add("@" + serverName + searchChannel.getName());
+            }
+        }
+        String result;
+        if (matches.size() == 0)
+            result = "No matches found.";
+        else
+            result = StringUtils.delimited(matches.toArray(new String[0]), " ");
+        if (result.length() > source.getProtocolDelimitedLength() * 2)
+            result = JZBot.pastebinNotice(result, null);
+        source.sendSpaced(result);
+    }
+    
+    private boolean factoidMatches(Factoid factoid, String regex)
+    {
+        if(factoid.getAttribution().matches(regex))
+            return true;
+        if(factoid.getCreatorSource().matches(regex))
+            return true;
+        if(factoid.getFactpack().matches(regex))
+            return true;
+        if(factoid.getFullCreatorName().matches(regex))
+            return true;
+        if (factoid.getName().matches(regex))
+            return true;
+        if(factoid.getValue().matches(regex))
+            return true;
+        return false;
     }
     
     private void doFactoidLocate(boolean pm, ServerUser sender, Messenger source,
             String afterCommand, FactScope scope, String server, Server s, String channel,
             Channel c)
     {
-        // TODO Auto-generated method stub
-        
+        if (afterCommand.equals(""))
+            throw new ResponseException("You need to specify the name "
+                + "of the factoid to locate. This command will then "
+                + "search across the entire database to find factoids "
+                + "with the specified name, and the scope of each "
+                + "matching factoid will be printed out.");
+        ArrayList<String> matches = new ArrayList<String>();
+        if (JZBot.storage.getFactoid(afterCommand) != null)
+            matches.add("global");
+        for (Server searchServer : JZBot.storage.getServers().isolate())
+        {
+            String serverName = searchServer.getName();
+            if (searchServer.getFactoid(afterCommand) != null)
+                matches.add("@" + serverName);
+            for (Channel searchChannel : searchServer.getChannels().isolate())
+            {
+                if (searchChannel.getFactoid(afterCommand) != null)
+                    matches.add("@" + serverName + searchChannel.getName());
+            }
+        }
+        String result;
+        if (matches.size() == 0)
+            result = "No matches found.";
+        else
+            result = StringUtils.delimited(matches.toArray(new String[0]), " ");
+        if (result.length() > source.getProtocolDelimitedLength() * 2)
+            result = JZBot.pastebinNotice(result, null);
+        source.sendSpaced(result);
     }
     
     private Factoid getScopedFactoid(FactScope scope, Server s, Channel c, String name)

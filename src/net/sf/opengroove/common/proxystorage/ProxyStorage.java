@@ -562,7 +562,9 @@ public class ProxyStorage<E>
     {
         Object object;
         if (c != StoredList.class)
-            object = getById(id, c);
+            // TODO: make sure not checking for existence here is sane. I think it is but
+            // I'm not 100% sure yet.
+            object = getById(id, c, false);
         else
             object = new StoredList(ProxyStorage.this, subtype, id);
         HashSet<Long> set = list.get(c);
@@ -814,6 +816,30 @@ public class ProxyStorage<E>
         return propertyName;
     }
     
+    private Method getAccessorMethod(Object object, String propertyName)
+    {
+        String original = propertyName;
+        propertyName =
+                propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
+        try
+        {
+            return object.getClass().getMethod("get" + propertyName);
+        }
+        catch (NoSuchMethodException e)
+        {
+            try
+            {
+                return object.getClass().getMethod("is" + propertyName);
+            }
+            catch (NoSuchMethodException e2)
+            {
+                throw new IllegalArgumentException("No such property " + propertyName
+                    + " on class " + object.getClass().getName() + " implementing "
+                    + Arrays.toString(object.getClass().getInterfaces()));
+            }
+        }
+    }
+    
     /**
      * If the table specified does not exist, creates it as a table with no columns. If
      * the table specified does exist, it is not modified.
@@ -850,7 +876,11 @@ public class ProxyStorage<E>
      * 
      * The new instance will be persisted in the database, but will not be owned by
      * anything, so a call to vacuum() would remove it until it is assigned to another
-     * object that is in the tree.
+     * object that is in the tree.<br/><br/>
+     * 
+     * Generally, it's more convenient to annotate a method on a ProxyStorage object with
+     * {@link Constructor} and use that method instead. Both methods would do exactly the
+     * same thing, but the latter would most likely be more convenient to use.
      * 
      * @param c
      *            The class of the interface to create a new instance of.
@@ -860,7 +890,7 @@ public class ProxyStorage<E>
     {
         if (!allClasses.contains(c))
             throw new IllegalArgumentException("The class specified (" + c.getName()
-                + ") is not a class in the root " + "tree of this proxy storage instance. "
+                + ") is not a class in the root tree of this proxy storage instance. "
                 + "(the root class is " + rootClass.getName() + ")");
         try
         {
@@ -905,7 +935,7 @@ public class ProxyStorage<E>
             }
             st.execute();
             st.close();
-            return (T) getById(newId, c);
+            return (T) getById(newId, c, false);
         }
         catch (Exception e)
         {
@@ -932,25 +962,40 @@ public class ProxyStorage<E>
     
     /**
      * Gets an object that has the specified id and is of the specified type. This method
-     * doesn't handle StoredLists; it only handles proxy beans.
+     * doesn't handle StoredLists; it only handles proxy beans.<br/><br/>
+     * 
+     * This method is package-scope instead of public as it's possible to tell it not to
+     * check whether the specified object actually exists, which can cause problems later
+     * on when actually accessing the object.
      * 
      * @param id
      *            The id of the object
      * @param c
      *            The class of the object
+     * @param check
+     *            Whether or not to make sure the object exists in the database. This
+     *            causes an SQL query to be run against the database which can cause
+     *            performance problems if used excessively.
      * @return A new object that represents the id specified. If the object does not
      *         exist, null will be returned. The object returned implements the interface
      *         defined by <code>c</code>, as well as {@link ProxyObject}.
      * @throws SQLException
      */
-    Object getById(long id, Class c) throws SQLException
+    Object getById(long id, Class c, boolean check) throws SQLException
     {
         synchronized (lock)
         {
-            if (!isTargetIdPresent(id, c))
-                return null;
+            if (check)
+                if (!isTargetIdPresent(id, c))
+                    return null;
             if (objectCache.containsKey(id))
-                return objectCache.get(id);
+            {
+                Object result = objectCache.get(id);
+                if (!(c.isInstance(result)))
+                    throw new IllegalStateException("Class mismatch: object " + id
+                        + " is cached as an instance of " + result.getClass().getName()
+                        + " but was requested as an instance of " + c.getName());
+            }
             ObjectHandler handler = new ObjectHandler(c, id);
             Object proxy =
                     Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { c,
@@ -1026,7 +1071,9 @@ public class ProxyStorage<E>
             rst.close();
             if (hasNext)
             {
-                return (E) getById(existingId, rootClass);
+                // The root will never be garbage collected (because it's the root, and
+                // the root can't be changed), so we don't need to check for existence.
+                return (E) getById(existingId, rootClass, false);
             }
             if (!createIfNonexistant)
                 return null;
@@ -1145,6 +1192,33 @@ public class ProxyStorage<E>
                     long objectId = object.getProxyStorageId();
                     return objectId == targetId;
                 }
+                if (method.isAnnotationPresent(Printf.class))
+                {
+                    /*
+                     * This method is a format method. We'll get the list of properties to
+                     * retrieve, fetch all of them into an array, then return the
+                     * formatted result. We cache all of the properties in a map to avoid
+                     * double-selecting a property from the database if it's used more
+                     * than once in the same printf formatter.
+                     */
+                    Map<String, Object> propertyMap = new HashMap<String, Object>();
+                    Printf annotation = method.getAnnotation(Printf.class);
+                    Object[] properties = new Object[annotation.properties().length];
+                    String[] propertyNames = annotation.properties();
+                    for (int i = 0; i < propertyNames.length; i++)
+                    {
+                        String propertyName = propertyNames[i];
+                        if (propertyMap.containsKey(propertyName))
+                            properties[i] = propertyMap.get(propertyName);
+                        else
+                        {
+                            properties[i] =
+                                    getAccessorMethod(proxy, propertyName).invoke(proxy);
+                            propertyMap.put(propertyName, properties[i]);
+                        }
+                    }
+                    return String.format(annotation.format(), properties);
+                }
                 if (method.isAnnotationPresent(Search.class))
                 {
                     /*
@@ -1257,7 +1331,9 @@ public class ProxyStorage<E>
                     int index = 0;
                     for (long resultId : resultIds)
                     {
-                        results[index++] = getById(resultId, listType);
+                        // TODO: figure out if not checking for object existence here is
+                        // sane
+                        results[index++] = getById(resultId, listType, false);
                     }
                     if (method.getReturnType().isArray())
                     {
@@ -1398,7 +1474,9 @@ public class ProxyStorage<E>
                     int index = 0;
                     for (long resultId : resultIds)
                     {
-                        results[index++] = getById(resultId, listType);
+                        // TODO: figure out if not checking for object existence here is
+                        // sane
+                        results[index++] = getById(resultId, listType, false);
                     }
                     if (method.getReturnType().isArray())
                     {
@@ -1440,7 +1518,7 @@ public class ProxyStorage<E>
                 }
                 if (method.getName().equals("toString"))
                 {
-                    return "ProxyStorage-id" + targetId;
+                    return "ProxyStorage-object-" + targetId;
                 }
                 if (isPropertyMethod(method))
                 {
@@ -1595,10 +1673,12 @@ public class ProxyStorage<E>
                                 ust.close();
                                 result = newId;
                             }
-                            return getById((Long) result, method.getReturnType());
+                            // TODO: figure out if not checking for object existence here
+                            // is sane
+                            return getById((Long) result, method.getReturnType(), false);
                         }
                         throw new IllegalArgumentException(
-                                "The method is a getter, but it's return "
+                                "The method is a getter, but its return "
                                     + "type is not a proper type.");
                     }
                     else

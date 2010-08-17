@@ -2,6 +2,7 @@ package jw.jzbot.storage;
 
 import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.Length;
+import net.sf.opengroove.common.proxystorage.Printf;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
@@ -56,6 +57,9 @@ public interface Factoid
     public String getCreatorNick();
     
     public void setCreatorNick(String nick);
+    
+    @Printf(format="%s <%s@%s>", properties={"creatorNick","creatorUsername","creator"})
+    public String getFullCreatorName();
     
     @Property
     public long getCreationTime();
