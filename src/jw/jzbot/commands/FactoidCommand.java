@@ -535,45 +535,57 @@ public class FactoidCommand implements Command
                 + "search for. This command will then search the entire "
                 + "database of factoids for any factoids whose name, "
                 + "text, or other attributes contain a match to the "
-                + "specified text, which should be a regular expression.");
+                + "specified text, which should be a regular expression. "
+                + "The factoid's scope and name will then be printed "
+                + "for each match. Entires will be separated by | characters.");
         String regex = ".*" + afterCommand + ".*";
         ArrayList<String> matches = new ArrayList<String>();
-        if (JZBot.storage.getFactoid(afterCommand) != null)
-            matches.add("global");
+        searchForFactoidInContainer(JZBot.storage, "global", regex, matches);
         for (Server searchServer : JZBot.storage.getServers().isolate())
         {
             String serverName = searchServer.getName();
-            if (searchServer.getFactoid(afterCommand) != null)
-                matches.add("@" + serverName);
+            searchForFactoidInContainer(searchServer, "@" + serverName, regex, matches);
             for (Channel searchChannel : searchServer.getChannels().isolate())
             {
-                if (searchChannel.getFactoid(afterCommand) != null)
-                    matches.add("@" + serverName + searchChannel.getName());
+                searchForFactoidInContainer(searchChannel, "@" + serverName
+                    + searchChannel.getName());
             }
         }
         String result;
         if (matches.size() == 0)
             result = "No matches found.";
         else
-            result = StringUtils.delimited(matches.toArray(new String[0]), " ");
+            result = StringUtils.delimited(matches.toArray(new String[0]), " | ");
         if (result.length() > source.getProtocolDelimitedLength() * 2)
             result = JZBot.pastebinNotice(result, null);
         source.sendSpaced(result);
     }
     
+    private void searchForFactoidInContainer(HasFactoids container, String containerName,
+            String regex, ArrayList<String> matches)
+    {
+        for (Factoid factoid : container.getFactoids().isolate())
+        {
+            if (factoidMatches(factoid, regex))
+            {
+                matches.add(containerName + " " + factoid.getName());
+            }
+        }
+    }
+    
     private boolean factoidMatches(Factoid factoid, String regex)
     {
-        if(factoid.getAttribution().matches(regex))
+        if (factoid.getAttribution().matches(regex))
             return true;
-        if(factoid.getCreatorSource().matches(regex))
+        if (factoid.getCreatorSource().matches(regex))
             return true;
-        if(factoid.getFactpack().matches(regex))
+        if (factoid.getFactpack().matches(regex))
             return true;
-        if(factoid.getFullCreatorName().matches(regex))
+        if (factoid.getFullCreatorName().matches(regex))
             return true;
         if (factoid.getName().matches(regex))
             return true;
-        if(factoid.getValue().matches(regex))
+        if (factoid.getValue().matches(regex))
             return true;
         return false;
     }
