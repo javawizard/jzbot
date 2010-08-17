@@ -555,7 +555,10 @@ public class FactoidCommand implements Command
         if (matches.size() == 0)
             result = "No matches found.";
         else
-            result = StringUtils.delimited(matches.toArray(new String[0]), " | ");
+            result =
+                    "" + matches.size() + " match" + (matches.size() == 1 ? "" : "es")
+                        + ": "
+                        + StringUtils.delimited(matches.toArray(new String[0]), " | ");
         if (result.length() > source.getProtocolDelimitedLength() * 2)
             result = JZBot.pastebinNotice(result, null);
         source.sendSpaced(result);
@@ -619,7 +622,9 @@ public class FactoidCommand implements Command
         if (matches.size() == 0)
             result = "No matches found.";
         else
-            result = StringUtils.delimited(matches.toArray(new String[0]), " ");
+            result =
+                    "" + matches.size() + " match" + (matches.size() == 1 ? "" : "es")
+                        + ": " + StringUtils.delimited(matches.toArray(new String[0]), " ");
         if (result.length() > source.getProtocolDelimitedLength() * 2)
             result = JZBot.pastebinNotice(result, null);
         source.sendSpaced(result);
