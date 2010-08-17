@@ -1,5 +1,9 @@
 package net.sf.opengroove.common.proxystorage;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * An annotation that can be applied to a proxy bean interface method to indicate that it
  * should return a formatted string consisting of other properties. The string to return
@@ -8,6 +12,8 @@ package net.sf.opengroove.common.proxystorage;
  * @author Alexander Boyd
  * 
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface Printf
 {
     /**

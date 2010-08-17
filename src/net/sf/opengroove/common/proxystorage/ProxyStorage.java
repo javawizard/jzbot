@@ -1194,6 +1194,7 @@ public class ProxyStorage<E>
                 }
                 if (method.isAnnotationPresent(Printf.class))
                 {
+                    System.out.println("PRINTF METHOD");
                     /*
                      * This method is a format method. We'll get the list of properties to
                      * retrieve, fetch all of them into an array, then return the
@@ -1764,6 +1765,9 @@ public class ProxyStorage<E>
                  * contains (in which case all matches will be returned), or a single
                  * instance of that object, in which case the first match will be returned
                  * or null if there wasn't a match.
+                 * 
+                 * TODO: delete the above todo, as I'm fairly certain all of it is now
+                 * implemented in the ProxyStorage system.
                  */
                 throw new UnsupportedOperationException("The method " + method.getName()
                     + " is not supported for the proxy type " + targetClass.getName());
