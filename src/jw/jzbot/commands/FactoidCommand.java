@@ -530,7 +530,7 @@ public class FactoidCommand implements Command
             String afterCommand, FactScope scope, String server, Server s, String channel,
             Channel c)
     {
-        if (afterCommand == null)
+        if (afterCommand.equals(""))
             throw new ResponseException("You need to specify the text to "
                 + "search for. This command will then search the entire "
                 + "database of factoids for any factoids whose name, "
@@ -548,7 +548,7 @@ public class FactoidCommand implements Command
             for (Channel searchChannel : searchServer.getChannels().isolate())
             {
                 searchForFactoidInContainer(searchChannel, "@" + serverName
-                    + searchChannel.getName());
+                    + searchChannel.getName(), regex, matches);
             }
         }
         String result;
@@ -575,17 +575,18 @@ public class FactoidCommand implements Command
     
     private boolean factoidMatches(Factoid factoid, String regex)
     {
-        if (factoid.getAttribution().matches(regex))
+        if (factoid.getAttribution() != null && factoid.getAttribution().matches(regex))
             return true;
-        if (factoid.getCreatorSource().matches(regex))
+        if (factoid.getCreatorSource() != null && factoid.getCreatorSource().matches(regex))
             return true;
-        if (factoid.getFactpack().matches(regex))
+        if (factoid.getFactpack() != null && factoid.getFactpack().matches(regex))
             return true;
-        if (factoid.getFullCreatorName().matches(regex))
+        if (factoid.getFullCreatorName() != null
+            && factoid.getFullCreatorName().matches(regex))
             return true;
-        if (factoid.getName().matches(regex))
+        if (factoid.getName() != null && factoid.getName().matches(regex))
             return true;
-        if (factoid.getValue().matches(regex))
+        if (factoid.getValue() != null && factoid.getValue().matches(regex))
             return true;
         return false;
     }
