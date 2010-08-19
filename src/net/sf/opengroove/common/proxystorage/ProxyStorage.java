@@ -1094,7 +1094,7 @@ public class ProxyStorage<E>
         catch (SQLException e)
         {
             throw new RuntimeException(
-                    "An error occured while performing the requested operation.", e);
+                    "An error occurred while performing the requested operation.", e);
         }
     }
     
