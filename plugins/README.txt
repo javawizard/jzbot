@@ -1,1 +1,1 @@
-DO NOT install plugins in this folder. This folder is 
+DO NOT install plugins in this folder. This folder is only for plugins included with JZBot. To install a new plugin, place it in storage/plugins/<language>, where <language> is the name of the language that the plugin is written in. If that folder doesn't exist, then you need to install or activate a plugin that supports the language you're trying to use, restart the bot, then put the plugin in that folder.

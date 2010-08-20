@@ -82,12 +82,12 @@ import jw.jzbot.help.PropsHelpProvider;
 import jw.jzbot.help.XMLHelpProvider;
 import jw.jzbot.pastebin.DefaultPastebinProviders;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
+import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.protocols.BZFlagProtocol;
 import jw.jzbot.protocols.IrcProtocol;
 import jw.jzbot.protocols.fb.FacebookProtocol;
 import jw.jzbot.protocols.imap.ImapProtocol;
 import jw.jzbot.protocols.xmpp.XmppProtocol;
-import jw.jzbot.psystem.server.PluginManager;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -1237,7 +1237,7 @@ public class JZBot
         startLogSinkThread();
         reloadRegexes();
         System.out.println("Starting the plugin manager...");
-        PluginManager.start();
+        PluginSystem.start();
         System.out.println("Starting the automatic restart thread...");
         startAutomaticRestart();
         System.out.println("Starting the pm user time thread...");
@@ -1272,7 +1272,7 @@ public class JZBot
             {
                 System.out.println();
                 System.out.println("Shutting down the plugin manager...");
-                PluginManager.shutdown();
+                PluginSystem.shutdown();
                 System.out.println("Shutting down the log queue...");
                 synchronized (logQueueLock)
                 {
