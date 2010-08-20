@@ -977,7 +977,7 @@ public class JZBot
         if (args[0].equals("help"))
         {
             System.out.println("JZBot is an IRC bot. If you have questions, connect");
-            System.out.println("to irc.freenode.net and join channel ##jzbot.");
+            System.out.println("to irc.freenode.net and join channel #jzbot.");
             System.out
                     .println("To set up your bot, run \"jzbot addserver <name> <protocol> <server> ");
             System.out.println("<port> <nick> <hostname> <password>\". <server>");
