@@ -251,7 +251,6 @@ public class ProxyStorage<E>
                         + ";FILE_LOCK=SOCKET", "sa", "");
             System.out.println("connected");
             dbInfo = connection.getMetaData();
-            System.out.println("Hello world");
             checkSystemTables();
             checkTables(rootClass, allClasses);
         }
