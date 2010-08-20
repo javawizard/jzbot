@@ -274,7 +274,14 @@ public class BZFlagProtocol implements Connection
     
     private void doShutdown()
     {
-        serverLink.closeIgnore();
+        try
+        {
+            serverLink.closeIgnore();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         try
         {
             inputThread.shutdown();
