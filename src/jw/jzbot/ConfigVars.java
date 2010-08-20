@@ -53,9 +53,9 @@ public enum ConfigVars
         }
     },
     keys("", "A pipe-separated list of hashes (as obtained from the {hash} function). "
-        + "If a user runs \"~op key <text>\", and then has of <text> is equal to "
+        + "If a user runs \"~superop key <text>\", and then hash of <text> is equal to "
         + "one of the hashes in this list, the user will be made a superop. Note that "
-        + "keys cannot contain spaces."), notfound(
+        + "the plaintext forms of keys cannot contain spaces."), notfound(
             "",
             "This config variable is the name of a factoid to run when users "
                 + "send a message that isn't recognized. If this is blank, then the text \""
