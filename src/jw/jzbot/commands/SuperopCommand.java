@@ -65,7 +65,7 @@ public class SuperopCommand implements Command
             Server dServer = JZBot.storage.getServer(server);
             dServer.getOperators().add(op);
             source.sendMessage("Hostname " + newHostname
-                + " was successfully added as a superop.");
+                + " was successfully added as a superop on " + server + ".");
         }
         else if (subcommand.equals("delete"))
         {
