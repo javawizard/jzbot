@@ -2795,7 +2795,8 @@ public class JZBot
     
     public static final long startedAtTime = System.currentTimeMillis();
     // Easter egg
-    public static final String PART_MESSAGE = "So long, and thanks for all the fish";
+    public static final String PART_MESSAGE =
+            "So long, and thanks for all the fish. And don't forget to be awesome!";
     
     public static void reloadRegexes()
     {
