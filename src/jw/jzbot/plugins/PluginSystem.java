@@ -68,6 +68,7 @@ public class PluginSystem
         Set<String> languagesAlreadyLoaded = new HashSet<String>();
         while (previousLoadedCount < loadedPlugins.size())
         {
+            previousLoadedCount = loadedPlugins.size();
             /*
              * We scan through the available list of plugin languages. For each language
              * that's not in languagesAlreadyLoaded, we query it for the list of plugins
