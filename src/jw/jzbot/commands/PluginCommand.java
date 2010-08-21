@@ -35,36 +35,30 @@ public class PluginCommand implements Command
                     (argumentsTokenized1.length > 1) ? argumentsTokenized1[1] : "";
             if (command.equals("available"))
             {
-                String response =
-                        "The following plugins are currently installed. "
-                            + "This list does not include plugins whose language "
-                            + "support plugin is not currently active. The plugins are: ";
+                String response = "";
                 response += StringUtils.delimited(PluginSystem.knownPluginNames, " ");
+                if (response.equals(""))
+                    response = "No available plugins.";
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
                     response = JZBot.pastebinNotice(response, null);
                 source.sendSpaced(response);
             }
             else if (command.equals("enabled"))
             {
-                String response =
-                        "The following plugins are currently enabled. "
-                            + "Note that not all of the plugins may be "
-                            + "active; the bot has to be restarted after "
-                            + "enabling a plugin for it to become active, "
-                            + "and an error while loading a plugin may "
-                            + "prevent it from becoming active. The list is: ";
+                String response = "";
                 response += StringUtils.delimited(PluginSystem.enabledPluginNames, " ");
+                if (response.equals(""))
+                    response = "No enabled plugins.";
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
                     response = JZBot.pastebinNotice(response, null);
                 source.sendSpaced(response);
             }
             else if (command.equals("active"))
             {
-                String response =
-                        "The following plugins are currently active. These are "
-                            + "the plugins that were successfully loaded the "
-                            + "last time the bot started up. They are: ";
+                String response = "";
                 response += StringUtils.delimited(PluginSystem.loadedPluginNames, " ");
+                if (response.equals(""))
+                    response = "No active plugins.";
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
                     response = JZBot.pastebinNotice(response, null);
                 source.sendSpaced(response);
