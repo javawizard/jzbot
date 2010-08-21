@@ -32,7 +32,7 @@ public class DefaultPastebinProviders
         // PastebinService.installProvider(new PDPastebin("ospaste.com", false,
         // "index.php",
         // true));
-        PastebinService.installProvider(new PDPastebin("spartabin.co.cc", false,
+        PastebinService.installProvider(new PDPastebin("p.jcs.me.uk", false,
                 "pastebin.php", true));
         // PastebinService.installProvider(new PDPastebin("paste.uberdragon.net", false,
         // "index.php"));
