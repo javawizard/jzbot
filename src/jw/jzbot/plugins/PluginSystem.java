@@ -170,6 +170,7 @@ public class PluginSystem
                  */
                 try
                 {
+                    System.out.println("PLUGIN LOADER: Loading plugin " + plugin.info.name);
                     pluginLanguages.get(plugin.language).loadPlugin(plugin,
                             new PluginContext(plugin));
                     loadedPlugins.add(plugin);
