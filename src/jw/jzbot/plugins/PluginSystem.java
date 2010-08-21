@@ -27,11 +27,16 @@ public class PluginSystem
     
     public static List<Plugin> loadedPlugins = new ArrayList<Plugin>();
     
-    public static Set<String> loadedPluginNames = new HashSet<String>();
+    public static Set<String> loadedPluginNames = new TreeSet<String>();
     
     private static ArrayList<PluginLogMessage> log = new ArrayList<PluginLogMessage>();
     
     public static Set<Plugin> knownPlugins = new TreeSet<Plugin>();
+    
+    public static Set<String> knownPluginNames = new TreeSet<String>();
+    
+    private static Map<String, Plugin> knownPluginMap =
+            new HashMap<String, Plugin>();
     
     private PluginSystem()
     {
@@ -102,7 +107,11 @@ public class PluginSystem
                 for (Plugin languagePlugin : languagePluginList)
                 {
                     if (!knownPlugins.contains(languagePlugin))
+                    {
                         knownPlugins.add(languagePlugin);
+                        knownPluginNames.add(languagePlugin.info.name);
+                        knownPluginMap.put(languagePlugin.info.name, languagePlugin);
+                    }
                     else
                     {
                         /*

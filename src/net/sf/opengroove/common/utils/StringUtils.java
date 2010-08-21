@@ -8,6 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage.ToString;
@@ -44,6 +49,11 @@ public class StringUtils
             sb.append(generator.toString(items[i]));
         }
         return sb.toString();
+    }
+    
+    public static String delimited(Iterable<String> items, String delimiter)
+    {
+        return delimited(list(items).toArray(new String[0]), delimiter);
     }
     
     public static String delimited(String[] items, String delimiter)
@@ -167,6 +177,19 @@ public class StringUtils
         {
             throw new RuntimeException(e);
         }
+    }
+    
+    public static <T> List<T> list(Iterable<T> iter)
+    {
+        return list(iter.iterator());
+    }
+    
+    public static <T> List<T> list(Iterator<T> iter)
+    {
+        ArrayList<T> list = new ArrayList<T>();
+        while (iter.hasNext())
+            list.add(iter.next());
+        return list;
     }
     
 }
