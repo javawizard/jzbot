@@ -195,7 +195,10 @@ public class PluginSystem
         {
             if (!folder.exists())
                 folder.mkdirs();
-            PluginInfo[] infos = language.listPlugins(new File(folder, language.getName()));
+            File languageFolder = new File(folder, language.getName());
+            if (!languageFolder.exists())
+                languageFolder.mkdirs();
+            PluginInfo[] infos = language.listPlugins(languageFolder);
             for (PluginInfo info : infos)
             {
                 Plugin plugin = new Plugin();
