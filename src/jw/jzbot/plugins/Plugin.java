@@ -2,7 +2,7 @@ package jw.jzbot.plugins;
 
 import java.io.File;
 
-public class Plugin
+public class Plugin implements Comparable<Plugin>
 {
     public PluginInfo info;
     public File folder;
@@ -18,5 +18,11 @@ public class Plugin
         if (!(other instanceof Plugin))
             return false;
         return ((Plugin) other).info.equals(info);
+    }
+
+    @Override
+    public int compareTo(Plugin o)
+    {
+        return info.name.compareTo(o.info.name);
     }
 }

@@ -22,7 +22,9 @@ public class PluginCommand implements Command
     public void run(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
     {
-        throw new ResponseException("This command still needs to be written.");
+        throw new ResponseException("This command still needs to be written. "
+            + "And note to jcp: write PythonLanguageSupport.java too.");
+        TODO: ^
     }
     
 }
