@@ -180,6 +180,9 @@ public class PluginSystem
         /*
          * We're done!
          */
+        log(null, false, "" + knownPlugins.size() + " plugins available, "
+            + enabledPluginNames.size() + " plugins enabled, " + loadedPlugins.size()
+            + " plugins activated.");
     }
     
     /**
@@ -196,16 +199,17 @@ public class PluginSystem
             if (!folder.exists())
                 folder.mkdirs();
             File languageFolder = new File(folder, language.getName());
-            if (!languageFolder.exists())
-                languageFolder.mkdirs();
-            PluginInfo[] infos = language.listPlugins(languageFolder);
-            for (PluginInfo info : infos)
+            if (languageFolder.exists())
             {
-                Plugin plugin = new Plugin();
-                plugin.info = info;
-                plugin.folder = folder;
-                plugin.language = language.getName();
-                list.add(plugin);
+                PluginInfo[] infos = language.listPlugins(languageFolder);
+                for (PluginInfo info : infos)
+                {
+                    Plugin plugin = new Plugin();
+                    plugin.info = info;
+                    plugin.folder = folder;
+                    plugin.language = language.getName();
+                    list.add(plugin);
+                }
             }
         }
         return list;
