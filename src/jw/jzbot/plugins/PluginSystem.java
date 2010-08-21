@@ -35,8 +35,7 @@ public class PluginSystem
     
     public static Set<String> knownPluginNames = new TreeSet<String>();
     
-    private static Map<String, Plugin> knownPluginMap =
-            new HashMap<String, Plugin>();
+    public static Map<String, Plugin> knownPluginMap = new HashMap<String, Plugin>();
     
     private PluginSystem()
     {
@@ -58,6 +57,7 @@ public class PluginSystem
         String[] enabledPluginNamesArray =
                 StringUtils.readFile(enabledPluginsFile).split("\\n");
         enabledPluginNames.addAll(Arrays.asList(enabledPluginNamesArray));
+        enabledPluginNames.remove("");
         /*
          * We've got the list. Now we'll start activating the plugins.
          */
@@ -252,5 +252,11 @@ public class PluginSystem
     public static void installPluginLanguage(PluginLanguage language)
     {
         pluginLanguages.put(language.getName(), language);
+    }
+    
+    public static void saveEnabledPlugins()
+    {
+        StringUtils.writeFile(StringUtils.delimited(enabledPluginNames, "\n") + "\n",
+                enabledPluginsFile);
     }
 }
