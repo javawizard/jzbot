@@ -1818,11 +1818,15 @@ public class JZBot
             String trigger = chan.getTrigger();
             if (context != null)
                 message = replaceNamePrefixWithTrigger(context, trigger, message);
+            System.out.println("Message translated conformant to channel trigger: "
+                + message);
             if (trigger != null && message.startsWith(trigger))
             {
+                System.out.println("Trigger match! Message selected for processing.");
                 try
                 {
                     message = message.substring(trigger.length());
+                    System.out.println("Message without trigger: " + message);
                     boolean replyToPseudo = false;
                     ServerChannel pseudoTarget = new ServerChannel(serverName, channel);
                     if (isSuperop(serverName, hostname))
@@ -1830,7 +1834,7 @@ public class JZBot
                         if (message.startsWith("%"))
                         {
                             replyToPseudo = true;
-                            message = message.substring(trigger.length());
+                            message = message.substring("%".length());
                         }
                         if ((message.startsWith("@") || message.startsWith("#"))
                             && message.contains(" "))
@@ -1838,7 +1842,14 @@ public class JZBot
                             pseudoTarget = parseFragment(message, pseudoTarget);
                             message = message.substring(message.indexOf(' ') + 1);
                         }
+                        System.out.println("Message after pseudo-target processing: "
+                            + message);
                     }
+                    else
+                        System.out.println("Sender is not a superop, so "
+                            + "we're not performing any pseudo-target processing.");
+                    // TODO: consider performing pseudo-target processing but throwing an
+                    // exception if it yields anything and the user's not a superop
                     if (replyToPseudo && pseudoTarget.getChannel() == null)
                     {
                         getConnection(serverName).sendMessage(
@@ -1847,7 +1858,7 @@ public class JZBot
                                     + "the target if the target contains a channel.");
                         return;
                     }
-                    System.out.println("running message command");
+                    System.out.println("Running message command");
                     runMessageCommand(
                             JZBot.storage.getServer(pseudoTarget.getServerName()),
                             pseudoTarget.getServerName(), pseudoTarget.getChannel(), false,
@@ -2221,7 +2232,7 @@ public class JZBot
             System.out.println("Finishing command run #6");
             return;
         }
-        System.out.println("invalid command");
+        System.out.println("invalid command, dispatching to invalid command processor");
         doInvalidCommand(pm, pm ? senderServer : datastoreServer, pm ? senderServerName
                 : serverName, channel, serverUser, source);
         System.out.println("Finishing command run #7");
@@ -2310,14 +2321,17 @@ public class JZBot
         String notfoundFact = ConfigVars.notfound.get();
         if (notfoundFact.trim().equals("") && c != null)
         {
+            System.out.println("No custom notfound factoid; using standard message");
             source.sendMessage("Huh? (pm \"help\" for more info)");
         }
         else if (notfoundFact.trim().equals(""))
         {
+            System.out.println("No custom notfound factoid; using standard message");
             source.sendMessage("Huh? (pm \"help\" for more info)");
         }
         else
         {
+            System.out.println("Found a custom notfound factoid");
             try
             {
                 Factoid f = null;
@@ -2343,6 +2357,7 @@ public class JZBot
                         "Syntax error in not-found factoid: " + pastebinStack(t));
             }
         }
+        System.out.println("Finished processing for invalid command");
     }
     
     public static void onConnect(final Server datastoreServer, final String serverName)
