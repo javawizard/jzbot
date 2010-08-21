@@ -9,7 +9,8 @@ pythonexample, that prints out a test message.
 
 
 def init(context):
-    pyjzbot.add_command("pythonexample", 
-        lambda server, channel, pm, sender, source, arguments:
-        source.sendMessage("This is an example response from a Python plugin"))
+    def the_command(server, channel, pm, sender, source, arguments):
+        source.sendMessage("This is an example response from a Python plugin")
+    pyjzbot.add_command("pythonexample", the_command) 
+        
 
