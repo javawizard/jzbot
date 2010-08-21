@@ -53,6 +53,10 @@ public class RegexCommand implements Command
                     + " that it should call.");
             String regexString = args.substring(0, index);
             String factoid = args.substring(index + 1);
+            if (factoid.length() < 1)
+                throw new ResponseException("The factoid to run must be "
+                    + "non-empty. Make sure you don't have a trailing "
+                    + "space in the command string you juse used.");
             Regex existing = c.getRegex(regexString);
             if (existing != null)
                 throw new ResponseException("That exact same regex already exists here.");
