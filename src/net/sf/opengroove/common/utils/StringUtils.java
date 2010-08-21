@@ -8,13 +8,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Properties;
 
 import net.sf.opengroove.common.proxystorage.ProxyStorage.ToString;
 
 public class StringUtils
 {
-    public static boolean isMemberOf(String string,
-        String[] strings)
+    public static boolean isMemberOf(String string, String[] strings)
     {
         for (String test : strings)
         {
@@ -24,8 +24,7 @@ public class StringUtils
         return false;
     }
     
-    public static boolean isMemberOfIgnoreCase(
-        String string, String[] strings)
+    public static boolean isMemberOfIgnoreCase(String string, String[] strings)
     {
         for (String test : strings)
         {
@@ -35,8 +34,7 @@ public class StringUtils
         return false;
     }
     
-    public static <T> String delimited(T[] items,
-        ToString<T> generator, String delimiter)
+    public static <T> String delimited(T[] items, ToString<T> generator, String delimiter)
     {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < items.length; i++)
@@ -48,8 +46,7 @@ public class StringUtils
         return sb.toString();
     }
     
-    public static String delimited(String[] items,
-        String delimiter)
+    public static String delimited(String[] items, String delimiter)
     {
         return delimited(items, new ToString<String>()
         {
@@ -67,10 +64,10 @@ public class StringUtils
     }
     
     /**
-     * reads the file specified in to a string. the file must not be larger than
-     * 5 MB.
+     * reads the file specified in to a string. the file must not be larger than 5 MB.
      * 
-     * @param file.
+     * @param file
+     *            .
      * @return
      */
     public static String readFile(File file)
@@ -78,10 +75,8 @@ public class StringUtils
         try
         {
             if (file.length() > (5 * 1000 * 1000))
-                throw new RuntimeException(
-                    "the file is "
-                        + file.length()
-                        + " bytes. that is too large. it can't be larger than 5000000 bytes.");
+                throw new RuntimeException("the file is " + file.length()
+                    + " bytes. that is too large. it can't be larger than 5000000 bytes.");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             FileInputStream fis = new FileInputStream(file);
             copy(fis, baos);
@@ -108,10 +103,8 @@ public class StringUtils
     {
         try
         {
-            ByteArrayInputStream bais = new ByteArrayInputStream(
-                string.getBytes("UTF-8"));
-            FileOutputStream fos = new FileOutputStream(
-                file);
+            ByteArrayInputStream bais = new ByteArrayInputStream(string.getBytes("UTF-8"));
+            FileOutputStream fos = new FileOutputStream(file);
             copy(bais, fos);
             bais.close();
             fos.flush();
@@ -124,9 +117,9 @@ public class StringUtils
     }
     
     /**
-     * Copies the contents of one stream to another. Bytes from the source
-     * stream are read until it is empty, and written to the destination stream.
-     * Neither the source nor the destination streams are flushed or closed.
+     * Copies the contents of one stream to another. Bytes from the source stream are read
+     * until it is empty, and written to the destination stream. Neither the source nor
+     * the destination streams are flushed or closed.
      * 
      * @param in
      *            The source stream
@@ -135,8 +128,7 @@ public class StringUtils
      * @throws IOException
      *             if an I/O error occurs
      */
-    public static void copy(InputStream in, OutputStream out)
-        throws IOException
+    public static void copy(InputStream in, OutputStream out) throws IOException
     {
         byte[] buffer = new byte[8192];
         int amount;
@@ -147,10 +139,10 @@ public class StringUtils
     }
     
     /**
-     * Returns a byte array of exactly the size specified, using the contents of
-     * the byte array specified. If the byte array is smaller than the size
-     * requested, the extra space will be filled with 0s, and if the byte array
-     * is larger than the size requested, the leading bytes will be removed.
+     * Returns a byte array of exactly the size specified, using the contents of the byte
+     * array specified. If the byte array is smaller than the size requested, the extra
+     * space will be filled with 0s, and if the byte array is larger than the size
+     * requested, the leading bytes will be removed.
      * 
      * @param bytes
      * @param length
@@ -159,9 +151,22 @@ public class StringUtils
     public static byte[] exactLength(byte[] bytes, int length)
     {
         byte[] newBytes = new byte[length];
-        System.arraycopy(bytes, 0, newBytes, 0, Math.min(
-            bytes.length, newBytes.length));
+        System.arraycopy(bytes, 0, newBytes, 0, Math.min(bytes.length, newBytes.length));
         return newBytes;
+    }
+    
+    public static Properties loadProps(File file)
+    {
+        try
+        {
+            Properties props = new Properties();
+            props.load(new FileInputStream(file));
+            return props;
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
 }

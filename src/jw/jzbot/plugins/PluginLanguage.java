@@ -35,12 +35,17 @@ public interface PluginLanguage
      *            The folder to search
      * @return A list of plugins present in the specified folder
      */
-    public PluginInfo listPlugins(File folder);
+    public PluginInfo[] listPlugins(File folder);
     
     /**
-     * Loads the specified plugin with the specified context.
+     * Loads the specified plugin with the specified context. If this method throws an
+     * exception, an error will be sent to the plugin error log, but the plugin will still
+     * be marked as loaded to prevent it from being repeatedly loaded.
      * 
-     * @param info
+     * @param plugin
+     * @param context
+     * @throws Exception
+     *             if a problem happens while loading the plugin
      */
-    public void loadPlugin(PluginInfo info, PluginContext context);
+    public void loadPlugin(Plugin plugin, PluginContext context) throws Exception;
 }
