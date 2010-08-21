@@ -18,6 +18,8 @@ public class PluginSystem
 {
     public static final File enabledPluginsFile = new File("storage/enabled-plugins.txt");
     
+    public static final String PLUGIN_NAME_REGEX = "[a-z][a-z0-9\\-_]*";
+    
     private static final int MAX_LOG_SIZE = 100;
     
     public static Set<String> enabledPluginNames = new TreeSet<String>();
@@ -106,6 +108,14 @@ public class PluginSystem
                  */
                 for (Plugin languagePlugin : languagePluginList)
                 {
+                    if (!languagePlugin.info.name.matches(PLUGIN_NAME_REGEX))
+                    {
+                        log(null, true, "The plugin " + languagePlugin.info.name
+                            + " has a name that does not match the regex \""
+                            + PLUGIN_NAME_REGEX
+                            + "\". All plugin names must match this regex.");
+                        continue;
+                    }
                     if (!knownPlugins.contains(languagePlugin))
                     {
                         knownPlugins.add(languagePlugin);
