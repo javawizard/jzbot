@@ -1207,7 +1207,7 @@ public class JZBot
         // loadCommand(new WeatherCommand());
     }
     
-    private static void loadCommand(Command command)
+    public static void loadCommand(Command command)
     {
         commands.put(command.getName(), command);
     }

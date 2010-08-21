@@ -1,4 +1,4 @@
-package jw.jzbot.plugins.packaged;
+package jw.jzbot.plugins.packaged.python;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.python.core.PyDictionary;
+import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
@@ -22,15 +24,25 @@ public class PythonLanguageSupport implements PluginLanguage
 {
     public static PythonInterpreter interpreter;
     
+    public static PyDictionary namespace;
+    
     public static PySystemState sys;
     
     public PythonLanguageSupport()
     {
-        if (interpreter != null)
-            throw new RuntimeException("Only one instance of "
-                + "PythonLanguageSupport can be constructed.");
-        sys = new PySystemState();
-        interpreter = new PythonInterpreter(sys);
+        try
+        {
+            if (interpreter != null)
+                throw new RuntimeException("Only one instance of "
+                    + "PythonLanguageSupport can be constructed.");
+            sys = new PySystemState();
+            namespace = new PyDictionary();
+            interpreter = new PythonInterpreter(namespace, sys);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
     
     @Override
@@ -68,11 +80,8 @@ public class PythonLanguageSupport implements PluginLanguage
                     && !line.trim().equals("\"\"\" jzbot"))
                     ;
                 info.description = "";
-                if (line == null)// No information block
-                {
-                    info.dependencies = new String[0];
-                }
-                else
+                info.dependencies = new String[0];
+                if (line != null)// Information block is present
                 {
                     while ((line = reader.readLine()) != null
                         && !line.trim().equals("\"\"\""))
@@ -82,8 +91,9 @@ public class PythonLanguageSupport implements PluginLanguage
                                     line.trim().substring("dependencies:".length()).trim()
                                             .split(" ");
                         else
-                            info.description += line.trim();
+                            info.description += " " + line.trim();
                     }
+                    info.description = info.description.trim();
                 }
                 reader.close();
                 list.add(info);

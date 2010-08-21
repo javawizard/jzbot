@@ -33,7 +33,6 @@ public class PluginCommand implements Command
             String command = argumentsTokenized1[0];
             String afterCommand =
                     (argumentsTokenized1.length > 1) ? argumentsTokenized1[1] : "";
-            afterCommand = "";
             if (command.equals("available"))
             {
                 String response =

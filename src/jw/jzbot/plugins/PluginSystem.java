@@ -177,9 +177,9 @@ public class PluginSystem
                 }
                 catch (Throwable e)
                 {
-                    e.printStackTrace();
                     log(null, true, "Exception while loading plugin " + plugin.info.name
                         + ": " + e.getClass().getName() + ": " + e.getMessage());
+                    e.printStackTrace();
                 }
             }
             System.out.println("PLUGIN LOADER: Loaded "
@@ -225,7 +225,7 @@ public class PluginSystem
                 {
                     Plugin plugin = new Plugin();
                     plugin.info = info;
-                    plugin.folder = folder;
+                    plugin.folder = languageFolder;
                     plugin.language = language.getName();
                     list.add(plugin);
                 }
