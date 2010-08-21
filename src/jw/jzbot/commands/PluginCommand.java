@@ -24,7 +24,7 @@ public class PluginCommand implements Command
     {
         throw new ResponseException("This command still needs to be written. "
             + "And note to jcp: write PythonLanguageSupport.java too.");
-        TODO: ^
+//        TODO: ^
     }
     
 }
