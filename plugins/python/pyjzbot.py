@@ -23,7 +23,7 @@ def add_command(name, function):
             function(*args)
     
     TheCommand.__name__ = name + "_command"
-    _jzbot.JZBot.loadCommand(TheCommand())
+    _jzbot.JZBot.installCommand(TheCommand())
 
 
 def init(self):
