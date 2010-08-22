@@ -1136,33 +1136,33 @@ public class JZBot
     
     private static void loadCommands()
     {
-        loadCommand(new CommandListCommand());
-        loadCommand(new ConfigCommand());
-        loadCommand(new ExecCommand());
-        loadCommand(new ExplainCommand());
-        loadCommand(new FactoidCommand());
+        installCommand(new CommandListCommand());
+        installCommand(new ConfigCommand());
+        installCommand(new ExecCommand());
+        installCommand(new ExplainCommand());
+        installCommand(new FactoidCommand());
         // loadCommand(new GoogleCommand());
-        loadCommand(new HelpCommand());
-        loadCommand(new JoinCommand());
-        loadCommand(new LeaveCommand());
+        installCommand(new HelpCommand());
+        installCommand(new JoinCommand());
+        installCommand(new LeaveCommand());
         // loadCommand(new LengthCommand());
-        loadCommand(new ListChannelsCommand());
-        loadCommand(new MMCommand());
-        loadCommand(new PluginCommand());
-        loadCommand(new RedefineCommand());
-        loadCommand(new RegexCommand());
-        loadCommand(new RestartCommand());
+        installCommand(new ListChannelsCommand());
+        installCommand(new MMCommand());
+        installCommand(new PluginCommand());
+        installCommand(new RedefineCommand());
+        installCommand(new RegexCommand());
+        installCommand(new RestartCommand());
         // loadCommand(new RouletteCommand());
         // loadCommand(new SayCommand());
-        loadCommand(new ScopeCommand());
-        loadCommand(new ServerCommand());
-        loadCommand(new ShutdownCommand());
-        loadCommand(new StatusCommand());
-        loadCommand(new SuperopCommand());
-        loadCommand(new SwitchnickCommand());
-        loadCommand(new TriggerCommand());
+        installCommand(new ScopeCommand());
+        installCommand(new ServerCommand());
+        installCommand(new ShutdownCommand());
+        installCommand(new StatusCommand());
+        installCommand(new SuperopCommand());
+        installCommand(new SwitchnickCommand());
+        installCommand(new TriggerCommand());
         // loadCommand(new TTTCommand());
-        loadCommand(new UpdateCommand());
+        installCommand(new UpdateCommand());
         // loadCommand(new WeatherCommand());
     }
     
@@ -1178,7 +1178,7 @@ public class JZBot
      * @param command
      *            The command to load
      */
-    public static void loadCommand(Command command)
+    public static void installCommand(Command command)
     {
         String name = command.getName();
         synchronized (commands)
