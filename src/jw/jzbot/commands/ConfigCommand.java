@@ -37,20 +37,20 @@ public class ConfigCommand implements Command
             if (var == null)
                 throw new ResponseException(
                         "That isn't a valid var name. Use \"~config\" to see "
-                                + "a list of var names.");
+                            + "a list of var names.");
             if (tokens.length == 1)
             {
                 source.sendMessage("This variable's current value is \"" + var.get()
-                        + "\". You can use \"~config " + var.name()
-                        + " <newvalue>\" to set a new value."
-                        + " The variable's description is:");
+                    + "\". You can use \"~config " + var.name()
+                    + " <newvalue>\" to set a new value."
+                    + " The variable's description is:");
                 source.sendSpaced(var.getDescription());
             }
             else
             {
                 var.set(tokens[1]);
                 source.sendMessage("Successfully set the var \"" + var.name()
-                        + "\" to have the value \"" + tokens[1] + "\".");
+                    + "\" to have the value \"" + tokens[1] + "\".");
             }
         }
         else
@@ -62,13 +62,20 @@ public class ConfigCommand implements Command
             }
             source
                     .sendMessage("Use \"~config <varname>\" to see a variable's current value and "
-                            + "a short description of the variable, "
-                            + "or \"~config "
-                            + "<varname> <value>\" to "
-                            + "set the value "
-                            + "of a variable. Currently, "
-                            + "allowed variable names are, separated by spaces:");
+                        + "a short description of the variable, "
+                        + "or \"~config "
+                        + "<varname> <value>\" to "
+                        + "set the value "
+                        + "of a variable. Currently, "
+                        + "allowed variable names are, separated by spaces:");
             JZUtils.ircSendDelimited(configVarNames, "  ", source);
         }
+    }
+    
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
     }
 }

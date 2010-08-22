@@ -350,4 +350,11 @@ public class ServerCommand implements Command
                 + "that already exists.");
         return server;
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }

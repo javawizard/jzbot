@@ -65,5 +65,12 @@ public class LeaveCommand implements Command
         JZBot.getServer(server).partChannel(channel,
                 "Leaving on request from " + sender.nick());
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
     
 }

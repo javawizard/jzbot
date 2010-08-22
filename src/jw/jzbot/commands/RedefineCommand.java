@@ -42,5 +42,12 @@ public class RedefineCommand implements Command
                         + "allow changing the names that built-in commands "
                         + "(except for ~redefine itself) are known under.");
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
     
 }

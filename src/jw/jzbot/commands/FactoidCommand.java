@@ -1212,4 +1212,12 @@ public class FactoidCommand implements Command
         if (value != null)
             e.setAttribute(name, URLEncoder.encode(value));
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

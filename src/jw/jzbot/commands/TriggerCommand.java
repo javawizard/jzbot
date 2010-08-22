@@ -39,5 +39,12 @@ public class TriggerCommand implements Command
         c.setTrigger(arguments);
         source.sendMessage("Trigger set to " + arguments);
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
     
 }

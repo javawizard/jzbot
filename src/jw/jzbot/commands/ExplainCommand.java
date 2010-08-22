@@ -32,8 +32,9 @@ public class ExplainCommand implements Command
         }
         Factoid f = null;
         if (channel != null)
-            f = JZBot
-                    .getChannelFactoid(JZBot.storage.getServer(server), channel, arguments);
+            f =
+                    JZBot.getChannelFactoid(JZBot.storage.getServer(server), channel,
+                            arguments);
         if (f == null)
             f = JZBot.getServerFactoid(JZBot.storage.getServer(server), arguments);
         if (f == null)
@@ -45,9 +46,14 @@ public class ExplainCommand implements Command
         buffer.append("Factoid " + f.getName() + ": " + f.getValue());
         buffer.append("\n\nExplanation for this factoid:\n\n");
         buffer.append(explanation);
-        source
-                .sendMessage("Explanation of this factoid: "
-                        + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY,
-                                null, null));
+        source.sendMessage("Explanation of this factoid: "
+            + Pastebin.createPost("jzbot", buffer.toString(), Duration.DAY, null, null));
+    }
+    
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
     }
 }

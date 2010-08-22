@@ -32,5 +32,12 @@ public class SwitchnickCommand implements Command
         // FIXME: log this
         JZBot.getServer(server).getConnection().changeNick(arguments);
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
     
 }

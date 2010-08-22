@@ -56,9 +56,16 @@ public class ExecCommand implements Command
         String result = sink.toString();
         long finishedMillis = System.currentTimeMillis();
         System.out.println("__internal_exec: Parsed in " + (parsedMillis - startMillis)
-                + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
+            + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
         source.sendMessage(result);
+    }
+    
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
     }
 }

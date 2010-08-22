@@ -30,4 +30,11 @@ public class CommandListCommand implements Command
             source.sendMessage(currentList);
         source.sendMessage("End of command list");
     }
+    
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }

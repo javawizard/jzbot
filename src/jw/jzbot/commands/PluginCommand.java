@@ -143,4 +143,11 @@ public class PluginCommand implements Command
             }
         }
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }

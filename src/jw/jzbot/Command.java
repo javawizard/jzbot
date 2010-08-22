@@ -2,8 +2,39 @@ package jw.jzbot;
 
 public interface Command
 {
+    /**
+     * Gets the name of this command.
+     * 
+     * @return
+     */
     public String getName();
     
+    /**
+     * Checks to see whether this command should apply for the given context and
+     * arguments. If this is false, processing will continue as if this command did not
+     * exist.
+     * 
+     * @param server
+     * @param channel
+     * @param pm
+     * @param sender
+     * @param source
+     * @param arguments
+     * @return
+     */
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments);
+    
+    /**
+     * Runs this command.
+     * 
+     * @param server
+     * @param channel
+     * @param pm
+     * @param sender
+     * @param source
+     * @param arguments
+     */
     public void run(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments);
     // FIXME: change the method to accept a source too, and have it be either a

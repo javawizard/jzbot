@@ -82,6 +82,16 @@ public interface Storage extends HasFactoids
     @Constructor
     public PersistentKey createPersistentKey();
     
+    @Constructor
+    public PluginStorage createPlugin();
+    
+    @Property
+    @ListType(PluginStorage.class)
+    public StoredList<PluginStorage> getPlugins();
+    
+    @Search(listProperty = "plugins", searchProperty = "name", exact = true)
+    public PluginStorage getPlugin(String name);
+    
     @Property
     @ListType(Factoid.class)
     public StoredList<Factoid> getFactoids();

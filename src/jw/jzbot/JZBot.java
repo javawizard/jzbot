@@ -945,7 +945,8 @@ public class JZBot
     public static final Object futureFactoidLock = new Object();
     public static ScheduledThreadPoolExecutor futureFactoidPool =
             new ScheduledThreadPoolExecutor(1);
-    public static final HashMap<String, Command> commands = new HashMap<String, Command>();
+    public static final HashMap<String, List<Command>> commands =
+            new HashMap<String, List<Command>>();
     // numeric 320: is signed on as account
     public static ProxyStorage<Storage> proxyStorage;
     public static Storage storage;
@@ -1207,9 +1208,33 @@ public class JZBot
         // loadCommand(new WeatherCommand());
     }
     
+    /**
+     * Loads the specified command. If there is already a command with the specified name,
+     * chain loading is used; the already-existing command will be invoked first, but if
+     * it says that the input data is not relevant (as per
+     * {@link Command#relevant(String, String, boolean, ServerUser, Messenger, String)},
+     * then this command will be called. If there are multiple commands with the same
+     * name, the first one added will be tried first, then the next, then the next, and so
+     * on.
+     * 
+     * @param command
+     *            The command to load
+     */
     public static void loadCommand(Command command)
     {
-        commands.put(command.getName(), command);
+        String name = command.getName();
+        synchronized (commands)
+        {
+            List<Command> list;
+            if (commands.containsKey(name))
+                list = commands.get(name);
+            else
+            {
+                list = new ArrayList<Command>(1);
+                commands.put(name, list);
+            }
+            list.add(command);
+        }
     }
     
     private static void start() throws Throwable
@@ -1928,7 +1953,7 @@ public class JZBot
         ServerUser source = new ServerUser(serverName, sender, login, hostname);
         try
         {
-            Command command = commands.get("join");
+            Command command = commands.get("join").get(0);
             command.run(serverName, channel, true, source, source, toChannel
                 + " frominvite");
         }
@@ -2124,6 +2149,7 @@ public class JZBot
             String sender, Messenger source, String hostname, String username,
             String message, boolean processFactoids)
     {
+        threadLocalUsername.set(username);
         ServerUser serverUser =
                 new ServerUser(senderServerName, sender, username, hostname);
         ServerChannel serverChannel = null;
@@ -2147,13 +2173,20 @@ public class JZBot
          * check to see if we're supposed to process factoids so that regexes can't
          * override commands.
          */
-        Command c = commands.get(command);
-        if (c != null)
+        List<Command> commandList = commands.get(command);
+        if (commandList == null)
+            commandList = Collections.EMPTY_LIST;
+        for (Command c : commandList)
         {
-            System.out.println("Command: " + c.getName());
+            System.out.println("Checking command: " + c.getName());
             try
             {
-                threadLocalUsername.set(username);
+                if (!c.relevant(serverName, channel, pm, serverUser, source,
+                        commandArguments))
+                {
+                    System.out.println("Command is not relevant");
+                    continue;
+                }
                 c.run(serverName, channel, pm, serverUser, source, commandArguments);
             }
             catch (Exception e)
@@ -2186,6 +2219,7 @@ public class JZBot
          * varaibles prefixed with two underscores. Some mechanism that doesn't use local
          * variables needs to be added.
          */
+        System.out.println("No relevant commands found");
         if (!processFactoids)
         {
             System.out.println("Finishing command run #2");
@@ -2209,6 +2243,7 @@ public class JZBot
             factoid = storage.getFactoid(command);
         if (factoid != null)
         {
+            System.out.println("Found a matching factoid: " + factoid.getName());
             if (factoid.isLibrary())
             {
                 source.sendMessage("That factoid is a library factoid. It can only be run "

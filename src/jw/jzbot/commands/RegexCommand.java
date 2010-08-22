@@ -135,4 +135,11 @@ public class RegexCommand implements Command
             throw new ResponseException("Specify one of add, delete (or del), or list.");
         }
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }

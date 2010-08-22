@@ -79,4 +79,11 @@ public class ListChannelsCommand implements Command
         }
         source.sendSpaced(StringUtils.delimited(items.toArray(new String[0]), "  "));
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }

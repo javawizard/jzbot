@@ -16,6 +16,9 @@ def add_command(name, function):
         def getName(self):
             return name
         
+        def relevant(self, *args):
+            return True
+        
         def run(self, *args):
             function(*args)
     

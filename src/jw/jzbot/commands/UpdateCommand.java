@@ -96,4 +96,11 @@ public class UpdateCommand implements Command
             return null;
         return file.getAbsolutePath();
     }
+
+    @Override
+    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+            Messenger source, String arguments)
+    {
+        return true;
+    }
 }
