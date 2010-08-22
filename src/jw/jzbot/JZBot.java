@@ -84,11 +84,8 @@ import jw.jzbot.pastebin.DefaultPastebinProviders;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.protocols.Connection;
-import jw.jzbot.protocols.bzflag.BZFlagProtocol;
-import jw.jzbot.protocols.fb.FacebookProtocol;
-import jw.jzbot.protocols.imap.ImapProtocol;
-import jw.jzbot.protocols.irc.IrcProtocol;
-import jw.jzbot.protocols.xmpp.XmppProtocol;
+import jw.jzbot.protocols.ProtocolManager;
+import jw.jzbot.protocols.newstyle.NewIrcProtocol;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -539,8 +536,7 @@ public class JZBot
                     context.setServerName(serverName);
                     context.setDatastoreServer(server);
                     System.out.println("Instantiating protocol instance...");
-                    Connection c =
-                            instantiateConnectionForProtocol(server.getProtocol(), true);
+                    Connection c = ProtocolManager.createConnection(server.getProtocol());
                     context.setConnection(c);
                     System.out.println("Initializing protocol...");
                     c.init(context);
@@ -716,45 +712,6 @@ public class JZBot
         catch (Exception e)
         {
             e.printStackTrace();
-        }
-    }
-    
-    public static Connection instantiateConnectionForProtocol(String name, boolean run)
-    {
-        /*
-         * TODO: the protocol list is hard-coded right now; this should ideally be split
-         * into a .props file; consider jw/jzbot/protocols/protocols.props.
-         */
-        Class<? extends Connection> c;
-        if (name.equals("irc"))
-            c = IrcProtocol.class;
-        else if (name.equals("bzflag"))
-            c = BZFlagProtocol.class;
-        else if (name.equals("facebook"))
-            c = FacebookProtocol.class;
-        else if (name.equals("xmpp"))
-            c = XmppProtocol.class;
-        else if (name.equals("imap"))
-            c = ImapProtocol.class;
-        else
-            throw new ResponseException("The protocol \"" + name
-                + "\" is not a valid protocol name. Valid protocol names are, "
-                + "at present, \"irc\", \"bzflag\", \"facebook\", and \"xmpp\".");
-        if (!run)
-            return null;
-        try
-        {
-            return c.newInstance();
-        }
-        catch (Exception e)
-        {
-            /*
-             * We need to catch Exception instead of just the two Exception types
-             * newInstance throws as newInstance propegates checked exceptions too, which
-             * isn't good.
-             */
-            throw new RuntimeException("Exception while instantiating protocol \"" + name
-                + "\" for class " + c.getName(), e);
         }
     }
     
@@ -1258,6 +1215,7 @@ public class JZBot
         System.out.println("Starting the relational data store...");
         startRelationalStore();
         System.out.println("Loading core components...");
+        loadProtocols();
         loadCommands();
         loadCachedConfig();
         startLogSinkThread();
@@ -1265,7 +1223,7 @@ public class JZBot
         System.out.println("Starting the plugin manager...");
         PluginSystem.start();
         System.out.println("Starting the automatic restart thread...");
-        startAutomaticRestart();
+        startAutomaticRestartThread();
         System.out.println("Starting the pm user time thread...");
         startPmUserTimeThread();
         System.out.println("Running _onstartup notifications...");
@@ -1280,6 +1238,14 @@ public class JZBot
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");
         System.out.println();
+    }
+    
+    private static void loadProtocols()
+    {
+        /*
+         * The five built-in protocols
+         */
+        ProtocolManager.installProtocol(new NewIrcProtocol());
     }
     
     private static void startPmUserTimeThread()
@@ -3199,7 +3165,7 @@ public class JZBot
         }
     };
     
-    private static void startAutomaticRestart()
+    private static void startAutomaticRestartThread()
     {
         restartFile.delete();
         restartThread.setDaemon(true);
@@ -3252,6 +3218,14 @@ public class JZBot
             e.printStackTrace();
         }
         System.out.println("Exiting on restart with status 17...");
+        try
+        {
+            Thread.sleep(200);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
         /*
          * FIXME: due to a current bug that I haven't been able to figure out, replacing
          * this with System.exit(17) causes a hang, where not even Ctrl+C will kill the
@@ -3265,17 +3239,23 @@ public class JZBot
     
     protected static void onRestartGlobalDisconnect()
     {
-        for (ConnectionContext context : new ArrayList<ConnectionContext>(connectionMap
-                .values()))
+        for (final ConnectionContext context : new ArrayList<ConnectionContext>(
+                connectionMap.values()))
         {
-            try
+            new Thread()
             {
-                context.getConnection().disconnect(PART_MESSAGE);
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+                public void run()
+                {
+                    try
+                    {
+                        context.getConnection().disconnect(PART_MESSAGE);
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }.start();
         }
     }
     

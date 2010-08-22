@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.sf.opengroove.common.utils.StringUtils;
+
 import jw.jzbot.Command;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
+import jw.jzbot.protocols.ProtocolManager;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.JZUtils;
 
@@ -53,7 +56,10 @@ public class ServerCommand implements Command
             verifyOkChars(serverName);
             if (JZBot.storage.getServer(serverName) != null)
                 throw new ResponseException("A server with that name already exists.");
-            JZBot.instantiateConnectionForProtocol(tokens[0], false);
+            if (!ProtocolManager.hasProtocol(tokens[0]))
+                throw new ResponseException("The protocol \"" + tokens[0]
+                    + "\" is not a valid protocol. Valid protocols " +
+                    		"are: " + StringUtils.delimited(ProtocolManager.getProtocolNames(), " "));
             Server newServer = JZBot.storage.createServer();
             newServer.setActive(true);
             newServer.setName(serverName);
@@ -350,7 +356,7 @@ public class ServerCommand implements Command
                 + "that already exists.");
         return server;
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
