@@ -24,6 +24,8 @@ public class ProtocolManager
     
     public static Protocol getProtocol(String name)
     {
+        if (!protocolMap.containsKey(name))
+            throw new IllegalArgumentException("No such protocol: " + name);
         return protocolMap.get(name);
     }
     
