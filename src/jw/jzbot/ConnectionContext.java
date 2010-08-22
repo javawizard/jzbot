@@ -1,5 +1,6 @@
 package jw.jzbot;
 
+import jw.jzbot.protocols.Connection;
 import jw.jzbot.storage.Server;
 
 public class ConnectionContext

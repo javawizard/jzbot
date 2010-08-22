@@ -37,13 +37,13 @@ import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import jw.jzbot.ConfigVars;
-import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.fact.output.DelimitedSink;
+import jw.jzbot.protocols.Connection;
 
 public class XmppProtocol implements Connection
 {

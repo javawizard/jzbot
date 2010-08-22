@@ -1,5 +1,7 @@
 package jw.jzbot;
 
+import jw.jzbot.protocols.Connection;
+
 /**
  * A wrapper around a Connection. Almost all of JZBot accesses connection objects through
  * a ConnectionWrapper. A connection wrapper primarily takes care of logging events sent

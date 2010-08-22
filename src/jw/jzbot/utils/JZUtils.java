@@ -6,8 +6,8 @@ import java.util.ArrayList;
 
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
-import jw.jzbot.Connection;
 import jw.jzbot.Messenger;
+import jw.jzbot.protocols.Connection;
 
 import org.jibble.pircbot.PircBot;
 

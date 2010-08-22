@@ -1,10 +1,10 @@
 package jw.jzbot.fact.functions;
 
-import jw.jzbot.Connection;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.protocols.Connection;
 
 public class PFunction extends Function
 {

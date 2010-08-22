@@ -1,13 +1,13 @@
-package jw.jzbot.protocols;
+package jw.jzbot.protocols.irc;
 
 import java.io.IOException;
 
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
-import jw.jzbot.Connection;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.protocols.Connection;
 
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.PircBot;

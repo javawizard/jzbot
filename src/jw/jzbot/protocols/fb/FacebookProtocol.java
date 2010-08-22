@@ -6,11 +6,11 @@ import java.io.UnsupportedEncodingException;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.User;
 
-import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.protocols.Connection;
 
 public class FacebookProtocol implements Connection
 {

@@ -1,4 +1,4 @@
-package jw.jzbot.protocols;
+package jw.jzbot.protocols.bzflag;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -16,9 +16,7 @@ import jw.jzbot.*;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
-import jw.jzbot.protocols.bzflag.BZFlagConnector;
-import jw.jzbot.protocols.bzflag.Message;
-import jw.jzbot.protocols.bzflag.ServerLink;
+import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.bzflag.pack.MsgAccept;
 import jw.jzbot.protocols.bzflag.pack.MsgAddPlayer;
 import jw.jzbot.protocols.bzflag.pack.MsgEnter;

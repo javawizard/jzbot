@@ -1,8 +1,9 @@
-package jw.jzbot;
+package jw.jzbot.protocols;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;

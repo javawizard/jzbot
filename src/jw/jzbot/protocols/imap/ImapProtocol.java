@@ -28,11 +28,11 @@ import org.jibble.pircbot.User;
 import com.sun.mail.imap.IMAPFolder;
 import com.sun.mail.smtp.SMTPTransport;
 
-import jw.jzbot.Connection;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.xmpp.XmppProtocol;
 
 public class ImapProtocol implements Connection

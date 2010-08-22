@@ -1,6 +1,5 @@
 package jw.jzbot.fact.functions.irc;
 
-import jw.jzbot.Connection;
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
@@ -8,6 +7,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.protocols.Connection;
 import net.sf.opengroove.common.utils.StringUtils;
 import net.sf.opengroove.common.utils.StringUtils.ToString;
 
