@@ -85,7 +85,11 @@ import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.ProtocolManager;
+import jw.jzbot.protocols.newstyle.NewBZFlagProtocol;
+import jw.jzbot.protocols.newstyle.NewFacebookProtocol;
+import jw.jzbot.protocols.newstyle.NewImapProtocol;
 import jw.jzbot.protocols.newstyle.NewIrcProtocol;
+import jw.jzbot.protocols.newstyle.NewXmppProtocol;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -1246,6 +1250,10 @@ public class JZBot
          * The five built-in protocols
          */
         ProtocolManager.installProtocol(new NewIrcProtocol());
+        ProtocolManager.installProtocol(new NewXmppProtocol());
+        ProtocolManager.installProtocol(new NewBZFlagProtocol());
+        ProtocolManager.installProtocol(new NewFacebookProtocol());
+        ProtocolManager.installProtocol(new NewImapProtocol());
     }
     
     private static void startPmUserTimeThread()
