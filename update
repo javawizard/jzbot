@@ -1,9 +1,13 @@
 #!/bin/bash
+echo Downloading updates from the JZBot subversion repository...
 svn update
+echo Removing existing classes...
+rm -rf classes
+echo Building JZBot...
 ./build
 echo Updating to the latest version of JZBot... > storage/restart-temp
 rm -rf storage/restart
 mv storage/restart-temp storage/restart
 echo Updates have completed successfully. If your bot
-echo is currently running, it will be restarted momentarily.
+echo is currently running, it will restart itself momentarily.
 

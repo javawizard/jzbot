@@ -39,10 +39,7 @@ public class UpdateCommand implements Command
                 + "updates. Visit us at jzbot.googlecode.com for help with this.");
         try
         {
-            final Process p = Runtime.getRuntime().exec(new String[]
-            {
-                scriptName
-            });
+            final Process p = Runtime.getRuntime().exec(new String[] { scriptName });
             InputStream in = p.getInputStream();
             InputStream err = p.getErrorStream();
             JZUtils.sinkStream(in);
@@ -76,7 +73,9 @@ public class UpdateCommand implements Command
         source.sendMessage("Updates have been started. The bot will "
             + "automatically restart once it has finished updating. "
             + "Do not attempt to restart the bot in any other way "
-            + "until it restarts itself. This might take a few minutes.");
+            + "until it restarts itself. This might take a few minutes, "
+            + "and some commands and functionality may not work while "
+            + "the update is going on.");
     }
     
     private static String getAutoUpdateScriptName()
@@ -96,7 +95,7 @@ public class UpdateCommand implements Command
             return null;
         return file.getAbsolutePath();
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
