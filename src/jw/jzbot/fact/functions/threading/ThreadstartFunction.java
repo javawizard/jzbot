@@ -18,12 +18,31 @@ public class ThreadstartFunction extends Function
     {
         // FIXME: maybe support for named threads? (which could then be checked to see if
         // they're alive, forcibly stopped, etc)
-        final String threadName = arguments.resolveString(0);
-        final FactEntity code = arguments.getEntity(1);
-        String localVarRegex = arguments.resolveString(2);
+        final String threadName;
+        final FactEntity code;
+        String localVarRegex = "";
+        if (arguments.length() == 1)
+        {
+            threadName = "";
+            code = arguments.getEntity(0);
+        }
+        else if (arguments.length() == 2)
+        {
+            threadName = arguments.resolveString(0);
+            code = arguments.getEntity(1);
+        }
+        else
+        {
+            threadName = arguments.resolveString(0);
+            code = arguments.getEntity(1);
+            localVarRegex = arguments.resolveString(2);
+        }
         final FactContext newContext = context.cloneForThreading(localVarRegex);
         final String oldScope = context.currentScope();
-        new Thread("user-thread-" + threadName)
+        new Thread(
+                "user-thread-"
+                    + (threadName.equals("") ? "unnamed-" + System.currentTimeMillis()
+                            : threadName))
         {
             public void run()
             {
@@ -78,7 +97,10 @@ public class ThreadstartFunction extends Function
             + "scope, the error message will be dumped to the bot's primary "
             + "channel, or discarded if there is no primary channel. Right now, "
             + "the name is unused (except that it shows up in the output from "
-            + "~status threads), but that could change in the future.";
+            + "~status threads), but that could change in the future. <name> "
+            + "and <regex> are optional, but the former is required if the "
+            + "latter is present. They default to a generated name and the "
+            + "empty string, respectively.";
     }
     
 }
