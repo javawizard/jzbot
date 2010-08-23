@@ -99,8 +99,8 @@ public class ThreadstartFunction extends Function
             + "the name is unused (except that it shows up in the output from "
             + "~status threads), but that could change in the future. <name> "
             + "and <regex> are optional, but the former is required if the "
-            + "latter is present. They default to a generated name and the "
-            + "empty string, respectively.";
+            + "latter is present. They default to a generated name and "
+            + "\".*\", respectively.";
     }
     
 }
