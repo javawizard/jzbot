@@ -58,8 +58,8 @@ public class ServerCommand implements Command
                 throw new ResponseException("A server with that name already exists.");
             if (!ProtocolManager.hasProtocol(tokens[0]))
                 throw new ResponseException("The protocol \"" + tokens[0]
-                    + "\" is not a valid protocol. Valid protocols " +
-                    		"are: " + StringUtils.delimited(ProtocolManager.getProtocolNames(), " "));
+                    + "\" is not a valid protocol. Valid protocols " + "are: "
+                    + StringUtils.delimited(ProtocolManager.getProtocolNames(), " "));
             Server newServer = JZBot.storage.createServer();
             newServer.setActive(true);
             newServer.setName(serverName);
@@ -225,16 +225,16 @@ public class ServerCommand implements Command
                 String sName = s.getName();
                 String flags = "";
                 if (s.isActive())
-                    flags += "a";
+                    flags += "1";
                 ConnectionContext c = JZBot.getRealConnection(sName);
                 if (c != null)
                 {
-                    flags += "o";
+                    flags += "2";
                     if (c.getConnection().isConnected())
-                        flags += "c";
+                        flags += "3";
                 }
                 if (JZBot.connectionLastErrorMap.get(sName) != null)
-                    flags += "e";
+                    flags += "4";
                 // if (flags.equals(""))
                 // flags = "0";
                 items.add(flags + ":" + sName);
