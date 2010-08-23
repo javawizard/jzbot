@@ -1,6 +1,8 @@
 package jw.jzbot.commands;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -33,32 +35,40 @@ public class PluginCommand implements Command
             String command = argumentsTokenized1[0];
             String afterCommand =
                     (argumentsTokenized1.length > 1) ? argumentsTokenized1[1] : "";
-            if (command.equals("available"))
+            if (command.equals("list"))
             {
                 String response = "";
-                response += StringUtils.delimited(PluginSystem.knownPluginNames, " ");
+                TreeSet<String> list = new TreeSet<String>();
+                list.addAll(PluginSystem.enabledPluginNames);
+                list.addAll(PluginSystem.failedPluginNames);
+                list.addAll(PluginSystem.knownPluginNames);
+                list.addAll(PluginSystem.loadedPluginNames);
+                ArrayList<String> resultList = new ArrayList<String>();
+                for (String name : list)
+                {
+                    String flags = "";
+                    if (PluginSystem.knownPluginNames.contains(name))
+                        flags += "1";
+                    if (PluginSystem.enabledPluginNames.contains(name))
+                        flags += "2";
+                    if (PluginSystem.loadedPluginNames.contains(name))
+                        flags += "3";
+                    if (PluginSystem.failedPluginNames.contains(name))
+                        flags += "4";
+                    resultList.add(flags + ":" + name);
+                }
+                response += StringUtils.delimited(resultList, " ");
                 if (response.equals(""))
                     response = "No available plugins.";
-                if (response.length() > (source.getProtocolDelimitedLength() * 2))
-                    response = JZBot.pastebinNotice(response, null);
-                source.sendSpaced(response);
-            }
-            else if (command.equals("enabled"))
-            {
-                String response = "";
-                response += StringUtils.delimited(PluginSystem.enabledPluginNames, " ");
-                if (response.equals(""))
-                    response = "No enabled plugins.";
-                if (response.length() > (source.getProtocolDelimitedLength() * 2))
-                    response = JZBot.pastebinNotice(response, null);
-                source.sendSpaced(response);
-            }
-            else if (command.equals("active"))
-            {
-                String response = "";
-                response += StringUtils.delimited(PluginSystem.loadedPluginNames, " ");
-                if (response.equals(""))
-                    response = "No active plugins.";
+                else
+                    source.sendSpaced("Here's the list. Plugins in "
+                        + "this list are in the format <flags>:<name>, where "
+                        + "<flags> are some flags and <name> is the name of "
+                        + "the plugin. Flags are 1: installed (or included "
+                        + "with JZBot), 2: enabled, 3: active (meaning the "
+                        + "plugin is currently loaded and running), 4: error "
+                        + "occurred while loading this plugin the last time "
+                        + "the bot was started.");
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
                     response = JZBot.pastebinNotice(response, null);
                 source.sendSpaced(response);
@@ -139,11 +149,11 @@ public class PluginCommand implements Command
             else
             {
                 throw new ResponseException("Invalid plugin command. Try 'plugin "
-                    + "<available|enabled|active|enable|disable|info>'");
+                    + "<list|enable|disable|info|delete|undelete>'");
             }
         }
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)

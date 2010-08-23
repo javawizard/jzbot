@@ -216,8 +216,8 @@ public class ServerCommand implements Command
         {
             source.sendSpaced("Here's the list. Servers in this list are in the format "
                 + "<flags>:<name>, where <flags> are some flags and <name> is the "
-                + "name of the server. Flags are a: active, o: has a connection "
-                + "object, c: currently connected, e: error occurred during last "
+                + "name of the server. Flags are 1: active, 2: has a connection "
+                + "object, 3: currently connected, 4: error occurred during last "
                 + "connection attempt (use \"server error\" to read the error message).");
             List<String> items = new ArrayList<String>();
             for (Server s : JZBot.storage.getServers().isolate())
