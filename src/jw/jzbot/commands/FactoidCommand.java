@@ -1217,7 +1217,6 @@ public class FactoidCommand implements Command
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 }

@@ -216,8 +216,8 @@ public class ServerCommand implements Command
         {
             source.sendSpaced("Here's the list. Servers in this list are in the format "
                 + "<flags>:<name>, where <flags> are some flags and <name> is the "
-                + "name of the server. Flags are 1: active, 2: has a connection "
-                + "object, 3: currently connected, 4: error occurred during last "
+                + "name of the server. Flags are A: active, O: has a connection "
+                + "object, C: currently connected, E: error occurred during last "
                 + "connection attempt (use \"server error\" to read the error message).");
             List<String> items = new ArrayList<String>();
             for (Server s : JZBot.storage.getServers().isolate())
@@ -225,16 +225,16 @@ public class ServerCommand implements Command
                 String sName = s.getName();
                 String flags = "";
                 if (s.isActive())
-                    flags += "1";
+                    flags += "A";
                 ConnectionContext c = JZBot.getRealConnection(sName);
                 if (c != null)
                 {
-                    flags += "2";
+                    flags += "O";
                     if (c.getConnection().isConnected())
-                        flags += "3";
+                        flags += "C";
                 }
                 if (JZBot.connectionLastErrorMap.get(sName) != null)
-                    flags += "4";
+                    flags += "E";
                 // if (flags.equals(""))
                 // flags = "0";
                 items.add(flags + ":" + sName);
