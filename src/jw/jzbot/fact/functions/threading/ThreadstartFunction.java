@@ -20,7 +20,7 @@ public class ThreadstartFunction extends Function
         // they're alive, forcibly stopped, etc)
         final String threadName;
         final FactEntity code;
-        String localVarRegex = "";
+        String localVarRegex = ".*";
         if (arguments.length() == 1)
         {
             threadName = "";
