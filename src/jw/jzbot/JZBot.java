@@ -1218,13 +1218,17 @@ public class JZBot
         }
         System.out.println("Starting the relational data store...");
         startRelationalStore();
-        System.out.println("Loading core components...");
+        System.out.println("Loading built-in protocols...");
         loadProtocols();
+        System.out.println("Loading built-in commands...");
         loadCommands();
+        System.out.println("Loading cached configuration...");
         loadCachedConfig();
+        System.out.println("Starting log sink...");
         startLogSinkThread();
+        System.out.println("Loading cached regular expressions...");
         reloadRegexes();
-        System.out.println("Starting the plugin manager...");
+        System.out.println("Starting the plugin system...");
         PluginSystem.start();
         System.out.println("Starting the automatic restart thread...");
         startAutomaticRestartThread();
@@ -1237,7 +1241,6 @@ public class JZBot
         startConnectionCycleThread();
         System.out.println("Dispatching notifications to connection cycle thread...");
         notifyConnectionCycleThread();
-        System.out.println("Connect thread started.");
         System.out.println();
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");

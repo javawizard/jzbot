@@ -1,13 +1,22 @@
 package jw.jzbot.plugins;
 
+import jw.jzbot.storage.Node;
+import jw.jzbot.storage.PluginStorage;
+
 public class PluginContext
 {
     public final Plugin plugin;
+    
+    public final Node storage;
+    
+    private PluginStorage pluginStorage;
     
     public PluginContext(Plugin plugin)
     {
         super();
         this.plugin = plugin;
+        this.pluginStorage = PluginSystem.getStorage(plugin.info.name);
+        this.storage = pluginStorage.getNode();
     }
     
     /**

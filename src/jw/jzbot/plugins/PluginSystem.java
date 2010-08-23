@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import jw.jzbot.JZBot;
 import jw.jzbot.plugins.java.JavaPluginLanguage;
+import jw.jzbot.storage.PluginStorage;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -39,6 +41,8 @@ public class PluginSystem
     
     public static Map<String, Plugin> knownPluginMap = new HashMap<String, Plugin>();
     
+    public static Set<String> failedPluginNames = new TreeSet<String>();
+    
     private PluginSystem()
     {
         throw new RuntimeException("You're not supposed to create "
@@ -47,6 +51,7 @@ public class PluginSystem
     
     public static void start()
     {
+        System.out.println("PLUGIN LOADER: Initializing...");
         /*
          * First we'll install the Java plugin language.
          */
@@ -60,10 +65,35 @@ public class PluginSystem
                 StringUtils.readFile(enabledPluginsFile).split("\\n");
         enabledPluginNames.addAll(Arrays.asList(enabledPluginNamesArray));
         enabledPluginNames.remove("");
+        System.out.println("PLUGIN LOADER: Loading plugin storage...");
+        loadStorage();
         /*
          * We've got the list. Now we'll start activating the plugins.
          */
+        System.out.println("PLUGIN LOADER: Activating plugins...");
         activatePlugins();
+    }
+    
+    private static void loadStorage()
+    {
+        for (PluginStorage storage : JZBot.storage.getPlugins().isolate())
+        {
+            if(storage.isDeleteOnStartup())
+                JZBot.storage.getPlugins().remove(storage);
+        }
+    }
+    
+    static PluginStorage getStorage(String name)
+    {
+        PluginStorage p = JZBot.storage.getPlugin(name);
+        if(p == null)
+        {
+            p = JZBot.storage.createPlugin();
+            p.setName(name);
+            p.setNode(p.createNode());
+            JZBot.storage.getPlugins().add(p);
+        }
+        return p;
     }
     
     private static void activatePlugins()
@@ -152,6 +182,11 @@ public class PluginSystem
                      * The plugin has already been activated.
                      */
                     continue;
+                if(failedPluginNames.contains(plugin.info.name))
+                    /*
+                     * We already tried to load this plugin and it failed
+                     */
+                    continue;
                 for (String dependency : plugin.info.dependencies)
                 {
                     if (!loadedPluginNames.contains(dependency))
@@ -178,6 +213,7 @@ public class PluginSystem
                 }
                 catch (Throwable e)
                 {
+                    failedPluginNames.add(plugin.info.name);
                     log(null, true, "Exception while loading plugin " + plugin.info.name
                         + ": " + e.getClass().getName() + ": " + e.getMessage());
                     e.printStackTrace();
