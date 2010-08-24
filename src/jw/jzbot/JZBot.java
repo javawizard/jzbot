@@ -107,6 +107,7 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
+import org.python.util.PythonInterpreter;
 
 import sun.misc.Unsafe;
 
@@ -1352,13 +1353,13 @@ public class JZBot
         }
     }
     
-    private static void loadConfiguration()
+    private static void loadConfiguration() throws Exception
     {
-        ConfigVars.register();
+        registerDefaultConfigVars();
         logQueue =
                 new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
                         .get()));
-        Configuration.addListener("", ConfigVars.proxytrace.name(), new VarListener()
+        Configuration.addListener("", "proxytrace", new VarListener()
         {
             
             @Override
@@ -1367,6 +1368,12 @@ public class JZBot
                 proxyTraceConfigChanged();
             }
         });
+    }
+    
+    private static void registerDefaultConfigVars() throws IOException
+    {
+        new PythonInterpreter().execfile(Configuration.class
+                .getResourceAsStream("default_config_vars.py"));
     }
     
     public static void onJoin(Server datastoreServer, String serverName, String channel,

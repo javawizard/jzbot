@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
 import jw.jzbot.storage.ConfigStorage;
 import jw.jzbot.storage.ConfigVariable;
@@ -276,6 +275,28 @@ public class Configuration
         synchronized (var.listeners)
         {
             var.listeners.add(listener);
+        }
+    }
+    
+    /**
+     * Adds a filter that will be called when the specified var is about to change value.
+     * Filters can be used to validate that the new value for a variable satisfies some
+     * criteria. If the new value does not, the filter can throw an exception and the var
+     * will not be changed. The var must be registered; if it is ever deregistered in the
+     * future, this will clear all of its filters, and they must be added again if the
+     * var is re-registered.
+     * 
+     * @param scope
+     * @param name
+     * @param filter
+     */
+    public static void addFilter(String scope, String name, VarFilter filter)
+    {
+        scope = normalizeScope(scope);
+        Variable var = getScopeFolder(scope).getVariable(name);
+        synchronized (var.filters)
+        {
+            var.filters.add(filter);
         }
     }
     

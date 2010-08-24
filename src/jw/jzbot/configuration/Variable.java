@@ -12,6 +12,7 @@ public class Variable extends Setting
     public String defaultValue;
     public volatile String value;
     public List<VarListener> listeners = new ArrayList<VarListener>();
+    public List<VarFilter> filters = new ArrayList<VarFilter>();
     
     public Variable(String name, String description, VarType type, String defaultValue,
             String value)
@@ -38,6 +39,24 @@ public class Variable extends Setting
             {
                 ex.printStackTrace();
             }
+        }
+    }
+    
+    public void fireFilters(String scope, String name, String value)
+    {
+        ArrayList<VarFilter> newList = new ArrayList<VarFilter>();
+        synchronized (filters)
+        {
+            newList.addAll(filters);
+        }
+        for (VarFilter filter : newList)
+        {
+            /*
+             * We specifically do not want to catch exceptions here. The idea of a filter
+             * is that if the value isn't allowed it will throw an exception that will
+             * propagate back up and prevent it from being set.
+             */
+            filter.filter(scope, name, value);
         }
     }
     
