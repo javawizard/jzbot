@@ -5,7 +5,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
-import jw.jzbot.storage.HasFactoids;
+import jw.jzbot.storage.StorageContainer;
 
 public class FphasdepFunction extends Function
 {
@@ -32,7 +32,7 @@ public class FphasdepFunction extends Function
         }
         String server = JZBot.extractRelativeServer(target, null);
         String channel = JZBot.extractRelativeChannel(target, null);
-        HasFactoids container;
+        StorageContainer container;
         if (server == null)
             container = JZBot.storage;
         else if (channel == null)

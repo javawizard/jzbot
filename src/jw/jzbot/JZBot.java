@@ -65,6 +65,8 @@ import jw.jzbot.commands.SuperopCommand;
 import jw.jzbot.commands.SwitchnickCommand;
 import jw.jzbot.commands.TriggerCommand;
 import jw.jzbot.commands.UpdateCommand;
+import jw.jzbot.configuration.Configuration;
+import jw.jzbot.configuration.VarListener;
 import jw.jzbot.eval.CaltechEvaluator;
 import jw.jzbot.eval.JEvalEvaluator;
 import jw.jzbot.eval.JepliteEvaluator;
@@ -195,8 +197,6 @@ public class JZBot
     public static final Object logQueueLock = new Object();
     // TODO: consider changing this to 90
     private static final long CONNECTION_CYCLE_TIMEOUT = 120;
-    
-    public static int logQueueDelay;
     
     public static Thread notificationThread = new Thread("factoid-cron-thread")
     {
@@ -1216,14 +1216,14 @@ public class JZBot
             System.out.println("you'll want to look at the addserver command.");
             System.exit(0);
         }
+        System.out.println("Loading configuration...");
+        loadConfiguration();
         System.out.println("Starting the relational data store...");
         startRelationalStore();
         System.out.println("Loading built-in protocols...");
         loadProtocols();
         System.out.println("Loading built-in commands...");
         loadCommands();
-        System.out.println("Loading cached configuration...");
-        loadCachedConfig();
         System.out.println("Starting log sink...");
         startLogSinkThread();
         System.out.println("Loading cached regular expressions...");
@@ -1352,22 +1352,21 @@ public class JZBot
         }
     }
     
-    private static void loadCachedConfig()
+    private static void loadConfiguration()
     {
-        configNolog = ConfigVars.nolog.get();
-        try
-        {
-            configLogsize = Integer.parseInt(ConfigVars.logsize.get());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            configLogsize = 0;
-        }
+        ConfigVars.register();
         logQueue =
                 new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
                         .get()));
-        logQueueDelay = Integer.parseInt(ConfigVars.lqdelay.get());
+        Configuration.addListener("", ConfigVars.proxytrace.name(), new VarListener()
+        {
+            
+            @Override
+            public void changed(String scope, String name)
+            {
+                proxyTraceConfigChanged();
+            }
+        });
     }
     
     public static void onJoin(Server datastoreServer, String serverName, String channel,
@@ -2817,10 +2816,6 @@ public class JZBot
     
     private static Object regexLock = new Object();
     
-    private static String configNolog;
-    
-    private static int configLogsize = 0;
-    
     public static final long startedAtTime = System.currentTimeMillis();
     // Easter egg
     public static final String PART_MESSAGE =
@@ -3273,5 +3268,30 @@ public class JZBot
     public static void proxyTraceConfigChanged()
     {
         proxyStorage.setTracingEnabled(ConfigVars.proxytrace.get().equals("1"));
+    }
+    
+    public static StorageContainer getStorageContainer(String scope)
+    {
+        if (scope.equals("") || scope.equals("@"))
+            return storage;
+        if (scope.startsWith("@") && !scope.contains("#"))
+            return storage.getServer(extractServerName(scope));
+        if (scope.startsWith("@") && scope.contains("#"))
+        {
+            Server s = storage.getServer(extractServerName(scope));
+            if (s == null)
+                return null;
+            return s.getChannel(extractChannelName(scope));
+        }
+        throw new IllegalArgumentException(scope + " is not a correctly-formatted scope.");
+    }
+    
+    public static StorageContainer getCheckedStorageContainer(String scope)
+    {
+        StorageContainer container = getStorageContainer(scope);
+        if (container == null)
+            throw new IllegalStateException("The scope " + scope
+                + " does not currently exist.");
+        return container;
     }
 }

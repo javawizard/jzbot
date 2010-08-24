@@ -4,7 +4,7 @@ import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Search;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
-public interface HasFactoids
+public interface StorageContainer
 {
     public StoredList<Factoid> getFactoids();
     
@@ -14,4 +14,9 @@ public interface HasFactoids
     
     public Factoid[] searchFactoids(String search);
     
+    public ConfigStorage getConfiguration();
+    
+    public ConfigStorage createConfiguration();
+    
+    public void setConfiguration(ConfigStorage storage);
 }

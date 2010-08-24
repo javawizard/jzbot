@@ -2,15 +2,30 @@ package jw.jzbot;
 
 import java.nio.charset.Charset;
 
+import jw.jzbot.configuration.Configuration;
+import jw.jzbot.configuration.Configuration.VarType;
 import jw.jzbot.storage.MapEntry;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
+/**
+ * A bunch of global configuration variables used by the bot.<br/><br/>
+ * 
+ * This has been largely superseded by {@link jw.jzbot.configuration.Configuration} and
+ * exists mostly for backward-compatibility. Internally, this class registers all of its
+ * enum constants with the new configuration system and migrates them if needed. The new
+ * system supports dynamic changing of configuration variables at runtime, typing of
+ * varaibles, and channel-specific and server-specific varibles and so should be preferred
+ * to this system.
+ * 
+ * @author Alexander Boyd
+ * 
+ */
 public enum ConfigVars
 {
-    delay("1000",
+    delay(VarType.integer, "1000",
             "This config variable sets how often marlen can send messages, in milliseconds. "
                 + "The default is 1000. The bot will buffer messages if they are sent "
                 + "more often than this. This does not take effect until "
@@ -22,29 +37,14 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    evalengine("jeval", "")
-    {
-        public String getDescription()
-        {
-            return "See \"~help functions eval\" for information. When {eval} is "
+    evalengine(VarType.text, "jeval",
+            "See \"~help functions eval\" for information. When {eval} is "
                 + "used without an engine specified, whatever engine is set in this "
                 + "config variable is the engine that will be used. For example, if "
                 + "this config variable is \"jeval\", then running {eval||5+3} "
-                + "will function the same as {eval|jeval|5+3}.";
-        }
-        
-    },
-    charset(Charset.defaultCharset().name(), "")
+                + "will function the same as {eval|jeval|5+3}."), charset(VarType.text,
+            Charset.defaultCharset().name(), "The charset used by default.")
     {
-        public String getDescription()
-        {
-            return "This config variable is the charset used to read and write characters "
-                + "from and to the IRC server. Available charsets are, separated "
-                + "by spaces: http://pastebin.com/"
-                + Pastebin.createPost("jzbot", StringUtils.delimited(Charset
-                        .availableCharsets().keySet().toArray(new String[0]), "   "),
-                        Duration.DAY, null, null);
-        }
         
         public void set(String value)
         {
@@ -52,64 +52,46 @@ public enum ConfigVars
             super.set(value);
         }
     },
-    keys("", "A pipe-separated list of hashes (as obtained from the {hash} function). "
-        + "If a user runs \"~superop key <text>\", and then hash of <text> is equal to "
-        + "one of the hashes in this list, the user will be made a superop. Note that "
-        + "the plaintext forms of keys cannot contain spaces."), notfound(
+    keys(
+            VarType.text,
+            "",
+            "A pipe-separated list of hashes (as obtained from the {hash} function). "
+                + "If a user runs \"~superop key <text>\", and then hash of <text> is equal to "
+                + "one of the hashes in this list, the user will be made a superop. Note that "
+                + "the plaintext forms of keys cannot contain spaces."), notfound(
+            VarType.text,
             "",
             "This config variable is the name of a factoid to run when users "
                 + "send a message that isn't recognized. If this is blank, then the text \""
                 + "Huh? (pm \"help\" for more info)\" will be sent instead."), primary(
+            VarType.text,
             "",
             "This config variable is the name of a channel that error messages "
                 + "will be sent to when there's not a logical channel to send them to. For"
                 + " example, if the global _onready factoid has a syntax error, the message will "
                 + "be sent to the channel specified in this config variable. Leaving this empty "
-                + "will cause such errors to simply be ignored."), chanops("0",
-            "This config variable specifies whether channel operators are treated as "
-                + "bot ops. 1 means they are, 0 means they are not. Channel operators at "
-                + "the bot's primary channel are also treated as bot superops.")
-    {
-        public void set(String value)
-        {
-            if (!(value.equals("0") || value.equals("1")))
-                throw new ResponseException(
-                        "Invalid value; must be 0 or 1, see \"~config chanops\" for help");
-            super.set(value);
-        }
-    },
-    openstatus("1", "This config variable specifies whether everyone can run \"~status\". "
-        + "If this is 1, then everyone can. If this is 0, only superops can.")
-    {
-        public void set(String value)
-        {
-            if (!(value.equals("0") || value.equals("1")))
-                throw new ResponseException(
-                        "Invalid value; must be 0 or 1, see \"~config openstatus\" for help");
-            super.set(value);
-        }
-    },
-    servicemsg("0", "If this is 1, the bot will authenticate to NickServ by messaging "
-        + "it directly. If this is 0, the bot will authenticate to NickServ by using "
-        + "the IRC \"NICKSERV\" command.")
-    {
-        public void set(String value)
-        {
-            if (!(value.equals("0") || value.equals("1")))
-                throw new ResponseException(
-                        "Invalid value; must be 0 or 1, see \"~config servicemsg\" for help");
-            super.set(value);
-        }
-    },
-    proxytrace("0", "If this is 1, all ProxyStorage calls will be traced and "
-        + "the statistics made available via \"~status proxytrace\". "
-        + "This tends to decrease performance quite a bit, so it should "
-        + "generally only be used by developers wanting to improve "
-        + "database performance or by people curious as to what queries "
-        + "are being made by the bot. If this is 0, no such tracing will "
-        + "be performed, and performance will be better. Note that even "
-        + "with tracing enabled, the first few calls needed to figure "
-        + "out whether tracing should be enabled will not be traced.")
+                + "will cause such errors to simply be ignored."), chanops(VarType.bool,
+            "0", "This config variable specifies whether channel operators are treated as "
+                + "bot ops. Channel operators at the bot's primary channel are also "
+                + "treated as bot superops."), openstatus(
+            VarType.bool,
+            "1",
+            "This config variable specifies whether everyone "
+                + "can run \"~status\". If this is false, only superops are allowed to run it."), servicemsg(
+            VarType.bool,
+            "0",
+            "If this is true, the bot will authenticate to NickServ by messaging "
+                + "it directly. If this is false, the bot will authenticate to NickServ by using "
+                + "the IRC \"NICKSERV\" command."), proxytrace(VarType.bool, "0",
+            "If this is true, all ProxyStorage calls will be traced and "
+                + "the statistics made available via \"~status proxytrace\". "
+                + "This tends to decrease performance quite a bit, so it should "
+                + "generally only be used by developers wanting to improve "
+                + "database performance or by people curious as to what queries "
+                + "are being made by the bot. If this is false, no such tracing will "
+                + "be performed, and performance will be better. Note that even "
+                + "with tracing enabled, the first few calls needed to figure "
+                + "out whether tracing should be enabled will not be traced.")
     {
         public void set(String value)
         {
@@ -117,7 +99,6 @@ public enum ConfigVars
                 throw new ResponseException(
                         "Invalid value; must be 0 or 1, see \"~config proxytrace\" for help");
             super.set(value);
-            JZBot.proxyTraceConfigChanged();
         }
     },
     logsize("0", "This config variable is the maximum size, in bytes, of the logs to "
@@ -178,9 +159,11 @@ public enum ConfigVars
         + "mean no. A restart is required after this is changed.");
     private String defaultValue;
     private String description;
+    private VarType type;
     
-    private ConfigVars(String defaultValue, String description)
+    private ConfigVars(VarType type, String defaultValue, String description)
     {
+        this.type = type;
         this.defaultValue = defaultValue;
         this.description = description;
     }
@@ -208,5 +191,14 @@ public enum ConfigVars
     public String getDescription()
     {
         return description;
+    }
+    
+    public static void register()
+    {
+        for(ConfigVars var : ConfigVars.values())
+        {
+            boolean previouslyMigrated = Configuration.hasDatastoreVar("", var.name());
+            Configuration.register("", var.name(), var.getDescription())
+        }
     }
 }

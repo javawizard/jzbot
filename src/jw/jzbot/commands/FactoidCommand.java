@@ -28,7 +28,7 @@ import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
-import jw.jzbot.storage.HasFactoids;
+import jw.jzbot.storage.StorageContainer;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.JZUtils;
 import jw.jzbot.utils.Pastebin;
@@ -564,7 +564,7 @@ public class FactoidCommand implements Command
         source.sendSpaced(result);
     }
     
-    private void searchForFactoidInContainer(HasFactoids container, String containerName,
+    private void searchForFactoidInContainer(StorageContainer container, String containerName,
             String regex, ArrayList<String> matches)
     {
         for (Factoid factoid : container.getFactoids().isolate())
@@ -720,7 +720,7 @@ public class FactoidCommand implements Command
             }
             else
             {
-                HasFactoids container;
+                StorageContainer container;
                 if (scope == FactScope.global)
                     container = JZBot.storage;
                 else if (scope == FactScope.server)
@@ -802,7 +802,7 @@ public class FactoidCommand implements Command
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
         boolean hasAnyFactoids = false;
-        HasFactoids target =
+        StorageContainer target =
                 (scope == FactScope.global ? JZBot.storage : scope == FactScope.server ? s
                         : storedChannel);
         /*
@@ -1004,13 +1004,13 @@ public class FactoidCommand implements Command
         Map<String, String> realNameMap = new HashMap<String, String>();
         Map<String, Boolean> restrictedMap = new HashMap<String, Boolean>();
         Map<String, Boolean> libraryMap = new HashMap<String, Boolean>();
-        HasFactoids targetScope =
+        StorageContainer targetScope =
                 (scope == FactScope.global ? JZBot.storage : (scope == FactScope.server ? s
                         : storedChannel));
         /*
          * We'll look up the container we're inserting in to.
          */
-        HasFactoids container =
+        StorageContainer container =
                 scope == FactScope.global ? JZBot.storage : scope == FactScope.server ? s
                         : storedChannel;
         for (FactpackEntry entry : factpack.factoids)
@@ -1153,7 +1153,7 @@ public class FactoidCommand implements Command
         }
     }
     
-    private static void buildFactpackList(HasFactoids container, ArrayList<String> list)
+    private static void buildFactpackList(StorageContainer container, ArrayList<String> list)
     {
         for (Factoid fact : container.getFactoids().isolate())
         {
@@ -1183,7 +1183,7 @@ public class FactoidCommand implements Command
         return doc;
     }
     
-    public static void populateFactoidExport(Element root, HasFactoids container)
+    public static void populateFactoidExport(Element root, StorageContainer container)
     {
         ArrayList<Factoid> factoids = container.getFactoids().isolate();
         for (Factoid factoid : factoids)

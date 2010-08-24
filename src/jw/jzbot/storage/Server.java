@@ -1,5 +1,6 @@
 package jw.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Constructor;
 import net.sf.opengroove.common.proxystorage.Default;
 import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Property;
@@ -8,7 +9,7 @@ import net.sf.opengroove.common.proxystorage.Search;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
-public interface Server extends HasFactoids
+public interface Server extends StorageContainer
 {
     /**
      * True if this server is active, false if it is not. Active servers are those that
@@ -139,5 +140,13 @@ public interface Server extends HasFactoids
     public int getPriority();
     
     public void setPriority(int priority);
+    
+    @Property
+    public ConfigStorage getConfiguration();
+    
+    public void setConfiguration(ConfigStorage configuration);
+    
+    @Constructor
+    public ConfigStorage createConfiguration();
     
 }

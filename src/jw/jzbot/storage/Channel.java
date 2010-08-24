@@ -1,5 +1,6 @@
 package jw.jzbot.storage;
 
+import net.sf.opengroove.common.proxystorage.Constructor;
 import net.sf.opengroove.common.proxystorage.ListType;
 import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
@@ -7,7 +8,7 @@ import net.sf.opengroove.common.proxystorage.Search;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
-public interface Channel extends HasFactoids
+public interface Channel extends StorageContainer
 {
     /**
      * The name of this channel. For example, this could be "#bztraining".
@@ -70,5 +71,13 @@ public interface Channel extends HasFactoids
     
     @Search(listProperty = "regularExpressions", searchProperty = "expression")
     public Regex getRegex(String expression);
+    
+    @Property
+    public ConfigStorage getConfiguration();
+    
+    public void setConfiguration(ConfigStorage configuration);
+    
+    @Constructor
+    public ConfigStorage createConfiguration();
     
 }

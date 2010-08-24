@@ -8,7 +8,7 @@ import net.sf.opengroove.common.proxystorage.Search;
 import net.sf.opengroove.common.proxystorage.StoredList;
 
 @ProxyBean
-public interface Storage extends HasFactoids
+public interface Storage extends StorageContainer
 {
     @Property
     @ListType(Server.class)
@@ -114,4 +114,13 @@ public interface Storage extends HasFactoids
     
     @Search(listProperty = "pluginKeys", searchProperty = "name")
     public PersistentKey getPluginKeyByName(String string);
+    
+    @Property
+    public ConfigStorage getConfiguration();
+    
+    public void setConfiguration(ConfigStorage configuration);
+    
+    @Constructor
+    public ConfigStorage createConfiguration();
+    
 }
