@@ -1,5 +1,10 @@
 
+# This file contains the default configuration variables registered by JZBot
+# itself. This is written in Python because it's ended up being easier to code
+# configuration stuff in Python than it has in Java.
+
 from jw.jzbot.configuration import Configuration
+import __builtin__
 
 # We're going to override some built-in functions here, but we don't
 # particularly care as we're not using any of them after this
@@ -16,9 +21,56 @@ folder = Configuration.VarType.folder
 # Tuple order:   type, name, default, description
 
 variables = [
-    (bool, "proxytrace", "0", "True to trace all ProxyStorage calls, false"
+    (integer, "delay", 1000, "The delay to use for sending messages on "
+     "servers with no set delay. This is in milliseconds."),
+    (integer, "lqdelay", 30, "The interval, in seconds, at which to "
+     "store logs to disk. This helps reduce performance issues by "
+     "buffering logs in memory, but may cause logs for up to this many "
+     "seconds to be lost whenever the bot shuts down.")
+    (integer, "lqmaxsize", 500, "The maximum size of the in-memory "
+     "log queue"),
+    (text, "notfound", None, "The name of a factoid to invoke when a "
+     "non-existent factoid or command is invoked. This will be resolved "
+     "at the scope that the factoid or command was invoked at, so "
+     "channel-specific or server-specific factoids could allow for "
+     "channel-specific or server-specific error messages. If this is "
+     "unset, or if the specified factoid cannot be found at whatever "
+     "scope the missing command is invoked at, a default message "
+     "(currently \"Huh? (pm \"help\" for more info)\") will be used instead."),
+    (text, "primary", None, "The bot's primary channel. Various pieces "
+     "of information, such as some error messages, will be sent to this "
+     "channel. Such information will be discarded if this is unset."),
+    (bool, "proxytrace", False, "True to trace all ProxyStorage calls, false"
      "to not do any tracing."),
+    
 ]
 
 for var_type, name, default, description in variables:
-    Configuration.register("", name, description, var_type, default)
+    if default.__type__ == __builtin__.bool:
+        # Convert booleans to their numerical representation since the
+        # configuration system stores booleans as "1" and "0" for True and
+        # False, respectively.
+        default = int(default)
+    Configuration.register("", name, description, var_type, str(default))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

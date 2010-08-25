@@ -8,7 +8,7 @@ import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.storage.MapEntry;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class RedefineCommand implements Command
 {
@@ -35,7 +35,7 @@ public class RedefineCommand implements Command
             {
                 list.add(redefinition.getKey() + "->" + redefinition.getValue());
             }
-            JZUtils.ircSendDelimited(list.toArray(new String[0]), "  ", source);
+            Utils.ircSendDelimited(list.toArray(new String[0]), "  ", source);
         }
         throw new ResponseException(
                 "Redefinition is not yet supported. When it is, it will "

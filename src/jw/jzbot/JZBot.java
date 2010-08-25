@@ -93,7 +93,7 @@ import jw.jzbot.protocols.newstyle.NewImapProtocol;
 import jw.jzbot.protocols.newstyle.NewIrcProtocol;
 import jw.jzbot.protocols.newstyle.NewXmppProtocol;
 import jw.jzbot.storage.*;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 
 import net.sf.opengroove.common.proxystorage.ProxyObject;
@@ -150,14 +150,7 @@ public class JZBot
         {
             while (isRunning)
             {
-                try
-                {
-                    Thread.sleep(60 * 1000);
-                }
-                catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
+                Utils.sleep(60 * 1000);
                 try
                 {
                     synchronized (pmUserScopeLock)
@@ -304,7 +297,7 @@ public class JZBot
             e.printStackTrace();
             try
             {
-                sendMessageToTarget(ConfigVars.primary.get(),
+                sendMessageToTarget(Configuration.getText(null, "primary"),
                         "Global notification failure for " + name + ": " + pastebinStack(e));
             }
             catch (Throwable e2)
@@ -327,12 +320,15 @@ public class JZBot
      * the channel logger to log that a message was sent.
      * 
      * @param target
-     *            The target to send to
+     *            The target to send to, which can be null. If it's null, the message will
+     *            be silently discarded.
      * @param message
      *            The message to send
      */
     public static void sendMessageToTarget(String target, String message)
     {
+        if (target == null)
+            return;
         String serverName;
         String channelName;
         try
@@ -706,13 +702,17 @@ public class JZBot
     
     private static void runPreConnectActions(ConnectionContext context)
     {
-        context.getConnection().setMessageDelay(Integer.parseInt(ConfigVars.delay.get()));
+        context.getConnection().setMessageDelay(Configuration.getInt(null, "delay"));
         // TODO: might want to change this to an onVersion method in IrcProtocol itself,
         // and have it retrievable from the context
         context.getConnection().setVersion("JZBot -- http://jzbot.googlecode.com");
         try
         {
-            context.getConnection().setEncoding(ConfigVars.charset.get());
+            /*
+             * We might want to make this configurable via the configuration system on a
+             * per-server basis
+             */
+            context.getConnection().setEncoding("UTF-8");
         }
         catch (Exception e)
         {
@@ -810,7 +810,16 @@ public class JZBot
     
     public static Evaluator getDefaultEvalEngine(String channel)
     {
-        return getEvalEngine(ConfigVars.evalengine.get());
+        /*
+         * I'm going to write a custom eval engine using a mix of Python and Java
+         * (assuming I can get PyParsing to work in Jython), with the Python side parsing
+         * the equation and the Java side actually resolving it (the Java side will cache
+         * the parsed representation, so the Python side will only be invoked once in a
+         * while, which should save on performance). Then I'll get rid of the option of
+         * having an eval engine. So for now we're just hard-coding it to jeval, which is
+         * the default anyway.
+         */
+        return getEvalEngine("jeval");
     }
     
     public static class FutureFactoid implements Runnable
@@ -1039,30 +1048,32 @@ public class JZBot
         else if (args[0].equals("config"))
         {
             initProxyStorage();
-            if (args.length == 1)
-            {
-                System.out.println("All config var names: "
-                    + StringUtils.delimited(ConfigVars.values(), new ToString<ConfigVars>()
-                    {
-                        
-                        @Override
-                        public String toString(ConfigVars object)
-                        {
-                            return object.name();
-                        }
-                    }, ", "));
-            }
-            else if (args.length == 2)
-            {
-                System.out.println("Config variable \"" + args[1]
-                    + "\" is currently set to \"" + ConfigVars.valueOf(args[1]).get());
-            }
-            else
-            {
-                ConfigVars.valueOf(args[1]).set(args[2]);
-                System.out.println("Successfully set the var \"" + args[1]
-                    + "\" to the value \"" + args[2] + "\".");
-            }
+            // TODO: uncomment this and make it so it mirrors the ~config command in usage
+            // (and perhaps it could even invoke ~config directly)
+            // if (args.length == 1)
+            // {
+            // System.out.println("All config var names: "
+            // + StringUtils.delimited(ConfigVars.values(), new ToString<ConfigVars>()
+            // {
+            //                        
+            // @Override
+            // public String toString(ConfigVars object)
+            // {
+            // return object.name();
+            // }
+            // }, ", "));
+            // }
+            // else if (args.length == 2)
+            // {
+            // System.out.println("Config variable \"" + args[1]
+            // + "\" is currently set to \"" + ConfigVars.valueOf(args[1]).get());
+            // }
+            // else
+            // {
+            // ConfigVars.valueOf(args[1]).set(args[2]);
+            // System.out.println("Successfully set the var \"" + args[1]
+            // + "\" to the value \"" + args[2] + "\".");
+            // }
         }
         else if (args[0].equals("activateserver"))
         {
@@ -1355,10 +1366,9 @@ public class JZBot
     
     private static void loadConfiguration() throws Exception
     {
+        Configuration.initialize();
         registerDefaultConfigVars();
-        logQueue =
-                new LinkedBlockingQueue<LogEvent>(Integer.parseInt(ConfigVars.lqmaxsize
-                        .get()));
+        logQueue = new LinkedBlockingQueue<LogEvent>(Configuration.getInt("", "lqmaxsize"));
         Configuration.addListener("", "proxytrace", new VarListener()
         {
             
@@ -1578,7 +1588,7 @@ public class JZBot
                     String pseudoServer = serverName;
                     if (pseudoServer == null || pseudoChannel == null)
                     {
-                        String primary = ConfigVars.primary.get();
+                        String primary = Configuration.getText(null, "primary");
                         try
                         {
                             pseudoServer = extractServerName(primary);
@@ -2336,17 +2346,15 @@ public class JZBot
     private static void doInvalidCommand(boolean pm, Server server, String serverName,
             String channel, ServerUser sender, Messenger source)
     {
+        String defaultMessage = "Huh? (pm \"help\" for more info)";
         Channel c = server.getChannel(channel);
-        String notfoundFact = ConfigVars.notfound.get();
-        if (notfoundFact.trim().equals("") && c != null)
+        String notfoundFact = Configuration.getText(null, "notfound");
+        if (notfoundFact == null)
+            notfoundFact = "";
+        if (notfoundFact.trim().equals(""))
         {
             System.out.println("No custom notfound factoid; using standard message");
-            source.sendMessage("Huh? (pm \"help\" for more info)");
-        }
-        else if (notfoundFact.trim().equals(""))
-        {
-            System.out.println("No custom notfound factoid; using standard message");
-            source.sendMessage("Huh? (pm \"help\" for more info)");
+            source.sendMessage(defaultMessage);
         }
         else
         {
@@ -2361,14 +2369,16 @@ public class JZBot
                 if (f == null)
                     f = storage.getFactoid(notfoundFact);
                 if (f == null)
-                    throw new RuntimeException("The not-found factoid \"" + notfoundFact
-                        + "\" does not exist.");
-                String factValue =
-                        safeRunFactoid(f, server, serverName, channel, sender, source,
-                                new String[0], true, new HashMap<String, String>());
-                if (factValue.trim().equals(""))
-                    factValue = "Not-found factoid didn't output anything";
-                sendActionOrMessage(source, factValue);
+                    source.sendMessage(defaultMessage);
+                else
+                {
+                    String factValue =
+                            safeRunFactoid(f, server, serverName, channel, sender, source,
+                                    new String[0], true, new HashMap<String, String>());
+                    if (factValue.trim().equals(""))
+                        factValue = "(Not-found factoid didn't output anything)";
+                    sendActionOrMessage(source, factValue);
+                }
             }
             catch (Throwable t)
             {
@@ -2387,53 +2397,18 @@ public class JZBot
         {
             public void run()
             {
-                if (ConfigVars.servicemsg.get().equals("1"))
-                {
-                    try
-                    {
-                        Thread.sleep(2500);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    System.out.println("Authenticating with NickServ via privmsg");
-                    String pwd = config.getPassword();
-                    if (pwd != null && !"".equals(pwd))
-                        con.sendMessage("NickServ", "identify " + pwd);
-                }
-                try
-                {
-                    Thread.sleep(2300);// FIXME: make this a config var
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
+                Utils.sleep(2300);// FIXME: make this a config var
                 for (Channel channel : datastoreServer.getChannels().isolate())
                 {
                     if (!channel.isSuspended())
                     {
-                        try
-                        {
-                            Thread.sleep(2300);
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
-                        System.out.println(serverName + ": joining " + channel.getName());
+                        Utils.sleep(2300);
+                        System.out.println(serverName + ": joining " + channel.getName()
+                            + " on connect");
                         con.joinChannel(channel.getName());
                     }
                 }
-                try
-                {
-                    Thread.sleep(2500);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
+                Utils.sleep(2500);
                 try
                 {
                     runNotificationFactoid(serverName, datastoreServer, null, null, con
@@ -2446,19 +2421,7 @@ public class JZBot
                         + "_onconnect for server \"" + serverName + "\"", e)
                             .printStackTrace();
                 }
-                try
-                {
-                    Thread.sleep(3500);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-                String umodes = ConfigVars.modes.get();
-                for (char c : umodes.toCharArray())
-                {
-                    con.setMode(con.getNick(), "+" + c);
-                }
+                Utils.sleep(3500);
             }
         }.start();
     }
@@ -2688,7 +2651,7 @@ public class JZBot
     
     public static String evaluateEquation(String toEval, String channel)
     {
-        return evaluateEquation(toEval, channel, ConfigVars.evalengine.get());
+        return evaluateEquation(toEval, channel, "jeval");
     }
     
     public static String evaluateEquation(String toEval, String channel, String engineName)
@@ -2701,7 +2664,7 @@ public class JZBot
         catch (Exception e)
         {
             throw new FactoidException("Exception while evaluating " + toEval
-                + " with engine " + ConfigVars.evalengine.get(), e);
+                + " with engine " + engineName, e);
         }
     }
     
@@ -2736,7 +2699,7 @@ public class JZBot
     public static void sendDelimited(ConnectionWrapper bot, String[] array,
             String delimiter, String recipient)
     {
-        JZUtils.ircSendDelimited(array, delimiter, new GenericMessenger(bot, recipient));
+        Utils.ircSendDelimited(array, delimiter, new GenericMessenger(bot, recipient));
     }
     
     public static Factoid getChannelFactoid(Server server, String channelName,
@@ -2892,7 +2855,7 @@ public class JZBot
                 {
                     try
                     {
-                        Thread.sleep(logQueueDelay);
+                        Thread.sleep(Configuration.getInt(null, "lqdelay") * 1000);
                         System.out.println("Sinking log events...");
                         int events = 0;
                         LogEvent event;
@@ -2922,43 +2885,46 @@ public class JZBot
     
     public static void sinkQueuedLogEvent(LogEvent logEvent)
     {
-        String server = logEvent.server;
-        String channel = logEvent.channel;
-        String nick = logEvent.nick;
-        String details = logEvent.details;
-        String event = logEvent.event;
-        String filename = "@" + server + channel;
-        details = details.replace("\r", "").replace("\n", "");
-        try
-        {
-            if (StringUtils.isMemberOf(filename, configNolog.split("\\|")))
-                return;
-            String data =
-                    event + " " + System.currentTimeMillis() + " " + nick + " " + details;
-            File logFile = new File(logsFolder, filename);
-            if (!logFile.exists())
-                if (!logFile.createNewFile())
-                    throw new Exception("Couldn't create new log file.");
-            String content = StringUtils.readFile(logFile);
-            if ((!content.endsWith("\n")) && content.length() > 0)
-                content += "\n";
-            content += data;
-            while (content.length() > configLogsize)
-            {
-                if (content.length() == 0)
-                    break;
-                int newlinePlace = content.indexOf('\n');
-                if (newlinePlace == -1)
-                    newlinePlace = content.length() - 1;
-                content = content.substring(newlinePlace + 1);
-            }
-            StringUtils.writeFile(content, logFile);
-        }
-        catch (Exception e)
-        {
-            new Exception("Exception while writing data to channel logs", e)
-                    .printStackTrace();
-        }
+        // FIXME: This needs to be re-done using an embedded H2 database
+        // String server = logEvent.server;
+        // String channel = logEvent.channel;
+        // String nick = logEvent.nick;
+        // String details = logEvent.details;
+        // String event = logEvent.event;
+        // String filename = "@" + server + channel;
+        // details = details.replace("\r", "").replace("\n", "");
+        // try
+        // {
+        // // FIXME: Have this registered as a channel-specific config variable for every
+        // // channel
+        // // if (StringUtils.isMemberOf(filename, configNolog.split("\\|")))
+        // // return;
+        // String data =
+        // event + " " + System.currentTimeMillis() + " " + nick + " " + details;
+        // File logFile = new File(logsFolder, filename);
+        // if (!logFile.exists())
+        // if (!logFile.createNewFile())
+        // throw new Exception("Couldn't create new log file.");
+        // String content = StringUtils.readFile(logFile);
+        // if ((!content.endsWith("\n")) && content.length() > 0)
+        // content += "\n";
+        // content += data;
+        // while (content.length() > configLogsize)
+        // {
+        // if (content.length() == 0)
+        // break;
+        // int newlinePlace = content.indexOf('\n');
+        // if (newlinePlace == -1)
+        // newlinePlace = content.length() - 1;
+        // content = content.substring(newlinePlace + 1);
+        // }
+        // StringUtils.writeFile(content, logFile);
+        // }
+        // catch (Exception e)
+        // {
+        // new Exception("Exception while writing data to channel logs", e)
+        // .printStackTrace();
+        // }
     }
     
     public static File[] listLocalFactpackFiles()
@@ -3152,26 +3118,11 @@ public class JZBot
         {
             while (isRunning)
             {
-                try
-                {
-                    Thread.sleep(5000);
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                    return;
-                }
+                Utils.sleep(5000);
                 if (restartFile.exists())
                 {
                     restartFile.delete();
-                    try
-                    {
-                        Thread.sleep(3000);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
+                    Utils.sleep(3000);
                     restart();
                 }
             }
@@ -3189,15 +3140,6 @@ public class JZBot
     {
         shouldRestartOnShutdown = true;
         System.out.println("Restarting...");
-        /*
-         * TODO: in the future, maybe have this disconnect all active servers with
-         * whatever message storage/restart contains, if it exists, otherwise a default
-         * error message or one that could be passed into this method. Each protocol
-         * restart should be done in a thread, and then 3 seconds should go by before
-         * exiting, so that each protocol has 3 seconds to exit. This way, protocols will
-         * most likely get the exit message, but a rogue protocol whose quit method blocks
-         * won't cause the restart not to work.
-         */
         isRunning = false;
         new Thread()
         {
@@ -3206,14 +3148,7 @@ public class JZBot
                 onRestartGlobalDisconnect();
             }
         }.start();
-        try
-        {
-            Thread.sleep(5000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        Utils.sleep(5000);
         try
         {
             proxyStorage.close();
@@ -3222,23 +3157,9 @@ public class JZBot
         {
             ex.printStackTrace();
         }
-        try
-        {
-            Thread.sleep(2000);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        Utils.sleep(2000);
         System.out.println("Exiting on restart with status 17...");
-        try
-        {
-            Thread.sleep(200);
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        Utils.sleep(200);
         /*
          * FIXME: due to a current bug that I haven't been able to figure out, replacing
          * this with System.exit(17) causes a hang, where not even Ctrl+C will kill the
@@ -3274,7 +3195,7 @@ public class JZBot
     
     public static void proxyTraceConfigChanged()
     {
-        proxyStorage.setTracingEnabled(ConfigVars.proxytrace.get().equals("1"));
+        proxyStorage.setTracingEnabled(Configuration.getBool(null, "proxytrace"));
     }
     
     public static StorageContainer getStorageContainer(String scope)

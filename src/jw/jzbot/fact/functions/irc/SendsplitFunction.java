@@ -6,7 +6,7 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class SendsplitFunction extends Function
 {
@@ -14,7 +14,7 @@ public class SendsplitFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        String[] tokens = JZUtils.ircDelimited(new ServerChannel(context.getServer(),
+        String[] tokens = Utils.ircDelimited(new ServerChannel(context.getServer(),
                 context.getChannel()), arguments.resolveString(3).split(
                 arguments.resolveString(1)), arguments.resolveString(2));
         for (String s : tokens)

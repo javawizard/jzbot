@@ -1,6 +1,6 @@
 package jw.jzbot;
 
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class ServerUser implements Messenger
 {
@@ -132,7 +132,7 @@ public class ServerUser implements Messenger
     @Override
     public void sendSpaced(String message)
     {
-        JZUtils.sendSpaced(this, message);
+        Utils.sendSpaced(this, message);
     }
 
     @Override

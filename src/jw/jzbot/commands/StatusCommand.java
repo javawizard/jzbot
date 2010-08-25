@@ -17,14 +17,14 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
 import jw.jzbot.Command;
-import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
+import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -44,8 +44,10 @@ public class StatusCommand implements Command
     public void run(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
     {
-        if (ConfigVars.openstatus.get().equals("0"))
-            sender.verifySuperop();
+        // TODO: re-enable this. Also consider enabling one to just disable
+        // processing-intensive functions like "~status version".
+        // if (ConfigVars.openstatus.get().equals("0"))
+        // sender.verifySuperop();
         if (arguments.equals(""))
         {
             String s =
@@ -113,7 +115,7 @@ public class StatusCommand implements Command
             }
             else
             {
-                JZUtils.ircSendDelimited(strings.toArray(new String[0]), ", ", source);
+                Utils.ircSendDelimited(strings.toArray(new String[0]), ", ", source);
             }
         }
         else if (arguments.equals("logging"))
@@ -225,7 +227,7 @@ public class StatusCommand implements Command
         else if (arguments.equals("proxytrace"))
         {
             String initial = "";
-            boolean tracingEnabled = ConfigVars.proxytrace.get().equals("1");
+            boolean tracingEnabled = Configuration.getBool(null, "proxytrace");
             Map<String, Long> map = JZBot.proxyStorage.getCurrentTracingInfo();
             if (tracingEnabled)
                 initial +=
@@ -269,7 +271,7 @@ public class StatusCommand implements Command
             Process p =
                     Runtime.getRuntime().exec(getSvnExecutable() + " info --xml -R .",
                             null, new File("."));
-            JZUtils.sinkStream(p.getErrorStream());
+            Utils.sinkStream(p.getErrorStream());
             Document doc = new SAXBuilder().build(p.getInputStream());
             int exitCode = p.waitFor();
             if (exitCode != 0)
@@ -299,7 +301,7 @@ public class StatusCommand implements Command
             p =
                     Runtime.getRuntime().exec(getSvnExecutable() + " log --xml -r HEAD .",
                             null, new File("."));
-            JZUtils.sinkStream(p.getErrorStream());
+            Utils.sinkStream(p.getErrorStream());
             String remoteString = null;
             try
             {
@@ -393,7 +395,7 @@ public class StatusCommand implements Command
         else
             return "lib/jsvn";
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)

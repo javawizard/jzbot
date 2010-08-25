@@ -1,6 +1,6 @@
 package jw.jzbot;
 
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 /**
  * A generic messenger that can be used when only a connection wrapper and a recipient
@@ -48,7 +48,7 @@ public class GenericMessenger implements Messenger
     @Override
     public void sendSpaced(String message)
     {
-        JZUtils.sendSpaced(this, message);
+        Utils.sendSpaced(this, message);
     }
     
     @Override

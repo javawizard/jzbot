@@ -36,7 +36,6 @@ import org.jivesoftware.smackx.muc.UserStatusListener;
 import org.xmlpull.mxp1.MXParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import jw.jzbot.ConfigVars;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -58,7 +57,11 @@ public class XmppProtocol implements Connection
         
         // TODO: Make sure that this isn't going to ever get initialized before we set up
         // the ProxyStorage database, as that could cause problems
-        XMPPConnection.DEBUG_ENABLED = ConfigVars.xmppdebug.get().equals("1");
+        
+        // TODO: Change this to be configured in a file, since it could affect the box the
+        // bot itself is running on (headless boxes will throw an exception if I remember
+        // correctly)
+        // XMPPConnection.DEBUG_ENABLED = ConfigVars.xmppdebug.get().equals("1");
     }
     
     /**

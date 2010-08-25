@@ -30,7 +30,7 @@ import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.storage.StorageContainer;
 import jw.jzbot.storage.Server;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -731,7 +731,7 @@ public class FactoidCommand implements Command
             }
             // TODO: consider pastebinning if there are more than, say, 10 factpacks, or
             // if there are more factpacks than can fit into two messages
-            JZUtils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
+            Utils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
         }
         else if (command.equals("install"))
         {
@@ -781,7 +781,7 @@ public class FactoidCommand implements Command
         Factpack factpack = Factpack.parse(packContents);
         String sn = factpack.name + ": ";
         String[] strings = new String[0];
-        JZUtils.ircSendDelimited(sn, strings, ", ", source);
+        Utils.ircSendDelimited(sn, strings, ", ", source);
         if (!factpack.description.equals(""))
         {
             String[] descStrings = factpack.description.split("\n");

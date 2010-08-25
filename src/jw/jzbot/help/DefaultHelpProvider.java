@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 import net.sf.opengroove.common.utils.StringUtils;
 
@@ -51,7 +51,7 @@ public class DefaultHelpProvider implements HelpProvider
                     "JMLogo Interpreter (http://me.opengroove.org/search?q=jmlogo)"
             };
             // TODO: the delimited length is hard-coded; figure out a way around this
-            String[] messageList = JZUtils
+            String[] messageList = Utils
                     .delimitedLengthRestricted(creditsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n");
         }
@@ -64,7 +64,7 @@ public class DefaultHelpProvider implements HelpProvider
                             + "Alexander Boyd (javawizard2539/jcp/jpc)", "MrDudle",
                     "Maximilian Dirkmann (schrottplatz)", "Phase"
             };
-            String[] messageList = JZUtils
+            String[] messageList = Utils
                     .delimitedLengthRestricted(authorsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n")
                     + "\nFor people that have contributed (directly or indirectly) to the "
@@ -81,7 +81,7 @@ public class DefaultHelpProvider implements HelpProvider
                     "Daniel Outmin (a_meteorite)", "Maximilian Dirkmann (schrottplatz)",
                     "MrDudle", "Joshua Bodine (Constitution)", "Tim Riker (TimRiker)"
             };
-            String[] messageList = JZUtils
+            String[] messageList = Utils
                     .delimitedLengthRestricted(authorsList, ", ", 300);
             return StringUtils.delimited(messageList, "\n");
         }

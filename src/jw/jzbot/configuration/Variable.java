@@ -107,6 +107,7 @@ public class Variable extends Setting
         }
         if (!works)
             throw new IllegalArgumentException(
-                    "That text is not valid for a variable of type " + type.name());
+                    "That's not a valid value for a configuration variable of type "
+                        + type.name());
     }
 }

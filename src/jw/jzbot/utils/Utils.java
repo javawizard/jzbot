@@ -11,7 +11,7 @@ import jw.jzbot.protocols.Connection;
 
 import org.jibble.pircbot.PircBot;
 
-public class JZUtils
+public class Utils
 {
     public static String[] delimitedLengthRestricted(String[] items, String delimiter,
             int length)
@@ -58,10 +58,7 @@ public class JZUtils
         if (items.length > 0)
             items[0] = prefix + items[0];
         else
-            items = new String[]
-            {
-                prefix
-            };
+            items = new String[] { prefix };
         for (String s : ircDelimited(messenger, items, delimiter))
         {
             messenger.sendMessage(s);
@@ -109,5 +106,25 @@ public class JZUtils
                 }
             }
         }.start();
+    }
+    
+    /**
+     * Calls {@link Thread#sleep(long)}, but catches and ignores any thrown exceptions. If
+     * an exception is thrown, it will be printed to stdout, but it will not be re-thrown
+     * from this method.
+     * 
+     * @param delay
+     *            The time, in milliseconds, to sleep for
+     */
+    public static void sleep(long delay)
+    {
+        try
+        {
+            Thread.sleep(delay);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

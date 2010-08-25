@@ -1,8 +1,8 @@
 package jw.jzbot.fact.functions.threading;
 
-import jw.jzbot.ConfigVars;
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
+import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
@@ -64,9 +64,11 @@ public class ThreadstartFunction extends Function
                     catch (Exception e)
                     {
                         usableConnection =
-                                JZBot.checkedGetExtractedConnection(ConfigVars.primary
-                                        .get(), null);
-                        usableChannel = JZBot.extractChannelName(ConfigVars.primary.get());
+                                JZBot.checkedGetExtractedConnection(Configuration.getText(
+                                        null, "primary"), null);
+                        usableChannel =
+                                JZBot.extractChannelName(Configuration.getText(null,
+                                        "primary"));
                     }
                     if (usableConnection != null && usableChannel != null)
                     {

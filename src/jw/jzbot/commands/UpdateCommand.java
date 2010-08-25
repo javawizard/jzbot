@@ -7,7 +7,7 @@ import jw.jzbot.Command;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class UpdateCommand implements Command
 {
@@ -42,8 +42,8 @@ public class UpdateCommand implements Command
             final Process p = Runtime.getRuntime().exec(new String[] { scriptName });
             InputStream in = p.getInputStream();
             InputStream err = p.getErrorStream();
-            JZUtils.sinkStream(in);
-            JZUtils.sinkStream(err);
+            Utils.sinkStream(in);
+            Utils.sinkStream(err);
             new Thread("update-check-waiter")
             {
                 public void run()

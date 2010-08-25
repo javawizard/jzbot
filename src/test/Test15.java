@@ -1,6 +1,6 @@
 package test;
 
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class Test15
 {
@@ -11,7 +11,7 @@ public class Test15
     public static void main(String[] args)
     {
         String[] items = generateItems(7, 150);
-        String[] strings = JZUtils.delimitedLengthRestricted(items, " | ", 456);
+        String[] strings = Utils.delimitedLengthRestricted(items, " | ", 456);
         for (String s : strings)
         {
             System.out.println(s);

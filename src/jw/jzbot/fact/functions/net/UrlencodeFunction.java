@@ -2,7 +2,6 @@ package jw.jzbot.fact.functions.net;
 
 import java.net.URLEncoder;
 
-import jw.jzbot.ConfigVars;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
@@ -17,12 +16,12 @@ public class UrlencodeFunction extends Function
     {
         try
         {
-            sink.write(URLEncoder.encode(arguments.getString(0), ConfigVars.charset.get()));
+            sink.write(URLEncoder.encode(arguments.getString(0), "UTF-8"));
         }
         catch (Exception e)
         {
             throw new FactoidException("Exception while encoding URL fragment "
-                    + arguments.getString(0), e);
+                + arguments.getString(0), e);
         }
     }
     
@@ -30,7 +29,7 @@ public class UrlencodeFunction extends Function
     public String getHelp(String topic)
     {
         return "Syntax: {urlencode|<text>} -- Encodes the text specified so that it is "
-                + "suitable for including in a URL.";
+            + "suitable for including in a URL.";
     }
     
     public String getName()

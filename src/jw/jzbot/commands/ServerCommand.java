@@ -14,7 +14,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.protocols.ProtocolManager;
 import jw.jzbot.storage.Server;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class ServerCommand implements Command
 {
@@ -239,7 +239,7 @@ public class ServerCommand implements Command
                 // flags = "0";
                 items.add(flags + ":" + sName);
             }
-            JZUtils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
+            Utils.ircSendDelimited(items.toArray(new String[0]), "  ", source);
         }
         else if (subcommand.equals("error"))
         {

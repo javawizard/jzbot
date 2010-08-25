@@ -2,10 +2,14 @@ package jw.jzbot.configuration;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import jw.jzbot.JZBot;
+import jw.jzbot.ScopeLevel;
+import jw.jzbot.events.Notify;
+import jw.jzbot.events.ScopeListener;
 import jw.jzbot.storage.ConfigStorage;
 import jw.jzbot.storage.ConfigVariable;
 import jw.jzbot.storage.StorageContainer;
@@ -63,7 +67,29 @@ public class Configuration
         bool, integer, decimal, text, folder
     }
     
-    private static Map<String, Folder> scopeFolderMap = new HashMap<String, Folder>();
+    private static Map<String, Folder> scopeFolderMap =
+            Collections.synchronizedMap(new HashMap<String, Folder>());
+    
+    /**
+     * Initializes the configuration system. The notification system must have been
+     * initialized first, and initial notifications must not yet have been sent. The
+     * configuration system uses the notification system for listening for changes to
+     * which channels and servers exist.
+     */
+    public static void initialize()
+    {
+        ScopeListener removed = new ScopeListener()
+        {
+            
+            @Override
+            public void notify(ScopeLevel level, String scope, boolean initial)
+            {
+                scopeFolderMap.remove(scope);
+            }
+        };
+        Notify.channelRemoved.addListener(removed);
+        Notify.serverRemoved.addListener(removed);
+    }
     
     /**
      * Registers a new variable.
@@ -283,8 +309,8 @@ public class Configuration
      * Filters can be used to validate that the new value for a variable satisfies some
      * criteria. If the new value does not, the filter can throw an exception and the var
      * will not be changed. The var must be registered; if it is ever deregistered in the
-     * future, this will clear all of its filters, and they must be added again if the
-     * var is re-registered.
+     * future, this will clear all of its filters, and they must be added again if the var
+     * is re-registered.
      * 
      * @param scope
      * @param name
@@ -362,7 +388,7 @@ public class Configuration
     
     private static String normalizeScope(String scope)
     {
-        if (scope.equals("@"))
+        if (scope == null || scope.equals("@"))
             scope = "";
         return scope;
     }

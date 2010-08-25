@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.jzbot.Command;
-import jw.jzbot.ConfigVars;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
@@ -13,7 +12,7 @@ import jw.jzbot.ServerUser;
 import jw.jzbot.fact.functions.HashFunction;
 import jw.jzbot.storage.Operator;
 import jw.jzbot.storage.Server;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class SuperopCommand implements Command
 {
@@ -43,7 +42,7 @@ public class SuperopCommand implements Command
             {
                 strings.add(op.getHostname());
             }
-            JZUtils.ircSendDelimited(strings.toArray(new String[0]), "  ", source);
+            Utils.ircSendDelimited(strings.toArray(new String[0]), "  ", source);
             source
                     .sendMessage("End of superop list. These superops are the superops at "
                         + "this server; this list does not include superops at "
@@ -87,21 +86,26 @@ public class SuperopCommand implements Command
         }
         else if (subcommand.equals("key"))
         {
-            String theKey = tokens[1];
-            String theHash = HashFunction.doHash(theKey);
-            if (StringUtils.isMemberOf(theHash, ConfigVars.keys.get().split("\\|")))
-            {
-                JZBot.elevate(sender.getServerName(), sender.getHostname(),
-                        ConfigVars.primary.get());
-                source.sendMessage("That key is correct. Your hostname has now been "
-                    + "added as a superop. This will persist until the "
-                    + "bot is restarted.");
-                return;
-            }
-            else
-            {
-                throw new ResponseException("Incorrect key.");
-            }
+            throw new RuntimeException("Due to some recent changes, keys "
+                + "are currently disabled. I might add this concept "
+                + "back in the future. If someone who knows Java wants "
+                + "to fix this up, contact the project owners at "
+                + "http://jzbot.googlecode.com");
+            // String theKey = tokens[1];
+            // String theHash = HashFunction.doHash(theKey);
+            // if (StringUtils.isMemberOf(theHash, ConfigVars.keys.get().split("\\|")))
+            // {
+            // JZBot.elevate(sender.getServerName(), sender.getHostname(),
+            // ConfigVars.primary.get());
+            // source.sendMessage("That key is correct. Your hostname has now been "
+            // + "added as a superop. This will persist until the "
+            // + "bot is restarted.");
+            // return;
+            // }
+            // else
+            // {
+            // throw new ResponseException("Incorrect key.");
+            // }
         }
         
         else
@@ -111,7 +115,7 @@ public class SuperopCommand implements Command
         }
         
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)

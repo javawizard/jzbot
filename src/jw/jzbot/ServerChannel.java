@@ -1,6 +1,6 @@
 package jw.jzbot;
 
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 
 public class ServerChannel implements Messenger, Scope
 {
@@ -62,7 +62,7 @@ public class ServerChannel implements Messenger, Scope
     @Override
     public void sendSpaced(String message)
     {
-        JZUtils.sendSpaced(this, message);
+        Utils.sendSpaced(this, message);
     }
     
     @Override

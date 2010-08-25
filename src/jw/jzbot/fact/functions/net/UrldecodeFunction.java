@@ -3,7 +3,6 @@ package jw.jzbot.fact.functions.net;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import jw.jzbot.ConfigVars;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
@@ -17,13 +16,12 @@ public class UrldecodeFunction extends Function
     {
         try
         {
-            sink.write(URLDecoder.decode(arguments.resolveString(0), ConfigVars.charset
-                    .get()));
+            sink.write(URLDecoder.decode(arguments.resolveString(0), "UTF-8"));
         }
         catch (Exception e)
         {
             throw new FactoidException("Exception while decoding URL fragment "
-                    + arguments.getString(0), e);
+                + arguments.getString(0), e);
         }
     }
     

@@ -7,7 +7,6 @@ import java.util.Collections;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.jzbot.Command;
-import jw.jzbot.ConfigVars;
 import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
@@ -15,7 +14,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
-import jw.jzbot.utils.JZUtils;
+import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
 
@@ -31,23 +30,28 @@ public class HelpCommand implements Command
             Messenger source, String arguments)
     {
         Server datastoreServer = JZBot.storage.getServer(server);
-        if (ConfigVars.helpinpm.get().equals("1") && !pm)
-        {
-            if (arguments.equals("functions"))
-            {
-                throw new ResponseException(
-                        "You're not allowed to run the help command at a channel. "
-                            + "You can use "
-                            + "http://code.google.com/p/jzbot/wiki/FactoidFunctions "
-                            + "or try sending \"help\" in a pm to the bot instead.");
-            }
-            else
-            {
-                throw new ResponseException(
-                        "You're not allowed to run the help command at a channel. "
-                            + "Try sending \"help\" in a pm to the bot instead.");
-            }
-        }
+        // FIXME: re-add this as a channel-specific, server-specific, and global
+        // configuration variable. The more specific ones override the less specific ones.
+        // All except the global one can be unset, which means that the parent one should
+        // be used. Global defaults to true, meaning help is allowed in channels (the var
+        // would be channelhelp).
+        // if (ConfigVars.helpinpm.get().equals("1") && !pm)
+        // {
+        // if (arguments.equals("functions"))
+        // {
+        // throw new ResponseException(
+        // "You're not allowed to run the help command at a channel. "
+        // + "You can use "
+        // + "http://code.google.com/p/jzbot/wiki/FactoidFunctions "
+        // + "or try sending \"help\" in a pm to the bot instead.");
+        // }
+        // else
+        // {
+        // throw new ResponseException(
+        // "You're not allowed to run the help command at a channel. "
+        // + "Try sending \"help\" in a pm to the bot instead.");
+        // }
+        // }
         ArrayList<String> subpages = new ArrayList<String>();
         String page = arguments;
         String text = null;
@@ -143,7 +147,7 @@ public class HelpCommand implements Command
                                 null, null));
         }
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)
