@@ -2,7 +2,6 @@ package jw.jzbot.help;
 
 import java.util.HashMap;
 
-import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.utils.Utils;
 

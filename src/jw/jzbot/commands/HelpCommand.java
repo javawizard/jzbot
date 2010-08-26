@@ -7,11 +7,12 @@ import java.util.Collections;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.jzbot.Command;
-import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
 import jw.jzbot.ServerUser;
+import jw.jzbot.help.HelpProvider;
+import jw.jzbot.help.HelpSystem;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.Utils;
@@ -64,7 +65,7 @@ public class HelpCommand implements Command
             else
                 page = page.substring(0, page.length() - " --".length());
         }
-        for (HelpProvider provider : JZBot.helpProviders)
+        for (HelpProvider provider : HelpSystem.getProviders())
         {
             String possibleText = provider.getPage(page);
             if (possibleText != null)
@@ -130,7 +131,7 @@ public class HelpCommand implements Command
             for (String subpage : subpages)
             {
                 String subtext = "";
-                for (HelpProvider provider : JZBot.helpProviders)
+                for (HelpProvider provider : HelpSystem.getProviders())
                 {
                     String possibleText = provider.getPage(page + " " + subpage);
                     if (possibleText != null)

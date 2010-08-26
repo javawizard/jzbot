@@ -1,4 +1,4 @@
-package jw.jzbot;
+package jw.jzbot.help;
 
 /**
  * A help provider. Help providers provide help content to the ~help command.

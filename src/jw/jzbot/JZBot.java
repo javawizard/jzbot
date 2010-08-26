@@ -80,6 +80,7 @@ import jw.jzbot.fact.output.NullSink;
 import jw.jzbot.fact.output.StringSink;
 import jw.jzbot.help.DefaultHelpProvider;
 import jw.jzbot.help.FunctionHelpProvider;
+import jw.jzbot.help.HelpSystem;
 import jw.jzbot.help.PropsHelpProvider;
 import jw.jzbot.help.XMLHelpProvider;
 import jw.jzbot.pastebin.DefaultPastebinProviders;
@@ -126,8 +127,6 @@ public class JZBot
     
     public static Map<String, String> globalVariables =
             Collections.synchronizedMap(new HashMap<String, String>());
-    
-    public static ArrayList<HelpProvider> helpProviders = new ArrayList<HelpProvider>();
     
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
     
@@ -779,9 +778,9 @@ public class JZBot
     
     static
     {
-        helpProviders.add(new DefaultHelpProvider());
-        helpProviders.add(new FunctionHelpProvider());
-        helpProviders.add(new PropsHelpProvider("docs/help.props"));
+        HelpSystem.installProvider(new DefaultHelpProvider());
+        HelpSystem.installProvider(new FunctionHelpProvider());
+        HelpSystem.installProvider(new PropsHelpProvider("docs/help.props"));
     }
     
     public static Map<String, Evaluator> evalEngines = new HashMap<String, Evaluator>();

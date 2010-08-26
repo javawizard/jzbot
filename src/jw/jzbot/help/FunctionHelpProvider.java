@@ -1,6 +1,5 @@
 package jw.jzbot.help;
 
-import jw.jzbot.HelpProvider;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.Function;
 

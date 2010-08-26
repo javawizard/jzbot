@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import jw.jzbot.HelpProvider;
 import jw.jzbot.JZBot;
 
 public class PropsHelpProvider implements HelpProvider
