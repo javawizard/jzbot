@@ -85,12 +85,48 @@ public class ConfigCommand implements Command
                  */
                 listFolderContents(source, scope, varPath);
             }
-            throw new ResponseException("This still needs to be written.");
+            else if (input == null)
+            {
+                /*
+                 * We're supposed to read the variable
+                 */
+                VarType type = Configuration.getType(scope, varPath);
+                String result = "(" + type.name() + ")";
+                if (!Configuration.isSet(scope, varPath))
+                {
+                    if (Configuration.hasDefault(scope, varPath))
+                        result += " default:";
+                    else
+                        result += " unset";
+                }
+                String value = getDisplayValue(scope, varPath);
+                if (value != null)
+                    result += " " + value;
+                source.sendSpaced(result);
+            }
+            else
+            {
+                /*
+                 * We're supposed to set the variable
+                 */
+                String oldDisplayValue = getDisplayValue(scope, varPath);
+                Configuration.setText(scope, varPath, input);
+                source.sendSpaced("Successfully set to " + getDisplayValue(scope, varPath)
+                    + "."
+                    + (oldDisplayValue != null ? " Old value: " + oldDisplayValue : ""));
+            }
         }
         else if (command.equals("info"))
         {
             source.sendSpaced(getTypeInfo(scope, varPath) + " "
                 + Configuration.getDescription(scope, varPath));
+        }
+        else if (command.equals("unset"))
+        {
+            String oldDisplayValue = getDisplayValue(scope, varPath);
+            Configuration.setText(scope, varPath, null);
+            source.sendSpaced("Successfully unset."
+                + (oldDisplayValue != null ? " Old value: " + oldDisplayValue : ""));
         }
         else
         {
@@ -143,5 +179,16 @@ public class ConfigCommand implements Command
             Messenger source, String arguments)
     {
         return true;
+    }
+    
+    public String getDisplayValue(String scope, String varPath)
+    {
+        String result = Configuration.getTextNormal(scope, varPath);
+        if (result == null)
+            return null;
+        VarType type = Configuration.getType(scope, varPath);
+        if (type == VarType.text)
+            result = "\"" + result + "\"";
+        return result;
     }
 }
