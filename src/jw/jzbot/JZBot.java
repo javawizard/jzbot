@@ -1356,7 +1356,6 @@ public class JZBot
                         700, 300, 400);
         storage = proxyStorage.getRoot();
         config = storage.getConfig();
-        proxyTraceConfigChanged();
         if (config == null)
         {
             config = storage.createConfig();
@@ -1378,6 +1377,7 @@ public class JZBot
                 proxyTraceConfigChanged();
             }
         });
+        proxyTraceConfigChanged();
     }
     
     private static void registerDefaultConfigVars() throws IOException

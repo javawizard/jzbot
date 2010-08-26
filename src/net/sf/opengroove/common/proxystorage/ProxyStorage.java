@@ -256,6 +256,7 @@ public class ProxyStorage<E>
         }
         catch (Exception e)
         {
+            e.printStackTrace();
             throw new RuntimeException(
                     "An exception occured while initializing the proxy storage", e);
         }

@@ -98,7 +98,7 @@ public class ConfigCommand implements Command
     private void respondWithNoScope(String server, String channel)
     {
         throw new ResponseException("You need to specify a "
-            + "scope level. At your current scope, allowed scope levels are:"
+            + "scope level. At your current scope, allowed scope levels are: "
             + ScopeLevel.validLevelsSpacedString(server, channel)
             + ". For more help with the config command, use \"help config\".");
     }

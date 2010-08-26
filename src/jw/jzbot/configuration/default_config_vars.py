@@ -26,7 +26,7 @@ variables = [
     (integer, "lqdelay", 30, "The interval, in seconds, at which to "
      "store logs to disk. This helps reduce performance issues by "
      "buffering logs in memory, but may cause logs for up to this many "
-     "seconds to be lost whenever the bot shuts down.")
+     "seconds to be lost whenever the bot shuts down."),
     (integer, "lqmaxsize", 500, "The maximum size of the in-memory "
      "log queue"),
     (text, "notfound", None, "The name of a factoid to invoke when a "
@@ -46,7 +46,7 @@ variables = [
 ]
 
 for var_type, name, default, description in variables:
-    if default.__type__ == __builtin__.bool:
+    if default.__class__ == __builtin__.bool:
         # Convert booleans to their numerical representation since the
         # configuration system stores booleans as "1" and "0" for True and
         # False, respectively.

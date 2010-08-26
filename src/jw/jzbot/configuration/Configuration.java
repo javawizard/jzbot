@@ -168,6 +168,9 @@ public class Configuration
     {
         scope = normalizeScope(scope);
         Variable var = getScopeFolder(scope).getVariable(name);
+        if (var == null)
+            throw new IllegalArgumentException("The variable " + scope + ":" + name
+                + " does not exist.");
         if (var.value == null)
             return var.defaultValue;
         return var.value;
