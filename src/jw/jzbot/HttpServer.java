@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
+import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactQuota;
 import jw.jzbot.storage.Factoid;
 
@@ -186,11 +187,11 @@ public class HttpServer
                             "Internal server exception:\n\n"
                                 + sw.toString()
                                 + "\n\nYou might want to connect to the IRC server "
-                                + JZBot.failsafeExtractServerName(ConfigVars.primary.get())
+                                + JZBot.failsafeExtractServerName(Configuration.getText(
+                                        null, "primary"))
                                 + " and join "
-                                + JZBot
-                                        .failsafeExtractChannelName(ConfigVars.primary
-                                                .get()) + " and ask for help.");
+                                + JZBot.failsafeExtractChannelName(Configuration.getText(
+                                        null, "primary")) + " and ask for help.");
             return response;
         }
     }

@@ -68,7 +68,7 @@ public class StringUtils
         }, delimiter);
     }
     
-    public interface ToString<S>
+    public static interface ToString<S>
     {
         public String toString(S object);
     }

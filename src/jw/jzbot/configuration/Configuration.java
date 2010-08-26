@@ -399,4 +399,17 @@ public class Configuration
             return path.substring(path.lastIndexOf("/") + 1);
         return path;
     }
+    
+    public static boolean exists(String scope, String name)
+    {
+        try
+        {
+            getType(scope, name);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
 }

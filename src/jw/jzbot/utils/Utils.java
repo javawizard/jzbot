@@ -127,4 +127,27 @@ public class Utils
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Returns true if the specified enumeration contains the specified named constant.
+     * 
+     * @param c
+     *            The class of the enumeration
+     * @param constant
+     *            The constant to check for
+     * @return True if the specified enumeration contains the specified constant
+     */
+    public static boolean contains(Class<? extends Enum> c, String constant)
+    {
+        try
+        {
+            Enum.valueOf(c, constant);
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        return true;
+    }
+    
 }
