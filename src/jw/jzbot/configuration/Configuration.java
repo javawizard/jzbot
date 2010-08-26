@@ -383,7 +383,7 @@ public class Configuration
         Folder folder = scopeFolderMap.get(scope);
         if (folder == null)
         {
-            folder = new Folder(scope, null, null);
+            folder = new Folder(scope, "(no description)", null);
             scopeFolderMap.put(scope, folder);
         }
         return folder;
@@ -401,6 +401,13 @@ public class Configuration
         if (path.contains("/"))
             return path.substring(path.lastIndexOf("/") + 1);
         return path;
+    }
+    
+    public static String child(String parent, String child)
+    {
+        if (parent.equals(""))
+            return child;
+        return parent + "/" + child;
     }
     
     public static boolean exists(String scope, String name)

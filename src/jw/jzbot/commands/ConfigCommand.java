@@ -1,6 +1,7 @@
 package jw.jzbot.commands;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
@@ -72,18 +73,38 @@ public class ConfigCommand implements Command
         /*
          * Now we process the actual command.
          */
-        if (command.equals("info"))
+        if (command == null)
+        {
+            VarType varType = Configuration.getType(scope, varPath);
+            if (varType == null || varType == VarType.folder)
+            {
+                /*
+                 * This is either a folder or the scope folder. Either way we'll list the
+                 * contents of the folder and send them back.
+                 */
+                listFolderContents(source, scope, varPath);
+            }
+            throw new ResponseException("This still needs to be written.");
+        }
+        else if (command.equals("info"))
         {
             source.sendSpaced(getTypeInfo(scope, varPath) + " "
                 + Configuration.getDescription(scope, varPath));
         }
-        else if (command == null)
-        {
-            throw new ResponseException("This still needs to be written.");
-        }
         else
         {
             throw new ResponseException("That command (" + command + ") doesn't exist.");
+        }
+    }
+    
+    private void listFolderContents(Messenger source, String scope, String varPath)
+    {
+        String[] names = Configuration.getChildNames(scope, varPath);
+        ArrayList<String> results = new ArrayList<String>();
+        for (String name : names)
+        {
+            VarType type = Configuration.getType(scope, Configuration.child(varPath, name));
+            TODO: pick up here, ignore the type (the above line is a mistake), then print out the information about whether the var is set or not, whether it has a default value, whether it is a folder or not (so maybe the previous line wasn't a mistake)
         }
     }
     

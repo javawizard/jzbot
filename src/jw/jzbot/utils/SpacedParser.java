@@ -23,6 +23,7 @@ public class SpacedParser
         if (tokens.size() == 0)
             return null;
         String result = tokens.get(0);
+        tokens.remove(0);
         previous.add(result);
         return result;
     }
