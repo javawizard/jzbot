@@ -1559,7 +1559,11 @@ public class ProxyStorage<E>
                                 st.close();
                                 throw new IllegalStateException(
                                         "The object that was queried has been deleted "
-                                            + "from the database.");
+                                            + "from the database. The object's id is "
+                                            + targetId + " and its class is "
+                                            + targetClass.getName()
+                                            + ", and the property that's being queried is "
+                                            + propertyName);
                             }
                             result = rs.getObject(propertyName);
                             if (result != null)
