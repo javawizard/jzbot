@@ -51,7 +51,8 @@ for var_type, name, default, description in variables:
         # configuration system stores booleans as "1" and "0" for True and
         # False, respectively.
         default = int(default)
-    Configuration.register("", name, description, var_type, str(default))
+    Configuration.register("", name, description, var_type, 
+                           None if default is None else str(default))
 
 
 

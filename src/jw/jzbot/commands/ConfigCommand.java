@@ -2,6 +2,7 @@ package jw.jzbot.commands;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
@@ -100,12 +101,25 @@ public class ConfigCommand implements Command
     private void listFolderContents(Messenger source, String scope, String varPath)
     {
         String[] names = Configuration.getChildNames(scope, varPath);
+        Arrays.sort(names);
         ArrayList<String> results = new ArrayList<String>();
         for (String name : names)
         {
-            VarType type = Configuration.getType(scope, Configuration.child(varPath, name));
-            TODO: pick up here, ignore the type (the above line is a mistake), then print out the information about whether the var is set or not, whether it has a default value, whether it is a folder or not (so maybe the previous line wasn't a mistake)
+            String childPath = Configuration.child(varPath, name);
+            VarType type = Configuration.getType(scope, childPath);
+            String prefix = "";
+            if (type == VarType.folder)
+                prefix = "->";
+            else if (Configuration.isSet(scope, childPath))
+                prefix += "+";
+            else if (Configuration.hasDefault(scope, childPath))
+                prefix += "=";
+            results.add(prefix + name);
         }
+        if (results.size() == 0)
+            source.sendSpaced("(no configuration variables available)");
+        else
+            source.sendSpaced(StringUtils.delimited(results, " "));
     }
     
     private String getTypeInfo(String scope, String path)

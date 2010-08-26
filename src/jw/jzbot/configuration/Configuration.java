@@ -288,6 +288,20 @@ public class Configuration
         return folder.getSettingNames();
     }
     
+    public static boolean isSet(String scope, String name)
+    {
+        scope = normalizeScope(scope);
+        Variable var = getScopeFolder(scope).getVariable(name);
+        return var.value != null;
+    }
+    
+    public static boolean hasDefault(String scope, String name)
+    {
+        scope = normalizeScope(scope);
+        Variable var = getScopeFolder(scope).getVariable(name);
+        return var.defaultValue != null;
+    }
+    
     /**
      * Adds a listener that will be called when the specified var changes value. The var
      * must be registered; if it is ever deregistered in the future, this will clear all
