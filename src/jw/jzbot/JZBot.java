@@ -3151,7 +3151,20 @@ public class JZBot
         Utils.sleep(5000);
         try
         {
+            System.out.println("Shutting down the ProxyStorage system...");
             proxyStorage.close();
+            System.out.println("ProxyStorage shut down successfully.");
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        Utils.sleep(1000);
+        try
+        {
+            System.out.println("Shutting down the relational data store...");
+            relationalStore.close();
+            System.out.println("Relational store shut down successfully.");
         }
         catch (Exception ex)
         {
@@ -3173,6 +3186,7 @@ public class JZBot
     
     protected static void onRestartGlobalDisconnect()
     {
+        System.out.println("Starting global disconnect...");
         for (final ConnectionContext context : new ArrayList<ConnectionContext>(
                 connectionMap.values()))
         {
@@ -3182,7 +3196,11 @@ public class JZBot
                 {
                     try
                     {
+                        System.out.println("Disconnecting server "
+                            + context.getServerName() + " on shutdown...");
                         context.getConnection().disconnect(PART_MESSAGE);
+                        System.out.println("Server " + context.getServerName()
+                            + " disconnected successfully.");
                     }
                     catch (Exception ex)
                     {
@@ -3191,6 +3209,7 @@ public class JZBot
                 }
             }.start();
         }
+        System.out.println("Global disconnect finished.");
     }
     
     public static void proxyTraceConfigChanged()
