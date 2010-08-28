@@ -5,9 +5,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * I don't honestly recall where I got this program, but the majority of it was
- * not written by me. If anyone knows where this came from, send me an email
- * (javawizard@trivergia.com).
+ * I don't honestly recall where I got this program, but the majority of it was not
+ * written by me. If anyone knows where this came from, send me an email
+ * (javawizard@trivergia.com). This is a BF interpreter. BF is a really awesome
+ * programming language cause it uses only eight characters and yet still manages to be
+ * turing-complete. The first letter of the name stands for Brain. The second letter
+ * stands for a word that JZBot policy prohibits reproducing in documentation. (No, I'm
+ * not really that uptight, I just personally don't want to repeat it :)
  * 
  * @author Alexander Boyd
  * 
@@ -39,8 +43,8 @@ public class Bfi
     }
     
     /**
-     * With this constructor you can specify the number of memory cells to
-     * provide, I/O uses default
+     * With this constructor you can specify the number of memory cells to provide, I/O
+     * uses default
      **/
     public Bfi(int count)
     {
@@ -48,8 +52,7 @@ public class Bfi
     }
     
     /**
-     * This constructor lets you specify the number of memory cells, and the I/O
-     * Streams
+     * This constructor lets you specify the number of memory cells, and the I/O Streams
      **/
     public Bfi(int count, OutputStream p, InputStream i)
     {
@@ -97,8 +100,8 @@ public class Bfi
     }
     
     /**
-     * Loads brainf___ program, filters every char not in the CHARS constant or
-     * after a \ out of the String
+     * Loads brainf___ program, filters every char not in the CHARS constant or after a \
+     * out of the String
      **/
     
     public void setProgram(String prg)
@@ -314,8 +317,7 @@ public class Bfi
     }
     
     /**
-     * This method goes through the whole code starting at a certain point in
-     * the code
+     * This method goes through the whole code starting at a certain point in the code
      **/
     
     public void start(int off)
@@ -342,18 +344,16 @@ public class Bfi
             }
             else
             {
-                throw new RuntimeException(
-                        "Unspecified exception while interpreting");
+                throw new RuntimeException("Unspecified exception while interpreting");
             }
         }
-        throw new RuntimeException(
-                "Code-positional exception while interpreting, s1=" + s1
-                        + ",s2=" + s2 + ",cp=" + cp + ",cmdl=" + cmd.length());
+        throw new RuntimeException("Code-positional exception while interpreting, s1=" + s1
+            + ",s2=" + s2 + ",cp=" + cp + ",cmdl=" + cmd.length());
     }
     
     /**
-     * Start a simple Hello World program, using the special ascii extension of
-     * this interpreter
+     * Start a simple Hello World program, using the special ascii extension of this
+     * interpreter
      **/
     
     public void helloworldExt()
