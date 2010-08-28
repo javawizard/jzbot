@@ -9,7 +9,7 @@ class recvThread (threading.Thread):
         self.callback = callback
         self.callback_err = callback_err or callback
         self.buffer = ""
-        self.queue = deque() # Thankfully these are apparently thread-safe... apparently.
+        self.queue = deque()
         self.active = False
 
     def pop(self):
@@ -43,7 +43,7 @@ class sendThread(threading.Thread):
     def __init__(self, socket):
         threading.Thread.__init__(self)
         self.socket = socket
-        self.queue = deque() # Thankfully these are apparently thread-safe... apparently.
+        self.queue = deque()
         self.active = False
     
     def append(self, line):
@@ -53,7 +53,7 @@ class sendThread(threading.Thread):
         self.active = True
         while self.active:
             if self.queue:
-                line = str(self.queue.popleft()) + '\r\n'
+                line = str(self.queue.popleft())
                 try:
                     sent=self.socket.send(line)
                 except:
@@ -69,45 +69,83 @@ class notificationServer (object):
         self.username = user
         self.socket = None
         
+        self.transfer = False
+        
         self.__recv = None
         self.__send = None
         self.__trid = 0
+        
+        self.connected = False
         return
     
     def conn_close(self):
-        return False
+        if self.transfer:
+            self.__recv.active = False
+            self.__send.active = False
+            
+            self.connect()
+        else:
+            self.connected = False
+            return False
+    
+    def isConnected(self):
+        return self.connected
     
     def connect(self):
         self.socket = socket.socket()
-        self.__recv = recvThread(self.socket, self.recv_callback, self.conn_close)
+        self.__recv = recvThread(self.socket, self.recv_callback,
+            self.conn_close)
         self.__send = sendThread(self.socket)
         
-        self._send(True, 'VER', 'MSNP8')
+        self.connected = False
+        self._send(['VER', 'MSNP8'], True)
         
         self.socket.connect(self.addr)
         self.__recv.start()
         self.__send.start()
-        return True
+        
     
     def recv_callback(self):
         line = self._recv()
         if not line:
             return
         words = line.split(' ')
+        print 'MSN Recv', line
+        
         if words[0] == 'VER':
             versions = words[2:]
             assert '0' not in versions
             assert 'MSNP8' in versions
+            self._send(['CVR', '0x0409', 'python', 'jzbot', 'java',
+                'JZBOT', '42', 'MSMSGS', self.username], True)
+            return
+        if words[0] == 'CVR':
+            self._send(['USR', 'TWN', 'I', self.username], True)
+            return
+        if words[0] == 'XFR':
+            assert words[2] in ('NS')
+            assert words[4] == '0'
+            self.transfer = True
+            host,port = words[3].split(':')
+            port = int(port)
             
-        print 'MSN Recv', line
+            self.addr = (host, port)
+            return
+        
+        if words[0] == 'USR':
+            assert words[2] == 'TWN'
+            assert words[3] in ('S')
+            tweenerstring = dict([item.split("=") for item in words[4].split(",")])
 
-    def _send(self, trid=False, *args):
+    def _send(self, args, trid=False, newline=True):
         "Send a protocol line to the remote server."
         if trid:
             self.__trid += 1
             raw_line = '%s %d %s' % (args[0], self.__trid, ' '.join(args[1:]))
         else:
             raw_line = ' '.join(args[1:])
+        if newline:
+            raw_line = raw_line + '\r\n'
         print 'MSN Send', raw_line
         self.__send.queue.append(raw_line)
         return

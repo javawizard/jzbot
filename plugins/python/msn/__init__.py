@@ -5,8 +5,10 @@ Do NOT use unless you happen to be developing this plugin.
 
 # Java.
 from jw.jzbot import protocols
+import java.lang
 
 # Python.
+import time
 import ns
 import sb
 
@@ -19,6 +21,12 @@ class MSNConnection(protocols.Connection):
     
     def changeNick(self, newnick):
         return
+
+    def isConnected(self):
+        if self.notificationServer is not None:
+            return self.notificationServer.connected
+        else:
+            return False
     
     def connect(self):
         user = self.connectionContext.getNick()
@@ -33,6 +41,16 @@ class MSNConnection(protocols.Connection):
         
         self.notificationServer = ns.notificationServer(msnconnection=self, addr=(host, port), user=user)
         self.notificationServer.connect()
+
+        for x in xrange(30):
+            if self.notificationServer.connected:
+                return
+            if self.notificationServer.connected is None:
+                raise java.lang.IllegalStateException
+            
+            time.sleep(1)
+        self.notificationServer.is_connecting = False
+        raise java.lang.IllegalStateException("Took too long to connect.")
         return
     
     def discard(self):
@@ -56,9 +74,6 @@ class MSNConnection(protocols.Connection):
     
     def getUsers(self, channel):
         return None
-    
-    def isConnected(self):
-        return False
     
     def joinChannel(self, channel):
         return
