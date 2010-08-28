@@ -5,6 +5,7 @@ Do NOT use unless you happen to be developing this plugin.
 
 # Java.
 from jw.jzbot import protocols
+from jw.jzbot import configuration
 import java.lang
 
 # Python.
@@ -34,12 +35,17 @@ class MSNConnection(protocols.Connection):
         host = self.connectionContext.getServer()
         port = self.connectionContext.getPort()
         
+        nexus = configuration.Configuration.getText('server', 'msn/nexus')
+        nexus_ssl = configuration.Configuration.getBool('server', 'msn/nexus')
+        
         if (not host) or (host == 'default'):
             host = 'messenger.hotmail.com'
         if (not port) or (port == 'default') or (port == 0):
             port = 1863
         
-        self.notificationServer = ns.notificationServer(msnconnection=self, addr=(host, port), user=user)
+        config = {'nexus': nexus, 'nexus-ssl': nexus_ssl}
+        
+        self.notificationServer = ns.notificationServer(msnconnection=self, addr=(host, port), user=user, config=config)
         self.notificationServer.connect()
 
         for x in xrange(30):
@@ -51,7 +57,6 @@ class MSNConnection(protocols.Connection):
             time.sleep(1)
         self.notificationServer.is_connecting = False
         raise java.lang.IllegalStateException("Took too long to connect.")
-        return
     
     def discard(self):
         return
@@ -136,5 +141,6 @@ class MSNProtocol(protocols.Protocol):
 
 def init (pluginContext):
     protocols.ProtocolManager.installProtocol(MSNProtocol())
-    #thread = asyncthread.AsyncThread()
-    #thread.start()
+    configuration.Configuration.register('@msn', 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
+    configuration.Configuration.register('@msn', 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'default')
+    configuration.Configuration.register('@msn', 'msn/nexus-ssl', 'If SSL is required to authenticate to the Nexus', configuration.Configuration.VarType.bool, "1")

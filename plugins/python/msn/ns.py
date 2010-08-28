@@ -1,6 +1,7 @@
 import threading
 import socket
 from collections import deque
+#from auth import tweener
 
 class recvThread (threading.Thread):
     def __init__(self, socket, callback, callback_err=None):
@@ -25,7 +26,6 @@ class recvThread (threading.Thread):
                 buffer = self.socket.recv(8192)
             except:
                 self.active = False
-                #raise
             if buffer == '':
                 if self.callback_err is not None:
                     self.callback_err()
@@ -76,6 +76,7 @@ class notificationServer (object):
         self.__trid = 0
         
         self.connected = False
+        self.is_connecting = True
         return
     
     def conn_close(self):
@@ -103,7 +104,6 @@ class notificationServer (object):
         self.socket.connect(self.addr)
         self.__recv.start()
         self.__send.start()
-        
     
     def recv_callback(self):
         line = self._recv()
