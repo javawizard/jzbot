@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.io.StringWriter;
@@ -1386,8 +1387,17 @@ public class JZBot
     
     private static void registerDefaultConfigVars() throws IOException
     {
-        new PythonInterpreter().execfile(Configuration.class
-                .getResourceAsStream("default_config_vars.py"));
+        new PythonInterpreter().execfile(getResource(Configuration.class,
+                "default_config_vars.py"));
+    }
+    
+    public static InputStream getResource(Class c, String name)
+    {
+        InputStream input = c.getResourceAsStream(name);
+        if (input == null)
+            throw new RuntimeException("Resource " + name + " on class " + c.getName()
+                + " does not exist.");
+        return input;
     }
     
     public static void onJoin(Server datastoreServer, String serverName, String channel,
