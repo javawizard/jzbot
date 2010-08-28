@@ -74,6 +74,7 @@ public class HelpCommand implements Command
             if (possibleSubpages != null)
                 subpages.addAll(Arrays.asList(possibleSubpages));
         }
+        text = text.replace("\n", " ");
         Collections.sort(subpages);
         if (text == null)
             throw new ResponseException("No such help page");

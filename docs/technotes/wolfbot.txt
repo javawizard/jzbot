@@ -1,0 +1,7 @@
+I'm working on a plugin to allow marlen to arbitrate a game of Werewolf...
+
+This is going to be interesting. I want it to allow people to participate via pm. The logic behind that is that then a game of wolfbot could be going on via text. Which would be way cool.
+
+So, wolfbot registers a configuration folder called wolfbot on all channels. This has a boolean var, enabled, which specifies whether wolfbot is enabled at that channel.
+
+ 

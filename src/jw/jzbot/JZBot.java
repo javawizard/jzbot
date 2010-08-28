@@ -70,6 +70,7 @@ import jw.jzbot.configuration.VarListener;
 import jw.jzbot.eval.CaltechEvaluator;
 import jw.jzbot.eval.JEvalEvaluator;
 import jw.jzbot.eval.JepliteEvaluator;
+import jw.jzbot.events.Notify;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactParser;
@@ -983,7 +984,7 @@ public class JZBot
             args = list.toArray(new String[0]);
             if (args.length < 6 || args.length > 7)
             {
-                System.out.println("\"jzbot setup\" expects either 6 or 7 "
+                System.out.println("\"jzbot addserver\" expects either 6 or 7 "
                     + "arguments, but you provided " + args.length);
                 System.out.println("arguments. See \"jzbot help\" for help.");
                 return;
@@ -1040,6 +1041,7 @@ public class JZBot
             op.setHostname(hostname);
             datastoreServer.getOperators().add(op);
             storage.getServers().add(datastoreServer);
+            Notify.serverAdded.fireListeners(ScopeLevel.server, "@" + serverName, false);
             System.out.println("");
             System.out.println("A new server has been added. Run \"jzbot\"");
             System.out.println("to start your bot.");
