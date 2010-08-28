@@ -937,6 +937,9 @@ public class JZBot
         System.out.println("http://code.google.com/p/jzbot/wiki/People for "
             + "the full list.");
         System.out.println();
+        System.out.println("--- Stats ---");
+        System.out.println("JVM path: " + System.getProperty("java.home"));
+        System.out.println();
         if (args.length > 0)
         {
             doWithArguments(args);
