@@ -88,6 +88,7 @@ public class Variable extends Setting
             else if (type == VarType.integer)
             {
                 new BigInteger(text);
+                works = true;
             }
             else if (type == VarType.text)
             {
