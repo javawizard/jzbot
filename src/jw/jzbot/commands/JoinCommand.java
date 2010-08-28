@@ -4,7 +4,9 @@ import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ScopeLevel;
 import jw.jzbot.ServerUser;
+import jw.jzbot.events.Notify;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
@@ -67,12 +69,14 @@ public class JoinCommand implements Command
         c.setName(name);
         c.setTrigger("~");
         dServer.getChannels().add(c);
+        Notify.channelAdded.fireListeners(ScopeLevel.channel, "@" + dServer.getName()
+            + name, false);
         JZBot.getServer(server).joinChannel(name);
         source.sendMessage("Successful. I'm only allowing superops to create stuff here.");
         // JZBot.bot.sendMessage(name, "Here I am (courtesy of " + sender
         // + "). I'm only allowing ops to create factoids here.");
     }
-
+    
     @Override
     public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
             Messenger source, String arguments)

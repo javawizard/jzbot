@@ -1254,6 +1254,8 @@ public class JZBot
         System.out.println("Running _onstartup notifications...");
         runNotificationFactoid(null, null, null, null, "", "", "", "_onstartup",
                 new String[0], true, false);
+        System.out.println("Firing initial notification events...");
+        fireInitialNotifyEvents();
         System.out.println("Starting connection cycle thread...");
         startConnectionCycleThread();
         System.out.println("Dispatching notifications to connection cycle thread...");
@@ -1262,6 +1264,20 @@ public class JZBot
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");
         System.out.println();
+    }
+    
+    private static void fireInitialNotifyEvents()
+    {
+        for (Server server : storage.getServers().isolate())
+        {
+            Notify.serverAdded.fireListeners(ScopeLevel.server, "@" + server.getName(),
+                    true);
+            for (Channel channel : server.getChannels().isolate())
+            {
+                Notify.channelAdded.fireListeners(ScopeLevel.channel, "@"
+                    + server.getName() + channel.getName(), true);
+            }
+        }
     }
     
     private static void loadProtocols()

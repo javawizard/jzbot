@@ -11,7 +11,9 @@ import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
 import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
+import jw.jzbot.ScopeLevel;
 import jw.jzbot.ServerUser;
+import jw.jzbot.events.Notify;
 import jw.jzbot.protocols.ProtocolManager;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.Utils;
@@ -70,6 +72,8 @@ public class ServerCommand implements Command
             if (tokens.length > 4)
                 newServer.setPassword(tokens[4]);
             JZBot.storage.getServers().add(newServer);
+            Notify.serverAdded.fireListeners(ScopeLevel.server, "@" + newServer.getName(),
+                    false);
             JZBot.notifyConnectionCycleThread();
             source.sendMessage("That server has been added and activated. The bot "
                 + "will connect to it within a few seconds.");
