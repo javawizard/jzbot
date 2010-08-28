@@ -1387,17 +1387,8 @@ public class JZBot
     
     private static void registerDefaultConfigVars() throws IOException
     {
-        new PythonInterpreter().execfile(getResource(Configuration.class,
-                "default_config_vars.py"));
-    }
-    
-    public static InputStream getResource(Class c, String name)
-    {
-        InputStream input = c.getResourceAsStream(name);
-        if (input == null)
-            throw new RuntimeException("Resource " + name + " on class " + c.getName()
-                + " does not exist.");
-        return input;
+        new PythonInterpreter().execfile(new FileInputStream(
+                "src/jw/jzbot/configuration/default_config_vars.py"));
     }
     
     public static void onJoin(Server datastoreServer, String serverName, String channel,
