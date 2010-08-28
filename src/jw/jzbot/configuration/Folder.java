@@ -38,6 +38,8 @@ public class Folder extends Setting
         Folder folder = this;
         for (int i = 0; i < components.length - 1; i++)
         {
+            System.out.println("Current folder: " + folder.name + ", getting subfolder "
+                + components[i]);
             folder = folder.getFolder(components[i]);
         }
         if (folder == this)
