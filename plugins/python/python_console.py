@@ -9,6 +9,7 @@ from java.util import Properties
 from java.net import ServerSocket, InetAddress
 from java.lang import Thread
 from java.io import BufferedReader, InputStreamReader, ByteArrayOutputStream
+from java.io import File, FileInputStream
 from java.lang import String
 from org.python.util import InteractiveConsole
 from org.python.core import Py
@@ -38,7 +39,7 @@ class Console(InteractiveConsole):
     
     def showexception(self, exception):
         stream = ByteArrayOutputStream()
-        result = traceback.format_exception(exception.type, exception.value, 
+        result = traceback.format_exception(exception.type, exception.value,
                                             exception.traceback)
         result = "".join(result)
         self.write(result)
@@ -88,7 +89,15 @@ Anyway, that's about it. Have fun!
 
 
 def init(context):
-#    server = ServerSocket(24680)
+    if not File("storage/python_console.props").exists():
+        context.log("storage/python_console.props does not exist")
+        return
+    context.log("storage/python_console.props exists; proceeding with load")
+    props = Properties()
+    props.load(FileInputStream(File("storage/python_console.props"))) 
+    server = ServerSocket(int(props["port"]), 20, 
+                          InetAddress.getByName(props["host"])
+                          if "host" in props else None)
     class ServerThread(Thread):
         def run(self):
             while not server.isClosed():
