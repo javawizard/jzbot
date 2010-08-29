@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.python.core.Options;
+import org.python.core.Py;
 import org.python.core.PyDictionary;
 import org.python.core.PyObject;
 import org.python.core.PyString;
@@ -26,18 +28,23 @@ public class PythonLanguageSupport implements PluginLanguage
     
     public static PyDictionary namespace;
     
-    public static PySystemState sys;
-    
     public PythonLanguageSupport()
     {
         try
         {
+            /*
+             * It's extremely important that we use the default system state here instead
+             * of creating our own like we used to. In particular, using a custom state
+             * will cause the python_console plugin not to work (the interpreter it
+             * provides over a socket will function as if it were running under its own
+             * independent interpreter).
+             */
+            Options.showJavaExceptions = true;
             if (interpreter != null)
                 throw new RuntimeException("Only one instance of "
                     + "PythonLanguageSupport can be constructed.");
-            sys = new PySystemState();
             namespace = new PyDictionary();
-            interpreter = new PythonInterpreter(namespace, sys);
+            interpreter = new PythonInterpreter(namespace);
         }
         catch (Exception e)
         {
@@ -111,8 +118,8 @@ public class PythonLanguageSupport implements PluginLanguage
     {
         String name = plugin.info.name;
         String folderPath = plugin.folder.getCanonicalPath();
-        if (!sys.path.contains(new PyString(folderPath)))
-            sys.path.add(new PyString(folderPath));
+        if (!Py.defaultSystemState.path.contains(new PyString(folderPath)))
+            Py.defaultSystemState.path.add(new PyString(folderPath));
         interpreter.set("_context_" + name, context);
         interpreter.exec("import " + plugin.info.name);
         interpreter.exec(plugin.info.name + ".init(_context_" + name + ")");
