@@ -36,14 +36,14 @@ class MSNConnection(protocols.Connection):
         port = self.connectionContext.getPort()
         
         nexus = configuration.Configuration.getText('server', 'msn/nexus')
-        nexus_ssl = configuration.Configuration.getBool('server', 'msn/nexus')
+        nexus_ssl = bool(configuration.Configuration.getBool('server', 'msn/nexus-ssl'))
         
         if (not host) or (host == 'default'):
             host = 'messenger.hotmail.com'
         if (not port) or (port == 'default') or (port == 0):
             port = 1863
         
-        config = {'nexus': nexus, 'nexus-ssl': nexus_ssl}
+        config = {'nexus': nexus, 'nexus-ssl': nexus_ssl, 'user': user, 'password': password}
         
         self.notificationServer = ns.notificationServer(msnconnection=self, addr=(host, port), user=user, config=config)
         self.notificationServer.connect()
@@ -142,5 +142,5 @@ class MSNProtocol(protocols.Protocol):
 def init (pluginContext):
     protocols.ProtocolManager.installProtocol(MSNProtocol())
     configuration.Configuration.register('@msn', 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
-    configuration.Configuration.register('@msn', 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'default')
-    configuration.Configuration.register('@msn', 'msn/nexus-ssl', 'If SSL is required to authenticate to the Nexus', configuration.Configuration.VarType.bool, "1")
+    configuration.Configuration.register('@msn', 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'https://nexus.passport.com/rdr/pprdr.asp')
+    configuration.Configuration.register('@msn', 'msn/nexus-ssl', 'If SSL is *required* to authenticate to the Nexus.', configuration.Configuration.VarType.bool, "1")
