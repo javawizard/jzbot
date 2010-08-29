@@ -61,26 +61,18 @@ class HandlerThread(Thread):
             self.console.write(
 """JZBot Python console at your service.
 ======== A FEW IMPORTANT NOTES ========
-When you print stuff with the print statement, or when you just type stuff as
-an expression to evaluate, the output gets sent to the bot's standard out,
-not across this socket to you. In other words, the second line of something
-like this:
-x = 5
-x
-would ordinarily cause "5" to appear on the console. In actuality, "5" will
-end up appearing on the bot's standard out, and nothing will get sent back to
-you. If you want to see any output, you need to use two functions provided to
-you: write and writeline. Both of them accept any object as an argument and
-convert it to a string, then send it back to you across the wire. writeline
-appends a newline to the end of the string before sending it.
-Other python plugins are available as modules named after the plugin. For
-example, if you've currently loaded a python plugin named example_python,
-you can get access to it as a module by importing example_python.
+The print statement and just typing expressions to be evaluated cause the
+output to be sent to stdout instead of sending the output back to you. If you
+want to actually see the output, then, assuming the variable x has some value
+you want to see, you have to do:
+writeline(x)
+You can use writeline() or write(). They both accept any python object and
+convert it to a string with str(). writeline sends a newline afterward.
+History (a.k.a. the up-arrow) does not currently work.
 If, for some reason, you want to restart the bot from the console you can do:
 from jw.jzbot import JZBot
 JZBot.restart()
 and you can send messages to the channel #jzbot on the server freenode like so:
-from jw.jzbot import JZBot
 connection = JZBot.getConnection("freenode")
 connection.sendMessage("#jzbot", "Hello everyone. How are you?")
 
