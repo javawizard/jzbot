@@ -39,7 +39,7 @@ public class PythonLanguageSupport implements PluginLanguage
              * provides over a socket will function as if it were running under its own
              * independent interpreter).
              */
-            Options.showJavaExceptions = true;
+            // Options.showJavaExceptions = true;
             if (interpreter != null)
                 throw new RuntimeException("Only one instance of "
                     + "PythonLanguageSupport can be constructed.");
