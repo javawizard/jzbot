@@ -1,5 +1,6 @@
 package jw.jzbot.configuration;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +47,8 @@ public class Folder extends Setting
             return settings.get(components[components.length - 1]);
         else if (folder == null)
             throw new IllegalArgumentException("The parent folder of the setting " + name
-                + " does not exist.");
+                + " does not exist. Components: " + Arrays.toString(components)
+                + ", self name: " + this.name + ", self type: " + this.type);
         else
             return folder.getSetting(components[components.length - 1]);
     }
