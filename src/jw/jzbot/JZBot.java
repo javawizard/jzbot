@@ -110,6 +110,7 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 import org.jibble.pircbot.User;
+import org.python.core.Options;
 import org.python.util.PythonInterpreter;
 
 import sun.misc.Unsafe;
@@ -1222,6 +1223,8 @@ public class JZBot
         addShutdownHook();
         DefaultPastebinProviders.installDefaultSet();
         logsFolder.mkdirs();
+        Options.includeJavaStackInExceptions = true;
+        Options.showJavaExceptions = true;
         System.out.println("Starting the ProxyStorage system...");
         initProxyStorage();
         if (storage.getServers().size() == 0)
