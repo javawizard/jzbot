@@ -1318,9 +1318,6 @@ public class JZBot
                         + " log event" + (discarded == 1 ? " was" : "s were")
                         + " discarded.");
                 }
-                System.out.println("JZBot has terminated.");
-                if (shouldRestartOnShutdown)
-                    System.exit(17);
             }
         });
     }
@@ -3159,8 +3156,18 @@ public class JZBot
     
     public static void restart()
     {
-        shouldRestartOnShutdown = true;
-        System.out.println("Restarting...");
+        shutdownOrRestart(true);
+    }
+    
+    public static void shutdown()
+    {
+        shutdownOrRestart(false);
+    }
+    
+    public static void shutdownOrRestart(boolean restart)
+    {
+        shouldRestartOnShutdown = restart;
+        System.out.println(restart ? "Restarting..." : "Shutting down...");
         isRunning = false;
         new Thread()
         {
@@ -3192,17 +3199,20 @@ public class JZBot
             ex.printStackTrace();
         }
         Utils.sleep(2000);
-        System.out.println("Exiting on restart with status 17...");
+        int exitStatus = restart ? 17 : 0;
+        System.out.println("Exiting on " + (restart ? "restart" : "shutdown")
+            + " with status " + exitStatus + "...");
         Utils.sleep(200);
         /*
          * FIXME: due to a current bug that I haven't been able to figure out, replacing
-         * this with System.exit(17) causes a hang, where not even Ctrl+C will kill the
-         * bot. So I'm using halt instead, after cleaning everything up. This really
-         * should be changed, but it's the best I can think of for now. We need, however,
-         * to consider that we need to get plugins unloaded, and I'm not completely sure
-         * that all of the shutdown hooks up to this point will take care of that.
+         * this with System.exit(exitStatus) causes a hang, where not even Ctrl+C will
+         * kill the bot. So I'm using halt instead, after cleaning everything up. This
+         * really should be changed, but it's the best I can think of for now. We need,
+         * however, to consider that we need to get plugins unloaded, and I'm not
+         * completely sure that all of the shutdown hooks up to this point will take care
+         * of that.
          */
-        Runtime.getRuntime().halt(17);
+        Runtime.getRuntime().halt(exitStatus);
     }
     
     protected static void onRestartGlobalDisconnect()

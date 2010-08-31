@@ -109,6 +109,7 @@ public class ConfigCommand implements Command
                 /*
                  * We're supposed to set the variable
                  */
+                sender.verifySuperop();
                 String oldDisplayValue = getDisplayValue(scope, varPath);
                 Configuration.setText(scope, varPath, input);
                 source.sendSpaced("Successfully set to " + getDisplayValue(scope, varPath)
@@ -123,6 +124,7 @@ public class ConfigCommand implements Command
         }
         else if (command.equals("unset"))
         {
+            sender.verifySuperop();
             String oldDisplayValue = getDisplayValue(scope, varPath);
             Configuration.setText(scope, varPath, null);
             source.sendSpaced("Successfully unset."
