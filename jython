@@ -1,0 +1,3 @@
+#!/usr/bin/bash
+
+java -jar lib/jython.jar
