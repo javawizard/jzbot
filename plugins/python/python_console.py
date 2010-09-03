@@ -1,4 +1,6 @@
 
+from __future__ import with_statement
+
 """ jzbot
 This plugin starts a socket listening on a specific port. When a connection
 on that port is received, the plugin starts a Python interactive console on
@@ -9,30 +11,42 @@ from java.util import Properties
 from java.net import ServerSocket, InetAddress
 from java.lang import Thread
 from java.io import BufferedReader, InputStreamReader, ByteArrayOutputStream
-from java.io import File, FileInputStream
+from java.io import File, FileInputStream, DataInputStream, DataOutputStream
 from java.lang import String
 from org.python.util import InteractiveConsole
 from org.python.core import Py
-import traceback 
+from threading import RLock
+import traceback
 
+sessions = []
 
 class Console(InteractiveConsole):
-    def __init__(self, reader, writer):
+    def __init__(self, reader, writer, read_lock, write_lock):
         self.reader = reader
         self.writer = writer
+        self.read_lock = read_lock
+        self.write_lock = write_lock
     
     def write(self, data):
         data = str(data)
-        self.writer.write(data)
-        self.writer.flush()
+        with self.write_lock:
+            self.writer.writeShort(2)
+            self.writer.writeUTF(data)
+            self.writer.flush()
     
     def writeline(self, data):
-        self.write(data)
-        self.write("\n")
+        with self.write_lock:
+            self.write(data)
+            self.write("\n")
     
     def raw_input(self, prompt):
-        self.write(prompt)
-        result = self.reader.readLine()
+        prompt = str(prompt)
+        with self.write_lock:
+            self.writer.writeShort(3)
+            self.writer.writeUTF(prompt)
+            self.writer.flush()
+        with self.read_lock:
+            result = self.reader.readUTF()
         if result is None:
             raise Exception("End-of-stream detected")
         return result
@@ -50,14 +64,27 @@ class HandlerThread(Thread):
         self.socket = socket
         self.socket_in = socket.getInputStream()
         self.socket_out = socket.getOutputStream()
-        self.reader = BufferedReader(InputStreamReader(self.socket_in))
-        self.writer = self.socket_out
-        self.console = Console(self.reader, self.writer)
-        self.console.getLocals()["write"] = self.console.write
-        self.console.getLocals()["writeline"] = self.console.writeline
-        self.console.getLocals()["exit"] = self.socket.close
+        self.reader = DataInputStream(self.socket_in)
+        self.writer = DataOutputStream(self.socket_out)
+        self.read_lock = RLock()
+        self.write_lock = RLock()
+        self.console = Console(self.reader, self.writer,
+                               self.read_lock, self.write_lock)
+        self.locals = self.console.getLocals()
+        self.globals = self.console.getGlobals()
+        self.locals["write"] = self.console.write
+        self.locals["writeline"] = self.console.writeline
+        self.locals["exit"] = self.client_disconnect
+        self.locals["quit"] = self.client_disconnect
+    
+    def client_disconnect(self):
+        with self.write_lock:
+            self.writer.writeShort(4)
+            self.writer.flush()
+        self.socket.close()
     
     def run(self):
+        sessions.append(self)
         try:
             self.console.write(
 """JZBot Python console at your service.
@@ -86,6 +113,7 @@ Anyway, that's about it. Have fun!
             self.socket.close()
         except:
             traceback.print_exc()
+        sessions.remove(self)
 
 
 def init(context):
