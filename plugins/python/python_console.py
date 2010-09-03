@@ -71,7 +71,6 @@ class HandlerThread(Thread):
         self.console = Console(self.reader, self.writer,
                                self.read_lock, self.write_lock)
         self.locals = self.console.getLocals()
-        self.globals = self.console.getGlobals()
         self.locals["write"] = self.console.write
         self.locals["writeline"] = self.console.writeline
         self.locals["exit"] = self.client_disconnect

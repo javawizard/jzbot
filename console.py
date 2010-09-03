@@ -32,6 +32,7 @@ try:
             print "Invalid mode received: " + str(mode)
             break
 except:
+    print "Connect exception:"
     print_exc()
 
 if not socket.isClosed():
