@@ -76,6 +76,11 @@ class HandlerThread(Thread):
         self.locals["exit"] = self.client_disconnect
         self.locals["quit"] = self.client_disconnect
     
+    def __str__(self):
+        return "<python_console session>"
+    
+    __repr__ = __str__
+    
     def client_disconnect(self):
         with self.write_lock:
             self.writer.writeShort(4)
