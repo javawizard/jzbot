@@ -16,6 +16,7 @@ from java.lang import String
 from org.python.util import InteractiveConsole
 from org.python.core import Py
 from threading import RLock
+from jw.jzbot import JZBot
 import traceback
 
 sessions = []
@@ -75,6 +76,8 @@ class HandlerThread(Thread):
         self.locals["writeline"] = self.console.writeline
         self.locals["exit"] = self.client_disconnect
         self.locals["quit"] = self.client_disconnect
+        self.locals["restart"] = JZBot.restart
+        self.locals["shutdown"] = JZBot.shutdown
     
     def __str__(self):
         return "<python_console session>"
@@ -102,9 +105,9 @@ You can use writeline() or write(). They both accept any python object and
 convert it to a string with str(). writeline sends a newline afterward.
 History (a.k.a. the up-arrow) does not currently work.
 If, for some reason, you want to restart the bot from the console you can do:
-from jw.jzbot import JZBot
-JZBot.restart()
+restart()
 and you can send messages to the channel #jzbot on the server freenode like so:
+from jw.jzbot import JZBot
 connection = JZBot.getConnection("freenode")
 connection.sendMessage("#jzbot", "Hello everyone. How are you?")
 
