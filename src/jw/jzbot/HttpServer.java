@@ -6,7 +6,7 @@ import java.net.*;
 
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactQuota;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Factoid;
 
 /**
@@ -111,8 +111,8 @@ public class HttpServer
             try
             {
                 factoidResult =
-                        JZBot.runFactoid(factoid, null, null, new ServerUser(null, null,
-                                null, null), new ServerUser(null, null, null, null),
+                        JZBot.runFactoid(factoid, null, null, new UserMessenger(null, null,
+                                null, null), new UserMessenger(null, null, null, null),
                                 new String[0], vars, true, quota);
             }
             catch (FactTimeExceededError e)

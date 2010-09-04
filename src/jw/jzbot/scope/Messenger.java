@@ -1,5 +1,7 @@
 package jw.jzbot.scope;
 
+import jw.jzbot.utils.Utils;
+
 /**
  * An interface representing an object that can send or receive messages. Messengers
  * typically represent individual users or channels.
@@ -7,7 +9,7 @@ package jw.jzbot.scope;
  * @author Alexander Boyd
  * 
  */
-public interface Messenger
+public interface Messenger extends Agent
 {
     /**
      * Sends a message to this messenger.
@@ -33,14 +35,18 @@ public interface Messenger
     
     /**
      * Sends a message as several chunks, each no longer than the protocol delimited
-     * length. Messages will be split into chunks around space characters.
+     * length. Messages will be split into chunks around space characters. Implementations
+     * of this interface can simply call {@link Utils#sendSpaced(Messenger, String)},
+     * passing in this messenger object and the specified string, and it will take care of
+     * splitting the string up and invoking {@link #sendMessage(String)} on each
+     * component.
      * 
      * @param message
      */
     public void sendSpaced(String message);
     
     /**
-     * Returns true if this protocol prefers long pieces of text to be pastebinned, false
+     * Returns true if this messenger prefers long pieces of text to be pastebinned, false
      * if it prefers them to be sent as several consecutive messages. For example, IRC
      * prefers pastebin posts because it's less spammy and pastebin URLs can be easily
      * opened from most IRC clients, whereas BZFlag does not prefer pastebin because it's
@@ -52,13 +58,6 @@ public interface Messenger
      */
     public boolean likesPastebin();
     
-    /**
-     * Returns the scope name for this messenger. This should be the smallest valid scope
-     * that the messenger is contained in or represents. If this is a channel, this will
-     * be the channel's scope. If this is a user, this will be the scope of the server
-     * that the user resides on.
-     * 
-     * @return
-     */
-    public String getScopeName();
+    // FIXME: add getConnection() and getProtocol() if there's any feasible use for them
+    
 }

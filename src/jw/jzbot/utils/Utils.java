@@ -3,6 +3,8 @@ package jw.jzbot.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
@@ -148,6 +150,30 @@ public class Utils
             return false;
         }
         return true;
+    }
+    
+    /**
+     * Matches the specified regex against the specified value and returns a list of all
+     * groups matched, excluding the entire match (which will always be the value passed
+     * into this method). If the specified regex does not match the specified value in its
+     * entirety, null is returned.
+     * 
+     * @param regex
+     * @param value
+     * @return
+     */
+    public static String[] match(String regex, String value)
+    {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(value);
+        if (!matcher.matches())
+            return null;
+        String[] result = new String[matcher.groupCount()];
+        for (int i = 0; i < result.length; i++)
+        {
+            result[i] = matcher.group(i + 1);
+        }
+        return result;
     }
     
 }

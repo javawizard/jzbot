@@ -4,41 +4,14 @@ import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.utils.Utils;
 
-public class ServerUser implements Messenger
+public class ServerUser implements User
 {
-    private String serverName;
+    protected String serverName;
     private String nick;
-    private String hostname;
-    private String username;
-    
-    public String getHostname()
-    {
-        return hostname;
-    }
-    
-    public void setHostname(String hostname)
-    {
-        this.hostname = hostname;
-    }
-    
-    public String getUsername()
-    {
-        return username;
-    }
-    
-    public void setUsername(String username)
-    {
-        this.username = username;
-    }
     
     public String getServerName()
     {
         return serverName;
-    }
-    
-    public void setServerName(String serverName)
-    {
-        this.serverName = serverName;
     }
     
     public String getNick()
@@ -46,64 +19,15 @@ public class ServerUser implements Messenger
         return nick;
     }
     
-    public void setNick(String nick)
+    ServerUser(String serverName, String nick)
     {
-        this.nick = nick;
-    }
-    
-    public ServerUser(String serverName, String nick, String username, String hostname)
-    {
-        super();
         this.serverName = serverName;
         this.nick = nick;
-        this.hostname = hostname;
-        this.username = username;
-    }
-    
-    public boolean isSuperop()
-    {
-        return JZBot.isSuperop(serverName, hostname);
-    }
-    
-    /**
-     * Throws an exception if this user is not a superop.
-     */
-    public void verifySuperop()
-    {
-        JZBot.verifySuperop(serverName, hostname);
     }
     
     public String nick()
     {
         return getNick();
-    }
-    
-    public void sendMessage(boolean pm, String serverName, String channel, String message)
-    {
-        sendMessage(serverName, pm, channel, message);
-    }
-    
-    /**
-     * If <tt>pm</tt> is true, sends a message to this user. Otherwise, sends a message to
-     * the specified channel on the specified server.
-     * 
-     * @param serverName
-     * @param pm
-     * @param channel
-     * @param message
-     */
-    public void sendMessage(String serverName, boolean pm, String channel, String message)
-    {
-        if (pm)
-        {
-            ConnectionWrapper con = JZBot.getServer(this.serverName);
-            con.sendMessage(this.nick, message);
-        }
-        else
-        {
-            ConnectionWrapper con = JZBot.getServer(serverName);
-            con.sendMessage(channel, message);
-        }
     }
     
     @Override
@@ -136,11 +60,48 @@ public class ServerUser implements Messenger
     {
         Utils.sendSpaced(this, message);
     }
-
+    
     @Override
     public String getScopeName()
     {
         return "@" + serverName;
+    }
+    
+    @Override
+    public String getCanonicalName()
+    {
+        return getScopeName() + "!" + nick;
+    }
+    
+    @Override
+    public boolean isSuperop()
+    {
+        throw new IllegalStateException("Instances of ServerUser do not "
+            + "contain hostname information and so cannot check to see "
+            + "if the user is a superop or not. Only instances of "
+            + "UserMessenger can indicate whether or not they are a superop.");
+    }
+    
+    @Override
+    public void verifySuperop()
+    {
+        isSuperop();
+    }
+    
+    @Override
+    public String getHostname()
+    {
+        throw new IllegalStateException("Instances of ServerUser do not "
+                + "track the user's hostname. Only instances of UserMessenger "
+                + "track this information.");
+    }
+    
+    @Override
+    public String getUsername()
+    {
+        throw new IllegalStateException("Instances of ServerUser do not "
+                + "track the user's username. Only instances of UserMessenger "
+                + "track this information.");
     }
     
 }

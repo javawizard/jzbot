@@ -5,7 +5,7 @@ import jw.jzbot.fact.FactContext;
 /**
  * An interface representing an object that can specify a server and channel for something
  * to be scoped to. The primary implementations of this interface are
- * {@link ServerChannel}, which returns the server and channel that it was passed during
+ * {@link ChannelScope}, which returns the server and channel that it was passed during
  * construction, and {@link FactContext}, which returns the server and channel that it has
  * been scoped to with the {scope} function or the server and channel at which the
  * factoid was run.
@@ -13,7 +13,7 @@ import jw.jzbot.fact.FactContext;
  * @author Alexander Boyd
  * 
  */
-public interface Scope
+public interface Scope extends Agent
 {
     /**
      * Gets the name of the server that this scope represents, or null if there is no
@@ -29,5 +29,5 @@ public interface Scope
      * 
      * @return
      */
-    public String getChannel();
+    public String getChannelName();
 }

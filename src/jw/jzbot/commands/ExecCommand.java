@@ -11,7 +11,7 @@ import jw.jzbot.fact.FactQuota;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.output.StringSink;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 
 public class ExecCommand implements Command
 {
@@ -23,7 +23,7 @@ public class ExecCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         sender.verifySuperop();
@@ -63,7 +63,7 @@ public class ExecCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

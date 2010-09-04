@@ -6,7 +6,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.events.Notify;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeLevel;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
@@ -18,7 +18,7 @@ public class JoinCommand implements Command
         return "join";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         Server dServer = JZBot.storage.getServer(server);
@@ -78,7 +78,7 @@ public class JoinCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

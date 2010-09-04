@@ -95,12 +95,11 @@ import jw.jzbot.protocols.newstyle.NewFacebookProtocol;
 import jw.jzbot.protocols.newstyle.NewImapProtocol;
 import jw.jzbot.protocols.newstyle.NewIrcProtocol;
 import jw.jzbot.protocols.newstyle.NewXmppProtocol;
-import jw.jzbot.scope.GenericMessenger;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.Scope;
 import jw.jzbot.scope.ScopeLevel;
-import jw.jzbot.scope.ServerChannel;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.ChannelScope;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.*;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
@@ -404,13 +403,13 @@ public class JZBot
              * The check for "@" is included so that we don't get the channel we're scoped
              * to on an entirely different server.
              */
-            return scope.getChannel();
+            return scope.getChannelName();
         return null;
     }
     
     /**
-     * Gets the connection object for the specified server, if it is currently
-     * connected. If it is not currently connected, null is returned.
+     * Gets the connection object for the specified server, if it is currently connected.
+     * If it is not currently connected, null is returned.
      * 
      * @param serverName
      * @return
@@ -836,14 +835,14 @@ public class JZBot
         private String server;
         private String channel;
         private ArgumentList arguments;
-        private ServerUser sender;
+        private UserMessenger sender;
         private Messenger source;
         private String key;
         private FactQuota quota;
         public long startTime;
         
         public FutureFactoid(int delay, String server, String channel,
-                ArgumentList arguments, ServerUser sender, Messenger source, String key,
+                ArgumentList arguments, UserMessenger sender, Messenger source, String key,
                 FactQuota quota)
         {
             if (delay > (86400 * 2))
@@ -1198,8 +1197,8 @@ public class JZBot
      * Loads the specified command. If there is already a command with the specified name,
      * chain loading is used; the already-existing command will be invoked first, but if
      * it says that the input data is not relevant (as per
-     * {@link Command#relevant(String, String, boolean, ServerUser, Messenger, String)},
-     * then this command will be called. If there are multiple commands with the same
+     * {@link Command#relevant(String, String, boolean, UserMessenger, Messenger, String)}
+     * , then this command will be called. If there are multiple commands with the same
      * name, the first one added will be tried first, then the next, then the next, and so
      * on.
      * 
@@ -1632,9 +1631,10 @@ public class JZBot
                     }
                     String factValue =
                             safeRunFactoid(f, server, serverName, channelName,
-                                    new ServerUser(serverName, sender, username, hostname),
-                                    new ServerChannel(pseudoServer, pseudoChannel), args,
-                                    true, new HashMap<String, String>());
+                                    new UserMessenger(serverName, sender, username,
+                                            hostname), new ChannelScope(pseudoServer,
+                                            pseudoChannel), args, true,
+                                    new HashMap<String, String>());
                     ConnectionWrapper con = getConnection(pseudoServer);
                     if (con != null)
                     {
@@ -1700,8 +1700,8 @@ public class JZBot
      *            The sender of the factoid request
      */
     public static String runFactoid(Factoid factoid, String server, String channel,
-            ServerUser sender, Messenger source, String[] args, Map<String, String> vars,
-            boolean allowRestricted, FactQuota quota)
+            UserMessenger sender, Messenger source, String[] args,
+            Map<String, String> vars, boolean allowRestricted, FactQuota quota)
     {
         if (quota == null)
             quota = new FactQuota();
@@ -1765,7 +1765,7 @@ public class JZBot
     }
     
     public static String doFactImport(String server, String channel,
-            ArgumentList arguments, ServerUser sender, Messenger source,
+            ArgumentList arguments, UserMessenger sender, Messenger source,
             boolean allowRestricted, FactQuota quota, ImportLevel level)
     {
         return doFactImport(server, channel, arguments, sender, source, allowRestricted,
@@ -1773,7 +1773,7 @@ public class JZBot
     }
     
     public static String doFactImport(String server, String channel,
-            ArgumentList arguments, ServerUser sender, Messenger source,
+            ArgumentList arguments, UserMessenger sender, Messenger source,
             boolean allowRestricted, FactQuota quota, ImportLevel level,
             Map<String, String> cascadingVars)
     {
@@ -1874,7 +1874,7 @@ public class JZBot
                     message = message.substring(trigger.length());
                     System.out.println("Message without trigger: " + message);
                     boolean replyToPseudo = false;
-                    ServerChannel pseudoTarget = new ServerChannel(serverName, channel);
+                    ChannelScope pseudoTarget = new ChannelScope(serverName, channel);
                     if (isSuperop(serverName, hostname))
                     {
                         if (message.startsWith("%"))
@@ -1896,7 +1896,7 @@ public class JZBot
                             + "we're not performing any pseudo-target processing.");
                     // TODO: consider performing pseudo-target processing but throwing an
                     // exception if it yields anything and the user's not a superop
-                    if (replyToPseudo && pseudoTarget.getChannel() == null)
+                    if (replyToPseudo && pseudoTarget.getChannelName() == null)
                     {
                         getConnection(serverName).sendMessage(
                                 channel,
@@ -1907,9 +1907,9 @@ public class JZBot
                     System.out.println("Running message command");
                     runMessageCommand(
                             JZBot.storage.getServer(pseudoTarget.getServerName()),
-                            pseudoTarget.getServerName(), pseudoTarget.getChannel(), false,
-                            datastoreServer, serverName, sender,
-                            replyToPseudo ? pseudoTarget : new ServerChannel(serverName,
+                            pseudoTarget.getServerName(), pseudoTarget.getChannelName(),
+                            false, datastoreServer, serverName, sender,
+                            replyToPseudo ? pseudoTarget : new ChannelScope(serverName,
                                     channel), hostname, login, message, processFactoids);
                 }
                 catch (Throwable e)
@@ -1971,7 +1971,7 @@ public class JZBot
     public static void onInvitation(Server datastoreServer, String serverName,
             String channel, String sender, String login, String hostname, String toChannel)
     {
-        ServerUser source = new ServerUser(serverName, sender, login, hostname);
+        UserMessenger source = new UserMessenger(serverName, sender, login, hostname);
         try
         {
             Command command = commands.get("join").get(0);
@@ -2082,9 +2082,9 @@ public class JZBot
         }
         incrementIndirectRequests(f);
         String factValue =
-                safeRunFactoid(f, server, serverName, channel, new ServerUser(serverName,
-                        sender, username, hostname),
-                        new ServerChannel(serverName, channel), strings, true, vars);
+                safeRunFactoid(f, server, serverName, channel, new UserMessenger(
+                        serverName, sender, username, hostname), new ChannelScope(
+                        serverName, channel), strings, true, vars);
         sendActionOrMessage(getConnection(serverName), channel, factValue);
         if ("true".equalsIgnoreCase(vars.get("__internal_override")))
             return OverrideStatus.override;
@@ -2171,11 +2171,11 @@ public class JZBot
             String message, boolean processFactoids)
     {
         threadLocalUsername.set(username);
-        ServerUser serverUser =
-                new ServerUser(senderServerName, sender, username, hostname);
-        ServerChannel serverChannel = null;
+        UserMessenger serverUser =
+                new UserMessenger(senderServerName, sender, username, hostname);
+        ChannelScope serverChannel = null;
         if (channel != null)
-            serverChannel = new ServerChannel(serverName, channel);
+            serverChannel = new ChannelScope(serverName, channel);
         if (source == null)
         {
             if (pm)
@@ -2318,7 +2318,7 @@ public class JZBot
      */
     
     public static String safeRunFactoid(Factoid f, Server server, String serverName,
-            String channel, ServerUser sender, Messenger source, String[] arguments,
+            String channel, UserMessenger sender, Messenger source, String[] arguments,
             boolean allowRestricted, Map<String, String> vars)
     {
         String factValue;
@@ -2371,7 +2371,7 @@ public class JZBot
     }
     
     private static void doInvalidCommand(boolean pm, Server server, String serverName,
-            String channel, ServerUser sender, Messenger source)
+            String channel, UserMessenger sender, Messenger source)
     {
         String defaultMessage = "Huh? (pm \"help\" for more info)";
         Channel c = server.getChannel(channel);
@@ -2409,8 +2409,9 @@ public class JZBot
             }
             catch (Throwable t)
             {
-                sender.sendMessage(pm, serverName, channel,
-                        "Syntax error in not-found factoid: " + pastebinStack(t));
+                source
+                        .sendMessage("Syntax error in not-found factoid: "
+                            + pastebinStack(t));
             }
         }
         System.out.println("Finished processing for invalid command");
@@ -2550,7 +2551,7 @@ public class JZBot
         ConnectionWrapper con = getConnection(serverName);
         try
         {
-            ServerChannel pseudoTarget = new ServerChannel(serverName, null);
+            ChannelScope pseudoTarget = new ChannelScope(serverName, null);
             boolean replyToPseudo = false;
             boolean explicitScope = false;
             System.out.println("pm from " + sender + ": " + message);
@@ -2573,7 +2574,7 @@ public class JZBot
                 if (userSetScope != null)
                     pseudoTarget = parseFragment(userSetScope + " ", pseudoTarget);
             }
-            if (replyToPseudo && pseudoTarget.getChannel() == null)
+            if (replyToPseudo && pseudoTarget.getChannelName() == null)
             {
                 con.sendMessage(sender, "You can only instruct the bot to reply to "
                     + "the target if the target contains a channel.");
@@ -2586,14 +2587,14 @@ public class JZBot
                 if (replyToPseudo)
                 {
                     runMessageCommand(pseudoDatastoreServer, pseudoTarget.getServerName(),
-                            pseudoTarget.getChannel(), false, datastoreServer, serverName,
-                            sender, null, hostname, login, message, true);
+                            pseudoTarget.getChannelName(), false, datastoreServer,
+                            serverName, sender, null, hostname, login, message, true);
                 }
                 else
                 {
                     runMessageCommand(pseudoDatastoreServer, pseudoTarget.getServerName(),
-                            pseudoTarget.getChannel(), true, datastoreServer, serverName,
-                            sender, null, hostname, login, message, true);
+                            pseudoTarget.getChannelName(), true, datastoreServer,
+                            serverName, sender, null, hostname, login, message, true);
                 }
             }
             catch (Throwable e)
@@ -2614,10 +2615,10 @@ public class JZBot
         
     }
     
-    public static ServerChannel parseFragment(String message, ServerChannel scope)
+    public static ChannelScope parseFragment(String message, ChannelScope scope)
     {
         String pseudoServer = scope.getServerName();
-        String pseudoChannel = scope.getChannel();
+        String pseudoChannel = scope.getChannelName();
         if (message.startsWith("#"))
         {
             pseudoChannel = message.substring(0, message.indexOf(" "));
@@ -2638,7 +2639,7 @@ public class JZBot
                 pseudoChannel = null;
             }
         }
-        return new ServerChannel(pseudoServer, pseudoChannel);
+        return new ChannelScope(pseudoServer, pseudoChannel);
     }
     
     private static ArrayList<String> elevatedSuperopList = new ArrayList<String>();
@@ -2721,12 +2722,6 @@ public class JZBot
         if (result.signum() == 0)
             return "0";
         return result.toPlainString();
-    }
-    
-    public static void sendDelimited(ConnectionWrapper bot, String[] array,
-            String delimiter, String recipient)
-    {
-        Utils.ircSendDelimited(array, delimiter, new GenericMessenger(bot, recipient));
     }
     
     public static Factoid getChannelFactoid(Server server, String channelName,

@@ -11,7 +11,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.commands.games.MastermindState;
 import jw.jzbot.commands.games.RouletteState;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 
 /**
  * A game of mastermind. Uses numbers 1 through 5 as "bead colors". 4 beads by default,
@@ -72,7 +72,7 @@ public class MMCommand implements Command
         return "mm";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         if (channel == null)
@@ -211,7 +211,7 @@ public class MMCommand implements Command
     }
 
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

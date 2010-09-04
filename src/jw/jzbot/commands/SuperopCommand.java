@@ -9,7 +9,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.fact.functions.HashFunction;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Operator;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.Utils;
@@ -22,7 +22,7 @@ public class SuperopCommand implements Command
         return "superop";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         if (server == null)
@@ -117,7 +117,7 @@ public class SuperopCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

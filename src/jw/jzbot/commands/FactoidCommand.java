@@ -25,7 +25,7 @@ import jw.jzbot.fact.output.StringSink;
 import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.storage.StorageContainer;
@@ -51,7 +51,7 @@ public class FactoidCommand implements Command
         return "factoid";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         FactScope scope;
@@ -526,7 +526,7 @@ public class FactoidCommand implements Command
         }
     }
     
-    private void doFactoidSearch(boolean pm, ServerUser sender, Messenger source,
+    private void doFactoidSearch(boolean pm, UserMessenger sender, Messenger source,
             String afterCommand, FactScope scope, String server, Server s, String channel,
             Channel c)
     {
@@ -594,7 +594,7 @@ public class FactoidCommand implements Command
         return false;
     }
     
-    private void doFactoidLocate(boolean pm, ServerUser sender, Messenger source,
+    private void doFactoidLocate(boolean pm, UserMessenger sender, Messenger source,
             String afterCommand, FactScope scope, String server, Server s, String channel,
             Channel c)
     {
@@ -644,7 +644,7 @@ public class FactoidCommand implements Command
         return !(command.equals("scope"));
     }
     
-    private void doFactpackCommand(boolean pm, ServerUser sender, Messenger source,
+    private void doFactpackCommand(boolean pm, UserMessenger sender, Messenger source,
             String commandString, FactScope scope, String server, Server s, String channel,
             Channel storedChannel)
     {
@@ -761,7 +761,7 @@ public class FactoidCommand implements Command
         }
     }
     
-    private void doFactpackDetails(boolean pm, ServerUser sender, Messenger source,
+    private void doFactpackDetails(boolean pm, UserMessenger sender, Messenger source,
             FactScope scope, String server, Server s, String channel,
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
@@ -797,7 +797,7 @@ public class FactoidCommand implements Command
         }
     }
     
-    private void doFactpackRemove(boolean pm, ServerUser sender, Messenger source,
+    private void doFactpackRemove(boolean pm, UserMessenger sender, Messenger source,
             FactScope scope, String server, Server s, String channel,
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
@@ -877,7 +877,7 @@ public class FactoidCommand implements Command
         return "@" + server + channel;
     }
     
-    private void doFactpackInstall(boolean pm, ServerUser sender, Messenger source,
+    private void doFactpackInstall(boolean pm, UserMessenger sender, Messenger source,
             FactScope scope, String server, Server s, String channel,
             Channel storedChannel, boolean force, boolean absolute, String afterCommand)
     {
@@ -1107,7 +1107,7 @@ public class FactoidCommand implements Command
     
     private String runInstallScript(String name, String text, String server,
             Server storedServer, String channel, Channel storedChannel,
-            Map<String, String> localVars, ServerUser sender, Messenger source)
+            Map<String, String> localVars, UserMessenger sender, Messenger source)
     {
         try
         {
@@ -1214,7 +1214,7 @@ public class FactoidCommand implements Command
     }
 
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

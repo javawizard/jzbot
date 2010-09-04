@@ -1,7 +1,7 @@
 package jw.jzbot;
 
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 
 public interface Command
 {
@@ -25,7 +25,7 @@ public interface Command
      * @param arguments
      * @return
      */
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments);
     
     /**
@@ -38,7 +38,7 @@ public interface Command
      * @param source
      * @param arguments
      */
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments);
     // FIXME: change the method to accept a source too, and have it be either a
     // ServerChannel or a ServerUser or something, both of which implement an interface

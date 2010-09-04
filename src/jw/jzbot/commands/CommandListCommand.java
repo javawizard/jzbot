@@ -3,7 +3,7 @@ package jw.jzbot.commands;
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 
 public class CommandListCommand implements Command
 {
@@ -13,7 +13,7 @@ public class CommandListCommand implements Command
         return "commandlist";
     }
     
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         String currentList = "";
@@ -32,7 +32,7 @@ public class CommandListCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

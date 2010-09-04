@@ -14,7 +14,7 @@ import jw.jzbot.events.Notify;
 import jw.jzbot.protocols.ProtocolManager;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeLevel;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.Utils;
 
@@ -28,7 +28,7 @@ public class ServerCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         // TODO: make a config var that, when set to a certain value, allows the list of
@@ -362,7 +362,7 @@ public class ServerCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

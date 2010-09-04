@@ -4,12 +4,12 @@ import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.utils.Utils;
 
-public class ServerChannel implements Messenger, Scope
+public class ChannelScope implements Messenger, Scope
 {
     private String serverName;
     private String channel;
     
-    public ServerChannel(String serverName, String channel)
+    public ChannelScope(String serverName, String channel)
     {
         super();
         this.serverName = serverName;
@@ -21,19 +21,9 @@ public class ServerChannel implements Messenger, Scope
         return serverName;
     }
     
-    public void setServerName(String serverName)
-    {
-        this.serverName = serverName;
-    }
-    
-    public String getChannel()
+    public String getChannelName()
     {
         return channel;
-    }
-    
-    public void setChannel(String channel)
-    {
-        this.channel = channel;
     }
     
     @Override
@@ -71,6 +61,12 @@ public class ServerChannel implements Messenger, Scope
     public String getScopeName()
     {
         return "@" + serverName + channel;
+    }
+    
+    @Override
+    public String getCanonicalName()
+    {
+        return getScopeName();
     }
     
 }

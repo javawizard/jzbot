@@ -6,7 +6,7 @@ import java.io.InputStream;
 import jw.jzbot.Command;
 import jw.jzbot.ResponseException;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.utils.Utils;
 
 public class UpdateCommand implements Command
@@ -20,7 +20,7 @@ public class UpdateCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         sender.verifySuperop();
@@ -97,7 +97,7 @@ public class UpdateCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

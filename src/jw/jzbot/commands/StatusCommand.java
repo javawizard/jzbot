@@ -23,7 +23,7 @@ import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -41,7 +41,7 @@ public class StatusCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         // TODO: re-enable this. Also consider enabling one to just disable
@@ -397,7 +397,7 @@ public class StatusCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

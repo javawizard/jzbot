@@ -14,7 +14,7 @@ import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
@@ -28,7 +28,7 @@ public class ListChannelsCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         if (server == null)
@@ -81,7 +81,7 @@ public class ListChannelsCommand implements Command
     }
 
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

@@ -5,7 +5,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.scope.Messenger;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -20,7 +20,7 @@ public class ExplainCommand implements Command
     }
     
     @Override
-    public void run(String server, String channel, boolean pm, ServerUser sender,
+    public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         // FIXME: merge this into ~factoid, to allow for scoping (IE specifying
@@ -51,7 +51,7 @@ public class ExplainCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, ServerUser sender,
+    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
         return true;

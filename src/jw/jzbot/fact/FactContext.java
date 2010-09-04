@@ -12,7 +12,7 @@ import jw.jzbot.fact.debug.DebugSupport;
 import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.Scope;
-import jw.jzbot.scope.ServerUser;
+import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Server;
 
 import org.jdom.Document;
@@ -60,7 +60,7 @@ public class FactContext implements Scope
     private boolean action;
     private String server;
     private String channel;
-    private ServerUser sender;
+    private UserMessenger sender;
     private Messenger source;
     
     public Messenger getSource()
@@ -117,17 +117,22 @@ public class FactContext implements Scope
         return channel;
     }
     
+    public String getChannelName()
+    {
+        return getChannel();
+    }
+    
     public void setChannel(String channel)
     {
         this.channel = channel;
     }
     
-    public ServerUser getSender()
+    public UserMessenger getSender()
     {
         return sender;
     }
     
-    public void setSender(ServerUser sender)
+    public void setSender(UserMessenger sender)
     {
         this.sender = sender;
     }
@@ -346,5 +351,21 @@ public class FactContext implements Scope
                     localVars.put(varName, previousVars[i]);
             }
         }
+    }
+    
+    @Override
+    public String getCanonicalName()
+    {
+        if (getServer() == null)
+            return "";
+        if (getChannel() == null)
+            return "@" + getServer();
+        return "@" + getServer() + getChannel();
+    }
+    
+    @Override
+    public String getScopeName()
+    {
+        return getCanonicalName();
     }
 }
