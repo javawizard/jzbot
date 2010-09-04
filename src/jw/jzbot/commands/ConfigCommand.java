@@ -6,12 +6,12 @@ import java.util.Arrays;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ScopeLevel;
-import jw.jzbot.ServerUser;
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.configuration.Configuration.VarType;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ScopeLevel;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.utils.SpacedParser;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;

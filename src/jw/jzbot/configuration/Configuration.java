@@ -9,9 +9,9 @@ import java.util.Map;
 import org.python.core.PyString;
 
 import jw.jzbot.JZBot;
-import jw.jzbot.ScopeLevel;
 import jw.jzbot.events.Notify;
 import jw.jzbot.events.ScopeListener;
+import jw.jzbot.scope.ScopeLevel;
 import jw.jzbot.storage.ConfigStorage;
 import jw.jzbot.storage.ConfigVariable;
 import jw.jzbot.storage.StorageContainer;

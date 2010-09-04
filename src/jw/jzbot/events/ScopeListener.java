@@ -1,6 +1,6 @@
 package jw.jzbot.events;
 
-import jw.jzbot.ScopeLevel;
+import jw.jzbot.scope.ScopeLevel;
 
 public interface ScopeListener
 {

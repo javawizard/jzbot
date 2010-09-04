@@ -1,5 +1,6 @@
-package jw.jzbot;
+package jw.jzbot.scope;
 
+import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.utils.Utils;
 
 /**

@@ -1,11 +1,11 @@
 package jw.jzbot.fact.functions.irc;
 
 import jw.jzbot.JZBot;
-import jw.jzbot.ServerChannel;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.scope.ServerChannel;
 import jw.jzbot.utils.Utils;
 
 public class SendsplitFunction extends Function

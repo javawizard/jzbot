@@ -7,11 +7,11 @@ import java.util.Map;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
 import jw.jzbot.commands.games.MastermindState;
 import jw.jzbot.commands.games.RouletteState;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 
 /**
  * A game of mastermind. Uses numbers 1 through 5 as "bead colors". 4 beads by default,

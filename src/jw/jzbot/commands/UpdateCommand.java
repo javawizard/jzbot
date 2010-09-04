@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.InputStream;
 
 import jw.jzbot.Command;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.utils.Utils;
 
 public class UpdateCommand implements Command

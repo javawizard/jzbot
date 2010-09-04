@@ -9,11 +9,11 @@ import net.sf.opengroove.common.utils.StringUtils;
 import jw.jzbot.Command;
 import jw.jzbot.FactScope;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
 import jw.jzbot.plugins.Plugin;
 import jw.jzbot.plugins.PluginSystem;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.PersistentKey;
 
 public class PluginCommand implements Command

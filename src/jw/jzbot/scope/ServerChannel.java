@@ -1,5 +1,7 @@
-package jw.jzbot;
+package jw.jzbot.scope;
 
+import jw.jzbot.ConnectionWrapper;
+import jw.jzbot.JZBot;
 import jw.jzbot.utils.Utils;
 
 public class ServerChannel implements Messenger, Scope

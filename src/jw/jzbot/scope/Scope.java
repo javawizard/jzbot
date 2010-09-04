@@ -1,4 +1,4 @@
-package jw.jzbot;
+package jw.jzbot.scope;
 
 import jw.jzbot.fact.FactContext;
 

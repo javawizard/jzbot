@@ -1,4 +1,4 @@
-package jw.jzbot;
+package jw.jzbot.scope;
 
 /**
  * An interface representing an object that can send or receive messages. Messengers

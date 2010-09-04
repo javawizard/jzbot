@@ -1,5 +1,8 @@
 package jw.jzbot;
 
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
+
 public interface Command
 {
     /**

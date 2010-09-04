@@ -1,4 +1,4 @@
-package jw.jzbot;
+package jw.jzbot.scope;
 
 import net.sf.opengroove.common.utils.StringUtils;
 

@@ -6,9 +6,9 @@ import java.util.regex.Pattern;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Regex;
 import jw.jzbot.storage.Server;

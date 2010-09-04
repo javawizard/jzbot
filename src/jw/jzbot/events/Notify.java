@@ -2,7 +2,7 @@ package jw.jzbot.events;
 
 import java.util.ArrayList;
 
-import jw.jzbot.ScopeLevel;
+import jw.jzbot.scope.ScopeLevel;
 
 /**
  * This class can be used to listen for some common events occurring through JZBot. Right

@@ -12,9 +12,9 @@ import net.sf.opengroove.common.utils.StringUtils;
 import jw.jzbot.Command;
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 

@@ -6,6 +6,7 @@ import java.net.*;
 
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactQuota;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.Factoid;
 
 /**

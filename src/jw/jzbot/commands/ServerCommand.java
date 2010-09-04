@@ -9,12 +9,12 @@ import net.sf.opengroove.common.utils.StringUtils;
 import jw.jzbot.Command;
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ScopeLevel;
-import jw.jzbot.ServerUser;
 import jw.jzbot.events.Notify;
 import jw.jzbot.protocols.ProtocolManager;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ScopeLevel;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.Server;
 import jw.jzbot.utils.Utils;
 

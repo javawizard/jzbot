@@ -18,12 +18,12 @@ import org.jdom.xpath.XPath;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;

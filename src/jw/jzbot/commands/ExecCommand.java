@@ -5,13 +5,13 @@ import java.util.Map;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
-import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.FactQuota;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.output.StringSink;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 
 public class ExecCommand implements Command
 {

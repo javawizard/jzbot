@@ -2,10 +2,10 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
 import jw.jzbot.ResponseException;
-import jw.jzbot.ServerUser;
 import jw.jzbot.fact.FactParser;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 import jw.jzbot.storage.Factoid;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;

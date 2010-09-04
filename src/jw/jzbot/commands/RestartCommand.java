@@ -2,8 +2,8 @@ package jw.jzbot.commands;
 
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
-import jw.jzbot.Messenger;
-import jw.jzbot.ServerUser;
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ServerUser;
 
 public class RestartCommand implements Command
 {
