@@ -24,7 +24,7 @@ public class ScopeManager
      * @param name
      * @return
      */
-    public Agent getAgent(String name)
+    public static Agent getAgent(String name)
     {
         String[] groups;
         if ((groups = Utils.match(GLOBAL_REGEX, name)) != null)
@@ -48,7 +48,7 @@ public class ScopeManager
             + "match one of the public static *_REGEX fields on this class.");
     }
     
-    public Messenger getMessenger(String name)
+    public static Messenger getMessenger(String name)
     {
         Agent agent = getAgent(name);
         if (!(agent instanceof Messenger))
@@ -57,7 +57,7 @@ public class ScopeManager
         return (Messenger) agent;
     }
     
-    public Scope getScope(String name)
+    public static Scope getScope(String name)
     {
         Agent agent = getAgent(name);
         if (!(agent instanceof Scope))
