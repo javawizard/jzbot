@@ -403,7 +403,7 @@ public class JZBot
     }
     
     /**
-     * Gets the connection object for the specified server, if it iss/difficult currently
+     * Gets the connection object for the specified server, if it is currently
      * connected. If it is not currently connected, null is returned.
      * 
      * @param serverName
