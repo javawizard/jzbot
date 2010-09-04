@@ -106,10 +106,16 @@ convert it to a string with str(). writeline sends a newline afterward.
 History (a.k.a. the up-arrow) does not currently work.
 If, for some reason, you want to restart the bot from the console you can do:
 restart()
-and you can send messages to the channel #jzbot on the server freenode like so:
-from jw.jzbot import JZBot
-connection = JZBot.getConnection("freenode")
-connection.sendMessage("#jzbot", "Hello everyone. How are you?")
+You can send messages to the channel #jzbot on the server freenode like so:
+from jw.jzbot.scope import ScopeManager
+jzbot_channel = ScopeManager.getMessenger("@freenode#jzbot")
+jzbot_channel.sendMessage("Hello everyone. How are you?")
+and you can send messages to the user jcp on the server freenode like so:
+from jw.jzbot.scope import ScopeManager
+jcp = ScopeManager.getMessenger("@freenode!jcp")
+jcp.sendMessage("Hi jcp. How's it going?")
+======== END OF IMPORTANT NOTES ========
+(Scroll back up if some of it went off screen. It's important.)
 
 Anyway, that's about it. Have fun!
 """)
