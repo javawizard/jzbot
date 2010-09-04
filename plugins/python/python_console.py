@@ -103,7 +103,6 @@ you want to see, you have to do:
 writeline(x)
 You can use writeline() or write(). They both accept any python object and
 convert it to a string with str(). writeline sends a newline afterward.
-History (a.k.a. the up-arrow) does not currently work.
 If, for some reason, you want to restart the bot from the console you can do:
 restart()
 You can send messages to the channel #jzbot on the server freenode like so:
