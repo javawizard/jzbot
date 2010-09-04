@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.python.core.PyString;
+
 import jw.jzbot.JZBot;
 import jw.jzbot.ScopeLevel;
 import jw.jzbot.events.Notify;
