@@ -6,6 +6,7 @@ Do NOT use unless you happen to be developing this plugin.
 # Java.
 from jw.jzbot import protocols
 from jw.jzbot import configuration
+from jw.jzbot.events import Notify, ScopeListener
 import java.lang
 
 # Python.
@@ -139,8 +140,15 @@ class MSNProtocol(protocols.Protocol):
     def createConnection(self):
         return MSNConnection()
 
+
+class AddVarsListener(ScopeListener):
+    def notify(self, level, scope, initial):
+        configuration.Configuration.register(scope, 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
+        configuration.Configuration.register(scope, 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'https://nexus.passport.com/rdr/pprdr.asp')
+        configuration.Configuration.register(scope, 'msn/nexus-ssl', 'If SSL is *required* to authenticate to the Nexus.', configuration.Configuration.VarType.bool, "1")        
+
+
 def init (pluginContext):
+    Notify.serverAdded.addListener(AddVarsListener())
     protocols.ProtocolManager.installProtocol(MSNProtocol())
-    configuration.Configuration.register('@msn', 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
-    configuration.Configuration.register('@msn', 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'https://nexus.passport.com/rdr/pprdr.asp')
-    configuration.Configuration.register('@msn', 'msn/nexus-ssl', 'If SSL is *required* to authenticate to the Nexus.', configuration.Configuration.VarType.bool, "1")
+
