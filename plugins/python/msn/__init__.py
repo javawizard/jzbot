@@ -143,9 +143,11 @@ class MSNProtocol(protocols.Protocol):
 
 class AddVarsListener(ScopeListener):
     def notify(self, level, scope, initial):
-        configuration.Configuration.register(scope, 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
-        configuration.Configuration.register(scope, 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'https://nexus.passport.com/rdr/pprdr.asp')
-        configuration.Configuration.register(scope, 'msn/nexus-ssl', 'If SSL is *required* to authenticate to the Nexus.', configuration.Configuration.VarType.bool, "1")        
+        datastore_server = JZBot.storage.getServer(scope[1:])
+        if datastore_server and datastore_server.getProtocol() == "msn":
+            configuration.Configuration.register(scope, 'msn', 'MSN configuration settings', configuration.Configuration.VarType.folder, None)
+            configuration.Configuration.register(scope, 'msn/nexus', 'Nexus used to Authenticate to the MSN network.', configuration.Configuration.VarType.text, 'https://nexus.passport.com/rdr/pprdr.asp')
+            configuration.Configuration.register(scope, 'msn/nexus-ssl', 'If SSL is *required* to authenticate to the Nexus.', configuration.Configuration.VarType.bool, "1")        
 
 
 def init (pluginContext):

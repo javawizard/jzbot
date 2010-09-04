@@ -1,6 +1,7 @@
 package jw.jzbot;
 
 import jw.jzbot.protocols.Connection;
+import jw.jzbot.storage.Server;
 
 /**
  * A wrapper around a Connection. Almost all of JZBot accesses connection objects through
@@ -99,5 +100,15 @@ public class ConnectionWrapper
     {
         // FIXME: log this
         getConnection().joinChannel(name);
+    }
+    
+    public String getProtocolName()
+    {
+        return context.getDatastoreServer().getProtocol();
+    }
+    
+    public Server getDatastoreServer()
+    {
+        return context.getDatastoreServer();
     }
 }
