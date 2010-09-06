@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import jw.jzbot.protocols.irc.NewIrcProtocol;
+import jw.jzbot.protocols.irc.IrcProtocol;
 
 public class ProtocolManager
 {

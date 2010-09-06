@@ -1,23 +1,23 @@
-package jw.jzbot.protocols.bzflag;
+package jw.jzbot.protocols.xmpp;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
 
-public class NewBZFlagProtocol implements Protocol
+public class XmppProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new BZFlagProtocolConnection();
+        return new XmppConnection();
     }
     
     @Override
     public String getName()
     {
-        return "bzflag";
+        return "xmpp";
     }
-
+    
     @Override
     public void initialize()
     {

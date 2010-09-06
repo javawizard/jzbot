@@ -1,21 +1,21 @@
-package jw.jzbot.protocols.irc;
+package jw.jzbot.protocols.imap;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
 
-public class NewIrcProtocol implements Protocol
+public class ImapProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new IrcConnection();
+        return new ImapConnection();
     }
     
     @Override
     public String getName()
     {
-        return "irc";
+        return "imap";
     }
 
     @Override

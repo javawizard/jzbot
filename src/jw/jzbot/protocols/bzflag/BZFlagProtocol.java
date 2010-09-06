@@ -1,21 +1,21 @@
-package jw.jzbot.protocols.imap;
+package jw.jzbot.protocols.bzflag;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
 
-public class NewImapProtocol implements Protocol
+public class BZFlagProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new ImapConnection();
+        return new BZFlagProtocolConnection();
     }
     
     @Override
     public String getName()
     {
-        return "imap";
+        return "bzflag";
     }
 
     @Override

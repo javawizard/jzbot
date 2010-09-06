@@ -3,7 +3,7 @@ package jw.jzbot.protocols.fb;
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
 
-public class NewFacebookProtocol implements Protocol
+public class FacebookProtocol implements Protocol
 {
     
     @Override

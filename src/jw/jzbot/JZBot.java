@@ -90,11 +90,11 @@ import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.ProtocolManager;
-import jw.jzbot.protocols.bzflag.NewBZFlagProtocol;
-import jw.jzbot.protocols.fb.NewFacebookProtocol;
-import jw.jzbot.protocols.imap.NewImapProtocol;
-import jw.jzbot.protocols.irc.NewIrcProtocol;
-import jw.jzbot.protocols.xmpp.NewXmppProtocol;
+import jw.jzbot.protocols.bzflag.BZFlagProtocol;
+import jw.jzbot.protocols.fb.FacebookProtocol;
+import jw.jzbot.protocols.imap.ImapProtocol;
+import jw.jzbot.protocols.irc.IrcProtocol;
+import jw.jzbot.protocols.xmpp.XmppProtocol;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.Scope;
 import jw.jzbot.scope.ScopeLevel;
@@ -1293,11 +1293,11 @@ public class JZBot
         /*
          * The five built-in protocols
          */
-        ProtocolManager.installProtocol(new NewIrcProtocol());
-        ProtocolManager.installProtocol(new NewXmppProtocol());
-        ProtocolManager.installProtocol(new NewBZFlagProtocol());
-        ProtocolManager.installProtocol(new NewFacebookProtocol());
-        ProtocolManager.installProtocol(new NewImapProtocol());
+        ProtocolManager.installProtocol(new IrcProtocol());
+        ProtocolManager.installProtocol(new XmppProtocol());
+        ProtocolManager.installProtocol(new BZFlagProtocol());
+        ProtocolManager.installProtocol(new FacebookProtocol());
+        ProtocolManager.installProtocol(new ImapProtocol());
     }
     
     private static void startPmUserTimeThread()
