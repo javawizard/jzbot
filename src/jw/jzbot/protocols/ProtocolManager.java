@@ -14,6 +14,7 @@ public class ProtocolManager
     
     public static void installProtocol(Protocol protocol)
     {
+        protocol.initialize();
         protocolMap.put(protocol.getName(), protocol);
     }
     
