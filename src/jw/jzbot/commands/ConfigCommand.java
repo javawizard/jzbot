@@ -185,7 +185,7 @@ public class ConfigCommand implements Command
     
     public String getDisplayValue(String scope, String varPath)
     {
-        String result = Configuration.getTextNormal(scope, varPath);
+        String result = Configuration.getHumanText(scope, varPath);
         if (result == null)
             return null;
         VarType type = Configuration.getType(scope, varPath);

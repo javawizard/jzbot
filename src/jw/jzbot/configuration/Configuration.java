@@ -66,7 +66,65 @@ public class Configuration
 {
     public static enum VarType
     {
-        bool, integer, decimal, text, folder
+        /**
+         * A boolean variable. This can be set as either true, false, 0, or 1 when setting
+         * with {@link Configuration#setText(String, String, String)}, and it will be
+         * converted to 0 or 1.
+         */
+        bool,
+        /**
+         * An integer variable. This cannot have a decimal point, but it can be positive
+         * or negative. There is no upper bound on the magnitude of the number that can be
+         * stored in one of these variables.
+         */
+        integer,
+        /**
+         * A decimal variable. This can have arbitrarily-large precision.
+         */
+        decimal,
+        /**
+         * A text variable. This can contain any valid string of characters.
+         */
+        text,
+        /**
+         * A password variable. This is the same as a text variable except that its value
+         * cannot be read with the ~config command (it reads as
+         * "&lt;hidden for security reasons&gt;").
+         */
+        password,
+        /**
+         * A secret variable. This is the same as a password variable unless there is a
+         * guard variable in the same folder as a secret variable, in which case the
+         * secret variables in that folder are affected as described in the documentation
+         * on the {@link #guard guard variable}.
+         */
+        secret,
+        /**
+         * A guard variable. This is the same as a text variable (in that it can be read
+         * freely with the ~config command and hence should not be used to store
+         * passwords), except that when a value is set for a guard variable, any
+         * {@link #secret} variables in the same folder as the guard variable are unset
+         * (or reset to their default value if they have one). <br/><br/>
+         * 
+         * This was originally added for the benefit of the IRC protocol. There needs to
+         * be a configuration variable to store the services bot to authenticate to and
+         * there needs to be a configuration variable to store the password that should be
+         * used to authenticate. However, even superops shouldn't know the bot's password,
+         * and if they could configure the services bot to authenticate to they could
+         * simply change it to be their own nickname and restart the bot, and the bot
+         * would send them its password. Guard variables and secret variables were
+         * introduced for this reason; the services bot can be a guard variable and the
+         * password can be a secret variable, and if a superop changes the services bot to
+         * be their own nickname the password is immediately cleared, thus preventing it
+         * from being exposed.
+         */
+        guard,
+        /**
+         * A folder. Folders can contain additional variables, and are a way to categorize
+         * variables easily. They also play a role in the way {@link #secret} and
+         * {@link #guard} variables work.
+         */
+        folder
     }
     
     private static Map<String, Folder> scopeFolderMap =
@@ -157,7 +215,7 @@ public class Configuration
     /**
      * Returns the current value of the specified variable in text form. Note that boolean
      * variables will be returned as "1" and "0" instead of "true" and "false". If you
-     * need "true" and "false", use {@link #getTextNormal(String, String)} instead.
+     * need "true" and "false", use {@link #getHumanText(String, String)} instead.
      * 
      * @param scope
      *            The scope to read the variable from
@@ -179,22 +237,29 @@ public class Configuration
     }
     
     /**
-     * Same as {@link #getText(String, String)}, but if the variable is a boolean, then
-     * this translates "1" to "true" and "0" to "false".
+     * Same as {@link #getText(String, String)}, but the variable is translated for human
+     * viewing. If the variable is a boolean, it is returned as "true" or "false" instead
+     * of "1" or "0", respectively. If the variable is a password variable or a secret
+     * variable, the return value of this method is "&lt;hidden for security reasons&gt;".
      * 
      * @param scope
      * @param name
      * @return
      */
-    public static String getTextNormal(String scope, String name)
+    public static String getHumanText(String scope, String name)
     {
         String value = getText(scope, name);
-        if (getScopeFolder(scope).getVariable(name).type == VarType.bool)
+        Variable var = getScopeFolder(scope).getVariable(name);
+        if (var.type == VarType.bool)
         {
             if (value.equals("1"))
                 value = "true";
             else if (value.equals("0"))
                 value = "false";
+        }
+        else if (var.type == VarType.password || var.type == VarType.secret)
+        {
+            value = "<hidden for security reasons>";
         }
         return value;
     }
