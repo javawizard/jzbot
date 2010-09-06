@@ -1,22 +1,21 @@
-package jw.jzbot.protocols.newstyle;
+package jw.jzbot.protocols.fb;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
-import jw.jzbot.protocols.imap.ImapProtocol;
 
-public class NewImapProtocol implements Protocol
+public class NewFacebookProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new ImapProtocol();
+        return new FacebookConnection();
     }
     
     @Override
     public String getName()
     {
-        return "imap";
+        return "facebook";
     }
 
     @Override

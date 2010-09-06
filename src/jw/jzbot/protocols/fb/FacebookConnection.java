@@ -12,7 +12,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.protocols.Connection;
 
-public class FacebookProtocol implements Connection
+public class FacebookConnection implements Connection
 {
     
     @Override

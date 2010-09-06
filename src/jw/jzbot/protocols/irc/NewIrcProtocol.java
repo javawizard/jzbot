@@ -1,22 +1,21 @@
-package jw.jzbot.protocols.newstyle;
+package jw.jzbot.protocols.irc;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
-import jw.jzbot.protocols.fb.FacebookProtocol;
 
-public class NewFacebookProtocol implements Protocol
+public class NewIrcProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new FacebookProtocol();
+        return new IrcConnection();
     }
     
     @Override
     public String getName()
     {
-        return "facebook";
+        return "irc";
     }
 
     @Override

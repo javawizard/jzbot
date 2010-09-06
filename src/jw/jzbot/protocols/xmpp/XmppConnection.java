@@ -44,7 +44,7 @@ import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.fact.output.DelimitedSink;
 import jw.jzbot.protocols.Connection;
 
-public class XmppProtocol implements Connection
+public class XmppConnection implements Connection
 {
     static
     {

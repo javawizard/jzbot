@@ -1,24 +1,23 @@
-package jw.jzbot.protocols.newstyle;
+package jw.jzbot.protocols.xmpp;
 
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.protocols.Protocol;
-import jw.jzbot.protocols.irc.IrcProtocol;
 
-public class NewIrcProtocol implements Protocol
+public class NewXmppProtocol implements Protocol
 {
     
     @Override
     public Connection createConnection()
     {
-        return new IrcProtocol();
+        return new XmppConnection();
     }
     
     @Override
     public String getName()
     {
-        return "irc";
+        return "xmpp";
     }
-
+    
     @Override
     public void initialize()
     {

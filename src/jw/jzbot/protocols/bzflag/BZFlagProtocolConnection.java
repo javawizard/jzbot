@@ -48,7 +48,7 @@ import org.jibble.pircbot.User;
  * @author Alexander Boyd
  * 
  */
-public class BZFlagProtocol implements Connection
+public class BZFlagProtocolConnection implements Connection
 {
     private boolean hasShutdown = false;
     

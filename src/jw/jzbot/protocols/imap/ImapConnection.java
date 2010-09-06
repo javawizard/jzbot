@@ -33,9 +33,9 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.protocols.Connection;
-import jw.jzbot.protocols.xmpp.XmppProtocol;
+import jw.jzbot.protocols.xmpp.XmppConnection;
 
-public class ImapProtocol implements Connection
+public class ImapConnection implements Connection
 {
 	private Store imapStore;
 	private IMAPFolder imapInbox;
@@ -170,7 +170,7 @@ public class ImapProtocol implements Connection
 				return;
 			}
 			String messageFrom = ((InternetAddress) message.getFrom()[0]).getAddress();
-			String encodedFrom = XmppProtocol.escape(messageFrom);
+			String encodedFrom = XmppConnection.escape(messageFrom);
 			// The split thing makes it so we only get the first line of the
 			// message, which is what we want to nix any signature that might
 			// be on the message and stuff
@@ -254,7 +254,7 @@ public class ImapProtocol implements Connection
 	@Override
 	public String getNick()
 	{
-		return XmppProtocol.escape(targetUsername);
+		return XmppConnection.escape(targetUsername);
 	}
 	
 	@Override
@@ -345,7 +345,7 @@ public class ImapProtocol implements Connection
 	{
 		try
 		{
-			String recipient = XmppProtocol.unescape(target);
+			String recipient = XmppConnection.unescape(target);
 			System.out.println("Sending email to " + recipient);
 			Properties props = System.getProperties();
 			props.put("mail.transport.protocol", "smtps");

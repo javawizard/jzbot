@@ -12,7 +12,7 @@ import jw.jzbot.protocols.Connection;
 import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.PircBot;
 
-public class IrcProtocol extends PircBot implements Connection
+public class IrcConnection extends PircBot implements Connection
 {
     @Override
     public void changeNick(String newNick)
@@ -87,7 +87,7 @@ public class IrcProtocol extends PircBot implements Connection
         super.setTopic(channel, topic);
     }
     
-    public IrcProtocol()
+    public IrcConnection()
     {
         super();
     }
