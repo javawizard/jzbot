@@ -31,4 +31,8 @@ public class GlobalScope implements Scope
         return "";
     }
     
+    public String toString()
+    {
+        return "<GlobalScope>";
+    }
 }

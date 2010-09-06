@@ -92,16 +92,20 @@ public class ServerUser implements User
     public String getHostname()
     {
         throw new IllegalStateException("Instances of ServerUser do not "
-                + "track the user's hostname. Only instances of UserMessenger "
-                + "track this information.");
+            + "track the user's hostname. Only instances of UserMessenger "
+            + "track this information.");
     }
     
     @Override
     public String getUsername()
     {
         throw new IllegalStateException("Instances of ServerUser do not "
-                + "track the user's username. Only instances of UserMessenger "
-                + "track this information.");
+            + "track the user's username. Only instances of UserMessenger "
+            + "track this information.");
     }
     
+    public String toString()
+    {
+        return "<ServerUser: " + getCanonicalName() + ">";
+    }
 }

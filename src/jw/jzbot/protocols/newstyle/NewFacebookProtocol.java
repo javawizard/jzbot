@@ -18,5 +18,12 @@ public class NewFacebookProtocol implements Protocol
     {
         return "facebook";
     }
+
+    @Override
+    public void initialize()
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

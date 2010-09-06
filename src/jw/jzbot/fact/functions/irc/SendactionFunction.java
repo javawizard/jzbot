@@ -6,6 +6,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.scope.ScopeManager;
 
 public class SendactionFunction extends Function
 {
@@ -13,12 +14,10 @@ public class SendactionFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (!context.checkedGetConnection().getConnection().isConnected())
-            throw new FactoidException("Can't send messages when the bot is disconnected");
         String to = arguments.resolveString(0);
         String message = arguments.resolveString(1);
         context.incrementMessageCount();
-        context.checkedGetConnection().getConnection().sendAction(to, message);
+        ScopeManager.getMessenger(context, to).sendAction(message);
         try
         {
             Thread.sleep(500);

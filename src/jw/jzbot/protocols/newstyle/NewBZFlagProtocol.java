@@ -18,5 +18,12 @@ public class NewBZFlagProtocol implements Protocol
     {
         return "bzflag";
     }
+
+    @Override
+    public void initialize()
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

@@ -47,4 +47,9 @@ public class UserMessenger extends ServerUser
         JZBot.verifySuperop(serverName, hostname);
     }
     
+    public String toString()
+    {
+        return "<UserMessenger: " + getCanonicalName() + " hostname: " + hostname
+            + ", username: " + username + ">";
+    }
 }

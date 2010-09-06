@@ -11,6 +11,11 @@ package jw.jzbot.protocols;
 public interface Protocol
 {
     /**
+     * Called once when this protocol is first installed.
+     */
+    public void initialize();
+    
+    /**
      * Returns the name of this protocol.
      * 
      * @return

@@ -33,4 +33,8 @@ public class ServerScope implements Scope
         return getScopeName();
     }
     
+    public String toString()
+    {
+        return "<ServerScope: " + getCanonicalName() + ">";
+    }
 }

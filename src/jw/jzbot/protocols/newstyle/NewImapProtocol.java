@@ -18,5 +18,12 @@ public class NewImapProtocol implements Protocol
     {
         return "imap";
     }
+
+    @Override
+    public void initialize()
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

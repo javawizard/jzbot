@@ -134,6 +134,9 @@ class MSNConnection(protocols.Connection):
 
 
 class MSNProtocol(protocols.Protocol):
+    def init(self):
+        pass
+    
     def getName(self):
         return "msn"
     

@@ -18,5 +18,12 @@ public class NewIrcProtocol implements Protocol
     {
         return "irc";
     }
+
+    @Override
+    public void initialize()
+    {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

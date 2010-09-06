@@ -69,4 +69,9 @@ public class ChannelScope implements Messenger, Scope
         return getScopeName();
     }
     
+    public String toString()
+    {
+        return "<ChannelScope: " + getCanonicalName() + ">";
+    }
+    
 }

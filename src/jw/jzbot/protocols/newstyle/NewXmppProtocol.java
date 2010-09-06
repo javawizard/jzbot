@@ -19,4 +19,11 @@ public class NewXmppProtocol implements Protocol
         return "xmpp";
     }
     
+    @Override
+    public void initialize()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
 }
