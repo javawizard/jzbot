@@ -16,6 +16,10 @@ public class SubstringFunction extends Function
         int start = stack.nextInt(0);
         int end = stack.nextOptionalInt(Integer.MAX_VALUE, 1);
         String s = stack.nextString();
+        if(start < 0)
+            start += s.length();
+        if(end < 0)
+            end += s.length();
         if (start < 0)
             start = 0;
         if (end > s.length())
