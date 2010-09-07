@@ -295,7 +295,7 @@ public class Configuration
     public static void setText(String scope, String name, String text)
     {
         scope = normalizeScope(scope);
-        Variable var = getScopeFolder(scope).getVariable(name);
+        Variable var = getScopeFolder(scope).getCheckedVariable(name);
         if (var.type == VarType.bool)
         {
             if (text.equals("true"))
@@ -353,7 +353,7 @@ public class Configuration
     public static VarType getType(String scope, String name)
     {
         scope = normalizeScope(scope);
-        return getScopeFolder(scope).getSetting(name).type;
+        return getScopeFolder(scope).getCheckedSetting(name).type;
     }
     
     /**

@@ -8,6 +8,7 @@ import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.configuration.Configuration;
+import jw.jzbot.configuration.NoSuchVariableException;
 import jw.jzbot.configuration.Configuration.VarType;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeLevel;
@@ -30,132 +31,142 @@ public class ConfigCommand implements Command
     public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
-        SpacedParser parser = new SpacedParser(arguments);
-        if (parser.empty())
-            respondWithNoScope(server, channel);
-        String command = null;
-        ScopeLevel scopeLevel = null;
-        if (Utils.contains(ScopeLevel.class, parser.observe()))
+        try
         {
-            scopeLevel = ScopeLevel.valueOf(parser.next());
-        }
-        else
-        {
-            command = parser.next();
+            SpacedParser parser = new SpacedParser(arguments);
             if (parser.empty())
                 respondWithNoScope(server, channel);
-            scopeLevel = ScopeLevel.valueOf(parser.next());
-        }
-        String scope = scopeLevel.createScope(server, channel);
-        /*
-         * We've got the command and the scope. The command can be null, which means that
-         * we're supposed to read the variable or set its value. Now we'll go read input
-         * until we've run out of valid folders.
-         */
-        String folderPath = "";
-        while (parser.more()
-            && Configuration.exists(scope, filterQuery(parser.observe()))
-            && Configuration.getType(scope, filterQuery(parser.observe())) == VarType.folder)
-        {
-            // We're specifically not filtering for queries here so that it will show up
-            // in the variable path
-            folderPath += "/" + parser.next();
-        }
-        if (folderPath.length() > 0)
-            folderPath = folderPath.substring(1);
-        /*
-         * We've pulled all of the folders. Now we check to see if there's another token.
-         * If there is, we use that as the variable to use, and we remove it from the
-         * parser. If there isn't, we use the folder itself as the variable to use.
-         */
-        String varPath = folderPath;
-        if (parser.more())
-            varPath += "/" + parser.next();
-        if (varPath.startsWith("/"))
-            varPath = varPath.substring(1);
-        String input = parser.more() ? parser.remaining() : null;
-        /*
-         * Now we check to see if the path ends with a question mark. If it does, we
-         * filter the question mark out and set the command to info.
-         */
-        if (varPath.endsWith("?"))
-        {
-            varPath = filterQuery(varPath);
-            command = "info";
-        }
-        /*
-         * Now we process the actual command.
-         */
-        if (command == null)
-        {
-            VarType varType = Configuration.getType(scope, varPath);
-            if (varType == null || varType == VarType.folder)
+            String command = null;
+            ScopeLevel scopeLevel = null;
+            if (Utils.contains(ScopeLevel.class, parser.observe()))
             {
-                /*
-                 * This is either a folder or the scope folder. Either way we'll list the
-                 * contents of the folder and send them back.
-                 */
-                listFolderContents(source, scope, varPath);
-            }
-            else if (input == null)
-            {
-                /*
-                 * We're supposed to read the variable
-                 */
-                VarType type = Configuration.getType(scope, varPath);
-                String result = "(" + type.name() + ")";
-                if (!Configuration.isSet(scope, varPath))
-                {
-                    if (Configuration.hasDefault(scope, varPath))
-                        result += " default:";
-                    else
-                        result += " unset";
-                }
-                String value = getDisplayValue(scope, varPath);
-                if (value != null)
-                    result += " " + value;
-                source.sendSpaced(result);
+                scopeLevel = ScopeLevel.valueOf(parser.next());
             }
             else
             {
-                /*
-                 * We're supposed to set the variable
-                 */
+                command = parser.next();
+                if (parser.empty())
+                    respondWithNoScope(server, channel);
+                scopeLevel = ScopeLevel.valueOf(parser.next());
+            }
+            String scope = scopeLevel.createScope(server, channel);
+            /*
+             * We've got the command and the scope. The command can be null, which means
+             * that we're supposed to read the variable or set its value. Now we'll go
+             * read input until we've run out of valid folders.
+             */
+            String folderPath = "";
+            while (parser.more()
+                && Configuration.exists(scope, filterQuery(parser.observe()))
+                && Configuration.getType(scope, filterQuery(parser.observe())) == VarType.folder)
+            {
+                // We're specifically not filtering for queries here so that it will show
+                // up
+                // in the variable path
+                folderPath += "/" + parser.next();
+            }
+            if (folderPath.length() > 0)
+                folderPath = folderPath.substring(1);
+            /*
+             * We've pulled all of the folders. Now we check to see if there's another
+             * token. If there is, we use that as the variable to use, and we remove it
+             * from the parser. If there isn't, we use the folder itself as the variable
+             * to use.
+             */
+            String varPath = folderPath;
+            if (parser.more())
+                varPath += "/" + parser.next();
+            if (varPath.startsWith("/"))
+                varPath = varPath.substring(1);
+            String input = parser.more() ? parser.remaining() : null;
+            /*
+             * Now we check to see if the path ends with a question mark. If it does, we
+             * filter the question mark out and set the command to info.
+             */
+            if (varPath.endsWith("?"))
+            {
+                varPath = filterQuery(varPath);
+                command = "info";
+            }
+            /*
+             * Now we process the actual command.
+             */
+            if (command == null)
+            {
+                VarType varType;
+                varType = Configuration.getType(scope, varPath);
+                if (varType == null || varType == VarType.folder)
+                {
+                    /*
+                     * This is either a folder or the scope folder. Either way we'll list
+                     * the contents of the folder and send them back.
+                     */
+                    listFolderContents(source, scope, varPath);
+                }
+                else if (input == null)
+                {
+                    /*
+                     * We're supposed to read the variable
+                     */
+                    VarType type = Configuration.getType(scope, varPath);
+                    String result = "(" + type.name() + ")";
+                    if (!Configuration.isSet(scope, varPath))
+                    {
+                        if (Configuration.hasDefault(scope, varPath))
+                            result += " default:";
+                        else
+                            result += " unset";
+                    }
+                    String value = getDisplayValue(scope, varPath);
+                    if (value != null)
+                        result += " " + value;
+                    source.sendSpaced(result);
+                }
+                else
+                {
+                    /*
+                     * We're supposed to set the variable
+                     */
+                    sender.verifySuperop();
+                    String oldDisplayValue = getDisplayValue(scope, varPath);
+                    Configuration.setText(scope, varPath, input);
+                    source
+                            .sendSpaced("Successfully set to "
+                                + getDisplayValue(scope, varPath)
+                                + "."
+                                + (oldDisplayValue != null ? " Old value: "
+                                    + oldDisplayValue : ""));
+                }
+            }
+            else if (command.equals("info"))
+            {
+                source.sendSpaced(getTypeInfo(scope, varPath) + " "
+                    + Configuration.getDescription(scope, varPath));
+            }
+            else if (command.equals("unset"))
+            {
                 sender.verifySuperop();
                 String oldDisplayValue = getDisplayValue(scope, varPath);
-                try
-                {
-                    Configuration.setText(scope, varPath, input);
-                }
-                catch (IllegalArgumentException e)
-                {
-                    throw new ResponseException(e.getMessage());
-                }
-                catch (IllegalStateException e)
-                {
-                    throw new ResponseException(e.getMessage());
-                }
-                source.sendSpaced("Successfully set to " + getDisplayValue(scope, varPath)
-                    + "."
+                Configuration.setText(scope, varPath, null);
+                source.sendSpaced("Successfully unset."
                     + (oldDisplayValue != null ? " Old value: " + oldDisplayValue : ""));
             }
+            else
+            {
+                throw new ResponseException("That command (" + command + ") doesn't exist.");
+            }
         }
-        else if (command.equals("info"))
+        catch (NoSuchVariableException e)
         {
-            source.sendSpaced(getTypeInfo(scope, varPath) + " "
-                + Configuration.getDescription(scope, varPath));
+            throw new ResponseException("No such variable: " + e.getMessage());
         }
-        else if (command.equals("unset"))
+        catch (IllegalArgumentException e)
         {
-            sender.verifySuperop();
-            String oldDisplayValue = getDisplayValue(scope, varPath);
-            Configuration.setText(scope, varPath, null);
-            source.sendSpaced("Successfully unset."
-                + (oldDisplayValue != null ? " Old value: " + oldDisplayValue : ""));
+            throw new ResponseException(e.getMessage());
         }
-        else
+        catch (IllegalStateException e)
         {
-            throw new ResponseException("That command (" + command + ") doesn't exist.");
+            throw new ResponseException(e.getMessage());
         }
     }
     

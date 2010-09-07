@@ -39,8 +39,9 @@ public class Folder extends Setting
         Folder folder = this;
         for (int i = 0; i < components.length - 1; i++)
         {
-            System.out.println("Current folder: " + folder.name + ", getting subfolder "
-                + components[i]);
+            // System.out.println("Current folder: " + folder.name +
+            // ", getting subfolder "
+            // + components[i]);
             folder = folder.getFolder(components[i]);
         }
         if (folder == this)
@@ -51,6 +52,20 @@ public class Folder extends Setting
                 + ", self name: " + this.name + ", self type: " + this.type);
         else
             return folder.getSetting(components[components.length - 1]);
+    }
+    
+    public Setting getCheckedSetting(String name)
+    {
+        try
+        {
+            Setting result = getSetting(name);
+            result.getClass();
+            return result;
+        }
+        catch (NullPointerException e)
+        {
+            throw new NoSuchVariableException(name);
+        }
     }
     
     public Folder getFolder(String name)
@@ -105,6 +120,19 @@ public class Folder extends Setting
     public String[] getSettingNames()
     {
         return settings.keySet().toArray(new String[0]);
+    }
+    
+    public Variable getCheckedVariable(String name)
+    {
+        try
+        {
+            return (Variable) getCheckedSetting(name);
+        }
+        catch (ClassCastException e)
+        {
+            throw new IllegalArgumentException("The setting " + name
+                + " is a folder, not a variable.", e);
+        }
     }
     
 }
