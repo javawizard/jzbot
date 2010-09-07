@@ -250,16 +250,19 @@ public class Configuration
     {
         String value = getText(scope, name);
         Variable var = getScopeFolder(scope).getVariable(name);
-        if (var.type == VarType.bool)
+        if (value != null)
         {
-            if (value.equals("1"))
-                value = "true";
-            else if (value.equals("0"))
-                value = "false";
-        }
-        else if (var.type == VarType.password || var.type == VarType.secret)
-        {
-            value = "<hidden for security reasons>";
+            if (var.type == VarType.bool)
+            {
+                if (value.equals("1"))
+                    value = "true";
+                else if (value.equals("0"))
+                    value = "false";
+            }
+            else if (var.type == VarType.password || var.type == VarType.secret)
+            {
+                value = "<hidden for security reasons>";
+            }
         }
         return value;
     }
@@ -301,7 +304,8 @@ public class Configuration
                 text = "0";
         }
         var.validateConformantValue(text);
-        if(!var.fireFilters(scope, name, text))return;
+        if (!var.fireFilters(scope, name, text))
+            return;
         if (var.type == VarType.guard)
         {
             /*
