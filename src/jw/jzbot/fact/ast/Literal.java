@@ -51,7 +51,7 @@ public class Literal extends FactEntity
     {
         sink.write(spaces(indentation));
         sink.write("literal: \"");
-        resolve(sink, null);
+        execute(sink, null);
         sink.write("\"\n");
     }
     

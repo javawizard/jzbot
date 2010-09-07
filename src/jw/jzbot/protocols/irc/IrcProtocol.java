@@ -68,6 +68,13 @@ public class IrcProtocol implements Protocol
                 "6667");
         Configuration.register(scope, "irc/nick", "The nickname to use when connecting",
                 VarType.text, null);
+        Configuration.register(scope, "irc/password", "The password to use when "
+            + "authenticating to services. This will be appended to the "
+            + "command specified by the authcommand variable.", VarType.secret, null);
+        Configuration.register(scope, "irc/authcommand", "The command to use to "
+            + "authenticate to services. The value of the password variable will "
+            + "replace \"%password%\" in this string. For example, this could be "
+            + "PRIVMSG NickServ :identify %password%", VarType.guard, null);
         Configuration.addFilter(scope, "irc/port", new PortRangeFilter());
     }
 }

@@ -123,7 +123,18 @@ public class ConfigCommand implements Command
                  */
                 sender.verifySuperop();
                 String oldDisplayValue = getDisplayValue(scope, varPath);
-                Configuration.setText(scope, varPath, input);
+                try
+                {
+                    Configuration.setText(scope, varPath, input);
+                }
+                catch (IllegalArgumentException e)
+                {
+                    throw new ResponseException(e.getMessage());
+                }
+                catch (IllegalStateException e)
+                {
+                    throw new ResponseException(e.getMessage());
+                }
                 source.sendSpaced("Successfully set to " + getDisplayValue(scope, varPath)
                     + "."
                     + (oldDisplayValue != null ? " Old value: " + oldDisplayValue : ""));
