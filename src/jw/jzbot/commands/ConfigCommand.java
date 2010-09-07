@@ -70,7 +70,7 @@ public class ConfigCommand implements Command
          */
         String varPath = folderPath;
         if (parser.more())
-            varPath += "/" + filterQuery(parser.next());
+            varPath += "/" + parser.next();
         if (varPath.startsWith("/"))
             varPath = varPath.substring(1);
         String input = parser.more() ? parser.remaining() : null;
