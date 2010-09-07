@@ -522,6 +522,10 @@ public class JZBot
         if (!isRunning)
             return;
         /*
+         * This is used to track threads spawned by the current step
+         */
+        ArrayList<Thread> currentStepThreads = new ArrayList<Thread>();
+        /*
          * First step: create a connection object for all servers in the list
          */
         synchronized (connectionCycleLock)
@@ -569,6 +573,10 @@ public class JZBot
          * through it will create a new connection and connect it. This ensures that a
          * given connection object is never re-used.
          * 
+         * We're going to start one thread per connection and then join all the threads so
+         * that one server that's being slow to connect doesn't stall the rest of them
+         * from connecting.
+         * 
          * TODO: figure out a more elegant way to handle making sure connections are never
          * re-used. That idea was hacked into the system at the last minute, and I didn't
          * do a very good job at it.
@@ -586,31 +594,20 @@ public class JZBot
                     }
                     else
                     {
-                        try
-                        {
-                            System.out.println("Running pre-connect actions for server "
-                                + context.getServerName());
-                            runPreConnectActions(context);
-                            System.out.println("Connecting to server "
-                                + context.getServerName());
-                            context.getConnection().connect();
-                            context.markConnected();
-                            System.out.println("Connection established.");
-                            connectionLastErrorMap.remove(context.getServerName());
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                            connectionLastErrorMap.put(context.getServerName(), e);
-                        }
+                        currentStepThreads.add(connectionCycleStartConnectThread(context));
                     }
                 }
             }
         }
+        joinAllAndClear(currentStepThreads);
         /*
          * Third step: disconnect all connections if they are connected but their server
          * object is inactive, their server object is no longer present in the server
-         * objects list, or the connection has been marked as needing to be discarded
+         * objects list, or the connection has been marked as needing to be discarded.
+         * We're going to do this in separate threads for the same reason that we did the
+         * previous step in separate threads.
+         * 
+         * TODO: change it so that it's done in separate threads as noted
          */
         synchronized (connectionCycleLock)
         {
@@ -655,6 +652,52 @@ public class JZBot
         /*
          * ...and we're done!
          */
+    }
+    
+    private static void joinAllAndClear(ArrayList<Thread> threads)
+    {
+        for (Thread thread : threads)
+        {
+            try
+            {
+                thread.join();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        threads.clear();
+    }
+    
+    private static Thread connectionCycleStartConnectThread(final ConnectionContext context)
+    {
+        Thread thread =
+                new Thread("connection-cycle-server-connect-" + context.getServerName())
+                {
+                    public void run()
+                    {
+                        try
+                        {
+                            System.out.println("Running pre-connect actions for server "
+                                + context.getServerName());
+                            runPreConnectActions(context);
+                            System.out.println("Connecting to server "
+                                + context.getServerName());
+                            context.getConnection().connect();
+                            context.markConnected();
+                            System.out.println("Connection established.");
+                            connectionLastErrorMap.remove(context.getServerName());
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                            connectionLastErrorMap.put(context.getServerName(), e);
+                        }
+                    }
+                };
+        thread.start();
+        return thread;
     }
     
     private static List<ConnectionContext> sortByPriority(
