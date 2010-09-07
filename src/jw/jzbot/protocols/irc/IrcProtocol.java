@@ -1,6 +1,7 @@
 package jw.jzbot.protocols.irc;
 
 import jw.jzbot.configuration.Configuration;
+import jw.jzbot.configuration.VarFilter;
 import jw.jzbot.configuration.Configuration.VarType;
 import jw.jzbot.events.Notify;
 import jw.jzbot.events.ScopeListener;
@@ -10,6 +11,21 @@ import jw.jzbot.scope.ScopeLevel;
 
 public class IrcProtocol implements Protocol
 {
+    
+    public static class PortRangeFilter implements VarFilter
+    {
+        
+        @Override
+        public boolean filter(String scope, String name, String value)
+        {
+            int i = Integer.parseInt(value);
+            if (i < 0 || i > 65535)
+                throw new IllegalArgumentException("The port " + value
+                    + " is out of range. Ports must be 0 through 65535.");
+            return true;
+        }
+        
+    }
     
     @Override
     public Connection createConnection()
@@ -52,5 +68,6 @@ public class IrcProtocol implements Protocol
                 "6667");
         Configuration.register(scope, "irc/nick", "The nickname to use when connecting",
                 VarType.text, null);
+        Configuration.addFilter(scope, "irc/port", new PortRangeFilter());
     }
 }
