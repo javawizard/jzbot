@@ -301,6 +301,30 @@ public class Configuration
                 text = "0";
         }
         var.validateConformantValue(text);
+        if(!var.fireFilters(scope, name, text))return;
+        if (var.type == VarType.guard)
+        {
+            /*
+             * We need to iterate over all the secret variables in the same folder and
+             * unset them.
+             */
+            for (Setting setting : var.folder.getSettings())
+            {
+                if ((setting instanceof Variable)
+                    && ((Variable) setting).type == VarType.secret)
+                {
+                    Variable secretVar = (Variable) setting;
+                    String secretName;
+                    if (name.contains("/"))
+                        secretName =
+                                name.substring(0, name.lastIndexOf("/")) + "/"
+                                    + secretVar.name;
+                    else
+                        secretName = secretVar.name;
+                    setText(scope, secretName, null);
+                }
+            }
+        }
         ConfigStorage storage = getConfigStorage(scope, true);
         ConfigVariable storedVar = storage.getVariable(name);
         if (storedVar == null)

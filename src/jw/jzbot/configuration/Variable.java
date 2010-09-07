@@ -42,9 +42,23 @@ public class Variable extends Setting
         }
     }
     
-    public void fireFilters(String scope, String name, String value)
+    /**
+     * Fires the filters registered to this variable.
+     * 
+     * @param scope
+     *            The scope in which the variable is being set
+     * @param name
+     *            The path of the variable
+     * @param value
+     *            The new value that is about to be set into the variable
+     * @return True if all of the filters are good with the variable being set to the new
+     *         value. Note that all of the filters will be run even if one of them decides
+     *         that the new value should not be set.
+     */
+    public boolean fireFilters(String scope, String name, String value)
     {
         ArrayList<VarFilter> newList = new ArrayList<VarFilter>();
+        boolean valueSetOk = true;
         synchronized (filters)
         {
             newList.addAll(filters);
@@ -56,8 +70,10 @@ public class Variable extends Setting
              * is that if the value isn't allowed it will throw an exception that will
              * propagate back up and prevent it from being set.
              */
-            filter.filter(scope, name, value);
+            if (!filter.filter(scope, name, value))
+                valueSetOk = false;
         }
+        return valueSetOk;
     }
     
     /**
@@ -90,7 +106,8 @@ public class Variable extends Setting
                 new BigInteger(text);
                 works = true;
             }
-            else if (type == VarType.text)
+            else if (type == VarType.text || type == VarType.password
+                || type == VarType.secret || type == VarType.guard)
             {
                 works = true;
             }

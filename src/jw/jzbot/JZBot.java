@@ -3137,6 +3137,7 @@ public class JZBot
                 if (restartFile.exists())
                 {
                     restartFile.delete();
+                    System.out.println("RESTART FILE FOUND, RESTART IMMINENT");
                     Utils.sleep(3000);
                     restart();
                 }
