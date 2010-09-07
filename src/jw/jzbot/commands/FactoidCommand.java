@@ -23,6 +23,7 @@ import jw.jzbot.fact.exceptions.FactpackInstallationException;
 import jw.jzbot.fact.functions.conditional.IfFunction;
 import jw.jzbot.fact.output.StringSink;
 import jw.jzbot.pastebin.PastebinService;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
@@ -190,7 +191,7 @@ public class FactoidCommand implements Command
                 recreate(oldFact, scope, s, c);
                 throw new ResponseException(
                         "There is a syntax error in the contents of the factoid: "
-                            + JZBot.pastebinStack(e));
+                            + PastebinUtils.pastebinStack(e));
             }
             Factoid f = JZBot.storage.createFactoid();
             f.setCreator(sender.getHostname());
@@ -244,7 +245,7 @@ public class FactoidCommand implements Command
                 }
                 if (currentList.length() > source.getProtocolDelimitedLength())
                 {
-                    currentList = JZBot.pastebinNotice(currentList, null);
+                    currentList = PastebinUtils.pastebinNotice(currentList, null);
                 }
                 if (!currentList.equals(""))
                 {
@@ -560,12 +561,12 @@ public class FactoidCommand implements Command
                         + ": "
                         + StringUtils.delimited(matches.toArray(new String[0]), " | ");
         if (result.length() > source.getProtocolDelimitedLength() * 2)
-            result = JZBot.pastebinNotice(result, null);
+            result = PastebinUtils.pastebinNotice(result, null);
         source.sendSpaced(result);
     }
     
-    private void searchForFactoidInContainer(StorageContainer container, String containerName,
-            String regex, ArrayList<String> matches)
+    private void searchForFactoidInContainer(StorageContainer container,
+            String containerName, String regex, ArrayList<String> matches)
     {
         for (Factoid factoid : container.getFactoids().isolate())
         {
@@ -626,7 +627,7 @@ public class FactoidCommand implements Command
                     "" + matches.size() + " match" + (matches.size() == 1 ? "" : "es")
                         + ": " + StringUtils.delimited(matches.toArray(new String[0]), " ");
         if (result.length() > source.getProtocolDelimitedLength() * 2)
-            result = JZBot.pastebinNotice(result, null);
+            result = PastebinUtils.pastebinNotice(result, null);
         source.sendSpaced(result);
     }
     
@@ -697,9 +698,8 @@ public class FactoidCommand implements Command
                 buffer.append("\n").append(StringUtils.delimited(new String[0], ", "));
                 buffer.append("\n\n");
             }
-            source.sendMessage(JZBot.pastebinNotice(
-                    items[0] + "\n\n\n" + buffer.toString(),
-                    new Feature[] { Feature.highlight }));
+            source.sendMessage(PastebinUtils.pastebinNotice(items[0] + "\n\n\n"
+                + buffer.toString(), new Feature[] { Feature.highlight }));
         }
         else if (command.equals("list"))
         {
@@ -789,7 +789,7 @@ public class FactoidCommand implements Command
             {
                 descStrings =
                         new String[] { "See "
-                            + JZBot.pastebinNotice(factpack.description, null)
+                            + PastebinUtils.pastebinNotice(factpack.description, null)
                             + " for the full description" };
             }
             for (String l : descStrings)
@@ -976,7 +976,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "There is a syntax error in this factpack's preinstall script: "
-                        + JZBot.pastebinStack(e));
+                        + PastebinUtils.pastebinStack(e));
         }
         /*
          * Preinstall script has been run, and will have checked for any dependencies if
@@ -1051,7 +1051,7 @@ public class FactoidCommand implements Command
             catch (Exception e)
             {
                 throw new ResponseException("There is a syntax error in the factoid \""
-                    + entry.name + "\" in that factpack: " + JZBot.pastebinStack(e));
+                    + entry.name + "\" in that factpack: " + PastebinUtils.pastebinStack(e));
             }
         }
         /*
@@ -1098,7 +1098,7 @@ public class FactoidCommand implements Command
             e.printStackTrace();
             source.sendMessage("The postinstall script encountered an error. "
                 + "The factpack has still been installed. Details: "
-                + JZBot.pastebinStack(e));
+                + PastebinUtils.pastebinStack(e));
         }
         if (!response.equals(""))
             source.sendMessage(response);
@@ -1127,7 +1127,7 @@ public class FactoidCommand implements Command
         {
             throw new ResponseException(
                     "There is a syntax error in one of this factpack's scripts: "
-                        + JZBot.pastebinStack(e));
+                        + PastebinUtils.pastebinStack(e));
         }
     }
     
@@ -1212,10 +1212,10 @@ public class FactoidCommand implements Command
         if (value != null)
             e.setAttribute(name, URLEncoder.encode(value));
     }
-
+    
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

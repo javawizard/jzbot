@@ -9,6 +9,7 @@ import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.output.NullSink;
+import jw.jzbot.pastebin.PastebinUtils;
 
 public class ThreadstartFunction extends Function
 {
@@ -72,9 +73,9 @@ public class ThreadstartFunction extends Function
                     }
                     if (usableConnection != null && usableChannel != null)
                     {
-                        usableConnection
-                                .sendMessage(usableChannel, "The user thread " + threadName
-                                    + " threw an exception: " + JZBot.pastebinStack(t));
+                        usableConnection.sendMessage(usableChannel, "The user thread "
+                            + threadName + " threw an exception: "
+                            + PastebinUtils.pastebinStack(t));
                     }
                 }
             }

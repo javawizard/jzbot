@@ -11,6 +11,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.help.HelpProvider;
 import jw.jzbot.help.HelpSystem;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
@@ -120,7 +121,8 @@ public class HelpCommand implements Command
                     && source.likesPastebin())
                     pageListText =
                             subpagesIntro
-                                + JZBot.tryPastebin(pageListText, null, pageListText);
+                                + PastebinUtils.tryPastebin(pageListText, null,
+                                        pageListText);
                 source.sendSpaced(pageListText);
             }
         }
@@ -151,8 +153,8 @@ public class HelpCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

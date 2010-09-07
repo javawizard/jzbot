@@ -53,10 +53,11 @@ public class ConfigCommand implements Command
          * until we've run out of valid folders.
          */
         String folderPath = "";
-        while (parser.more() && Configuration.exists(scope, parser.observe())
-            && Configuration.getType(scope, parser.observe()) == VarType.folder)
+        while (parser.more()
+            && Configuration.exists(scope, filterQuery(parser.observe()))
+            && Configuration.getType(scope, filterQuery(parser.observe())) == VarType.folder)
         {
-            folderPath += "/" + parser.next();
+            folderPath += "/" + filterQuery(parser.next());
         }
         if (folderPath.length() > 0)
             folderPath = folderPath.substring(1);
@@ -67,10 +68,19 @@ public class ConfigCommand implements Command
          */
         String varPath = folderPath;
         if (parser.more())
-            varPath += "/" + parser.next();
+            varPath += "/" + filterQuery(parser.next());
         if (varPath.startsWith("/"))
             varPath = varPath.substring(1);
         String input = parser.more() ? parser.remaining() : null;
+        /*
+         * Now we check to see if the path ends with a question mark. If it does, we
+         * filter the question mark out and set the command to info.
+         */
+        if (varPath.endsWith("?"))
+        {
+            varPath = filterQuery(varPath);
+            command = "info";
+        }
         /*
          * Now we process the actual command.
          */
@@ -136,6 +146,13 @@ public class ConfigCommand implements Command
         }
     }
     
+    private String filterQuery(String component)
+    {
+        if (component.endsWith("?"))
+            component = component.substring(0, component.length() - 1);
+        return component;
+    }
+    
     private void listFolderContents(Messenger source, String scope, String varPath)
     {
         String[] names = Configuration.getChildNames(scope, varPath);
@@ -177,8 +194,8 @@ public class ConfigCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

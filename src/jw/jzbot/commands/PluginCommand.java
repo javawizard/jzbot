@@ -15,6 +15,7 @@ import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.PersistentKey;
+import jw.jzbot.pastebin.PastebinUtils;
 
 public class PluginCommand implements Command
 {
@@ -70,7 +71,7 @@ public class PluginCommand implements Command
                         + "occurred while loading this plugin the last time "
                         + "the bot was started.");
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
-                    response = JZBot.pastebinNotice(response, null);
+                    response = PastebinUtils.pastebinNotice(response, null);
                 source.sendSpaced(response);
             }
             else if (command.equals("enable"))
@@ -143,7 +144,7 @@ public class PluginCommand implements Command
                             + "; Active: " + PluginSystem.loadedPluginNames.contains(name)
                             + "; Description: " + plugin.info.description;
                 if (response.length() > (source.getProtocolDelimitedLength() * 2))
-                    response = JZBot.pastebinNotice(response, null);
+                    response = PastebinUtils.pastebinNotice(response, null);
                 source.sendSpaced(response);
             }
             else
@@ -155,8 +156,8 @@ public class PluginCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

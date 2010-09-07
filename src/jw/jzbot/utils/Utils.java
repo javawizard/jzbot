@@ -2,6 +2,7 @@ package jw.jzbot.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +12,7 @@ import jw.jzbot.JZBot;
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.scope.Messenger;
 
+import org.apache.commons.io.IOUtils;
 import org.jibble.pircbot.PircBot;
 
 public class Utils
@@ -176,4 +178,21 @@ public class Utils
         return result;
     }
     
+    public static void threadedCopy(final InputStream in, final OutputStream out)
+    {
+        new Thread()
+        {
+            public void run()
+            {
+                try
+                {
+                    IOUtils.copy(in, out);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
 }

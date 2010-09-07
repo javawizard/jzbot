@@ -11,6 +11,7 @@ import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.events.Notify;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.protocols.ProtocolManager;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeLevel;
@@ -258,7 +259,7 @@ public class ServerCommand implements Command
                     + "since the last time it tried to connect.");
             else
                 source.sendMessage("Details of the last connection error: "
-                    + JZBot.pastebinStack(t));
+                    + PastebinUtils.pastebinStack(t));
         }
         else if (subcommand.equals("current"))
         {
@@ -362,8 +363,8 @@ public class ServerCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

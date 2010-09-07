@@ -86,6 +86,7 @@ import jw.jzbot.help.HelpSystem;
 import jw.jzbot.help.PropsHelpProvider;
 import jw.jzbot.help.XMLHelpProvider;
 import jw.jzbot.pastebin.DefaultPastebinProviders;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.plugins.PluginSystem;
 import jw.jzbot.protocols.Connection;
@@ -305,7 +306,8 @@ public class JZBot
             try
             {
                 sendMessageToTarget(Configuration.getText(null, "primary"),
-                        "Global notification failure for " + name + ": " + pastebinStack(e));
+                        "Global notification failure for " + name + ": "
+                            + PastebinUtils.pastebinStack(e));
             }
             catch (Throwable e2)
             {
@@ -898,7 +900,7 @@ public class JZBot
                 }
                 catch (Throwable t)
                 {
-                    result = "A future error occured: " + pastebinStack(t);
+                    result = "A future error occured: " + PastebinUtils.pastebinStack(t);
                 }
                 finally
                 {
@@ -1915,8 +1917,10 @@ public class JZBot
                 catch (Throwable e)
                 {
                     e.printStackTrace();
-                    getConnection(serverName).sendMessage(channel,
-                            "Internal upper-propegation error: " + pastebinStack(e));
+                    getConnection(serverName).sendMessage(
+                            channel,
+                            "Internal upper-propegation error: "
+                                + PastebinUtils.pastebinStack(e));
                 }
             }
             else
@@ -1927,7 +1931,7 @@ public class JZBot
         catch (FactTimeExceededError e)
         {
             getConnection(serverName).sendMessage(channel,
-                    "Time exceeded: " + pastebinStack(e));
+                    "Time exceeded: " + PastebinUtils.pastebinStack(e));
         }
         finally
         {
@@ -1984,7 +1988,7 @@ public class JZBot
                 source.sendSpaced(e.getMessage());
             else
                 source.sendSpaced("An error occurred while processing your invitation: "
-                    + pastebinStack(e));
+                    + PastebinUtils.pastebinStack(e));
         }
     }
     
@@ -2027,7 +2031,7 @@ public class JZBot
         {
             e.printStackTrace();
             getConnection(serverName).sendMessage(channel,
-                    "Pre-process regex error: " + pastebinStack(e));
+                    "Pre-process regex error: " + PastebinUtils.pastebinStack(e));
             return true;
         }
     }
@@ -2114,7 +2118,7 @@ public class JZBot
         {
             t.printStackTrace();
             getConnection(serverName).sendMessage(sender,
-                    "Exception while processing action: " + pastebinStack(t));
+                    "Exception while processing action: " + PastebinUtils.pastebinStack(t));
         }
         finally
         {
@@ -2221,7 +2225,7 @@ public class JZBot
                 {
                     e.printStackTrace();
                     source.sendSpaced("An error occured while running the command "
-                        + command + ": " + pastebinStack(e));
+                        + command + ": " + PastebinUtils.pastebinStack(e));
                 }
             }
             System.out.println("Finishing command run #1");
@@ -2330,44 +2334,28 @@ public class JZBot
         }
         catch (FactoidException e)
         {
-            factValue = "Syntax exception while running factoid: " + pastebinStack(e);
+            factValue =
+                    "Syntax exception while running factoid: "
+                        + PastebinUtils.pastebinStack(e);
         }
         catch (FactTimeExceededError e)
         {
-            factValue = "The factoid took too long to run: " + pastebinStack(e);
+            factValue =
+                    "The factoid took too long to run: " + PastebinUtils.pastebinStack(e);
         }
         catch (StackOverflowError e)
         {
             factValue =
                     "A stack overflow occurred. This probably means you have an infinitely-recursive loop in your factoid. Details: "
-                        + pastebinStack(e);
+                        + PastebinUtils.pastebinStack(e);
         }
         catch (Exception e)
         {
-            factValue = "External exception while running factoid: " + pastebinStack(e);
+            factValue =
+                    "External exception while running factoid: "
+                        + PastebinUtils.pastebinStack(e);
         }
         return factValue;
-    }
-    
-    public static String pastebinStack(Throwable e)
-    {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw, true));
-        String eString = sw.toString();
-        if (e instanceof FactoidException)
-            eString =
-                    ((FactoidException) e).createFactoidStackTrace()
-                        + "\n\nJava stack trace:\n\n" + eString;
-        try
-        {
-            return pastebinNotice(eString, null);
-        }
-        catch (Exception e2)
-        {
-            e2.printStackTrace();
-            return "(pastebin service unavailable)";
-        }
     }
     
     private static void doInvalidCommand(boolean pm, Server server, String serverName,
@@ -2409,9 +2397,8 @@ public class JZBot
             }
             catch (Throwable t)
             {
-                source
-                        .sendMessage("Syntax error in not-found factoid: "
-                            + pastebinStack(t));
+                source.sendMessage("Syntax error in not-found factoid: "
+                    + PastebinUtils.pastebinStack(t));
             }
         }
         System.out.println("Finished processing for invalid command");
@@ -2601,12 +2588,12 @@ public class JZBot
             {
                 e.printStackTrace();
                 con.sendMessage(sender, "Internal upper-propegating pm exception: "
-                    + pastebinStack(e));
+                    + PastebinUtils.pastebinStack(e));
             }
         }
         catch (FactTimeExceededError e)
         {
-            con.sendMessage(sender, "Time exceeded: " + pastebinStack(e));
+            con.sendMessage(sender, "Time exceeded: " + PastebinUtils.pastebinStack(e));
         }
         finally
         {
@@ -2990,50 +2977,6 @@ public class JZBot
                 return file;
         }
         return null;
-    }
-    
-    public static String pastebinNotice(String text, Feature[] features)
-    {
-        try
-        {
-            return Pastebin.createPost("jzbot", text
-                + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
-                + "post, or its creator (JZBot), send an email to \"alex"
-                + " AT opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
-        }
-        catch (RuntimeException e)
-        {
-            System.out.println("Exception occurred while trying to "
-                + "pastebin notice. The text to be sent to the pastebin was: \n\n" + text
-                + "\n\n");
-            throw e;
-        }
-    }
-    
-    /**
-     * Calls {@link #pastebinNotice(String, Feature[])}. If an exception is thrown,
-     * <tt>alternative</tt> is returned, with "(pastebin unavailable) " prefixed.
-     * 
-     * @param text
-     *            The text to pastebin
-     * @param features
-     *            The features that the target pastebin should have
-     * @param alternative
-     *            The text to return if the pastebin service is unavailable
-     * @return the return value of pastebinNotice(String, Feature[]), or
-     *         <tt>"(pastebin unavailable) " + alternative</tt> if the pastebin service is
-     *         currently unavailable
-     */
-    public static String tryPastebin(String text, Feature[] features, String alternative)
-    {
-        try
-        {
-            return pastebinNotice(text, features);
-        }
-        catch (Exception e)
-        {
-            return "(pastebin unavailable) " + alternative;
-        }
     }
     
     public static MathContext datasizeContext = new MathContext(3);

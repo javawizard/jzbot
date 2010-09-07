@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import jw.jzbot.Command;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
@@ -67,7 +68,7 @@ public class RegexCommand implements Command
             catch (Exception e)
             {
                 throw new ResponseException("Malformed regex pattern, see "
-                    + JZBot.pastebinStack(e));
+                    + PastebinUtils.pastebinStack(e));
             }
             Regex regex = JZBot.storage.createRegex();
             regex.setExpression(regexString);
@@ -135,10 +136,10 @@ public class RegexCommand implements Command
             throw new ResponseException("Specify one of add, delete (or del), or list.");
         }
     }
-
+    
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

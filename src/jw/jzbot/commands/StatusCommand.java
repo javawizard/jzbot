@@ -22,6 +22,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.pastebin.PastebinService;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.utils.Utils;
@@ -109,7 +110,7 @@ public class StatusCommand implements Command
             if (strings.size() > 10)
             {
                 String pastebin =
-                        JZBot.pastebinNotice(StringUtils.delimited(strings
+                        PastebinUtils.pastebinNotice(StringUtils.delimited(strings
                                 .toArray(new String[0]), "\n"), null);
                 source.sendMessage("" + size + " threads: " + pastebin);
             }
@@ -252,7 +253,7 @@ public class StatusCommand implements Command
                         + "statement in question was run since tracing was enabled.\n\n\n";
             for (Map.Entry<String, Long> entry : map.entrySet())
                 pastebinText += entry.getValue() + "  " + entry.getKey() + "\n";
-            initial += JZBot.pastebinNotice(pastebinText, null);
+            initial += PastebinUtils.pastebinNotice(pastebinText, null);
             source.sendSpaced(initial);
         }
         else
@@ -334,7 +335,7 @@ public class StatusCommand implements Command
                 e.printStackTrace();
                 remoteString =
                         "I couldn't connect to the subversion update server (because of "
-                            + JZBot.pastebinStack(e)
+                            + PastebinUtils.pastebinStack(e)
                             + ", so I don't know if I'm up-to-date or not.";
             }
             /*
@@ -397,8 +398,8 @@ public class StatusCommand implements Command
     }
     
     @Override
-    public boolean relevant(String server, String channel, boolean pm, UserMessenger sender,
-            Messenger source, String arguments)
+    public boolean relevant(String server, String channel, boolean pm,
+            UserMessenger sender, Messenger source, String arguments)
     {
         return true;
     }

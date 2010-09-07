@@ -285,7 +285,7 @@ public class FactParser
         return c;
     }
     
-    public static void install(String name, Function function)
+    public static void installFunction(String name, Function function)
     {
         functionMap.put(name.toLowerCase(), function);
         reverseFunctionMap.put(function, name.toLowerCase());
@@ -313,6 +313,13 @@ public class FactParser
         return reverseFunctionMap.get(function);
     }
     
+    /**
+     * Gets the function with the specified class. If more than one function with the
+     * specified class has been installed, the last one to be installed will be returned.
+     * 
+     * @param c
+     * @return
+     */
     public static Function getFunctionByClass(Class<? extends Function> c)
     {
         return functionsByClass.get(c);
@@ -357,7 +364,7 @@ public class FactParser
                                 (Class<? extends Function>) Class
                                         .forName("jw.jzbot.fact.functions."
                                             + classNameInFolder.replaceAll("(/|\\\\)", "."));
-                        install(functionName, c.newInstance());
+                        installFunction(functionName, c.newInstance());
                     }
                     else
                     {
@@ -433,7 +440,7 @@ public class FactParser
      */
     private static void installSpecialSet()
     {
-        install("c", new CharCodeSpecial("c", "\u0003",
+        installFunction("c", new CharCodeSpecial("c", "\u0003",
                 "Inserts the IRC color change character. Immediately following "
                     + "this should be two digits, which represent the color of text "
                     + "that should show up.\n"
@@ -442,20 +449,20 @@ public class FactParser
                     + "quotes), then run it; the result will be a list of numbers and "
                     + "the color they represent.\n"
                     + "This function is deprecated, and \"\\c\" should be used instead."));
-        install("n", new CharCodeSpecial("n", Colors.NORMAL,
+        installFunction("n", new CharCodeSpecial("n", Colors.NORMAL,
                 "Resets any coloring that has been applied in the factoid, so that "
                     + "all succeeding text has no special formatting.\n"
                     + "This function is deprecated, and \"\\p\" should be used instead."));
-        install("b", new CharCodeSpecial("b", Colors.BOLD,
+        installFunction("b", new CharCodeSpecial("b", Colors.BOLD,
                 "Inserts the IRC bold character, which causes all following text "
                     + "to be shown as bold.\n"
                     + "This function is deprecated, and \"\\b\" should be used instead."));
-        install("i", new CharCodeSpecial("i", Colors.REVERSE,
+        installFunction("i", new CharCodeSpecial("i", Colors.REVERSE,
                 "Inserts the IRC reverse character, which, depending on the client, "
                     + "either reverses the foreground and background colors or shows text"
                     + " as italic.\n"
                     + "This function is deprecated, and \"\\i\" should be used instead."));
-        install("u", new CharCodeSpecial("u", Colors.UNDERLINE,
+        installFunction("u", new CharCodeSpecial("u", Colors.UNDERLINE,
                 "Inserts the IRC underline character, which causes all "
                     + "succeeding text to be underlined.\n"
                     + "This function is deprecated, and \"\\u\" should be used instead."));
