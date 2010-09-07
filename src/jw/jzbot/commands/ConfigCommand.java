@@ -57,7 +57,9 @@ public class ConfigCommand implements Command
             && Configuration.exists(scope, filterQuery(parser.observe()))
             && Configuration.getType(scope, filterQuery(parser.observe())) == VarType.folder)
         {
-            folderPath += "/" + filterQuery(parser.next());
+            // We're specifically not filtering for queries here so that it will show up
+            // in the variable path
+            folderPath += "/" + parser.next();
         }
         if (folderPath.length() > 0)
             folderPath = folderPath.substring(1);
