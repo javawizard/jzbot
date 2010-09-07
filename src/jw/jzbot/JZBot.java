@@ -529,11 +529,14 @@ public class JZBot
             System.out.println("Synchronized on connection cycle");
             if (!isRunning)
                 return;
+            System.out.println("Creating connection objects for all servers...");
             for (Server server : sortByPriority(storage.getServers().isolate()))
             {
                 if (!isRunning)
                     return;
                 String serverName = server.getName();
+                System.out.println("Checking to see if server " + serverName
+                    + " has a connection object");
                 if (connectionMap.get(serverName) == null)
                 {
                     /*
@@ -545,10 +548,10 @@ public class JZBot
                     ConnectionContext context = new ConnectionContext();
                     context.setServerName(serverName);
                     context.setDatastoreServer(server);
-                    System.out.println("Instantiating protocol instance...");
+                    System.out.println("Instantiating connection instance...");
                     Connection c = ProtocolManager.createConnection(server.getProtocol());
                     context.setConnection(c);
-                    System.out.println("Initializing protocol...");
+                    System.out.println("Initializing connection...");
                     c.init(context);
                     System.out.println("Registering connection...");
                     connectionMap.put(server.getName(), context);
@@ -565,6 +568,10 @@ public class JZBot
          * thread notified. This will cause this whole method to run again, and that time
          * through it will create a new connection and connect it. This ensures that a
          * given connection object is never re-used.
+         * 
+         * TODO: figure out a more elegant way to handle making sure connections are never
+         * re-used. That idea was hacked into the system at the last minute, and I didn't
+         * do a very good job at it.
          */
         for (ConnectionContext context : sortByPriority(connectionMap.values()))
         {

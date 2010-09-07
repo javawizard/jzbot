@@ -845,7 +845,7 @@ public class XmppConnection implements Connection
     @Override
     public void sendAction(String target, String message)
     {
-        sendMessage(target, "<- " + message);
+        sendMessage(target, "* " + message);
     }
     
     @Override
