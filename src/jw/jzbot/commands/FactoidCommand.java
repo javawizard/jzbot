@@ -234,35 +234,43 @@ public class FactoidCommand implements Command
                 list = s.getFactoids();
             else
                 list = c.getFactoids();
+            String currentList = "";
             if (list != null)
             {
-                String currentList = "";
                 for (Factoid f : list.isolate())
                 {
                     currentList +=
                             (f.isLibrary() ? "%" : "") + (f.isRestricted() ? "@" : "")
                                 + f.getName() + "  ";
                 }
-                if (currentList.length() > source.getProtocolDelimitedLength())
-                {
-                    currentList = PastebinUtils.pastebinNotice(currentList, null);
-                }
-                if (!currentList.equals(""))
-                {
-                    source.sendMessage(currentList);
-                }
             }
+            String quotationMessage = "";
             if (scope == FactScope.global)
-                source.sendMessage("End of factoid list.");
+            	quotationMessage = "";
             else if (scope == FactScope.server)
-                source.sendMessage("End of factoid list. You should also run "
+            	quotationMessage = "You should also run "
                     + "\"factoid global list\" for"
-                    + " global factoids. These were not included " + "in this list.");
+                    + " global factoids. These were not included " + "in this query.";
             else
-                source.sendMessage("End of factoid list. You should also run "
+            	quotationMessage = "You should also run "
                     + "\"factoid global list\" and \"factoid server list\" for"
                     + " global factoids and server-specific factoids. These "
-                    + "were not included " + "in this list.");
+                    + "were not included " + "in this query.";
+            
+            if (currentList.equals(""))
+            {
+            	source.sendMessage("No factoids could be found. " + quotationMessage);
+            }
+            else if (currentList.length() > source.getProtocolDelimitedLength() || arguments.endsWith(" --"))
+            {
+                currentList = PastebinUtils.pastebinNotice(currentList + "\nEnd of factoid list. " + quotationMessage, null);
+                source.sendMessage( "A list of all " + scope + " factoids: " + currentList);
+            }
+            else
+            {
+            	source.sendSpaced( "A list of all " + scope + " factoids: " + currentList);
+                source.sendMessage(quotationMessage);
+            }
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
         {
