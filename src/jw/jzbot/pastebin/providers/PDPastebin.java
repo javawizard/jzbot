@@ -118,6 +118,7 @@ public class PDPastebin implements PastebinProvider
             client.getParams().setParameter("http.socket.timeout", 7000);
             HttpPost request = new HttpPost("http://" + location + "/" + downloadFile);
             request.addHeader("Content-type", "application/x-www-form-urlencoded");
+            request.getParams().setBooleanParameter("http.protocol.expect-continue", false);
             request.setEntity(new StringEntity("parent_pid=" + URLEncoder.encode(parent)
                     + "&format=text&code2=" + URLEncoder.encode(post.getData(), "US-ASCII")
                     + "&poster=" + URLEncoder.encode(poster)
