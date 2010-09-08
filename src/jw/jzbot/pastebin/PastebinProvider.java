@@ -25,7 +25,7 @@ public interface PastebinProvider
         author,
         /**
          * Indicates that posts can have additional information beyond the post contents
-         * and name. Pastebin.ca's description/question field is an example of this.F
+         * and name. Pastebin.ca's description/question field is an example of this.
          */
         info,
         /**
