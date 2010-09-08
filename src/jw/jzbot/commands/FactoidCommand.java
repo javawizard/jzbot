@@ -259,17 +259,17 @@ public class FactoidCommand implements Command
             
             if (currentList.equals(""))
             {
-            	source.sendMessage("No factoids could be found. " + quotationMessage);
+            	source.sendSpaced("No factoids could be found. " + quotationMessage);
             }
             else if (currentList.length() > source.getProtocolDelimitedLength() || arguments.endsWith(" --"))
             {
                 currentList = PastebinUtils.pastebinNotice(currentList + "\nEnd of factoid list. " + quotationMessage, null);
-                source.sendMessage( "A list of all " + scope + " factoids: " + currentList);
+                source.sendSpaced( "A list of all " + scope + " factoids: " + currentList);
             }
             else
             {
             	source.sendSpaced( "A list of all " + scope + " factoids: " + currentList);
-                source.sendMessage(quotationMessage);
+                source.sendSpaced(quotationMessage);
             }
         }
         if (command.equals("restrict") || command.equals("unrestrict"))
