@@ -14,8 +14,14 @@ from jw.jzbot.configuration.Configuration import VarType
 from jw.jzbot.events import Notify, ScopeListener
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from com.ziclix.python.sql import zxJDBC
+from threading import RLock
 
 
+def init(context):
+    global db
+    db = zxJDBC.connect("jdbc:h2:" + context.storageFolder.getPath() + 
+                     "/quotedb/db", "sa", "", "org.h2.Driver")
+    
 
 
 
