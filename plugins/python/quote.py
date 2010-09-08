@@ -22,6 +22,7 @@ def init(context):
     db = zxJDBC.connect("jdbc:h2:" + context.storageFolder.getPath() + 
                      "/quotedb/db", "sa", "", "org.h2.Driver")
     
+    
 
 
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-CMD="java -server -ea -cp classes:lib/*:storage/lib/*:/usr/share/java/* -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils -Dsun.net.inetaddr.ttl=10 `storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
+CMD="java -server -ea -Xmx32m -cp classes:lib/*:storage/lib/*:/usr/share/java/* -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils -Dsun.net.inetaddr.ttl=10 `cat storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
 echo 
 echo Running with command $CMD
 echo 
