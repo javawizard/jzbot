@@ -264,11 +264,11 @@ public class FactoidCommand implements Command
             else if (currentList.length() > source.getProtocolDelimitedLength() || arguments.endsWith(" --"))
             {
                 currentList = PastebinUtils.pastebinNotice(currentList + "\nEnd of factoid list. " + quotationMessage, null);
-                source.sendSpaced( "A list of all " + scope + " factoids: " + currentList);
+                source.sendSpaced("A list of all " + scope + " factoids: " + currentList);
             }
             else
             {
-            	source.sendSpaced( "A list of all " + scope + " factoids: " + currentList);
+            	source.sendSpaced("A list of all " + scope + " factoids: " + currentList);
                 source.sendSpaced(quotationMessage);
             }
         }
