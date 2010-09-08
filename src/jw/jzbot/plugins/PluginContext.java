@@ -1,5 +1,7 @@
 package jw.jzbot.plugins;
 
+import java.io.File;
+
 import jw.jzbot.storage.Node;
 import jw.jzbot.storage.PluginStorage;
 
@@ -9,6 +11,8 @@ public class PluginContext
     
     public final Node storage;
     
+    public final File storageFolder;
+    
     private PluginStorage pluginStorage;
     
     public PluginContext(Plugin plugin)
@@ -17,6 +21,9 @@ public class PluginContext
         this.plugin = plugin;
         this.pluginStorage = PluginSystem.getStorage(plugin.info.name);
         this.storage = pluginStorage.getNode();
+        this.storageFolder = new File("storage/plugin-storage/" + plugin.info.name);
+        if (!this.storageFolder.exists())
+            this.storageFolder.mkdirs();
     }
     
     /**

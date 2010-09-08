@@ -158,7 +158,8 @@ public class ConfigCommand implements Command
         }
         catch (NoSuchVariableException e)
         {
-            throw new ResponseException("No such variable: " + e.getMessage());
+            throw new ResponseException("No such variable: "
+                + e.getMessage().replace("/", " "));
         }
         catch (IllegalArgumentException e)
         {
