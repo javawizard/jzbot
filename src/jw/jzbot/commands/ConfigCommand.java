@@ -57,8 +57,10 @@ public class ConfigCommand implements Command
              */
             String folderPath = "";
             while (parser.more()
-                && Configuration.exists(scope, filterQuery(parser.observe()))
-                && Configuration.getType(scope, filterQuery(parser.observe())) == VarType.folder)
+                && Configuration.exists(scope, folderPath + "/"
+                    + filterQuery(filterComponent(parser.observe())))
+                && Configuration.getType(scope, folderPath + "/"
+                    + filterQuery(filterComponent(parser.observe()))) == VarType.folder)
             {
                 // We're specifically not filtering for queries here so that it will show
                 // up
@@ -169,6 +171,11 @@ public class ConfigCommand implements Command
         {
             throw new ResponseException(e.getMessage());
         }
+    }
+    
+    private String filterComponent(String component)
+    {
+        return component.replace("/", "");
     }
     
     private String filterQuery(String component)
