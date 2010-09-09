@@ -14,7 +14,7 @@ dependencies: pyjzbot
 from jw.jzbot.configuration import Configuration
 from jw.jzbot.configuration.Configuration import VarType
 from jw.jzbot.events import Notify, ScopeListener
-from jw.jzbot.fact.exceptions import FactoidException, ResponseException
+from jw.jzbot.fact.exceptions import FactoidException
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from com.ziclix.python.sql import zxJDBC
 from threading import RLock
@@ -69,7 +69,7 @@ def addquote(sink, arguments, context):
     quotegroup = arguments.resolveString(0)
     quotetext = arguments.resolveString(1)
     if quotetext.strip() == "":
-        raise ResponseException("You can't add an empty quote")
+        raise FactoidException("You can't add an empty quote")
     with quote_lock:
         if not quotegroup in Configuration.getText(None, 
                              "quote/groupnames").split(" "):
