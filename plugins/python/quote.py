@@ -14,7 +14,7 @@ dependencies: pyjzbot
 from jw.jzbot.configuration import Configuration
 from jw.jzbot.configuration.Configuration import VarType
 from jw.jzbot.events import Notify, ScopeListener
-from jw.jzbot.fact.exceptions import FactoidException
+from jw.jzbot.fact.exceptions import FactoidException, ResponseException
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from com.ziclix.python.sql import zxJDBC
 from threading import RLock
@@ -63,11 +63,14 @@ def addquote(sink, arguments, context):
     group. This function then evaluates to the number that the new quote
     was assigned. Numbering starts at 1 for blank groups. Groups must already
     be present in the quote system configuration before quotes can be added
-    to them; see ~config global quote.
+    to them; see ~config global quote. If the specified quote is empty, a
+    ResponseException will be thrown.
     """
+    quotegroup = arguments.resolveString(0)
+    quotetext = arguments.resolveString(1)
+    if quotetext.strip() == "":
+        raise ResponseException("You can't add an empty quote")
     with quote_lock:
-        quotegroup = arguments.resolveString(0)
-        quotetext = arguments.resolveString(1)
         if not quotegroup in Configuration.getText(None, 
                              "quote/groupnames").split(" "):
             raise FactoidException("The group " + quotegroup
