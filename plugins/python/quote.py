@@ -19,6 +19,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from com.ziclix.python.sql import zxJDBC
 from threading import RLock
 from pyjzbot import makefunction, no_exceptions
+from java.lang.System import currentTimeMillis
 
 quote_lock = RLock()
 
@@ -27,9 +28,13 @@ def execute(*args):
     cursor.execute(*args)
     return cursor
 
+def execute_commit(*args):
+    execute(*args)
+    db.commit()
+
 def add_quote_info(quotegroup, quotenumber, **map):
     for key in map:
-        execute("insert into quoteinfo values (?,?,?,?)", [quotegroup,
+        execute_commit("insert into quoteinfo values (?,?,?,?)", [quotegroup,
                 quotenumber, key, map[key]])
 
 @makefunction
@@ -48,25 +53,25 @@ def addquote(sink, arguments, context):
                              "quote/groupnames").split(" "):
             raise FactoidException("The group " + quotegroup
                                  + " does not exist.")
-        # quotesequence quotegroup nextquote
         next_id_result = execute("select nextquote from quotesequence where "
                                  "quotegroup = ?", [quotegroup]).fetchone()
         if next_id_result is None:
             next_id_result = 0
-            execute("insert into quotesequence values (?, 0)", [quotegroup])
+            execute_commit("insert into quotesequence values (?, 0)", [quotegroup])
         else:
             next_id_result = next_id_result[0]
         next_id_result += 1
-        execute("update quotesequence set nextquote = ? where quotegroup = ?",
+        execute_commit("update quotesequence set nextquote = ? where quotegroup = ?",
                 [next_id_result, quotegroup])
-        execute("insert into quotes values(?, ?, ?, ?)", [quotegroup,
+        execute_commit("insert into quotes values(?, ?, ?, ?)", [quotegroup,
                 next_id_result, quotetext, False])
         add_quote_info(quotegroup, next_id_result, 
                        nick=context.getSender().getNick(), 
                        user=context.getSender().getUsername(), 
                        host=context.getSender().getHostname(), 
                        server=context.getSender().getServerName(), 
-                       scope=context.getCanonicalName())
+                       scope=context.getCanonicalName(),
+                       date=str(currentTimeMillis()))
         sink.write(next_id_result)
 
 @makefunction
@@ -78,8 +83,11 @@ def deletequote(sink, arguments, context):
     information was accidentally quoted, one of the bot's owners should be
     contacted and asked to remove the information from disk.
     """
+    quotegroup = arguments.resolveString(0)
+    quotenumber = int(arguments.resolveString(1))
     with quote_lock:
-        pass
+        execute_commit("update quotes set hidden = true where quotegroup = ? "
+                "and quotenumber = ?", [quotegroup, quotenumber])
 
 @makefunction
 def getquote(sink, arguments, context):
@@ -103,9 +111,9 @@ def getquoteinfo(sink, arguments, context):
     """
     Syntax: {getquoteinfo|<group>|<number>|<key>} -- Gets information about the
     specified quote. <key> specifies the information to retrieve. Valid keys
-    are, at present, nicename, nick, user, host, server, and scope. All of
-    them pertain to the user that created the quote except for scope, which is
-    the scope the user was using at the time they invoked the command.
+    are, at present, nicename, nick, user, host, server, date, and scope. All 
+    of them pertain to the user that created the quote except for scope, which
+    is the scope the user was using at the time they invoked the command.
     """
     quotegroup = arguments.resolveString(0)
     quotenumber = int(arguments.resolveString(1))
@@ -121,10 +129,18 @@ def getquoteinfo(sink, arguments, context):
 @makefunction
 def searchquotes(sink, arguments, context):
     """
-    TODO: write this function
+    Syntax: {searchquotes|<group>|<regex>} -- Evaluates to a space-separated
+    list of the numbers of all of the quotes in the specified group that match
+    the specified regular expression.
     """
+    quotegroup = arguments.resolveString(0)
+    regex = arguments.resolveString(1)
     with quote_lock:
-        pass
+        result = execute("select quotenumber from quotes where quotegroup = ?"
+                         " and quotetext regexp ? and hidden = false order "  
+                         "by quotenumber desc", 
+                         [quotegroup, regex]).fetchall()
+        sink.write(" ".join([str(i[0]) for i in result]))
 
 
 def init(context):
