@@ -33,6 +33,8 @@ public class Folder extends Setting
     
     public Setting getSetting(String name)
     {
+        if (name.startsWith("/"))
+            name = name.substring(1);
         if (name.equals(""))
             return this;
         String[] components = name.split("\\/");
