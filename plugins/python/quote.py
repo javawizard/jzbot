@@ -20,6 +20,9 @@ from com.ziclix.python.sql import zxJDBC
 from threading import RLock
 from pyjzbot import makefunction, no_exceptions
 from java.lang.System import currentTimeMillis
+from java.lang import Thread
+from org.apache.commons.lang.StringEscapeUtils import escapeHtml
+from java.util import Date
 
 quote_lock = RLock()
 
@@ -36,6 +39,22 @@ def add_quote_info(quotegroup, quotenumber, **map):
     for key in map:
         execute_commit("insert into quoteinfo values (?,?,?,?)", [quotegroup,
                 quotenumber, key, map[key]])
+
+def get_quote_data(quotegroup, quotenumber):
+    quotetext = execute("select quotetext from quotes where quotegroup = ? "
+                        "and quotenumber = ?", 
+                        [quotegroup, quotenumber]).fetchone()[0]
+    metadata = dict(execute("select key, value from quoteinfo where "
+                              "quotegroup = ? and quotenumber = ?",
+                              [quotegroup, quotenumber]).fetchall())
+    return quotetext, metadata
+
+def search_quotes(quotegroup, regex):
+    result = execute("select quotenumber from quotes where quotegroup = ?"
+                     " and quotetext regexp ? and hidden = false order "  
+                     "by quotenumber desc", 
+                     [quotegroup, regex]).fetchall()
+    return [i[0] for i in result]
 
 @makefunction
 def addquote(sink, arguments, context):
@@ -136,11 +155,66 @@ def searchquotes(sink, arguments, context):
     quotegroup = arguments.resolveString(0)
     regex = arguments.resolveString(1)
     with quote_lock:
-        result = execute("select quotenumber from quotes where quotegroup = ?"
-                         " and quotetext regexp ? and hidden = false order "  
-                         "by quotenumber desc", 
-                         [quotegroup, regex]).fetchall()
-        sink.write(" ".join([str(i[0]) for i in result]))
+        sink.write(" ".join([str(i) for i in 
+                   search_quotes(quotegroup, regex)]))
+
+
+class HTTPHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        path = self.path
+        path_components = path[1:].split("/")
+        if len(path_components) == 1 and path_components[0] == "":
+            path_components = []
+        if len(path_components) > 0 and path_components[-1] == "":
+            path_components = path_components[:-1]
+        if len(path_components) == 0:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write("""
+            <html><body><b>Group listing is not supported right now.</b>
+            It will be supported at some time in the future.
+            </body></html>
+            """)
+            return
+        elif len(path_components) == 1: # Group listing
+            with quote_lock:
+                quotenumbers = search_quotes(path_components[0], "")
+                # TODO: we need to add paging at some point
+                quotedata = [get_quote_data(path_components[0], quotenumber)
+                             for quotenumber in quotenumbers]
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write("""
+            <html><body><h2>%s</h2><br/>
+            """ % path_components[0]) 
+            for quotetext, quoteinfo in quotedata:
+                self.wfile.write("""
+                %s<br/>
+                <small><font color="#707070">Added by 
+                <font color="#008c00"><b>%s</b></font>
+                 <%s@%s> from %s
+                on 
+                <font color="#0055bb"><b>%s</b></font> 
+                at %s</font></small><br/><br/>
+                """ % (escapeHtml(quotetext), 
+                       escapeHtml(quoteinfo["nick"]),
+                       escapeHtml(quoteinfo["user"]),
+                       escapeHtml(quoteinfo["host"]),
+                       escapeHtml(quoteinfo["server"]),
+                       escapeHtml(Date(long(quoteinfo["date"])).toString()), 
+                       escapeHtml(quoteinfo["scope"])))
+            self.wfile.write("""
+            </body></html>
+            """)
+            return
+        
+        # OLD STUFF
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write("The path is " + self.path)
 
 
 def init(context):
@@ -159,6 +233,17 @@ def init(context):
     Configuration.register(None, "quote/groupnames", "A space-separated list "
                            "of groups that quotes can be added to.",
                            VarType.text, "")
+    Configuration.register(None, "quote/port", "The port to listen for HTTP "
+                           "requests on. If this is unset, the HTTP server "
+                           "will not be started. This only takes effect "
+                           "at restart.", VarType.integer, None)
+    if Configuration.isSet(None, "quote/port"):
+        server = HTTPServer(("", Configuration.getInt(None, "quote/port")), 
+                            HTTPHandler)
+        class ServerThread(Thread):
+            def run(self):
+                server.serve_forever()
+        ServerThread().start()
     
     
     
