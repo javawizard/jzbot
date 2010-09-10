@@ -147,10 +147,24 @@ public class PluginCommand implements Command
                     response = PastebinUtils.pastebinNotice(response, null);
                 source.sendSpaced(response);
             }
+            else if (command.equals("error"))
+            {
+                if (afterCommand.equals(""))
+                    throw new ResponseException("You need to specify the "
+                        + "name of the plugin whose error you want to see.");
+                String traceback = PluginSystem.failedPluginTracebacks.get(afterCommand);
+                if (traceback == null)
+                    throw new ResponseException("The specified plugin did "
+                        + "not encounter an error while loading.");
+                source
+                        .sendSpaced("Details of the error encountering "
+                            + "while the plugin loaded: "
+                            + PastebinUtils.pastebinNotice(traceback));
+            }
             else
             {
                 throw new ResponseException("Invalid plugin command. Try 'plugin "
-                    + "<list|enable|disable|info|delete|undelete>'");
+                    + "<list|enable|disable|info|delete|undelete|error>'");
             }
         }
     }

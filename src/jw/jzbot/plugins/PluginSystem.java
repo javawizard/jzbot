@@ -1,6 +1,8 @@
 package jw.jzbot.plugins;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,6 +45,9 @@ public class PluginSystem
     
     public static Set<String> failedPluginNames = new TreeSet<String>();
     
+    public static Map<String, String> failedPluginTracebacks =
+            new HashMap<String, String>();
+    
     private PluginSystem()
     {
         throw new RuntimeException("You're not supposed to create "
@@ -78,7 +83,7 @@ public class PluginSystem
     {
         for (PluginStorage storage : JZBot.storage.getPlugins().isolate())
         {
-            if(storage.isDeleteOnStartup())
+            if (storage.isDeleteOnStartup())
                 JZBot.storage.getPlugins().remove(storage);
         }
     }
@@ -86,7 +91,7 @@ public class PluginSystem
     static PluginStorage getStorage(String name)
     {
         PluginStorage p = JZBot.storage.getPlugin(name);
-        if(p == null)
+        if (p == null)
         {
             p = JZBot.storage.createPlugin();
             p.setName(name);
@@ -182,7 +187,7 @@ public class PluginSystem
                      * The plugin has already been activated.
                      */
                     continue;
-                if(failedPluginNames.contains(plugin.info.name))
+                if (failedPluginNames.contains(plugin.info.name))
                     /*
                      * We already tried to load this plugin and it failed
                      */
@@ -213,7 +218,10 @@ public class PluginSystem
                 }
                 catch (Throwable e)
                 {
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
                     failedPluginNames.add(plugin.info.name);
+                    failedPluginTracebacks.put(plugin.info.name, sw.toString());
                     log(null, true, "Exception while loading plugin " + plugin.info.name
                         + ": " + e.getClass().getName() + ": " + e.getMessage());
                     e.printStackTrace();
