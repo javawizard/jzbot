@@ -197,9 +197,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 %s<br/>
                 <small><font color="#707070">Added by 
                 <font color="#008c00"><b>%s</b></font>
-                 <%s@%s> from %s
-                on 
-                <font color="#0055bb"><b>%s</b></font> 
+                 &lt;%s@%s&gt; from %s
+                on <font color="#0055bb"><b>%s</b></font> 
                 at %s</font></small><br/><br/>
                 """ % (escapeHtml(quotetext), 
                        escapeHtml(quoteinfo["nick"]),
