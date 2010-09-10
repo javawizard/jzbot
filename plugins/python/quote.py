@@ -56,6 +56,26 @@ def search_quotes(quotegroup, regex):
                      [quotegroup, regex]).fetchall()
     return [i[0] for i in result]
 
+def get_display_quotes(quotegroup, regex, offset, limit):
+    textresult = execute("select quotenumber, quotetext from quotes where "
+                         "quotegroup = ? and quotetext regexp ? and hidden "
+                         "= false order by quotenumber desc limit ? offset ?", 
+                         [quotegroup, regex, limit, offset])
+    inforesult = execute("select quotenumber, key, value from quoteinfo "
+                         "where quotenumber in (select quotenumber from "
+                         "quotes where quotegroup = ? and quotetext regexp "
+                         "? and hidden = false limit ? offset ?)", 
+                         [quotegroup, regex, limit, offset])
+    info_map_map = {} # Maps quote numbers to a map of their info
+    result = [] # a list of tuples: (number, text, info map)
+    for quotenumber, quotetext in textresult:
+        info_map = {}
+        info_map_map[quotenumber] = info_map
+        result.append((quotenumber, quotetext, info_map))
+    for quotenumber, key, value in inforesult:
+        info_map_map[quotenumber][key] = value
+    return result
+
 @makefunction
 def addquote(sink, arguments, context):
     """
@@ -185,12 +205,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             print "Request is for group listing. Acquiring lock..."
             with quote_lock:
                 print "Got quote lock. Getting quote list..."
-                quotenumbers = search_quotes(path_components[0], "")
-                # TODO: we need to add paging at some point
-                print "Getting information for each quote..."
-                quotedata = [(quotenumber, get_quote_data(path_components[0], 
-                                                        quotenumber))
-                             for quotenumber in quotenumbers]
+                quotedata = get_display_quotes(path_components[0], "", 0, 
+                                               1000000000)
             print "Got list from database. Formatting and sending..."
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -198,8 +214,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.wfile.write("""
             <html><body><h2>%s</h2><br/>
             """ % path_components[0]) 
-            for quotenumber, data in quotedata:
-                quotetext, quoteinfo = data
+            for quotenumber, quotetext, quoteinfo in quotedata:
                 self.wfile.write("""
                 %s<br/>
                 <small><font color="#707070">Quote
