@@ -60,8 +60,7 @@ public class FacebookConnection implements Connection
     @Override
     public int getProtocolDelimitedLength()
     {
-        // TODO: figure out what the maximum length of a wall post or comment or w/e is.
-        return 300;
+        return 420;
     }
     
     @Override

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.JZBot;
+import jw.jzbot.configuration.Configuration;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
@@ -195,9 +196,15 @@ public class IrcConnection extends PircBot implements Connection
     @Override
     public void connect() throws IOException, IrcException
     {
-        setLogin(context.getNick());
-        setName(context.getNick());
-        connect(context.getServer(), context.getPort(), context.getPassword());
+        String scope = "@" + context.getServerName();
+        Boolean useConfiguration = (Configuration.isSet(scope, "irc/server"));
+        String server = (useConfiguration) ? Configuration.getText(scope, "irc/server") : context.getServer();
+        int port = (useConfiguration) ? Configuration.getInt(scope, "irc/port") : context.getPort();
+        String password = (useConfiguration) ? Configuration.getText(scope, "irc/password") : context.getPassword();
+        String nick = (useConfiguration) ? Configuration.getText(scope, "irc/nick") : context.getNick();
+        setLogin(nick);
+        setName(nick);
+        connect(server, port, password);
     }
     
     private ConnectionContext context;

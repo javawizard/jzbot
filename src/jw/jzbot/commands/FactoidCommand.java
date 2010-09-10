@@ -525,13 +525,35 @@ public class FactoidCommand implements Command
             processed = true;
             doFactoidSearch(pm, sender, source, afterCommand, scope, server, s, channel, c);
         }
+        if (command.equals("explain"))
+        {
+            processed = true;
+            if (afterCommand.equals(""))
+                throw new ResponseException("You need to specify the factoid");
+            Factoid f = null;
+            if (scope == FactScope.channel)
+                f = c.getFactoid(afterCommand);
+            if (scope == FactScope.server)
+                f = s.getFactoid(afterCommand);
+            if (scope == FactScope.global)
+                f = JZBot.storage.getFactoid(afterCommand);
+            if (f == null)
+                throw new ResponseException("No such factoid: \"" + afterCommand + "\" in this scope.");
+            String explanation = FactParser.explain(f.getValue(), f.getName());
+            StringBuffer buffer = new StringBuffer();
+            buffer.append("Factoid " + f.getName() + ": " + f.getValue());
+            buffer.append("\n\nExplanation for this factoid:\n\n");
+            buffer.append(explanation);
+            source.sendMessage("Explanation of this factoid: "
+                    + PastebinUtils.pastebinNotice(buffer.toString()));
+        }
         if (!processed)
         {
             throw new ResponseException(
                     "Invalid factoid command. Try 'factoid [global|server] "
                         + "<list|create|replace|delete|literal|info|pack"
                         + "|restrict|unrestrict|isrestricted|attribute"
-                        + "|unattribute|function|scope|locate|search>'");
+                        + "|unattribute|function|scope|locate|search|explain>'");
         }
     }
     
