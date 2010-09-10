@@ -1,7 +1,10 @@
 package jw.jzbot.protocols.irc;
 
+import jw.jzbot.ConnectionWrapper;
+import jw.jzbot.JZBot;
 import jw.jzbot.configuration.Configuration;
 import jw.jzbot.configuration.VarFilter;
+import jw.jzbot.configuration.VarListener;
 import jw.jzbot.configuration.Configuration.VarType;
 import jw.jzbot.events.Notify;
 import jw.jzbot.events.ScopeListener;
@@ -76,5 +79,24 @@ public class IrcProtocol implements Protocol
             + "replace \"%password%\" in this string. For example, this could be "
             + "PRIVMSG NickServ :identify %password%", VarType.guard, null);
         Configuration.addFilter(scope, "irc/port", new PortRangeFilter());
+        Configuration.addListener(scope, "irc/nick", new VarListener()
+        {
+            
+            @Override
+            public void changed(String scope, String name)
+            {
+                ConnectionWrapper con = JZBot.getConnection(scope.substring(1));
+                try
+                {
+                    IrcConnection ircCon = (IrcConnection) con.getConnection();
+                    if (ircCon.isUsingNewConfig && Configuration.isSet(scope, name))
+                        con.getConnection().changeNick(Configuration.getText(scope, name));
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

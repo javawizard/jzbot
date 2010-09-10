@@ -15,6 +15,7 @@ import org.jibble.pircbot.PircBot;
 
 public class IrcConnection extends PircBot implements Connection
 {
+    public boolean isUsingNewConfig = false;
     @Override
     public void changeNick(String newNick)
     {
@@ -198,6 +199,7 @@ public class IrcConnection extends PircBot implements Connection
     {
         String scope = "@" + context.getServerName();
         Boolean useConfiguration = (Configuration.isSet(scope, "irc/server"));
+        this.isUsingNewConfig = useConfiguration;
         String server = (useConfiguration) ? Configuration.getText(scope, "irc/server") : context.getServer();
         int port = (useConfiguration) ? Configuration.getInt(scope, "irc/port") : context.getPort();
         String password = (useConfiguration) ? Configuration.getText(scope, "irc/password") : context.getPassword();
