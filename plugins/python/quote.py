@@ -164,6 +164,7 @@ def searchquotes(sink, arguments, context):
 
 class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
+        print "Servicing quotes page HTTP get request"
         path = self.path
         path_components = path[1:].split("/")
         if len(path_components) == 1 and path_components[0] == "":
@@ -181,12 +182,15 @@ class HTTPHandler(BaseHTTPRequestHandler):
             """)
             return
         elif len(path_components) == 1: # Group listing
+            print "Request is for group listing. Acquiring lock..."
             with quote_lock:
+                print "Got quote lock. Getting quote list..."
                 quotenumbers = search_quotes(path_components[0], "")
                 # TODO: we need to add paging at some point
                 quotedata = [(quotenumber, get_quote_data(path_components[0], 
                                                         quotenumber))
                              for quotenumber in quotenumbers]
+            print "Got list from database. Formatting and sending..."
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -214,6 +218,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.wfile.write("""
             </body></html>
             """)
+            print "Quotes page done!"
             return
         
         # OLD STUFF
