@@ -57,15 +57,18 @@ def search_quotes(quotegroup, regex):
     return [i[0] for i in result]
 
 def get_display_quotes(quotegroup, regex, offset, limit):
+    print "get_display_quotes: Getting textresults..."
     textresult = execute("select quotenumber, quotetext from quotes where "
                          "quotegroup = ? and quotetext regexp ? and hidden "
                          "= false order by quotenumber desc limit ? offset ?", 
                          [quotegroup, regex, limit, offset])
+    print "get_display_quotes: Getting inforesults..."
     inforesult = execute("select quotenumber, key, value from quoteinfo "
                          "where quotenumber in (select quotenumber from "
                          "quotes where quotegroup = ? and quotetext regexp "
                          "? and hidden = false limit ? offset ?)", 
                          [quotegroup, regex, limit, offset])
+    print "get_display_quotes: compiling maps..."
     info_map_map = {} # Maps quote numbers to a map of their info
     result = [] # a list of tuples: (number, text, info map)
     for quotenumber, quotetext in textresult:
