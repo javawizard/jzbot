@@ -187,6 +187,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 print "Got quote lock. Getting quote list..."
                 quotenumbers = search_quotes(path_components[0], "")
                 # TODO: we need to add paging at some point
+                print "Getting information for each quote..."
                 quotedata = [(quotenumber, get_quote_data(path_components[0], 
                                                         quotenumber))
                              for quotenumber in quotenumbers]
