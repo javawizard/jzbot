@@ -184,7 +184,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
             with quote_lock:
                 quotenumbers = search_quotes(path_components[0], "")
                 # TODO: we need to add paging at some point
-                quotedata = [get_quote_data(path_components[0], quotenumber)
+                quotedata = [(quotenumber, get_quote_data(path_components[0], 
+                                                        quotenumber))
                              for quotenumber in quotenumbers]
             self.send_response(200)
             self.send_header("Content-type", "text/html")
@@ -192,15 +193,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.wfile.write("""
             <html><body><h2>%s</h2><br/>
             """ % path_components[0]) 
-            for quotetext, quoteinfo in quotedata:
+            for quotenumber, data in quotedata:
+                quotetext, quoteinfo = data
                 self.wfile.write("""
                 %s<br/>
-                <small><font color="#707070">Added by 
+                <small><font color="#707070">Quote
+                #%s added by 
                 <font color="#008c00"><b>%s</b></font>
                  &lt;%s@%s&gt; from %s
                 on <font color="#0055bb"><b>%s</b></font> 
                 at %s</font></small><br/><br/>
-                """ % (escapeHtml(quotetext), 
+                """ % (escapeHtml(quotetext),
+                       str(quotenumber), 
                        escapeHtml(quoteinfo["nick"]),
                        escapeHtml(quoteinfo["user"]),
                        escapeHtml(quoteinfo["host"]),
