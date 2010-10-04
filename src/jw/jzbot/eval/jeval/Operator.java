@@ -27,8 +27,7 @@ public enum Operator
     END(-1, 0, null, null, null)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             throw new RuntimeException("END is a dummy operation");
         }
@@ -39,8 +38,7 @@ public enum Operator
     TERNARY(0, 3, "?", null, null)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return (value1.signum() != 0) ? value2 : value3;
         }
@@ -51,8 +49,7 @@ public enum Operator
     AND(0, 2, "&&", Type.BOOLEAN, Type.BOOLEAN)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.signum() != 0 && value2.signum() != 0 ? BigDecimal.ONE
                     : BigDecimal.ZERO;
@@ -64,8 +61,7 @@ public enum Operator
     OR(0, 2, "||", Type.BOOLEAN, Type.BOOLEAN)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.signum() != 0 || value2.signum() != 0 ? BigDecimal.ONE
                     : BigDecimal.ZERO;
@@ -77,11 +73,9 @@ public enum Operator
     GT(1, 2, ">", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) > 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) > 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -90,11 +84,9 @@ public enum Operator
     GE(1, 2, ">=", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) >= 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) >= 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -103,11 +95,9 @@ public enum Operator
     LT(1, 2, "<", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) < 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) < 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -116,11 +106,9 @@ public enum Operator
     LE(1, 2, "<=", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) <= 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) <= 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -129,11 +117,9 @@ public enum Operator
     EQ(1, 2, "==", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) == 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) == 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -142,11 +128,9 @@ public enum Operator
     NE(1, 2, "!=", Type.BOOLEAN, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
-            return value1.compareTo(value2) != 0 ? BigDecimal.ONE
-                    : BigDecimal.ZERO;
+            return value1.compareTo(value2) != 0 ? BigDecimal.ONE : BigDecimal.ZERO;
         }
     },
     /**
@@ -155,8 +139,7 @@ public enum Operator
     ADD(2, 2, "+", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.add(value2);
         }
@@ -167,8 +150,7 @@ public enum Operator
     SUB(2, 2, "-", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.subtract(value2);
         }
@@ -179,8 +161,7 @@ public enum Operator
     DIV(3, 2, "/", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.divide(value2, defaultContext);
         }
@@ -188,8 +169,7 @@ public enum Operator
     DIVC(3, 2, "÷", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.divide(value2, defaultContext);
         }
@@ -200,8 +180,7 @@ public enum Operator
     REMAINDER(3, 2, "%", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.remainder(value2, defaultContext);
         }
@@ -212,8 +191,7 @@ public enum Operator
     MUL(3, 2, "*", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.multiply(value2, defaultContext);
         }
@@ -224,8 +202,7 @@ public enum Operator
     NEG(4, 1, "-", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.negate();
         }
@@ -236,8 +213,7 @@ public enum Operator
     PLUS(4, 1, "+", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1;
         }
@@ -248,8 +224,7 @@ public enum Operator
     ABS(4, 1, " abs ", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1.abs();
         }
@@ -260,8 +235,7 @@ public enum Operator
     POW(4, 2, " pow ", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             try
             {
@@ -279,16 +253,15 @@ public enum Operator
     POWC(4, 2, "^", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             try
             {
-                return value1.pow(value2.intValueExact(), defaultContext);
+                return value1.pow(value2.intValue(), defaultContext);
             }
             catch (ArithmeticException ae)
             {
-                throw new RuntimeException("powc argument: " + ae.getMessage());
+                throw new RuntimeException("powc argument: " + ae.getMessage(), ae);
             }
         }
     },
@@ -298,21 +271,19 @@ public enum Operator
     INT(4, 1, "int ", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return new BigDecimal(value1.toBigInteger());
         }
     },
     /**
-     * No operation - used internally when expression contains only a reference
-     * to a variable.
+     * No operation - used internally when expression contains only a reference to a
+     * variable.
      */
     NOP(4, 1, "", Type.ARITHMETIC, Type.ARITHMETIC)
     {
         @Override
-        BigDecimal perform(BigDecimal value1, BigDecimal value2,
-                BigDecimal value3)
+        BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3)
         {
             return value1;
         }
@@ -325,8 +296,8 @@ public enum Operator
     final Type resultType;
     final Type operandType;
     
-    Operator(final int precedence, final int numberOfOperands,
-            final String string, final Type resultType, final Type operandType)
+    Operator(final int precedence, final int numberOfOperands, final String string,
+            final Type resultType, final Type operandType)
     {
         this.precedence = precedence;
         this.numberOfOperands = numberOfOperands;
@@ -335,6 +306,5 @@ public enum Operator
         this.operandType = operandType;
     }
     
-    abstract BigDecimal perform(BigDecimal value1, BigDecimal value2,
-            BigDecimal value3);
+    abstract BigDecimal perform(BigDecimal value1, BigDecimal value2, BigDecimal value3);
 }
