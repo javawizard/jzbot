@@ -42,7 +42,12 @@ variables = [
      "channel. Such information will be discarded if this is unset."),
     (bool, "proxytrace", False, "True to trace all ProxyStorage calls, false"
      "to not do any tracing."),
-    
+    (bool, "thegame", True, "True to respond to all private messages "
+     "containing \"the game\" with an additional line saying \"/me just lost "
+     "the game\". This line will be sent before the response to the private "
+     "message. This does nothing at channels; see \"~regex add\" for a way to "
+     "do it at channels. This is intended mostly as a hack until I can "
+     "properly implement global regexes.")
 ]
 
 for var_type, name, default, description in variables:

@@ -2573,6 +2573,10 @@ public class JZBot
     {
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
+        ConnectionWrapper con = getConnection(serverName);
+        if (message.toLowerCase().contains("the game")
+            && Configuration.getBool(null, "thegame"))
+            con.sendAction(sender, "just lost the game");
         String userSetScope = null;
         synchronized (pmUserScopeLock)
         {
@@ -2583,7 +2587,6 @@ public class JZBot
                         .currentTimeMillis());
             }
         }
-        ConnectionWrapper con = getConnection(serverName);
         try
         {
             ChannelScope pseudoTarget = new ChannelScope(serverName, null);
