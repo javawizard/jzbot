@@ -2574,9 +2574,18 @@ public class JZBot
         TimedKillThread tkt = new TimedKillThread(Thread.currentThread());
         tkt.start();
         ConnectionWrapper con = getConnection(serverName);
-        if (message.toLowerCase().contains("the game")
-            && Configuration.getBool(null, "thegame"))
-            con.sendAction(sender, "just lost the game");
+        if (Configuration.getBool(null, "thegame"))
+        {
+            String[] phrases = Configuration.getText(null, "gametext").split("\\|");
+            for (String phrase : phrases)
+            {
+                if (message.contains(phrase))
+                {
+                    con.sendAction(sender, "just lost the game");
+                    break;
+                }
+            }
+        }
         String userSetScope = null;
         synchronized (pmUserScopeLock)
         {

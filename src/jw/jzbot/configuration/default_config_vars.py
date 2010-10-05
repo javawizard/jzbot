@@ -43,11 +43,15 @@ variables = [
     (bool, "proxytrace", False, "True to trace all ProxyStorage calls, false"
      "to not do any tracing."),
     (bool, "thegame", True, "True to respond to all private messages "
-     "containing \"the game\" with an additional line saying \"/me just lost "
+     "containing any phrases in the config var \"gametext\" with an "
+     "additional line saying \"/me just lost "
      "the game\". This line will be sent before the response to the private "
      "message. This does nothing at channels; see \"~regex add\" for a way to "
      "do it at channels. This is intended mostly as a hack until I can "
-     "properly implement global regexes.")
+     "properly implement global regexes."),
+    (text, "gametext", "the game", "A list of phrases that the bot will lose "
+     "the game to, each separated by a | character. See the config variable "
+     "\"thegame\" for more information on what this does.")
 ]
 
 for var_type, name, default, description in variables:
