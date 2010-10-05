@@ -713,7 +713,7 @@ public class XmppConnection implements Connection
         if (arguments.length() == 0)
             throw new FactoidException("Need to specify a command to run. See "
                 + "http://code.google.com/p/jwutils/source/browse/trunk/projects"
-                + "/jzbot2-old/src/jw/jzbot/protocols/xmpp/XmppProtocol.java and "
+                + "/jzbot2-old/src/jw/jzbot/protocols/xmpp/XmppConnection.java and "
                 + "search for \"processProtocolFunction\" for a list of commands.");
         if (arguments.getString(0).equals("account-to-nick"))
         {
