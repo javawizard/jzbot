@@ -196,7 +196,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             path_components = path_components[:-1]
         if len(path_components) == 0:
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
+            self.send_header("Content-Type", "text/html")
             self.end_headers()
             self.wfile.write("""
             <html><body><b>Group listing is not supported right now.</b>
@@ -212,7 +212,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                                                1000000000)
             print "Got list from database. Formatting and sending..."
             self.send_response(200)
-            self.send_header("Content-type", "text/html")
+            self.send_header("Content-Type", "text/html")
             self.end_headers()
             self.wfile.write("""
             <html><body><h2>%s</h2><br/>
