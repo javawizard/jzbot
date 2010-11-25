@@ -12,6 +12,7 @@ from libautobus import AutobusConnection
 from pyjzbot import makecommand
 import re
 import math
+import os
 
 @makecommand
 def monitor(server, channel, pm, sender, source, arguments):
@@ -19,6 +20,7 @@ def monitor(server, channel, pm, sender, source, arguments):
     print "host is " + str(bus.host)
     print "input_thread is " + str(bus.input_thread)
     print "is_shut_down is " + str(bus.is_shut_down)
+    print "AUTOBUS_SERVER is " + str(os.getenv(""))
     interfaces = bus["autobus"].list_interfaces()
     stat_machines = []
     for interface in interfaces:
