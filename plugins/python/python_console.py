@@ -1,5 +1,5 @@
 
-from __future__ import with_statement
+from __future__ import with_statement #@UnresolvedImport
 
 """ jzbot
 This plugin starts a socket listening on a specific port. When a connection
@@ -15,9 +15,9 @@ from java.io import File, FileInputStream, DataInputStream, DataOutputStream
 from java.lang import String
 from org.python.util import InteractiveConsole
 from org.python.core import Py
-from threading import RLock
+from threading import RLock #@UnresolvedImport
 from jw.jzbot import JZBot
-import traceback
+import traceback #@UnresolvedImport
 
 sessions = []
 
@@ -135,7 +135,7 @@ def init(context):
     context.log("storage/python_console.props exists; proceeding with load")
     props = Properties()
     props.load(FileInputStream(File("storage/python_console.props"))) 
-    server = ServerSocket(int(props["port"]), 20, 
+    server = ServerSocket(int(props["port"]), 20,
                           InetAddress.getByName(props["host"])
                           if "host" in props else None)
     class ServerThread(Thread):

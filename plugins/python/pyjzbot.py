@@ -29,6 +29,14 @@ def add_command(name, function):
     _jzbot.JZBot.installCommand(TheCommand())
 
 
+def makecommand(function):
+    """
+    A version of add_command that can decorate a function, and will cause that
+    function to be registered as a command as its name.
+    """
+    add_command(function.__name__, function)
+    return function
+
 class _HelpNode(object):
     def __init__(self, pages, name):
         self.pages = pages

@@ -3,6 +3,7 @@
 	<name>jzbot2-old</name>
 	<comment></comment>
 	<projects>
+		<project>afn-python</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

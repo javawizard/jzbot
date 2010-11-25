@@ -1,4 +1,4 @@
-from __future__ import with_statement
+from __future__ import with_statement #@UnresolvedImport
 
 """ jzbot
 Adds a command, jzbot-javadoc, that invokes ./javadoc in the jzbot folder to
@@ -11,12 +11,12 @@ jzbot-javadoc, that can be used to configure the plugin.
 from jw.jzbot import Command, JZBot
 from jw.jzbot.fact import Function, FactParser
 from jw.jzbot.configuration import Configuration
-from jw.jzbot.configuration.Configuration import VarType
+from jw.jzbot.configuration.Configuration import VarType #@UnresolvedImport
 from jw.jzbot.pastebin.PastebinUtils import pastebinNotice
 from jw.jzbot.utils.Utils import threadedCopy
 from java.io import File, ByteArrayOutputStream
 from java.lang import Runtime, String
-from threading import RLock
+from threading import RLock #@UnresolvedImport
 
 generate_lock = RLock()
 exec_process = getattr(Runtime.getRuntime(), "exec") # Hack to get around
@@ -68,10 +68,10 @@ class JavadocFunction(Function):
 def init(context):
     Configuration.register(None, "jzbot-javadoc", "This folder contains "
                            "configuration variables related to the "
-                           "jzbot-javadoc plugin.", VarType.folder, None)
+                           "jzbot-javadoc plugin.", VarType.folder, None) #@UndefinedVariable
     Configuration.register(None, "jzbot-javadoc/superop", "True if only "
                            "superops can invoke the command ~jzbot-javadoc, " 
-                           "false if anyone can invoke it.", VarType.bool,
+                           "false if anyone can invoke it.", VarType.bool, #@UndefinedVariable
                            "1")
     JZBot.installCommand(JavadocCommand())
     FactParser.installFunction("jzbot-javadoc", JavadocFunction())
