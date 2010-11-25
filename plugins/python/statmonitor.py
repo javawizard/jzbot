@@ -13,6 +13,7 @@ from pyjzbot import makecommand
 import re
 import math
 import os
+from java.lang import System
 
 @makecommand
 def monitor(server, channel, pm, sender, source, arguments):
@@ -68,5 +69,6 @@ def create_bar(colors, percents, width=30):
 def init(context):
     global bus
     print "AUTOBUS_SERVER: " + str(os.getenv("AUTOBUS_SERVER"))
+    print "AUTOBUS_SERVER: " + str(System.getenv("AUTOBUS_SERVER"))
     bus = AutobusConnection()
     bus.start_connecting()
