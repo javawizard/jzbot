@@ -67,5 +67,6 @@ def create_bar(colors, percents, width=30):
 
 def init(context):
     global bus
+    print "AUTOBUS_SERVER: " + str(os.getenv("AUTOBUS_SERVER"))
     bus = AutobusConnection()
     bus.start_connecting()
