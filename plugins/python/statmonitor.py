@@ -16,6 +16,7 @@ import math
 @makecommand
 def monitor(server, channel, pm, sender, source, arguments):
     print "bus is " + str(bus)
+    print "host is " + str(bus.host)
     print "input_thread is " + str(bus.input_thread)
     print "is_shut_down is " + str(bus.is_shut_down)
     interfaces = bus["autobus"].list_interfaces()
