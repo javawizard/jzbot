@@ -30,7 +30,8 @@ def monitor(server, channel, pm, sender, source, arguments):
             if "." not in name:
                 stat_machines.append(name)
     source.sendMessage("\x02CPU:\x0f \x0302user\x0f \x0311system\x0f\x02\x0f "
-            "\x02Memory:\x0f \x0303resident\x0f \x0309buffers/cached\x0f\x02\x0f")
+            "\x02Memory:\x0f \x0303resident\x0f \x0309buffers/cached\x0f\x02\x0f "
+            "\x02Swap:\x0f \x0306used\x0f\x02\x0f")
     if len(stat_machines) == 0:
         source.sendMessage("No machines currently providing stats.")
     for machine in stat_machines:
@@ -38,7 +39,16 @@ def monitor(server, channel, pm, sender, source, arguments):
         if stats is None:
             continue
         user, system = stats["cpu"]
-        source.sendMessage(create_bar([2, 11], [user, system]) + "   " + machine) 
+        cpu_bar = create_bar([2, 11], [user, system]) + "   "
+        memory_bar = ""
+        swap_bar = ""
+        if "memory" in stats:
+            (resident, buffers, cached, free, total, swap, swapfree,
+                    swaptotal) = stats["memory"]
+            memory_bar = create_bar([3, 9], [(float(resident) / total) * 100,
+                    ((float(buffers) + cached) / total) * 100]) + "   "
+            swap_bar = create_bar([6], [(float(swapfree) / swaptotal) * 100])
+        source.sendMessage(cpu_bar + memory_bar + swap_bar + machine) 
 
 def create_bar(colors, percents, width=30):
     """
