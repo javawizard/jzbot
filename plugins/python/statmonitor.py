@@ -15,6 +15,9 @@ import math
 
 @makecommand
 def monitor(server, channel, pm, sender, source, arguments):
+    print "bus is " + str(bus)
+    print "input_thread is " + str(bus.input_thread)
+    print "is_shut_down is " + str(bus.is_shut_down)
     interfaces = bus["autobus"].list_interfaces()
     stat_machines = []
     for interface in interfaces:
@@ -62,5 +65,4 @@ def create_bar(colors, percents, width=30):
 def init(context):
     global bus
     bus = AutobusConnection()
-    
     bus.start_connecting()
