@@ -47,7 +47,7 @@ def monitor(server, channel, pm, sender, source, arguments):
                     swaptotal) = stats["memory"]
             memory_bar = create_bar([3, 9], [(float(resident) / total) * 100,
                     ((float(buffers) + cached) / total) * 100]) + "   "
-            swap_bar = create_bar([6], [(float(swap) / swaptotal) * 100])
+            swap_bar = create_bar([6], [(float(swap) / swaptotal) * 100]) + "   "
         source.sendMessage(cpu_bar + memory_bar + swap_bar + machine) 
 
 def create_bar(colors, percents, width=30):
