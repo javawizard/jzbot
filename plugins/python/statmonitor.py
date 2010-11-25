@@ -68,7 +68,5 @@ def create_bar(colors, percents, width=30):
 
 def init(context):
     global bus
-    print "AUTOBUS_SERVER: " + str(os.getenv("AUTOBUS_SERVER"))
-    print "AUTOBUS_SERVER: " + str(System.getenv("AUTOBUS_SERVER"))
-    bus = AutobusConnection()
+    bus = AutobusConnection("spiro.afn")
     bus.start_connecting()
