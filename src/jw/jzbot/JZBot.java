@@ -998,6 +998,8 @@ public class JZBot
         System.out.println("--- Stats ---");
         System.out.println("JVM path: " + System.getProperty("java.home"));
         System.out.println("AUTOBUS_SERVER env: " + System.getenv("AUTOBUS_SERVER"));
+        System.out.println("autobus.server sysprop: "
+            + System.getProperty("autobus.server"));
         System.out.println();
         if (args.length > 0)
         {
