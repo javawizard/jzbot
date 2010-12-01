@@ -21,7 +21,7 @@ def monitor(server, channel, pm, sender, source, arguments):
     print "host is " + str(bus.host)
     print "input_thread is " + str(bus.input_thread)
     print "is_shut_down is " + str(bus.is_shut_down)
-    print "AUTOBUS_SERVER is " + str(os.getenv(""))
+    print "AUTOBUS_SERVER is " + str(os.getenv("AUTOBUS_SERVER"))
     interfaces = bus["autobus"].list_interfaces()
     stat_machines = []
     for interface in interfaces:
@@ -31,7 +31,8 @@ def monitor(server, channel, pm, sender, source, arguments):
                 stat_machines.append(name)
     source.sendMessage("\x02CPU:\x0f \x0302user\x0f \x0311system\x0f\x02\x0f "
             "\x02Memory:\x0f \x0303resident\x0f \x0309buffers/cached\x0f\x02\x0f "
-            "\x02Swap:\x0f \x0306used\x0f\x02\x0f")
+            "\x02Swap:\x0f \x0306used\x0f\x02\x0f -- Make sure you have color "
+            "enabled so you can see the stats properly.")
     if len(stat_machines) == 0:
         source.sendMessage("No machines currently providing stats.")
     for machine in stat_machines:
