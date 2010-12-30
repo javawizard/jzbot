@@ -150,8 +150,8 @@ public class FactParser
                     currentLiteral = init(new Literal(), name, stack.at() - indexOffset);
                     currentArgument.add(currentLiteral);
                 }
-                char theChar = getEscapedChar(stack.next());
-                if (theChar == '[')
+                String theChar = getEscapedChar(stack.next());
+                if ("[".equals(theChar))
                 {
                     char v;
                     while ((v = stack.next()) != ']')
@@ -159,7 +159,7 @@ public class FactParser
                         currentLiteral.append(v);
                     }
                 }
-                else if (theChar != 0)
+                else if (theChar != null)
                     currentLiteral.append(theChar);
             }
             else if (c == '%'/* || c == '$' */)
@@ -260,29 +260,31 @@ public class FactParser
      *            The special character
      * @return The corresponding character
      */
-    private static char getEscapedChar(char c)
+    private static String getEscapedChar(char c)
     {
         switch (c)
         {
             case 'n':
-                return '\n';
+                return "\n";
             case 'r':
-                return '\r';
+                return "\r";
             case 'p':
-                return '\u000f';
+                return "\u000f";
             case 'b':
-                return '\u0002';
+                return "\u0002";
             case 'u':
-                return '\u001f';
+                return "\u001f";
             case 'i':
-                return '\u0016';
+                return "\u0016";
             case 'c':
-                return '\u0003';
+                return "\u0003";
+            case '0':
+                return "\u0000";
             case 'x':
             case ' ':
-                return 0;
+                return null;
         }
-        return c;
+        return "" + c;
     }
     
     public static void installFunction(String name, Function function)
