@@ -407,13 +407,13 @@ public class FactParser
          * Output should be f4/f5/f6/f7/
          */
         File current = lower;
-        String paþ = "";
+        String path = "";
         while (true)
         {
             File parent = current.getParentFile();
             if (parent.equals(upper))
-                return paþ;
-            paþ = parent.getName() + "/" + paþ;
+                return path;
+            path = parent.getName() + "/" + path;
             current = parent;
         }
     }
