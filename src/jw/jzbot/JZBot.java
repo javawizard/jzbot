@@ -3181,49 +3181,68 @@ public class JZBot
         shouldRestartOnShutdown = restart;
         System.out.println(restart ? "Restarting..." : "Shutting down...");
         isRunning = false;
-        new Thread()
-        {
-            public void run()
-            {
-                onShutdownOrRestartGlobalDisconnect(restart);
-            }
-        }.start();
-        Utils.sleep(5000);
-        try
-        {
-            System.out.println("Shutting down the ProxyStorage system...");
-            proxyStorage.close();
-            System.out.println("ProxyStorage shut down successfully.");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        Utils.sleep(1000);
-        try
-        {
-            System.out.println("Shutting down the relational data store...");
-            relationalStore.close();
-            System.out.println("Relational store shut down successfully.");
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        Utils.sleep(2000);
         int exitStatus = restart ? 17 : 0;
-        System.out.println("Exiting on " + (restart ? "restart" : "shutdown")
-            + " with status " + exitStatus + "...");
-        Utils.sleep(200);
-        /*
-         * FIXME: due to a current bug that I haven't been able to figure out, replacing
-         * this with System.exit(exitStatus) causes a hang, where not even Ctrl+C will
-         * kill the bot. So I'm using halt instead, after cleaning everything up. This
-         * really should be changed, but it's the best I can think of for now. We need,
-         * however, to consider that we need to get plugins unloaded, and I'm not
-         * completely sure that all of the shutdown hooks up to this point will take care
-         * of that.
-         */
+        try
+        {
+            try
+            {
+                new Thread()
+                {
+                    public void run()
+                    {
+                        onShutdownOrRestartGlobalDisconnect(restart);
+                    }
+                }.start();
+            }
+            catch (Throwable e)
+            {
+                /*
+                 * This code can actually cause an exception. I just had it happen, in
+                 * fact: if the compiled code is updated in such a way that the anonymous
+                 * inner class representing the new thread created above is modified or
+                 * renamed, a NoClassDefFoundError or NoSuchMethodError will result.
+                 */
+                e.printStackTrace();
+            }
+            Utils.sleep(5000);
+            try
+            {
+                System.out.println("Shutting down the ProxyStorage system...");
+                proxyStorage.close();
+                System.out.println("ProxyStorage shut down successfully.");
+            }
+            catch (Throwable ex)
+            {
+                ex.printStackTrace();
+            }
+            Utils.sleep(1000);
+            try
+            {
+                System.out.println("Shutting down the relational data store...");
+                relationalStore.close();
+                System.out.println("Relational store shut down successfully.");
+            }
+            catch (Throwable ex)
+            {
+                ex.printStackTrace();
+            }
+            Utils.sleep(2000);
+            System.out.println("Exiting on " + (restart ? "restart" : "shutdown")
+                + " with status " + exitStatus + "...");
+            Utils.sleep(200);
+            /*
+             * FIXME: due to a current bug that I haven't been able to figure out,
+             * replacing this with System.exit(exitStatus) causes a hang, where not even
+             * Ctrl+C will kill the bot. So I'm using halt instead, after cleaning
+             * everything up. This really should be changed, but it's the best I can think
+             * of for now. We need, however, to consider that we need to get plugins
+             * unloaded, and I'm not completely sure that all of the shutdown hooks up to
+             * this point will take care of that.
+             */}
+        catch (Throwable e)
+        {
+            e.printStackTrace();
+        }
         Runtime.getRuntime().halt(exitStatus);
     }
     
