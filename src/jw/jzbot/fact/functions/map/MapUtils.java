@@ -19,7 +19,7 @@ public class MapUtils
         {
             if (!entry.trim().equals(""))
             {
-                String[] tokens = entry.split("=", 1);
+                String[] tokens = entry.split("=", 2);
                 map.put(URLDecoder.decode(tokens[0]), URLDecoder.decode(tokens[1]));
             }
         }
