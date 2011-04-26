@@ -591,15 +591,19 @@ public class FactoidCommand implements Command
             throw new RuntimeException("The push command only works at a channel.");
         if (afterCommand.trim().equals(""))
             throw new ResponseException(
-                    "Syntax: ~factoid push <recipient> <factoids...> -- Pushes "
+                    "Syntax: ~factoid push <recipient> <recipient-scope> "
+                        + "<factoids...> -- Pushes "
                         + "the specified factoids to the specified bot, which must "
-                        + "currently be at this channel.");
+                        + "currently be at this channel. The factoids will be "
+                        + "re-created under the specified scope in the target bot.");
         List<String> split = new ArrayList<String>(Arrays.asList(afterCommand.split(" ")));
         String targetNick = split.get(0);
+        String targetScope = split.get(1);
+        split.remove(0);
         split.remove(0);
         StorageContainer container = getScopeContainer(scope, s, c);
         PushCallback callback =
-                new PushCallback(source, sender.getNick(), source.getCanonicalName(),
+                new PushCallback(source, sender.getNick(), targetScope,
                         container, targetNick);
         callback.factoids.addAll(split);
         source.sendSpaced("Pushing of factoids to " + targetNick + " has started.");

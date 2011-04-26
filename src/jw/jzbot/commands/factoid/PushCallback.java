@@ -55,7 +55,7 @@ public class PushCallback implements Callback
             return nextCommand(response);
         }
         successfulCount++;
-        return new Command("push", "creationTime", "" + factoid.getCreationTime(),
+        return new Command("push", "scope", targetScope, "creationTime", "" + factoid.getCreationTime(),
                 "creator", factoid.getCreator(), "creatorNick", factoid.getCreatorNick(),
                 "creatorUsername", factoid.getCreatorUsername(), "library", ""
                     + factoid.isLibrary(), "name", factoid.getName(), "restricted", ""
