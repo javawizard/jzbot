@@ -192,4 +192,13 @@ public class StringUtils
         return list;
     }
     
+    public String[] split(String input, String delimiter, int length)
+    {
+        List<String> list = Arrays.asList(input.split(delimiter, length));
+        ArrayList<String> newList = new ArrayList<String>(list);
+        while (newList.size() < length)
+            newList.add("");
+        return newList.toArray(new String[0]);
+    }
+    
 }
