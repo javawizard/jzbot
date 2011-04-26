@@ -39,20 +39,21 @@ public class Crosstalk
         String[] tokens = arguments.split(" ", 3);
         String sessionId = tokens[0];
         String type = tokens[1];
-        arguments = tokens[2];
+        arguments = (tokens.length > 2 ? tokens[2] : "");
         ensureCrosstalkAllowed(sender, sessionId);
         String command = null;
         if (type.equals("c"))
         {
             tokens = arguments.split(" ", 2);
             command = tokens[0];
-            arguments = tokens[1];
+            arguments = (tokens.length > 1 ? tokens[1] : "");
         }
         CrosstalkSession session = getSession(sender, sessionId);
-        if(session == null)
+        if (session == null)
         {
             /*
-             * Create a session if we're the receiver (under the assumption that this is a __handshake__)
+             * Create a session if we're the receiver (under the assumption that this is a
+             * __handshake__)
              */
         }
     }
