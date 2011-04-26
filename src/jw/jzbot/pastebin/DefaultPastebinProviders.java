@@ -22,11 +22,12 @@ public class DefaultPastebinProviders
         // PastebinService.installProvider(new PDPastebin("paste.amahi.org", false,
         // "pastebin.php", false));
         //
-        PastebinService.installProvider(new PDPastebin("pastebin.hu", false,
-                "pastebin.php", true));
+        // PastebinService.installProvider(new PDPastebin("pastebin.hu", false,
+        // "pastebin.php", true));
         //
-        PastebinService.installProvider(new PDPastebin("ampaste.net", true, "pastebin.php",
-                true));
+        // PastebinService.installProvider(new PDPastebin("ampaste.net", true,
+        // "pastebin.php",
+        // true));
         //
         // PastebinService.installProvider(new PDPastebin("paste.liquidswords.org", false,
         // "pastebin.php", true));
@@ -38,8 +39,7 @@ public class DefaultPastebinProviders
         // PastebinService.installProvider(new PDPastebin("ospaste.com", false,
         // "index.php", true));
         //
-        PastebinService.installProvider(new PDPastebin("paste.jcs.me.uk", false,
-                "", true));
+        PastebinService.installProvider(new PDPastebin("paste.jcs.me.uk", false, "", true));
         //
         // PastebinService.installProvider(new PDPastebin("paste.uberdragon.net", false,
         // "index.php"));
