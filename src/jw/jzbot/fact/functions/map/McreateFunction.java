@@ -13,7 +13,12 @@ public class McreateFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        sink.write(MapUtils.encode(new HashMap<String, String>()));
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < arguments.length(); i += 2)
+        {
+            map.put(arguments.resolveString(i), arguments.resolveString(i + 1));
+        }
+        sink.write(MapUtils.encode(map));
     }
     
     @Override

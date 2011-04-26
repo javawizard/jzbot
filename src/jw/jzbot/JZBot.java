@@ -133,8 +133,8 @@ public class JZBot
     
     public static File logsFolder = new File("storage/logs");
     
-    public static Map<String, String> globalVariables =
-            Collections.synchronizedMap(new HashMap<String, String>());
+    public static Map<String, String> globalVariables = Collections
+            .synchronizedMap(new HashMap<String, String>());
     
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
     
@@ -280,19 +280,19 @@ public class JZBot
                         continue;
                     System.out.println("Running reverse-cascade notification " + name
                         + " at @" + context.getServerName());
-                    runNotificationFactoid(context.getServerName(), context
-                            .getDatastoreServer(), null, null, context.getConnection()
-                            .getNick(), null, null, "_on" + name, new String[0], true,
-                            false);
+                    runNotificationFactoid(context.getServerName(),
+                            context.getDatastoreServer(), null, null, context
+                                    .getConnection().getNick(), null, null, "_on" + name,
+                            new String[0], true, false);
                     for (Channel channel : context.getDatastoreServer().getChannels()
                             .isolate())
                     {
                         System.out.println("Running reverse-cascade notification " + name
                             + " at @" + context.getServerName() + channel.getName());
-                        runNotificationFactoid(context.getServerName(), context
-                                .getDatastoreServer(), channel.getName(), channel, context
-                                .getConnection().getNick(), null, null, "_on" + name,
-                                new String[0], true, false);
+                        runNotificationFactoid(context.getServerName(),
+                                context.getDatastoreServer(), channel.getName(), channel,
+                                context.getConnection().getNick(), null, null,
+                                "_on" + name, new String[0], true, false);
                     }
                 }
             }
@@ -304,7 +304,8 @@ public class JZBot
             e.printStackTrace();
             try
             {
-                sendMessageToTarget(Configuration.getText(null, "primary"),
+                sendMessageToTarget(
+                        Configuration.getText(null, "primary"),
                         "Global notification failure for " + name + ": "
                             + PastebinUtils.pastebinStack(e));
             }
@@ -322,7 +323,8 @@ public class JZBot
     /**
      * Sends a message to the specified target, which is a canonical channel name. If the
      * specified server is not connected or if the specified channel is not joined, this
-     * message is silently discarded.<br/><br/>
+     * message is silently discarded.<br/>
+     * <br/>
      * 
      * This <b>must not</b> be called from any logging code, as this method will invoke
      * the channel logger to log that a message was sent.
@@ -621,7 +623,8 @@ public class JZBot
                     {
                         System.out.println("Disconnecting from server "
                             + context.getServerName());
-                        context.getConnection().disconnect(PART_MESSAGE);
+                        context.getConnection().disconnect(
+                                "Disconnecting from this server... " + PART_MESSAGE);
                         System.out.println("Disconnected.");
                     }
                 }
@@ -633,8 +636,8 @@ public class JZBot
          */
         synchronized (connectionCycleLock)
         {
-            for (ConnectionContext context : new ArrayList<ConnectionContext>(connectionMap
-                    .values()))
+            for (ConnectionContext context : new ArrayList<ConnectionContext>(
+                    connectionMap.values()))
             {
                 if ((!storage.getServers().contains(context.getDatastoreServer()))
                     || context.discardNeeded())
@@ -729,8 +732,8 @@ public class JZBot
         long start = System.currentTimeMillis();
         final Map<Long, Integer> priorityCache = new HashMap<Long, Integer>();
         for (Server server : list)
-            priorityCache.put(((ProxyObject) server).getProxyStorageId(), server
-                    .getPriority());
+            priorityCache.put(((ProxyObject) server).getProxyStorageId(),
+                    server.getPriority());
         Collections.sort(list, new Comparator<Server>()
         {
             
@@ -1120,7 +1123,7 @@ public class JZBot
             // System.out.println("All config var names: "
             // + StringUtils.delimited(ConfigVars.values(), new ToString<ConfigVars>()
             // {
-            //                        
+            //
             // @Override
             // public String toString(ConfigVars object)
             // {
@@ -1335,8 +1338,8 @@ public class JZBot
                     true);
             for (Channel channel : server.getChannels().isolate())
             {
-                Notify.channelAdded.fireListeners(ScopeLevel.channel, "@"
-                    + server.getName() + channel.getName(), true);
+                Notify.channelAdded.fireListeners(ScopeLevel.channel,
+                        "@" + server.getName() + channel.getName(), true);
             }
         }
     }
@@ -1636,8 +1639,7 @@ public class JZBot
             if (cascade)
             {
                 facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname)));
-                facts.addAll(Arrays
-                        .asList(server.searchFactoids("_chan" + factname + "_*")));
+                facts.addAll(Arrays.asList(server.searchFactoids("_chan" + factname + "_*")));
                 facts.addAll(Arrays.asList(storage.searchFactoids("_chan" + factname)));
                 facts.addAll(Arrays.asList(storage
                         .searchFactoids("_chan" + factname + "_*")));
@@ -1694,8 +1696,8 @@ public class JZBot
                         if (factValue.trim().equals(""))
                             ;
                         else if (factValue.startsWith("<ACTION>"))
-                            con.sendAction(pseudoChannel, factValue.substring("<ACTION>"
-                                    .length()));
+                            con.sendAction(pseudoChannel,
+                                    factValue.substring("<ACTION>".length()));
                         else
                             con.sendMessage(pseudoChannel, factValue);
                     }
@@ -2336,8 +2338,8 @@ public class JZBot
             System.out.println("calculating fact value");
             factValue =
                     safeRunFactoid(factoid, datastoreServer, serverName, channel,
-                            serverUser, source, commandArguments.split(" "), isSuperop(
-                                    serverName, hostname), new HashMap<String, String>());
+                            serverUser, source, commandArguments.split(" "),
+                            isSuperop(serverName, hostname), new HashMap<String, String>());
             System.out.println("fact value: " + factValue);
             sendActionOrMessage(source, factValue);
             System.out.println("Finishing command run #6");
@@ -2527,7 +2529,7 @@ public class JZBot
         // System.out.println("starting reconnect thread");
         // new Thread()
         // {
-        //            
+        //
         // public void run()
         // {
         // int attempts = 0;
@@ -2595,8 +2597,8 @@ public class JZBot
             userSetScope = pmUserScopeMap.get("@" + serverName + "!" + sender);
             if (userSetScope != null)
             {
-                pmUserScopeTimes.put("@" + serverName + "!" + sender, System
-                        .currentTimeMillis());
+                pmUserScopeTimes.put("@" + serverName + "!" + sender,
+                        System.currentTimeMillis());
             }
         }
         try
@@ -2860,8 +2862,7 @@ public class JZBot
     
     public static final long startedAtTime = System.currentTimeMillis();
     // Easter egg
-    public static final String PART_MESSAGE =
-            "So long, and thanks for all the fish. And don't forget to be awesome!";
+    public static final String PART_MESSAGE = "So long, and thanks for all the fish.";
     
     public static void reloadRegexes()
     {
@@ -3175,7 +3176,7 @@ public class JZBot
         shutdownOrRestart(false);
     }
     
-    public static void shutdownOrRestart(boolean restart)
+    public static void shutdownOrRestart(final boolean restart)
     {
         shouldRestartOnShutdown = restart;
         System.out.println(restart ? "Restarting..." : "Shutting down...");
@@ -3184,7 +3185,7 @@ public class JZBot
         {
             public void run()
             {
-                onRestartGlobalDisconnect();
+                onShutdownOrRestartGlobalDisconnect(restart);
             }
         }.start();
         Utils.sleep(5000);
@@ -3226,7 +3227,7 @@ public class JZBot
         Runtime.getRuntime().halt(exitStatus);
     }
     
-    protected static void onRestartGlobalDisconnect()
+    protected static void onShutdownOrRestartGlobalDisconnect(final boolean isRestarting)
     {
         System.out.println("Starting global disconnect...");
         for (final ConnectionContext context : new ArrayList<ConnectionContext>(
@@ -3240,7 +3241,9 @@ public class JZBot
                     {
                         System.out.println("Disconnecting server "
                             + context.getServerName() + " on shutdown...");
-                        context.getConnection().disconnect(PART_MESSAGE);
+                        context.getConnection().disconnect(
+                                (isRestarting ? "Restarting... " : "Shutting down... ")
+                                    + PART_MESSAGE);
                         System.out.println("Server " + context.getServerName()
                             + " disconnected successfully.");
                     }
