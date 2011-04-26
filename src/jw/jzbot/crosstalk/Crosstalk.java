@@ -97,6 +97,7 @@ public class Crosstalk
                         + ": " + e.getMessage()));
             return;
         }
+        System.out.println("Sending response");
         sendPacket(sender.getNick(), source, messageId, "r", "ok", response);
     }
     
@@ -167,6 +168,8 @@ public class Crosstalk
                 encodedText = encodedText.substring(maxAggregateLength);
             }
         }
+        if (messages.size() == 0)
+            messages.add("");
         for (int i = 0; i < messages.size(); i++)
         {
             String message = messages.get(i);
