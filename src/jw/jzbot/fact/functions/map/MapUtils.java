@@ -22,7 +22,7 @@ public class MapUtils
                 String[] tokens = entry.split("=", 1);
                 map.put(URLDecoder.decode(tokens[0]), URLDecoder.decode(tokens[1]));
             }
-        }
+        } 
         return map;
     }
     
