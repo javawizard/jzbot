@@ -11,7 +11,7 @@ import net.sf.opengroove.common.utils.StringUtils.ToString;
 
 public class MapUtils
 {
-    // # = entry separator, ? = key/value separator
+    // "#" = entry separator, "=" = key/value separator
     public static Map<String, String> decode(String text)
     {
         Map<String, String> map = new HashMap<String, String>();
@@ -19,7 +19,7 @@ public class MapUtils
         {
             if (!entry.trim().equals(""))
             {
-                String[] tokens = entry.split("?", 1);
+                String[] tokens = entry.split("=", 1);
                 map.put(URLDecoder.decode(tokens[0]), URLDecoder.decode(tokens[1]));
             }
         }
@@ -36,7 +36,7 @@ public class MapUtils
                     @Override
                     public String toString(Entry<String, String> entry)
                     {
-                        return URLEncoder.encode(entry.getKey()) + "?"
+                        return URLEncoder.encode(entry.getKey()) + "="
                             + URLEncoder.encode(entry.getValue());
                     }
                 }, "#");
