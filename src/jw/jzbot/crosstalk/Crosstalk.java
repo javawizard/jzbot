@@ -3,6 +3,7 @@ package jw.jzbot.crosstalk;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +121,7 @@ public class Crosstalk
             dispatchSuccessfulResponse(sender.getNick(), source, messageId, response);
         else
         {
+            System.out.println(response.properties);
             ErrorType type;
             try
             {
@@ -202,6 +204,7 @@ public class Crosstalk
     private static void parseInto(String data, Packet packet)
     {
         String[] components = data.split("#");
+        System.out.println("Components: " + Arrays.deepToString(components));
         for (String component : components)
         {
             if (component.contains("="))
@@ -209,6 +212,8 @@ public class Crosstalk
                 String[] tokens = component.split("=", 2);
                 String key = URLDecoder.decode(tokens[0]);
                 String value = URLDecoder.decode(tokens[1]);
+                System.out.println("Key: " + key);
+                System.out.println("Value: " + value);
                 if (packet.properties.containsKey(key))
                     packet.properties.put(key, packet.properties.get(key) + value);
                 else
@@ -339,6 +344,7 @@ public class Crosstalk
         Session session = getSession(sender.getNick(), messageId);
         Callback callback = session.callback;
         sessions.remove(messageId);
+        System.out.println(message);
         callback.failed(false, type, message);
     }
     
