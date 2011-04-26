@@ -1,3 +1,5 @@
+NOTICE: The original protocol has been rewritten. Look toward the end of the file to see the changes.
+
 Crosstalk is a system for allowing bots to communicate and exchange information. A crosstalk session is a command-response driven communications channel controlled by the bot that started the crosstalk session. Various commands can be issued over such a channel.
 
 There's no specific command for instructing a bot to begin a crosstalk session with another bot; instead, various components of JZBot (and, by extension, commands those components provide) are used to instruct the bot to perform some particular action via crosstalk. For example, "~factoid push some-bot @server#channel fact1 fact2 fact3" uses crosstalk to copy the factoids fact1, fact2, and fact3 at the current channel to some-bot, creating (or updating) them in some-bot with channel scope at the channel @server#channel.
@@ -55,13 +57,18 @@ Both the initiator's callback and the receiver's handler will be notified when a
 The initiator and the receiver both have a timer set in case one end dies unexpectedly. I'm thinking this will default to 15 seconds for now. If the initiator waits 15 seconds before hearing from the receiver, it sends a __hangup__ indicating that a timeout occurred, and closes down the session. If the receiver waits 15 seconds before hearing from the initiator, it sends a response containing __status__=error and closes down the session.
 
 
+==Rewrite==
+I'M REWRITING THIS TO BE STATELESS TO SIMPLIY A LOT OF THINGS.
 
+New format: 
 
-
-
-
-
-marlen_jackson: __crosstalk__ p 123456789012312345 ca this.is.a.test.key=sjsjkldfjklsdjk
+	commands: "botname: __crosstalk__ c <messageid> <handler> <command> <key>=<value> ... <data>"
+	
+	aggregated commands (all but the last message): "botname: __crosstalk__ ca <messageid> <key>=<value> ... <data>"
+	
+	responses: "botname: __crosstalk__ r <messageid> <status> <key>=<value> ... <data>"
+	
+	aggregated responses (all but the last message): "botname: __crosstalk__ r <messageid> <key>=<value> ... <data>"
 
 
 
