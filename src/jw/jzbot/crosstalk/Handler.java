@@ -1,13 +1,9 @@
 package jw.jzbot.crosstalk;
 
+import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.UserMessenger;
+
 public interface Handler
 {
-    public Response handshake(CrosstalkSession session);
-    
-    public Response commandReceived(CrosstalkSession session, Command command);
-    
-    public void done(CrosstalkSession session);
-    
-    public void failed(CrosstalkSession session, boolean local, ErrorType type,
-            String message);
+    public Response runCommand(UserMessenger sender, Messenger source, Command command);
 }
