@@ -1,4 +1,4 @@
-package jw.jzbot.commands;
+package jw.jzbot.commands.factoid;
 
 import java.io.File;
 import java.net.URLEncoder;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jw.jzbot.Command;
@@ -15,6 +16,8 @@ import jw.jzbot.Factpack;
 import jw.jzbot.JZBot;
 import jw.jzbot.ResponseException;
 import jw.jzbot.Factpack.FactpackEntry;
+import jw.jzbot.crosstalk.Crosstalk;
+import jw.jzbot.crosstalk.Response;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.Function;
@@ -26,6 +29,7 @@ import jw.jzbot.pastebin.PastebinService;
 import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.scope.Messenger;
+import jw.jzbot.scope.ScopeManager;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Factoid;
@@ -246,29 +250,34 @@ public class FactoidCommand implements Command
             }
             String quotationMessage = "";
             if (scope == FactScope.global)
-            	quotationMessage = "";
+                quotationMessage = "";
             else if (scope == FactScope.server)
-            	quotationMessage = "You should also run "
-                    + "\"factoid global list\" for"
-                    + " global factoids. These were not included " + "in this query.";
+                quotationMessage =
+                        "You should also run " + "\"factoid global list\" for"
+                            + " global factoids. These were not included "
+                            + "in this query.";
             else
-            	quotationMessage = "You should also run "
-                    + "\"factoid global list\" and \"factoid server list\" for"
-                    + " global factoids and server-specific factoids. These "
-                    + "were not included " + "in this query.";
+                quotationMessage =
+                        "You should also run "
+                            + "\"factoid global list\" and \"factoid server list\" for"
+                            + " global factoids and server-specific factoids. These "
+                            + "were not included " + "in this query.";
             
             if (currentList.equals(""))
             {
-            	source.sendSpaced("No factoids could be found. " + quotationMessage);
+                source.sendSpaced("No factoids could be found. " + quotationMessage);
             }
-            else if (currentList.length() > source.getProtocolDelimitedLength() || arguments.endsWith(" --"))
+            else if (currentList.length() > source.getProtocolDelimitedLength()
+                || arguments.endsWith(" --"))
             {
-                currentList = PastebinUtils.pastebinNotice(currentList + "\nEnd of factoid list. " + quotationMessage, null);
+                currentList =
+                        PastebinUtils.pastebinNotice(currentList
+                            + "\nEnd of factoid list. " + quotationMessage, null);
                 source.sendSpaced("A list of all " + scope + " factoids: " + currentList);
             }
             else
             {
-            	source.sendSpaced("A list of all " + scope + " factoids: " + currentList);
+                source.sendSpaced("A list of all " + scope + " factoids: " + currentList);
                 source.sendSpaced(quotationMessage);
             }
         }
@@ -538,14 +547,20 @@ public class FactoidCommand implements Command
             if (scope == FactScope.global)
                 f = JZBot.storage.getFactoid(afterCommand);
             if (f == null)
-                throw new ResponseException("No such factoid: \"" + afterCommand + "\" in this scope.");
+                throw new ResponseException("No such factoid: \"" + afterCommand
+                    + "\" in this scope.");
             String explanation = FactParser.explain(f.getValue(), f.getName());
             StringBuffer buffer = new StringBuffer();
             buffer.append("Factoid " + f.getName() + ": " + f.getValue());
             buffer.append("\n\nExplanation for this factoid:\n\n");
             buffer.append(explanation);
             source.sendMessage("Explanation of this factoid: "
-                    + PastebinUtils.pastebinNotice(buffer.toString()));
+                + PastebinUtils.pastebinNotice(buffer.toString()));
+        }
+        if (command.equals("push"))
+        {
+            processed = true;
+            doFactoidPush(pm, sender, source, afterCommand, scope, server, s, channel, c);
         }
         if (!processed)
         {
@@ -553,8 +568,42 @@ public class FactoidCommand implements Command
                     "Invalid factoid command. Try 'factoid [global|server] "
                         + "<list|create|replace|delete|literal|info|pack"
                         + "|restrict|unrestrict|isrestricted|attribute"
-                        + "|unattribute|function|scope|locate|search|explain>'");
+                        + "|unattribute|function|scope|locate|search|explain"
+                        + "|push|pull>'");
         }
+    }
+    
+    private StorageContainer getScopeContainer(FactScope scope, Server s, Channel c)
+    {
+        if (scope == FactScope.server)
+            return s;
+        else if (scope == FactScope.channel)
+            return c;
+        else
+            return JZBot.storage;
+    }
+    
+    private void doFactoidPush(boolean pm, UserMessenger sender, Messenger source,
+            String afterCommand, FactScope scope, String server, Server s, String channel,
+            Channel c)
+    {
+        if (pm)
+            throw new RuntimeException("The push command only works at a channel.");
+        if (afterCommand.trim().equals(""))
+            throw new ResponseException(
+                    "Syntax: ~factoid push <recipient> <factoids...> -- Pushes "
+                        + "the specified factoids to the specified bot, which must "
+                        + "currently be at this channel.");
+        List<String> split = new ArrayList<String>(Arrays.asList(afterCommand.split(" ")));
+        String targetNick = split.get(0);
+        split.remove(0);
+        StorageContainer container = getScopeContainer(scope, s, c);
+        PushCallback callback =
+                new PushCallback(source, sender.getNick(), source.getCanonicalName(),
+                        container, targetNick);
+        callback.factoids.addAll(split);
+        source.sendSpaced("Pushing of factoids to " + targetNick + " has started.");
+        Crosstalk.start(source, targetNick, "jzbot.factoid", callback);
     }
     
     private void doFactoidSearch(boolean pm, UserMessenger sender, Messenger source,
@@ -578,8 +627,8 @@ public class FactoidCommand implements Command
             searchForFactoidInContainer(searchServer, "@" + serverName, regex, matches);
             for (Channel searchChannel : searchServer.getChannels().isolate())
             {
-                searchForFactoidInContainer(searchChannel, "@" + serverName
-                    + searchChannel.getName(), regex, matches);
+                searchForFactoidInContainer(searchChannel,
+                        "@" + serverName + searchChannel.getName(), regex, matches);
             }
         }
         String result;
@@ -728,8 +777,9 @@ public class FactoidCommand implements Command
                 buffer.append("\n").append(StringUtils.delimited(new String[0], ", "));
                 buffer.append("\n\n");
             }
-            source.sendMessage(PastebinUtils.pastebinNotice(items[0] + "\n\n\n"
-                + buffer.toString(), new Feature[] { Feature.highlight }));
+            source.sendMessage(PastebinUtils.pastebinNotice(
+                    items[0] + "\n\n\n" + buffer.toString(),
+                    new Feature[] { Feature.highlight }));
         }
         else if (command.equals("list"))
         {
@@ -1048,9 +1098,10 @@ public class FactoidCommand implements Command
             /*
              * Scope is correct. Now we run rename and restricted scripts.
              */
-            realNameMap.put(entry.name, runInstallScript("rename_" + entry.name,
-                    entry.rename, server, s, channel, storedChannel, localVars, sender,
-                    source));
+            realNameMap.put(
+                    entry.name,
+                    runInstallScript("rename_" + entry.name, entry.rename, server, s,
+                            channel, storedChannel, localVars, sender, source));
             restrictedMap.put(entry.name, IfFunction.findValue(runInstallScript("restrict_"
                 + entry.name, entry.restrict, server, s, channel, storedChannel, localVars,
                     sender, source)));
@@ -1248,5 +1299,36 @@ public class FactoidCommand implements Command
             UserMessenger sender, Messenger source, String arguments)
     {
         return true;
+    }
+    
+    public static Response processCrosstalkCommand(jw.jzbot.crosstalk.Command command)
+    {
+        if (command.name.equals("push"))
+        {
+            StorageContainer storage =
+                    ScopeManager.getStorageContainer(ScopeManager
+                            .getScope(command.properties.get("scope")));
+            if (storage == null)
+                throw new RuntimeException(
+                        "The specified scope doesn't exist on the recipient.");
+            String name = command.properties.get("name");
+            Factoid factoid = storage.getFactoid(name);
+            if (factoid != null)
+                storage.getFactoids().remove(factoid);
+            factoid = JZBot.storage.createFactoid();
+            factoid.setActive(true);
+            factoid.setCreationTime(Long.parseLong(command.properties.get("creationTime")));
+            factoid.setCreator(command.properties.get("creator"));
+            factoid.setCreatorNick(command.properties.get("creatorNick"));
+            factoid.setCreatorSource("");
+            factoid.setCreatorUsername(command.properties.get("creatorUsername"));
+            factoid.setLibrary(command.properties.get("library").equals("true"));
+            factoid.setName(name);
+            factoid.setRestricted(command.properties.get("restricted").equals("true"));
+            factoid.setValue(command.properties.get("value"));
+            storage.getFactoids().add(factoid);
+            return new Response();
+        }
+        throw new RuntimeException("Invalid command: " + command.name);
     }
 }

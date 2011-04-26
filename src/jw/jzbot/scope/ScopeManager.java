@@ -1,6 +1,8 @@
 package jw.jzbot.scope;
 
+import jw.jzbot.JZBot;
 import jw.jzbot.storage.Server;
+import jw.jzbot.storage.StorageContainer;
 import jw.jzbot.utils.Utils;
 
 public class ScopeManager
@@ -114,4 +116,16 @@ public class ScopeManager
         return getScope(null, name);
     }
     
+    public static StorageContainer getStorageContainer(Scope scope)
+    {
+        if (scope instanceof GlobalScope)
+            return JZBot.storage;
+        else if (scope instanceof ServerScope)
+            return JZBot.storage.getServer(scope.getServerName());
+        else if (scope instanceof ChannelScope)
+            return JZBot.storage.getServer(scope.getServerName()).getChannel(
+                    scope.getChannelName());
+        else
+            throw new IllegalArgumentException("Invalid scope: " + scope);
+    }
 }

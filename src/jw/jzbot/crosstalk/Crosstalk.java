@@ -29,6 +29,8 @@ public class Crosstalk
     private static final Map<String, PendingPacket> pendingPackets =
             new HashMap<String, PendingPacket>();
     
+    private static final Map<String, Session> sessions = new HashMap<String, Session>();
+    
     public static void registerHandler(String name, Handler handler)
     {
         handlerRegistry.put(name, handler);
@@ -37,11 +39,12 @@ public class Crosstalk
     public static void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
     {
+        if (pm)
+            throw new ResponseException(
+                    "Crosstalk can't yet function over private messages.");
         if (arguments.trim().equals(""))
-        {
-            source.sendMessage("The __crosstalk__ command needs arguments "
+            throw new ResponseException("The __crosstalk__ command needs arguments "
                 + "specified. For more help on what crosstalk is, see \"help crosstalk\".");
-        }
         int originalLength = arguments.length();
         String[] tokens = StringUtils.split(arguments, " ", 2);
         String type = tokens[0];
@@ -74,8 +77,8 @@ public class Crosstalk
         Handler handler = handlerRegistry.get(handlerName);
         if (handler == null)
         {
-            sendPacket(sender, source, messageId, "r", "error", new Response("type",
-                    ErrorType.other.name(), "message",
+            sendPacket(sender.getNick(), source, messageId, "r", "error", new Response(
+                    "type", ErrorType.other.name(), "message",
                     "The specified handler could not be found."));
             return;
         }
@@ -86,14 +89,14 @@ public class Crosstalk
         }
         catch (Throwable e)
         {
-            sendPacket(sender, source, messageId, "r", "error", new Response("type",
-                    ErrorType.other.name(), "message",
+            sendPacket(sender.getNick(), source, messageId, "r", "error", new Response(
+                    "type", ErrorType.other.name(), "message",
                     "An exception occurred during invocation of the handler: "
                         + PastebinUtils.pastebinStack(e) + " -- " + e.getClass().getName()
                         + ": " + e.getMessage()));
             return;
         }
-        sendPacket(sender, source, messageId, "r", "ok", response);
+        sendPacket(sender.getNick(), source, messageId, "r", "ok", response);
     }
     
     private static void processAggregatedCommand(UserMessenger sender, Messenger source,
@@ -106,8 +109,29 @@ public class Crosstalk
     private static void processResponse(UserMessenger sender, Messenger source,
             String messageId, String arguments)
     {
-        // TODO Auto-generated method stub
-        
+        String[] tokens = StringUtils.split(arguments, " ", 2);
+        String status = tokens[0];
+        arguments = tokens[1];
+        PendingPacket packet = getPacket(sender, messageId, true);
+        packet.text += arguments.trim();
+        Response response = new Response();
+        parseInto(packet.text, response);
+        if (status == "ok")
+            dispatchSuccessfulResponse(sender.getNick(), source, messageId, response);
+        else
+        {
+            ErrorType type;
+            try
+            {
+                type = ErrorType.valueOf(response.properties.get("type"));
+            }
+            catch (Exception e)
+            {
+                type = ErrorType.other;
+            }
+            String message = response.properties.get("message");
+            dispatchFailedResponse(sender, source, messageId, type, message);
+        }
     }
     
     private static void processAggregatedResponse(UserMessenger sender, Messenger source,
@@ -117,10 +141,10 @@ public class Crosstalk
         packet.text += arguments.trim();
     }
     
-    private static void sendPacket(UserMessenger user, Messenger to, String messageId,
+    private static void sendPacket(String targetNick, Messenger to, String messageId,
             String type, String info, Packet packet)
     {
-        String command = user.getNick() + ": __crosstalk__ ";
+        String command = targetNick + ": __crosstalk__ ";
         String normalPrefix = command + type + " " + messageId + " " + info + " ";
         String aggregatePrefix = command + type + "a " + messageId + " ";
         int maxLength = to.getProtocolDelimitedLength();
@@ -253,5 +277,81 @@ public class Crosstalk
             throw new RuntimeException("THIS SHOULDN'T HAPPEN. Invalid type "
                 + "while handling a permissions error.");
         }
+    }
+    
+    /**
+     * Starts a crosstalk session with the specified user.
+     * 
+     * @param channel
+     *            The channel, in a form suitable for passing to
+     *            {@link ScopeManager#getMessenger(String)}, at which to communicate with
+     *            the user
+     * @param nick
+     *            The nick of the user to start a crosstalk session with
+     * @param handler
+     *            The name of the handler to be used on the recipient's side
+     * @param callback
+     *            The callback to use for this session
+     */
+    public static void start(Messenger channel, String nick, String handler, Callback callback)
+    {
+        Session session = new Session();
+        session.handler = handler;
+        session.callback = callback;
+        String id = createId();
+        if (sessions.containsKey(id))
+            throw new RuntimeException("Generated id already exists");
+        sessions.put(id, session);
+        // Re-using dispatchSuccessfulResponse for now
+        dispatchSuccessfulResponse(nick, channel, id, null);
+    }
+    
+    private static void dispatchSuccessfulResponse(String senderNick, Messenger source,
+            String messageId, Response response)
+    {
+        Session session = getSession(senderNick, messageId);
+        Callback callback = session.callback;
+        Command nextCommand;
+        try
+        {
+            nextCommand = callback.nextCommand(response);
+        }
+        catch (Throwable e)
+        {
+            sessions.remove(messageId);
+            callback.failed(true, ErrorType.other, "Callback threw an exception: "
+                + e.getClass().getName() + ": " + e.getMessage());
+            return;
+        }
+        if (nextCommand == null)// This crosstalk session is finished
+        {
+            sessions.remove(messageId);
+            return;
+        }
+        sendPacket(senderNick, source, messageId, "c", session.handler + " "
+            + nextCommand.name, nextCommand);
+    }
+    
+    private static void dispatchFailedResponse(UserMessenger sender, Messenger source,
+            String messageId, ErrorType type, String message)
+    {
+        Session session = getSession(sender.getNick(), messageId);
+        Callback callback = session.callback;
+        sessions.remove(messageId);
+        callback.failed(false, type, message);
+    }
+    
+    private static Session getSession(String senderNick, String messageId)
+    {
+        Session session = sessions.get(messageId);
+        if (session == null)
+            throw new ResponseException("No session for message id " + messageId + " from "
+                + senderNick + " currently exists.");
+        return session;
+    }
+    
+    static
+    {
+        DefaultHandlers.init();
     }
 }
