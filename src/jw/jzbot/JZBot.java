@@ -46,6 +46,7 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
 
 import jw.jzbot.commands.CommandListCommand;
 import jw.jzbot.commands.ConfigCommand;
+import jw.jzbot.commands.CrosstalkCommand;
 import jw.jzbot.commands.ExecCommand;
 import jw.jzbot.commands.FactoidCommand;
 import jw.jzbot.commands.HelpCommand;
@@ -1222,6 +1223,7 @@ public class JZBot
     {
         installCommand(new CommandListCommand());
         installCommand(new ConfigCommand());
+        installCommand(new CrosstalkCommand());
         installCommand(new ExecCommand());
         installCommand(new FactoidCommand());
         // loadCommand(new GoogleCommand());
