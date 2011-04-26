@@ -116,7 +116,7 @@ public class Crosstalk
         packet.text += arguments.trim();
         Response response = new Response();
         parseInto(packet.text, response);
-        if (status == "ok")
+        if (status.equals("ok"))
             dispatchSuccessfulResponse(sender.getNick(), source, messageId, response);
         else
         {
@@ -293,7 +293,8 @@ public class Crosstalk
      * @param callback
      *            The callback to use for this session
      */
-    public static void start(Messenger channel, String nick, String handler, Callback callback)
+    public static void start(Messenger channel, String nick, String handler,
+            Callback callback)
     {
         Session session = new Session();
         session.handler = handler;
