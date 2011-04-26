@@ -52,6 +52,14 @@ variables = [
     (text, "gametext", "the game", "A list of phrases that the bot will lose "
      "the game to, each separated by a | character. See the config variable "
      "\"thegame\" for more information on what this does.")
+    (integer, "crosstalkdelay", 0, "The delay to use when exchanging "
+     "Crosstalk messages with other bots. This can be overridden at the "
+     "the server level by setting the server-specific config variable of "
+     "the same name.")
+    (text, "crosstalkusers", "", "A space-separated list of hostnames of "
+     "bots allowed to crosstalk with this bot, in the form "
+     "servername:hostname. Only users from these hostnames will be allowed "
+     "to start a crosstalk session with this bot.")
 ]
 
 for var_type, name, default, description in variables:
@@ -60,7 +68,7 @@ for var_type, name, default, description in variables:
         # configuration system stores booleans as "1" and "0" for True and
         # False, respectively.
         default = int(default)
-    Configuration.register("", name, description, var_type, 
+    Configuration.register("", name, description, var_type,
                            None if default is None else str(default))
 
 
