@@ -46,8 +46,8 @@ public class Utils
     public static String[] ircDelimited(Messenger messenger, String[] items,
             String delimiter)
     {
-        return delimitedLengthRestricted(items, delimiter, messenger
-                .getProtocolDelimitedLength());
+        return delimitedLengthRestricted(items, delimiter,
+                messenger.getProtocolDelimitedLength());
     }
     
     public static void ircSendDelimited(String[] items, String delimiter,
@@ -166,6 +166,8 @@ public class Utils
      */
     public static String[] match(String regex, String value)
     {
+        if (value == null)
+            throw new NullPointerException("Value is null");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(value);
         if (!matcher.matches())
