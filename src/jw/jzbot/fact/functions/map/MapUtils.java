@@ -26,10 +26,10 @@ public class MapUtils
         return map;
     }
     
+    @SuppressWarnings("unchecked")
     public static String encode(Map<String, String> map)
     {
-        return StringUtils.delimited(
-                map.entrySet().<Map.Entry<String, String>> toArray(new Map.Entry[0]),
+        return StringUtils.delimited(map.entrySet().toArray(new Map.Entry[0]),
                 new ToString<Map.Entry<String, String>>()
                 {
                     
