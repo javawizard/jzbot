@@ -5,5 +5,5 @@ import java.util.HashMap;
 public class PendingPacket
 {
     public String messageId;
-    public String text;
+    public String text = "";
 }
