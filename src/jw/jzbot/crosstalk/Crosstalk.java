@@ -2,7 +2,9 @@ package jw.jzbot.crosstalk;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -10,6 +12,7 @@ import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.jzbot.ResponseException;
 import jw.jzbot.configuration.Configuration;
+import jw.jzbot.pastebin.PastebinUtils;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeManager;
 import jw.jzbot.scope.UserMessenger;
@@ -62,15 +65,42 @@ public class Crosstalk
     {
         String[] tokens = StringUtils.split(arguments, " ", 3);
         String handlerName = tokens[0];
-        String command = tokens[1];
+        String commandName = tokens[1];
         arguments = tokens[2];
+        PendingPacket packet = getPacket(sender, messageId, true);
+        packet.text += arguments.trim();
+        Command command = new Command(commandName);
+        parseInto(packet.text, command);
+        Handler handler = handlerRegistry.get(handlerName);
+        if (handler == null)
+        {
+            sendPacket(sender, source, messageId, "r", "error", new Response("type",
+                    ErrorType.other.name(), "message",
+                    "The specified handler could not be found."));
+            return;
+        }
+        Response response = null;
+        try
+        {
+            response = handler.runCommand(sender, source, command);
+        }
+        catch (Throwable e)
+        {
+            sendPacket(sender, source, messageId, "r", "error", new Response("type",
+                    ErrorType.other.name(), "message",
+                    "An exception occurred during invocation of the handler: "
+                        + PastebinUtils.pastebinStack(e) + " -- " + e.getClass().getName()
+                        + ": " + e.getMessage()));
+            return;
+        }
+        sendPacket(sender, source, messageId, "r", "ok", response);
     }
     
     private static void processAggregatedCommand(UserMessenger sender, Messenger source,
             String messageId, String arguments)
     {
         PendingPacket packet = getPacket(sender, messageId, false);
-        parseInto(arguments, packet);
+        packet.text += arguments.trim();
     }
     
     private static void processResponse(UserMessenger sender, Messenger source,
@@ -84,21 +114,70 @@ public class Crosstalk
             String messageId, String arguments)
     {
         PendingPacket packet = getPacket(sender, messageId, false);
-        parseInto(arguments, packet);
+        packet.text += arguments.trim();
     }
     
     private static void sendPacket(UserMessenger user, Messenger to, String messageId,
             String type, String info, Packet packet)
     {
         String command = user.getNick() + ": __crosstalk__ ";
+        String normalPrefix = command + type + " " + messageId + " " + info + " ";
+        String aggregatePrefix = command + type + "a " + messageId + " ";
         int maxLength = to.getProtocolDelimitedLength();
-        Map<String, String> pendingProperties =
-                new HashMap<String, String>(packet.properties);
+        int maxAggregateLength = maxLength - aggregatePrefix.length();
+        List<String> messages = new ArrayList<String>();
+        String encodedText = encodePacket(packet);
+        while (!encodedText.equals(""))
+        {
+            
+            if (encodedText.length() <= maxAggregateLength)
+            {
+                messages.add(encodedText);
+                encodedText = "";
+            }
+            else
+            {
+                messages.add(encodedText.substring(0, maxAggregateLength));
+                encodedText = encodedText.substring(maxAggregateLength);
+            }
+        }
+        for (int i = 0; i < messages.size(); i++)
+        {
+            String message = messages.get(i);
+            if (i < (messages.size() - 1)) // Not the last message
+            {
+                to.sendMessage(aggregatePrefix + message);
+                continue;
+            }
+            // Last message
+            if (message.length() < (maxLength - normalPrefix.length()))
+            {
+                to.sendMessage(normalPrefix + message);
+            }
+            else
+            {
+                to.sendMessage(aggregatePrefix + message);
+                to.sendMessage(normalPrefix);
+            }
+        }
+    }
+    
+    private static String encodePacket(Packet packet)
+    {
+        List<String> components = new ArrayList<String>();
+        for (Map.Entry<String, String> entry : packet.properties.entrySet())
+        {
+            components.add(URLEncoder.encode(entry.getKey()) + "="
+                + URLEncoder.encode(entry.getValue()));
+        }
+        if (!packet.data.equals(""))
+            components.add(URLEncoder.encode(packet.data));
+        return StringUtils.delimited(components, "#");
     }
     
     private static void parseInto(String data, Packet packet)
     {
-        String[] components = data.split(" ");
+        String[] components = data.split("#");
         for (String component : components)
         {
             if (component.contains("="))

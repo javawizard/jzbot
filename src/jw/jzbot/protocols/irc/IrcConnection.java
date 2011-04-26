@@ -96,7 +96,7 @@ public class IrcConnection extends PircBot implements Connection
     
     public int getProtocolDelimitedLength()
     {
-        return 400;
+        return 370;
     }
     
     @Override

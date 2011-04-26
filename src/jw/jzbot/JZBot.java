@@ -1975,7 +1975,8 @@ public class JZBot
                     getConnection(serverName).sendMessage(
                             channel,
                             "Internal upper-propegation error: "
-                                + PastebinUtils.pastebinStack(e));
+                                + PastebinUtils.pastebinStack(e) + " -- "
+                                + e.getClass().getName() + ": " + e.getMessage());
                 }
             }
             else
@@ -2274,13 +2275,18 @@ public class JZBot
                 if (e instanceof ResponseException)
                 {
                     if (!(e instanceof DieException))
-                        source.sendSpaced(((ResponseException) e).getMessage());
+                    {
+                        ResponseException re = (ResponseException) e;
+                        if (!re.getMessage().equals(""))
+                            source.sendSpaced(re.getMessage());
+                    }
                 }
                 else
                 {
                     e.printStackTrace();
                     source.sendSpaced("An error occured while running the command "
-                        + command + ": " + PastebinUtils.pastebinStack(e));
+                        + command + ": " + PastebinUtils.pastebinStack(e) + " -- "
+                        + e.getClass().getName() + ": " + e.getMessage());
                 }
             }
             System.out.println("Finishing command run #1");
@@ -2655,7 +2661,8 @@ public class JZBot
             {
                 e.printStackTrace();
                 con.sendMessage(sender, "Internal upper-propegating pm exception: "
-                    + PastebinUtils.pastebinStack(e));
+                    + PastebinUtils.pastebinStack(e) + " -- " + e.getClass().getName()
+                    + ": " + e.getMessage());
             }
         }
         catch (FactTimeExceededError e)
