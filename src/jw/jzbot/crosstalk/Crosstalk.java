@@ -46,7 +46,7 @@ public class Crosstalk
             throw new ResponseException("The __crosstalk__ command needs arguments "
                 + "specified. For more help on what crosstalk is, see \"help crosstalk\".");
         int originalLength = arguments.length();
-        String[] tokens = StringUtils.split(arguments, " ", 2);
+        String[] tokens = StringUtils.split(arguments, " ", 3);
         String type = tokens[0];
         String messageId = tokens[1];
         arguments = tokens[2];
