@@ -6,8 +6,8 @@ dependencies: pyjzbot
 """
 
 import sys
-if "storage/afn-python/src" not in sys.path:
-    sys.path.append("storage/afn-python/src")
+if "../../afn/python/src" not in sys.path:
+    sys.path.append("../../afn/python/src")
 from libautobus import AutobusConnection
 from pyjzbot import makecommand
 import re
