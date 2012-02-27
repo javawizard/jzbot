@@ -40,7 +40,7 @@ public class IfFunction extends Function {
         String toCompare = "|" + value.toLowerCase() + "|";
         if (yesValues.contains(toCompare))
             return true;
-        else if (noValues.contains(toCompare))
+        else if (noValues.contains(toCompare) || value.equals(""))
             return false;
         else
             return null;
