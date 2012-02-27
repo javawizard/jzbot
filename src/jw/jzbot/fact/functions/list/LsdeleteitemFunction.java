@@ -13,7 +13,7 @@ public class LsdeleteitemFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         List<String> list = ListUtils.parseList(arguments.resolveString(0));
-        list.remove(arguments.resolveString(0));
+        list.remove(arguments.resolveString(1));
         sink.write(ListUtils.formatList(list));
     }
     
