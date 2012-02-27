@@ -32,7 +32,7 @@ public class AfterpadFunction extends Function
         return "Syntax: {afterpad|<number>|<char>|<value>} -- Evaluates to <value>, but "
                 + "with <char> (which must be a single character) appended until the "
                 + "resulting length is at least equal to <number>. For example, "
-                + "{pad|7|0|1234} would evaluate to \"1234000\".";
+                + "{afterpad|7|0|1234} would evaluate to \"1234000\".";
     }
     
     public String getName()
