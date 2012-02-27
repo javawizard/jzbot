@@ -329,11 +329,12 @@ public class FactParser {
                             functionName = functionName.substring(1)
                                     .replace("Plus", "+").replace("Minus", "-")
                                     .replace("Star", "*").replace("Slash", "/")
-                                    .replace("Equals", "=")
+                                    .replace("Equal", "=")
                                     .replace("Greater", ">")
                                     .replace("Less", "<")
                                     .replace("Percent", "%")
-                                    .replace("Dollar", "$");
+                                    .replace("Dollar", "$")
+                                    .replace("Bang", "!");
                         }
                         functionName = functionName.toLowerCase().replace("_",
                                 ".");
