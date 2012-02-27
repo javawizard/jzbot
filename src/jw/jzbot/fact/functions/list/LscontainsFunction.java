@@ -13,7 +13,7 @@ public class LscontainsFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         List<String> list = ListUtils.parseList(arguments.resolveString(0));
-        if (list.contains(arguments.resolveString(0)))
+        if (list.contains(arguments.resolveString(1)))
             sink.write(1);
         else
             sink.write(0);
