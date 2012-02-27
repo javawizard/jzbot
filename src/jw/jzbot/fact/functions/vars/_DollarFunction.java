@@ -7,7 +7,7 @@ import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 
-public class _PercentFunction extends Function {
+public class _DollarFunction extends Function {
     
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
@@ -23,7 +23,7 @@ public class _PercentFunction extends Function {
     
     @Override
     public String getHelp(String topic) {
-        return "Syntax: {%|<var>} or {%|<var>|<value>} -- In the first form, acts exactly like {lget|<var>}. "
+        return "Syntax: {$|<var>} or {$|<var>|<value>} -- In the first form, acts exactly like {lget|<var>}. "
                 + "In the second form, acts exactly like {lset|<var>|<value>}.";
     }
     

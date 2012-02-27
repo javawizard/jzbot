@@ -324,8 +324,7 @@ public class FactParser {
                         String className = file.getName().substring(0,
                                 file.getName().length() - ".class".length());
                         String functionName = className.substring(0,
-                                className.length() - "Function".length())
-                                .toLowerCase();
+                                className.length() - "Function".length());
                         if (functionName.startsWith("_")) {
                             functionName = functionName.substring(1)
                                     .replace("Plus", "+").replace("Minus", "-")
@@ -336,7 +335,8 @@ public class FactParser {
                                     .replace("Percent", "%")
                                     .replace("Dollar", "$");
                         }
-                        functionName = functionName.replace("_", ".");
+                        functionName = functionName.toLowerCase().replace("_",
+                                ".");
                         String folderName = generateFolderTo(file,
                                 functionsFolder);
                         String classNameInFolder = folderName + className;
