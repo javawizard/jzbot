@@ -22,7 +22,7 @@ import jw.jzbot.utils.Pastebin.Duration;
 
 /**
  * A provider that can interface to Paul Dixon's pastebin software. This is what
- * pastebin.com and pastebin.im run.
+ * pastebin.com used to run before it changed hands and what pastebin.im runs.
  * 
  * @author Alexander Boyd
  * 
