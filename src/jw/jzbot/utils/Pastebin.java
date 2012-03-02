@@ -41,7 +41,7 @@ public class Pastebin
     
     public static enum Duration
     {
-        DAY, MONTH, FOREVER
+        TEN_MINUTES, HOUR, DAY, MONTH, FOREVER
     }
     
     public static String createPost(String poster, String data, Duration duration,
