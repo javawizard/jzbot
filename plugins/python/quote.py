@@ -249,7 +249,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
 
 def init(context):
     global db
-    db = zxJDBC.connect("jdbc:h2:" + context.storageFolder.getPath() + 
+    db = zxJDBC.connect("jdbc:h2:" + context.storageFolder.getPath() +
                      "/quotedb/db", "sa", "", "org.h2.Driver")
     execute("create table if not exists quotes (quotegroup text, "
             "quotenumber int, quotetext text, hidden boolean)")
