@@ -1,6 +1,7 @@
 #!/bin/bash
 test -x storage/environment && . ./storage/environment
-CMD="java -server -ea -Xmx32m -cp classes:lib/*:storage/lib/*:/storage/afn-python/src:/usr/share/java/* -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils -Dsun.net.inetaddr.ttl=10 `cat storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
+ln -f -s ../../../afn/java/src/afn src
+CMD="java -server -ea -Xmx32m -cp classes:lib/*:../../afn/java/lib/*:storage/lib/*:/storage/afn-python/src:/usr/share/java/* -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils -Dsun.net.inetaddr.ttl=10 `cat storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
 echo 
 echo Running with command $CMD
 echo 
