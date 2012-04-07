@@ -15,9 +15,9 @@ public class FunctionReference extends FactEntity {
     
     private String functionName;
     
-    public FunctionReference(Sequence arguments) {
-        this.arguments = arguments;
-    }
+    // public FunctionReference(Sequence arguments) {
+    // this.arguments = arguments;
+    // }
     
     public FunctionReference(List<FactEntity> arguments) {
         this.arguments = new Sequence(arguments);
