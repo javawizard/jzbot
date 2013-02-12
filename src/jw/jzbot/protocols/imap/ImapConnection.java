@@ -346,7 +346,7 @@ public class ImapConnection implements Connection
 		try
 		{
 			String recipient = XmppConnection.unescape(target);
-			System.out.println("Sending email to " + recipient);
+			System.out.println("Sending (2) email to " + recipient);
 			Properties props = System.getProperties();
 			props.put("mail.transport.protocol", "smtps");
 			props.put("mail.smtps.auth", "true");
@@ -378,7 +378,7 @@ public class ImapConnection implements Connection
 				}
 			}
 		}
-		catch (Exception e)
+		catch (Throwable e)
 		{
 		    System.out.println("SMTP Exception");
 			e.printStackTrace();
