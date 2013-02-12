@@ -360,8 +360,11 @@ public class ImapConnection implements Connection
 			SMTPTransport t = (SMTPTransport) session.getTransport("smtps");
 			try
 			{
+			    System.out.println("SMTP Connecting");
 				t.connect(targetSmtpServer, targetUsername, targetPassword);
+				System.out.println("SMTP Sending");
 				t.sendMessage(m, m.getAllRecipients());
+				System.out.println("SMTP Done");
 			}
 			finally
 			{
@@ -377,6 +380,7 @@ public class ImapConnection implements Connection
 		}
 		catch (Exception e)
 		{
+		    System.out.println("SMTP Exception");
 			e.printStackTrace();
 		}
 	}
