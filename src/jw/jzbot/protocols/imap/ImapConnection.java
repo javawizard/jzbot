@@ -174,10 +174,13 @@ public class ImapConnection implements Connection
 			// The split thing makes it so we only get the first line of the
 			// message, which is what we want to nix any signature that might
 			// be on the message and stuff
-			if (!messageFrom.equalsIgnoreCase(targetUsername))// prevent against
+			if (!messageFrom.equalsIgnoreCase(targetUsername)) {// prevent against
 				// the bot emailing itself to stop potential infinite loops
-				context.onPrivateMessage(encodedFrom, "user", encodedFrom, messageContent
-						.split("\n")[0]);
+			    String content = messageContent.split("\n")[0];
+			    if(content.endsWith("\r"))
+			        content = content.substring(0, content.length() - 1);
+				context.onPrivateMessage(encodedFrom, "user", encodedFrom, content);
+			}
 		}
 		catch (Throwable e)
 		{
