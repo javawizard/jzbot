@@ -18,11 +18,6 @@ import jw.jzbot.fact.output.StringSink;
 
 import org.jibble.pircbot.Colors;
 
-import afn.parcon.Forward;
-import afn.parcon.InfixExpr;
-import afn.parcon.Parser;
-import static afn.parcon.Functions.*;
-
 /**
  * A class that can parse factoids. This is the main entry point to the Fact
  * interpreter. The parser is a hand-coded predictive recursive descent parser.<br/>
@@ -61,28 +56,6 @@ public class FactParser {
     private static Map<Class<? extends Function>, Function> functionsByClass = new HashMap<Class<? extends Function>, Function>();
     private static AtomicLong idSequence = new AtomicLong();
     
-    public static final Parser createParser() {
-        Forward sequence = new Forward();
-        Parser literal = charNotIn("{|}%\\").onceOrMore()
-                .translate(joinStrings).construct(Literal.class);
-        Parser var = sequence(literal("%"),
-                charNotIn("%").onceOrMore().translate(joinStrings),
-                literal("%")).construct(VarReference.class);
-        Parser call = sequence(
-                literal("{"),
-                new InfixExpr(sequence.translate(singletonList), InfixExpr.op(
-                        "|", concatLists)), literal("}")).construct(
-                FunctionReference.class);
-        Parser backslashEscape = sequence(literal("\\"), charNotIn(""))
-                .translate(method1(FactParser.class, "getEscapedChar"))
-                .translate(toString).construct(Literal.class);
-        sequence.parser = first(literal, call, var, backslashEscape)
-                .zeroOrMore().construct(Sequence.class);
-        return exact(sequence.parser);
-    }
-    
-    public static final Parser parser = createParser();
-    
     /**
      * Parses the specified factoid into a FactEntity. This fact entity can then
      * be {@link FactEntity#resolve(FactContext) resolved} at any point in the
@@ -105,11 +78,149 @@ public class FactParser {
      * @return The parsed factoid
      */
     public static FactEntity parse(String factoid, String name) {
-        return (FactEntity) parser.parseString(factoid);
+        CharStack stack = new CharStack("{identity|" + factoid + "}");
+        FunctionReference reference = parseFunction(stack, name,
+                "{identity|".length());
+        if (stack.more())
+            /*
+             * The only way we can have more here is if they closed the identity
+             * function accidentally
+             */
+            throw new ParseException(stack.at(),
+                    "There are more \"}\" than there are \"{\"");
+        if (reference.getArgumentSequence().length() > 2)
+            throw new ParseException(stack.at(), "\"|\" is being used "
+                    + "somewhere in your factoid "
+                    + "outside of a function. If you want a literal \"|\" "
+                    + "character included in your text, you need to put "
+                    + "a backslash before it.");
+        FactEntity toplevel = reference.getArgumentSequence().get(1);
+        toplevel.setFactText(factoid);
+        toplevel.setParent(null);
+        return toplevel;
     }
     
-    // FIXME: With the change to Parcon parsing, position information was lost.
-    // This needs to be restored.
+    /**
+     * Parses a CharStack representing a function call into a function
+     * reference. Usually, if you're just trying to parse/run a factoid, you'll
+     * use {@link #parse(String)} instead. parse(String) interally calls this
+     * method with the argument "{identity|" + factText + "}" where factText is
+     * the text of the factoid.
+     * 
+     * 
+     * @param stack
+     *            The CharStack to parse
+     * @param name
+     *            The name of the factoid that we're in. See the <tt>name</tt>
+     *            parameter of the <tt>parse</tt> method for more info on what
+     *            this is.
+     * @return The parsed function
+     */
+    public static FunctionReference parseFunction(CharStack stack, String name,
+            int indexOffset) {
+        if (stack.next() != '{')
+            throw new ParseException(stack.at() - 1,
+                    "Start of function reference must be an open brace but is not");
+        int startFunctionIndex = stack.at() - 1;
+        Sequence argumentSequence = init(new Sequence(), name, stack.at()
+                - indexOffset);
+        Sequence currentArgument = init(new Sequence(), name, stack.at()
+                - indexOffset);
+        argumentSequence.add(currentArgument);
+        Literal currentLiteral = null;
+        // Now we parse until we hit one of "%", "{", "|", or "}". "%" means
+        // a variable reference, so we parse until the next "%", create a
+        // literal off of that, and add a reference to the lget command with the
+        // argument being the literal. "{" means the start of another function,
+        // which means we go back to just before it, call parseFunction again,
+        // and add the resulting function reference to the current argument.
+        // "|" means we're on to the next argument, so we add the current
+        // argument to the argument sequence and set the current argument to be
+        // a new argument. "}" means we're at the end of the function, so we
+        // add the current argument to the argument sequence, create a function
+        // reference off of the argument sequence, and return it.
+        while (stack.more()) {
+            char c = stack.next();
+            if (c == '\n' || c == '\r') {
+                continue;
+            } else if (c == '\\') {
+                if (currentLiteral == null) {
+                    currentLiteral = init(new Literal(), name, stack.at()
+                            - indexOffset);
+                    currentArgument.add(currentLiteral);
+                }
+                String theChar = getEscapedChar(stack.next());
+                if ("[".equals(theChar)) {
+                    char v;
+                    while ((v = stack.next()) != ']') {
+                        currentLiteral.append(v);
+                    }
+                } else if (theChar != null)
+                    currentLiteral.append(theChar);
+            } else if (c == '%'/* || c == '$' */) {
+                // The "$" sign for global variables is disabled for now.
+                int startIndex = stack.at();
+                currentLiteral = null;
+                StringBuffer l = new StringBuffer();
+                char v;
+                while ((v = stack.next()) != c) {
+                    l.append(v);
+                }
+                String varName = l.toString();
+                if (!varName.trim().equals("")) {
+                    currentArgument.add(init(
+                            new VarReference(varName, c == '$'), name,
+                            startIndex - indexOffset));
+                }
+            } else if (c == '{') {
+                currentLiteral = null;
+                stack.back();
+                FunctionReference ref = parseFunction(stack, name, indexOffset);
+                currentArgument.add(ref);
+            } else if (c == '|') {
+                currentLiteral = null;
+                if (currentArgument.length() == 1) {
+                    /*
+                     * If the current argument sequence only has one child,
+                     * we'll replace it with its child for efficiency reasons.
+                     */
+                    argumentSequence.remove(argumentSequence.length() - 1);
+                    argumentSequence.add(currentArgument.get(0));
+                }
+                currentArgument = init(new Sequence(), name, stack.at()
+                        - indexOffset);
+                argumentSequence.add(currentArgument);
+            } else if (c == '}') {
+                currentLiteral = null;
+                if (currentArgument.length() == 1) {
+                    /*
+                     * If the current argument sequence only has one child,
+                     * we'll replace it with its child for efficiency reasons.
+                     */
+                    argumentSequence.remove(argumentSequence.length() - 1);
+                    argumentSequence.add(currentArgument.get(0));
+                }
+                FunctionReference ref = new FunctionReference(argumentSequence);
+                init(ref, name, startFunctionIndex - indexOffset);
+                argumentSequence.setFunction(ref);
+                return ref;
+            } else {
+                if (currentLiteral == null) {
+                    currentLiteral = new Literal();
+                    currentArgument.add(currentLiteral);
+                }
+                currentLiteral.append(c);
+            }
+        }
+        /*
+         * We shouldn't ever get here. If we do, then it means that a function
+         * call wasn't closed properly, so we'll throw an exception.
+         */
+        throw new ParseException(stack.at() - 1,
+                "Function call not closed (IE you have "
+                        + "more \"{\" than you have \"}\")");
+    }
+    
     private static <T extends FactEntity> T init(T entity, String factName,
             int index) {
         entity.setFactName(factName);
@@ -135,7 +246,7 @@ public class FactParser {
      *            The special character
      * @return The corresponding character
      */
-    public static String getEscapedChar(char c) {
+    private static String getEscapedChar(char c) {
         switch (c) {
         case 'n':
             return "\n";

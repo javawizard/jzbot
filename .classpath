@@ -41,7 +41,5 @@
 	<classpathentry kind="lib" path="lib/mail.jar"/>
 	<classpathentry kind="lib" path="lib/jython.jar" sourcepath="/data/libraries/jython/jython-all/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/afn-java"/>
-	<classpathentry kind="lib" path="/afn-java/lib/json_simple-1.1.jar" sourcepath="/data/libraries/json_simple/json_simple-1.1-all/src"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
