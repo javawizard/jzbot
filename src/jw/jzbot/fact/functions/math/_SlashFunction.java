@@ -1,6 +1,7 @@
 package jw.jzbot.fact.functions.math;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
@@ -13,7 +14,7 @@ public class _SlashFunction extends Function {
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         BigDecimal total = new BigDecimal(arguments.resolveString(0));
         for (int i = 1; i < arguments.length(); i++)
-            total = total.divide(new BigDecimal(arguments.resolveString(i)));
+            total = total.divide(new BigDecimal(arguments.resolveString(i)), 100, RoundingMode.HALF_EVEN);
         sink.write(total.toString());
         
     }
