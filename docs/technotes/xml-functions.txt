@@ -1,0 +1,17 @@
+xmlparse:
+parses an xml document.
+
+xmlsearch:
+Searches for all elements or attributes matching the specified xpath.
+
+xmlatts:
+Gets the xpaths of all attributes on the specified element.
+
+xmltext:
+Gets the value of the specified attribute or the text of the specified element.
+
+xmlname:
+Gets the name of the specified attribute or the tag name of the specified element.
+
+xmleq:
+Evaluates to 1 if the specified paths represent the same element or attribute.

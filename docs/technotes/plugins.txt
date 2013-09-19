@@ -1,0 +1,1 @@
+Plugins are defined in wiki/Plugins.wiki.

@@ -1,0 +1,189 @@
+name local.admin.rotatingnews
+author Alexander Boyd
+description RotatingNews allows a channel's topic to be continuously in motion. It allows 
+  each channel that it is to control to specify a prefix, which will always be present 
+  at the beginning of the channel's topic. Then, each channel can add news with "~addnews". 
+  When this is run, news items will be "rotated" through the channel's topic, always keeping 
+ the length of the topic below 420 characters. News items that have been rotated out of the 
+  channel's topic can be accessed with "~morenews", which pastebins all news (including news 
+  in the topic) back 20 news items, along with the dates that each item was posted and the 
+  authors of each item. If someone tries to change the topic of a channel that RotatingNews 
+ is controlling, RotatingNews will change the topic back and issue a message to the channel 
+  telling the user that they should use ~addnews instead. RotatingNews requires ChanServ's 
+  "+o" flag at every channel that RotatingNews should control. It will use this to op the 
+  bot if it isn't opped when news is added.
+# As expected, rn (RotatingNews) stores everything as persistent variables. These variables
+# are used:
+#     rotatingnews-channel-<name>: <name> is the name of a channel. This activates RotatingNews
+#       at the specified channel. The value is anything besides the empty string, and RotatingNews
+#       sets it to "1" by default.
+#     rotatingnews-prefix-<name>: <name> is the name of a channel. The value of this variable
+#       is the prefix that should appear at the beginning of the channel's topic always.
+#     rotatingnews-items-<name>: <name> is the name of a channel. The value of this variable is
+#       a list of current news items, most recent first, with each item separated by "-----".
+#       Each item is of the format "<nick> <date> <text>", where <nick> is the
+#       nickname of the user that posted the news item, <date> is the date number 
+#       when the news item was posted, and <text> is the text of the news item.
+# 
+# rn has a factoid that takes a channel as an argument and sets that channel's topic to be
+# what it should be with rn installed. This gets the channel's prefix and the channel's items.
+# The prefix is first appended to the topic. One news item at a time is then taken off of
+# the channel's news and appended to the topic, with " || " before it, until there are either
+# no more news items left or appending the news item would result in the topic's length being
+# longer than 420 characters. Then, if the prefix is empty, the topic has its first four 
+# characters removed to get rid of the " || " that would be at the beginning. This is then set
+# as the channel's new topic.
+# 
+# Activating a channel involves simply creating the -channel property, and then setting the
+# channel's topic. The prefix, if not present (meaning if the channel hasn't ever before 
+# been activated), is set to "Use ~newsprefix <text> to set a prefix for your topic".
+# 
+# Setting the prefix is done by setting the persistent variable and then updating the topic.
+# 
+# Adding a news item is a bit more complex, but not by a ton. First, a local variable called
+# "count" is created, and initialized to be the value 1. Then, a local variable called "items"
+# is set to be the news item to add. Then, the current list of news items is iterated over.
+# On each iteration, items is suffixed with "-----" and the item itself. count is then 
+# incremented. When it reaches 20, all the rest of the news items will be ignored. Once this
+# is done, the news in the local var is set into the persistent var news, and the topic
+# is updated.
+# 
+# Viewing news using ~morenews involves splitting around "-----". The delimiter at the end
+# is a newline character. First, the news is split once, and the length of the sequence of
+# the formatted date and the person's nickname is measured. Then, the news is split again,
+# and this time constructed into a pastebin. The string that makes up the user's name and
+# the date is suffixed with spaces so that all of the strings are the exact same length;
+# this is more of a formatting thing than a functional thing. The pastebin post is then
+# sent to the user.
+# 
+# rn installs a global ontopic script. When this is called, it checks to see if the channel
+# is one under rn control. If it is, it checks to see if the topic changer is the bot itself.
+# If it's not, then it generates a topic for the channel, sets it, and then sends a message
+# to the channel telling the user that they should use ~addnews instead to add a news item.
+# 
+g.newsprefix={{pset||rotatingnews-prefix-%channel%||%1-%}}The channel's prefix has been successfully set.\
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}
+restrict.g.newsprefix=1
+g.addnews={{ife||%1-%||Syntax\: "addnews <text>" -- Adds the specified news item.||\
+{{lset||count||0}}{{lset||items||%0% {{timems}} %1-%}}\
+{{split||-----||\{{pget||rotatingnews-items-%channel%}}||item||\
+{{lset||count||{{eval||%count%+1}}}}\
+{{if||{{eval||%count%<50}}||{{lset||items||%items%-----%item%}}}}\
+}}\
+{{pset||rotatingnews-items-%channel%||%items%}}\
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
+The news has been successfully added to this channel.\
+}}
+restrict.g.addnews=1
+g.morenews=\
+{{if||{{exact||rotatingnews-in-use}}||\
+\\ {{pastebin||\
+\\ \\ {{split||-----||{{pget||rotatingnews-items-%channel%}}||item||\
+\\ \\ \\ {{dateformat||{{splitindex|| ||%item%||3||1}}}}, by "\
+\\ \\ \\ {{splitindex|| ||%item%||3||0}}"\: \
+\\ \\ \\ {{splitindex|| ||%item%||3||2}}\
+\\ \\ ||\\n}}\
+\\ }}\
+||This channel doesn't use RotatingNews.}}
+g.rotatingnews-generate-topic=\
+{{ife||{{pget||rotatingnews-channel-%channel%}}||{{error||That channel isn't controlled \
+by RotatingNews.}}}}\
+{{lset||prefix||{{pget||rotatingnews-prefix-%channel%}}}}\
+{{lset||c-items||{{pget||rotatingnews-items-%channel%}}}}\
+{{lset||newtopic||%prefix%}}\
+{{lset||continue||1}}\
+{{lset||maxl||{{first||{{pget||rotatingnews-maxlength}}||420}}}}\
+{{split||-----||%c-items%||item||\
+\\ {{if||%continue%||\
+\\ \\ {{lset||potential||%newtopic% \\|| {{splitindex|| ||%item%||3||2}}}}\
+\\ \\ {{if||{{eval||{{length||%potential%}}<%maxl%}}||\
+\\ \\ \\ {{lset||newtopic||%potential%}}\
+\\ \\ \\ ||{{lset||continue||0}}\
+\\ \\ }}\
+\\ }}\
+}}\
+{{if||{{match||^ \\\\\\|\\\\\\| .*||%newtopic%}}||\
+\\ {{lset||newtopic||{{substring||4||1000||%newtopic%}}}}\
+}}\
+{{lset||wasop||{{isop||%self%}}}}\
+{{if||%wasop%||||{{sendmessage||ChanServ||op %channel% %self%}}}}\
+{{wait||1000}}\
+{{topic||%newtopic%}}\
+{{if||%wasop%||||\
+\\ {{wait||1000}}\
+\\ {{mode||-o %self%}}\
+}}
+library.g.rotatingnews-generate-topic=1
+g.rotatingnews-in-use={{ife||{{pget||rotatingnews-channel-%channel%}}||0||1}}
+library.g.rotatingnews-in-use=1
+g.rotatingnews-config={{switch||%1%\
+||activate||\
+{{pset||rotatingnews-channel-%channel%||1}}{{ife||{{pget||rotatingnews-prefix-%channel%}}\
+||{{pset||rotatingnews-prefix-%channel%||RotatingNews has been activated. Use \
+"{{trigger}}newsprefix <text>" to set a prefix for your channel.}}}}\
+RotatingNews has been activated. If you want to deactivate it at a later date, use \
+"{{trigger}}rotatingnews-config deactivate".\
+{{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
+||deactivate||\
+{{pdelete||rotatingnews-channel-%channel%}}RotatingNews has been deactivated. All of \
+your current news will be remembered if you activate it in the future.\
+\
+||Invalid command. Use "{{trigger}}rotatingnews-config activate" or \
+"{{trigger}}rotatingnews-config deactivate".\
+}}
+restrict.g.rotatingnews-config=1
+g._chan_ontopic_rotatingnews-trigger=\
+{{ifne||{{pget||rotatingnews-channel-%channel%}}||\
+\\ {{ifneq||%0%||%self%||\
+\\ \\ {{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
+\\ \\ {{sendmessage||%channel%||This channel uses RotatingNews, so you can't change the topic. \
+\\ \\ To add a news item to the topic, try "{{trigger}}addnews <text>".}}\
+\\ }}\
+}}
+library.g._chan_ontopic_rotatingnews-trigger=1
+# For deleting news, we need to make three passes over the list of news items. The first 
+# pass, we find the news item we want to delete by incrementing a local var. Each item
+# is prefixed with 1 if it's to be included or 0 if it's the item to delete. Then, we
+# make a second pass with {{filter}}, filtering out the item that starts with a 0. Then,
+# we make a third pass, this time removing the leading 1. We then set this back into
+# the channel's persistent variable.
+g.deletenews=\
+{{lset||items||{{pget||rotatingnews-items-%channel%}}}}\
+{{ife||%items%||This channel doesn't have any news items.||\
+\\ {{lset||current||0}}\
+\\ {{lset||items||\
+\\ \\ {{split||-----||%items%||item||\
+\\ \\ \\ {{lset||current||{{eval||%current%+1}}}}\
+\\ \\ \\ {{ifeq||%current%||%1%||0||1}}\
+\\ \\ \\ %item%\
+\\ \\ \\ ||-----\
+\\ \\ }}\
+\\ }}\
+\\ {{lset||items||\
+\\ \\ {{filter||-----||%items%||^1.*\\$||-----}}\
+\\ }}\
+\\ {{lset||items||\
+\\ \\ {{split||-----||%items%||item||\
+\\ \\ \\ {{substring||1||1000||%item%}}\
+\\ \\ \\ ||-----\
+\\ \\ }}\
+\\ }}\
+\\ {{ifeq||{{pget||rotatingnews-items-%channel%}}||%items%||\
+\\ \\ There isn't a news item with that index. Use "deletenews <index>", \
+\\ \\ where <index> is the line number of the news item you want to delete \
+\\ \\ as reported by "morenews".\
+\\ \\ ||\
+\\ \\ {{pset||rotatingnews-items-%channel%||%items%}}\
+\\ \\ {{future||rotatingnews-key-%channel%||5||rotatingnews-generate-topic}}\
+\\ \\ The news was successfully deleted.\
+\\ }}\
+}}
+restrict.g.deletenews=1
+postinstall=Rotating news is now installed but not active. To activate it at a particular \
+channel, send "{{trigger}}rotatingnews-config activate" at that channel.
+
+
+
+
+
+

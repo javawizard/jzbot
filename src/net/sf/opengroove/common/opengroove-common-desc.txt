@@ -1,0 +1,3 @@
+This package (net.sf.opengroove.common) contains classes common to all OpenGroove projects (for example, the OpenGroove Client and the OpenGroove Realm Server). It is included in a project by way of an svn:externals property.
+
+CARE SHOULD BE EXERCISED WHEN MODIFYING THE FILES IN THIS PACKAGE AND IT'S SUBPACKAGES. These files are used by most of the OpenGroove projects, so modifying them in one project will modify then in all others as well.

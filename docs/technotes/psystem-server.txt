@@ -1,0 +1,79 @@
+This document discusses the workings of the plugin system in terms of the code JZBot uses on its side to load plugins and stuff.
+
+In Storage, there's another StoredList, this one of PersistentKey objects. These represent all of the keys, and associated plugin names, that have been added with "~plugin newkey". PersistentKey contains two fields: key and name. Key is the unique key, and name is the name that should be used for plugins when they authenticate with that key.
+
+When JZBot starts, it reads storage/requested-plugin-port. If it exists, it reads the port number from that. If it doesn't, it randomly generates a port number. It then writes the port number (regardless of whether or not it ended up reading it from requested-plugin-port) to storage/plugin-port. It then opens a TCP server socket on this port, and starts a thread listening for connections.
+
+When a connection is received, the socket reader reads the key that the plugin is trying to log in with. It then goes and first looks up in storage to see if the key specified is a persistent key. If it is, it uses the name matched with it as the name of the plugin. If not, it looks into the temporary key map to find the key, and uses the name in that map. If the key is not present in that map, JZBot rejects the plugin's connection for using an invalid key.
+
+Then, if, in the map of currently-loaded plugins, there is already a plugin with that name, the connection is rejected for trying to connect twice with the same name.
+
+If the connection has gotten this far without being rejected, JZBot adds the plugin's connection to the map of currently-connected plugins and wraps it with an RPCLink. It then checks the notification map to see if there's anything waiting to know when the plugin loads, and notifies it that the plugin has loaded.
+
+There are two types of plugins, as has been discussed before: internal plugins, which are scripts run at the request of a JZBot user (or because they're in the list of plugins loaded on startup), and external plugins, which are plugins that have a persistent key in the datastore and load themselves simply by connecting to the bot and authenticating correctly. As is most likely obvious, the steps taken to load a plugin and the steps taken to unload a plugin differ quite a bit between these two types, and indeed, those steps differ depending on how the plugin is unloaded.
+
+An internal plugin can be loaded in one of three ways:
+
+	By running "~plugin load <name>". 
+	
+	By marking the plugin as one that will be loaded automatically when JZBot starts.
+	
+	By using the {loadplugin} function to load a plugin.
+	
+An external plugin can be loaded in one way only:
+
+	By having the external plugin connect to JZBot and authenticate with a persistent key.
+	
+Plugins, both internal and external, can be unloaded in one of 6 different ways:
+
+	When the bot is about to shut down.
+	
+	By using the {unloadplugin} function to unload a plugin.
+	
+	By running "~plugin unload <name>".
+	
+	By the plugin requesting that JZBot unload it with unload().
+	
+	By a plugin requesting another plugin to be unloaed with unloadPlugin().
+	
+	By unexpectedly losing the TCP connection to the plugin or by having RPCLink throw an exception on a malformed packet.
+	
+Internal plugins can be unloaded one additional way:
+
+	When the plugin process terminates unexpectedly.
+	
+All of these need to be handled differently in code. Of the unload methods, 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+

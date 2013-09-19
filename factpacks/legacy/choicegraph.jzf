@@ -1,0 +1,62 @@
+name=local.games.choicegraph
+author=Alexander Boyd
+scope=global
+description=Adds a command, "choice", which can be used to follow a choicegraph. A choicegraph \
+is a series of questions and answers inputted into ChoiceGraph. Each question has a list \
+of possible answers, and each of those answers redirects to another question. When a question \
+with no answers is encountered, the question itself is printed, and the choicegraph session \n\
+ends. The command "choice <name>" is used to start a choicegraph session of questions and \
+answers, and "choicegraph add <name> <pastebin-url>" is used to add an actual set of choicegraph \
+questions.
+#The choicegraph system works off of the idea that accessing a named global variable is
+#quite a bit less computationally expensive than scanning through a list of items to find
+#a particular item, especially when there are a lot of items to scan through. Based on this
+#assumption, the choicegraph system actually builds a cache of global variables, where there
+#is one global variable for each row in the choiceset. Each choiceset, in its entire text,
+#is stored as a persistent variable named choicegraph-choiceset-<name>. The choicegraph
+#system then installs a global factoid called _onready_choicegraph which parses all persistent
+#variables that start with "choicegraph-choiceset-". For each of these, it gets all rows,
+#and for each row, puts it into a global variable named "choicegraph-choice-<name>-><key>",
+#where <name> is the name of the choiceset, and <key> is the key of the row that the variable
+#corresponds to. Note the use of "->" to separate the name and the key, instead of "-". This
+#is so that choiceset names can contain hyphens.
+#
+#The value of each global variable is of the format 
+#"<key>:<text>:<answer1>-><key1>#<answer2>-><key2>#...". 
+#
+#When a user runs ~choice <name>, a global variable called choicegraph-current-<user> is 
+#created, and it holds the name of the choicegraph the user is using. A global variable 
+#called choicegraph-userchoice-<name> is also created, which holds the key of the row that
+#the user is currently on.
+#
+#When a user runs ~choice <number>, the value of the row that they are currently on is
+#looked up. The particular numbered choice is then looked up. If it's valid, then the user's
+#current choicegraph stuff is set to that number. Then they are presented with the question 
+#referenced by that item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#    wx:Do you like seafood?:yes->wn#no->wy#maybe->wx

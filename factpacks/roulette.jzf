@@ -1,0 +1,45 @@
+name local.games.roulette
+author Alexander Boyd
+scope any
+description This factpack creates a "roulette" factoid that can be used to play a game of russian 
+  roulette. When a user issues "~roulette", they will either get a response such as "Chamber 1 of 
+  6: *click*" or "Chamber 1 of 6: *BANG* You're dead". One out of every 7 games, the gun will be 
+  unloaded. This is indicated by "Chamber 6 of 6: *click*" followed by "The gun was unloaded. 
+ Luckster". Also, if ~roulette is not used for 5 minutes, the game will be reset, and if the bot 
+  is opped at a channel and a user loses at roulette, that user will be kicked off of the channel. 
+  In a future release, there will be a mechanism to disable this kick functionality.
+ Also, Roulette can install a SegServer page that serves up statistics on which players 
+  die what percentage of the time. To get this page to work, install SegServer and 
+  run "roulette-config register-web".
+preinstall {fpcheckdep||local.library.conditional-op}
+>roulette {ife|{channel}|Roulette can only be used at a channel.|{exact|roulette-create}{exact|roulette-next}{ifeq|{get|roulette-loaded-{scope}}|{get|roulette-current-{scope}}|{exact|roulette-die|%0%}|{sendmessage|{scope}|%0%: (Chamber {get|roulette-current-{scope}} of 6) *click*}{ifeq|{get|roulette-current-{scope}}|6|{exact|roulette-unloaded}}}}
+>roulette-create {ifeq|{get|roulette-loaded-{scope}}||{set|roulette-loaded-{scope}|{eval|{randomint|7}+1}}}{ifeq|{get|roulette-current-{scope}}||{set|roulette-current-{scope}|0}}{future|roulette-delete-key-{scope}|300|roulette-delete}
+library.roulette-create 1
+>roulette-delete {delete|roulette-loaded-{scope}}{delete|roulette-current-{scope}}
+library.roulette-delete 1
+>roulette-next {set|roulette-current-{scope}|{eval|{get|roulette-current-{scope}}+1}}
+library.roulette-next 1
+>roulette-unloaded {sendmessage|{scope}|The gun was unloaded. Luckster.}{exact|roulette-reset}
+library.roulette-unloaded 1
+>roulette-die {ifeq|{pget|roulette-kick-{scope}}|1|{import|library.conditional-op}{kick|%0%|(Chamber {get|roulette-current-{scope}} of 6) *BANG* You're dead.}{import|library.conditional-deop}}{sendmessage|{scope}|%0%: (Chamber {get|roulette-current-{scope}} of 6) *BANG* You're dead.}{exact|roulette-reset}
+library.roulette-die 1
+>roulette-reset {delete|roulette-current-{scope}}{delete|roulette-loaded-{scope}}{sendaction|{scope}|reloads and spins the chamber}
+library.roulette-reset 1
+>roulette-config -
+{switch|%1%
+ |kick|
+ \ {ife|%2%
+ \ \ |Roulette kicks are {ifeq|{pget|roulette-kick-{scope}}|1|on|off} at this 
+ \ \ channel. Use "{trigger}roulette-config kick 
+ \ \ {lset|opposite|{ifeq|{pget|roulette-kick-{scope}}|1|off|on}}%opposite% 
+ \ \ to turn kicks %opposite%.
+ \ \ |
+ \ \ \ {switch|%2%
+ \ \ \ |on|{pset|roulette-kick-{scope}|1}Roulette kicks have been turned on.
+ \ \ \ |off|{pdelete|roulette-kick-{scope}}Roulette kicks have been turned off.
+ \ \ \ |Invalid kick value, must be either "on" or "off", not "%2%"
+ \ \ \ }
+ \ }
+ |Invalid command. The only valid command right now is {trigger}roulette-config kick on/off.
+ }
+restrict.roulette-config 1

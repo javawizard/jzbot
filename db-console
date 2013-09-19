@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# URL: jdbc:h2:db;FILE_LOCK=SOCKET
+
+java -cp classes org.h2.tools.Server -web -baseDir storage

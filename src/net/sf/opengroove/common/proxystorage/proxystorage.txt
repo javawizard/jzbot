@@ -1,0 +1,34 @@
+Each class (actually an interface but I'm calling it a class here for some random reason) in the object hierarchy has a table, who's name is it's non-qualified class name. For example, a class called net.sf.opengroove.client.storage.Contact would have it's objects stored in the table "contact". This can be changed by annotating the class with the @Table annotation.
+
+There is a column in each classes's table called proxystorage_id. It is a long. It represents the object's id.
+
+For each bean property on the class where the getter is annotated with @Property, there is a column in the table. If the value of the property is null, then the column's value is null. For java primitive types, a null value will be converted to 0 on a read, so there usually will not be a null value in a primitive column. For primitives, the type of the column corresponds to the type of the primitive. If a property is a Java long and the getter is annotated with @DateColumn, then the value will be stored as a Timestamp instead of as an int8. For strings, the type of the column is a varchar(1024), unless the length is specified in an @Length annotation, in which case the length is the length specified. For list types (IE those where the class of the property is StoredList), the value of the column is a long. If this is null, then it means that the property holding the list is null. If this is not null, then it is the id of the list. For each item in the list, then, there is a row in the collections table, with it's id being the number present in this column, it's index being it's position within the list, and it's value being a long that is a reference to the object at that particular position. Null values are not allowed at present, although it would be easy to do so, simply by having the value column be null for a null element.
+
+Anyway, for other objects, the column for that property is of type long, and contains the id of the object that is referenced, or null if there is no such object.
+
+Properties that have their getter annotated with @Identity are used within the equals and hashCode methods. A particular database object is considered equal to another one if all of the identity properties match. If none of the properties are annotated with @Identity, then two database objects will be considered equal if their database ids match.
+
+A property can be marked as @Required, in which case it cannot be set to null, and will be automatically created the first time a getter method is called, if it is called before a setter method has been called.
+
+List types only have a getter. They are never null. The list retrieved initially has no elements in it. Operations that modify a list typically require one SQL statement for the modification plus one SQL statement for each element the comes after the element being modified, except for the case of a set operation, which only uses one SQL statement period.
+
+Primitive properties can be annotated with @Default, and the value of the annotation will be used as the initial value when one of these is created.
+
+The static "root" contains the id of the root element. The static "sequencer" contains the next id to use for object creation.
+
+
+Tabled used:
+
+proxystorage_statics: 
+ name varchar(256) The name of this particular static. Allowed values are "sequencer" and "root".
+ value long The value of this static.
+ 
+proxystorage_collections:
+ id long The id of the collection
+ index int The index of the item in the collection. Indexes start at 0.
+ value long The id of the value of this particular element
+ 
+ELEMENT: (where ELEMENT is the name of this particular class)
+ proxystorage_id long The id of this element
+ PROPNAME PROPTYPE A specific property (where PROPNAME is the name of the property and PROPTYPE is the type of the property)
+ 

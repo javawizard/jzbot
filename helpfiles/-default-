@@ -1,0 +1,4 @@
+Send ~command (replace ~ with the channel's trigger), or pm command to the bot to  run it. Most commands are specific to a channel; in a pm, 
+prefix with the channel name. For example, send in a pm "#opengroove factoid create ..." would do the same as sending "factoid create ..." to 
+#opengroove. Use ~commandlist or pm "commandlist" to get a list of commands, then ~help <command> to get help on a specific command.
+Use "~help about" for information.

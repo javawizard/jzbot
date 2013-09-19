@@ -1,0 +1,64 @@
+I'm thinking jzbot should have the ability to connect to multiple servers. What I'm thinking is that each server the bot wants to connect to should be represented by a Protocol object. This would require almost no modification of the current IrcProtocol code. Then, a ServerSupport object or some such object would be passed into the protocol. Instead of having static event methods on JZBot (such as onMessage()), these methods are moved to ServerSupport (which would most likely be a static inner class of JZBot), and then one ServerSupport is created per protocol instance that holds information on that protocol.
+
+Servers are named. The particular name of a server can be anything; in particular, it doesn't need to contain or reflect upon in any way the hostname of the server to connect to.
+
+A particular named server has associated with it a hostname to connect to (example: irc.freenode.net), a port (example: 6667), a nickname (example: Marlen_Jackson), and a password (example: 1234). 
+
+This change requires some added notifications and the changing of the meaning of some notifications. Specifically, HTTP servers persist through a reconnect (IE the only way to manually recycle them is to ~restart); _onready runs when the bot start up and connects to proxystorage and everything, not when a connection to a server is established, _onconnect runs when a connection to a particular server is established (and _ondisconnect *will* run when a connection is lost, but I'm not planning on adding that yet), and, most likely, _onconnectfail will run when the bot tried to connect to a server but the connection failed for some reason.
+
+There will be some functions that change the current server or the current channel that a particular factoid is running at. These are needed particularly for notifications that do not run in the context of a server, such as _onready, which would otherwise be unable to execute several functions.
+
+Similar to the way channels work, servers can be active or non-active. Adding a server causes it to automatically become active. Active servers constantly try to connect when they get disconnected; non-active servers do not. There is a thread that checks every minute or so for servers that are connected but not active and disconnects them. The same thread goes through and attempts to connect servers that are not connected. Protocols, to that end, should not spend more than 20 seconds or so trying to connect before reporting a connection error. 
+
+The check thread blocks on reading from a queue. Every 2 minutes (this will be most likely configurable via a config var), or when the queue is triggered by adding an item to it, it goes through and does four things:
+
+	First, all servers that do not have a corresponding connection object get one created for them.
+	
+	Second, all connection objects that are disconnected and that have a corresponding active server object are connected.
+	
+	Third, all connection objects that are connected and that either have a corresponding non-active server object or do not have a corresponding server object are disconnected.
+	
+	Fourth, all connection objects that do not have a corresponding server are deleted.
+	
+A server disconnect also triggers the check thread. If the check thread fails to connect to a server, it simply moves on; the next check thread iteration will cause the server to be connected to again.
+
+Global notification factoids are run when a particular notification occurs at any of the servers. The {{server}} function can be used to detect which server the notification... hmm, now I'm thinking it might be a good idea to have global, server, and channel factoids... since facebook server factoids might be confusing if used at other servers... that might be something to consider. Deleting a server would delete any server and channel factoids associated with it. Also add an _onweek notification. The server-specific factoids thing would also greatly simplify notifications. However, it would probably be a good idea to get rid of the "_chan" prefix before some notifications, and just make sure that notification names never conflict. Commands like ~factoid literal should automatically widen their scope if that would work. For example, "~factoid literal roulette" "There isn't a local factoid named roulette. However, there is a global one. Here it is:" and so on, and for server-scope factoids the same thing would happen. This should not happen when modifying stuff, like when restricting or deleting. 
+
+Most commands to the bot currently can be prefixed with the name of a channel to run the command at. With the addition of multiple servers, this will change slightly: commands can be run in the context of a particular channel using the previous syntax, but the syntax @server#channel will also be supported, which runs the command in the context of the specified channel on the specified server. Additionally, a % can be present at the beginning of that specifier (so, for example, %@server#channel or %#channel) which tells the bot to use the channel as the message source instead of the user. This will cause the bot to act functionally identical to what it would if the message had been sent at the channel with the bot's trigger, with a few exceptions (most notably that the message is sent to the bot's pm log instead of its channel log).
+
+The connection objects for each server are stored in a hash map on JZBot. 
+
+
+
+Internally, the proxy storage system maintains
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

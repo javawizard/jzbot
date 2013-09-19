@@ -1,0 +1,25 @@
+name local.stats.bzflist
+author Alexander Boyd
+description Adds a command, bzflist, that prints out the current top 5 bzflag servers 
+  (ordered by number of players), and the number of players on each server and the 
+  number of players on each team on those servers.
+>bzflist -
+ {lset|count|0}
+ {sendsplit|%source%|-----| \| |
+ \ {bzflist|bz|
+ \ \ {lset|count|{eval|%count%+1}}
+ \ \ {ifeq|%count%|6|
+ \ \ \ {lset|bz-quit|1}
+ \ \ }
+ \ \ %bz-hostname%: 
+ \ \ "{restrict|%bz-description%|43}" 
+ \ \ (%bz-playercount%) 
+ \ \ \c04%bz-redcount% 
+ \ \ \c08%bz-roguecount% 
+ \ \ \c03%bz-greencount% 
+ \ \ \c02%bz-bluecount% 
+ \ \ \c06%bz-purplecount%\p 
+ \ \ %bz-observercount%|-----
+ \ }
+ }
+

@@ -1,0 +1,7 @@
+The ~redefine command can be used to redefine commands (except for the redefine command itself). It has the format "~redefine commandname newname" to create a definition, "~redefine" to list all definitions (in the format "command->newname   another->new   something->else"), and "~redefine commandname" to reset a redefinition.
+
+When a command is received, JZBot checks to see if the name denotes a command that is supposed to be run. Here's how it does it:
+
+First, it looks up to see if there's a redefinition by that name. If there is, it runs the command it specifies. If there isn't, it looks up to see if there is a command by that name. If there is, then it checks to make sure that the command hasn't been redefined, and if it hasn't, it returns that command. 
+
+The redefine command cannot itself be redefined, and all requests asking whether it has been redefined will report that it has not.

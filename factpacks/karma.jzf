@@ -1,0 +1,25 @@
+name local.stats.karma
+author Alexander Boyd
+description Adds a karma system into the bot. Particularly, this adds a karma command that 
+  can be used to view a user's current karma. Then, at each channel where karma should be 
+  used, "karma-config add" should be run to add support for karma at that channel. 
+ This factpack will also install a page that can be used to view karma over the internet. 
+  If you'd like to enable this page, install local.com.segserver and run "karma-config register-web".
+preinstall {fpcheckscope|global}
+>karma {ifeq|%1%|for|{import|karma-get|%2%}|{ifeq|%1%|set|Sorry, setting karma isn't allowed yet.|{import|karma-get|%1%}}}
+>regex.karma-plus {factoverride}{lset|k|{lower|%1%}}
+ {ifjoined|%1%|{ife|{pget|karma-{server}!%k%}|{pset|karma-{server}!%k%|0}}{pset|karma-{server}!%k%|{eval|{pget|karma-{server}!%k%}+{ifeq|%2%|++|1|-1}}}
+ {sendmessage|%channel%|{import|karma-get|%1%|changed}}|%0%: %1% isn't here right now, so you can't change their karma.}
+library.regex.karma-plus 1
+>karma-get %1%'s karma is{lset|k|{lower|%1%}}{ifeq|%2%|changed| now} {ife|{pget|karma-{server}!%k%}|0|{pget|karma-{server}!%k%}}
+library.karma-get 1
+>karma-config {switch|%1%
+ |add|
+ {addregex|^{trigger}([^ ]*)(\\+\\+\|\\-\\-)$ regex.karma-plus}The karma system was successfully activated at this channel. You can now use {trigger}<user>++ and {trigger}<user>-- to add and remove karma from a user.
+ |register-web|
+ {exact|segserver-config|register|karma|karma-segserver-serve}
+ |Invalid action. Use either "{trigger}karma-config add" (which adds karma support to the current channel) or "{trigger}karma-config register-web" (which registers a SegServer web page for the karma system).}
+restrict.karma-config 1
+>karma-segserver-serve :<html><body>TODO: actually get this page written</body></html>
+library.karma-segserver-serve 1
+postinstall The karma system has been added. Now, at each channel you want karma to work at, run "{trigger}karma-config add".

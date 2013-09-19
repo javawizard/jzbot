@@ -1,0 +1,75 @@
+name=local.com.segserver
+author=Alexander Boyd
+scope=global
+description=SegServer is a utility that starts an HTTP server on a certain port. This HTTP server \
+then delegates to other factoids based on the URL used. A factoid can be registered to \
+handle a certain URL path by running "~segserver-config register <url> <factoid>", where <url> is the \
+URL to trigger on (which does not contain spaces or slashes) and <factoid> is the factoid to run. There is one difference that \n\
+these factoids must account for, which is that http-* headers that are to be set by \
+the factoid should be set as chain variables instead of as local variables. http-* headers \
+that are created by the bot's web server functionality, however, will still be present as \
+local variables. The port for the server can be specified with "~segserver-config port <port>".
+depends=global:local.library.dateformats,SegServer needs the dateformats library to \
+format HTTP headers correctly.
+# There are global variables for each path called "segserver-page-<pagename>", whose value is
+# the name of the factoid that should be called when that page (or any subpage of that page)
+# ends up being called. <pagename> should not contain the leading forward slash that will 
+# be on the url. The factoid to invoke must be a global factoid. When it returns, all chain 
+# variables starting with "http-" will be copied to local variables.
+g.segserver-start={{ifne||{{pget||segserver-server-port}}||{{starthttp||{{pget||segserver-server-port}}||segserver-serve}}}}
+restrict.g.segserver-start=1
+#Here's where all the fun begins. This is the main content of segserver; the stuff that 
+#really makes it what it is.
+g.segserver-serve=\
+{{lset||newurl||%http-url%}}\
+{{ignore|| --- We need to trim off the leading forward slash, if one is present.}}\
+{{if||{{match||^/.*||%newurl%}}||{{lset||newurl||{{substring||1||10000||%newurl%}}}}}}\
+{{ignore|| --- Now we need to see if there's a slash in the new url. If there is, }}\
+{{ignore|| --- we'll set the new url to everything before it and the arguments to }}\
+{{ignore|| --- everything after it. If not, we'll set arguments to "" and leave newurl be.}}\
+{{if||{{contains||/||%newurl%}}||\
+{{lset||arguments||{{splitindex||/||%newurl%||2||1}}}}\
+{{lset||newurl||{{splitindex||/||%newurl%||2||0}}}}\
+||\
+{{lset||arguments||}}\
+}}\
+{{lset||original-url||%http-url%}}\
+{{lset||http-url||%arguments%}}\
+{{lset||target-page||%newurl%}}\
+{{ignore|| --- We have the name of the page to use. Now we go see if that page exists.}}\
+{{ignore|| --- If it does, we import it. If it doesn't, we import the segserver notfound page.}}\
+{{lset||target-fact-name||{{pget||segserver-page-%target-page%}}}}\
+{{ife||%target-fact-name%||\
+{{lset||target-fact-name||segserver-notfound}}\
+}}\
+{{ignore|| --- Now we do the actual importing.}}\
+{{cascade||^http-.*||%target-fact-name%}}\
+{{ignore|| --- The page has been run. Now we'll move any chain variables starting }}\
+{{ignore|| --- with "http-" into local variables, and we're done.}}\
+{{split||\\\\\\|||{{lcvars||^http-.*}}||thevarname||{{lset||%thevarname%||{{cget||%thevarname%}}\\x}}\\x}}\
+{{ignore|| --- ...and we're done!}}
+#Ok, we're done with segserver's main content.
+#TODO: in the future, consider adding an HttpSession-like mechanism, and maybe consider
+#adding easier cookie manipulation mechanisms. Cookie information could be passed down
+#as chain variables, and there could be factoids that get a cookie, set a cookie, 
+#set a session var, get a session var, invalidate a session, etc, and those all
+#set chain variables that are then read by segserver-serve.
+restrict.g.segserver-serve=1
+g.segserver-notfound={{cset||http-status||notfound}}\
+<html><body>We're sorry, but that page can't be found on our server.</body></html>
+library.g.segserver-notfound=1
+g.segserver-config={{switch||%1%\
+||register||\
+{{pset||segserver-page-%2%||%3%}}The page has been added under the URL "/%2%". This will take effect immediately.\
+||port||\
+{{if||{{isinrange||%2%||1||65535}}||{{pset||segserver-server-port||%2%}}The port was set successfully. Reconnect your bot (with "reconnect") for this change to take effect.||You need to specify a port number, and it needs to be between 1 and 65535.||Invalid range specified for the port.}}\
+||Invalid command. Use "segserver-config register <url> <factoid>" to register a factoid, \
+or "segserver-config port <portnumber>" to set the server's port.}}
+restrict.g.segserver-config=1
+g._onready_segserver={{exact||segserver-start}}
+library.g._onready_segserver=1
+g.segserver-uninstall=Segserver has been uninstalled. Registrations have not, however, been removed. \
+To remove them, use "\\{{trigger\\}}exec \\{{split\\|| \\||\\{{lpvars\\||^segserver-page-.*\\\\\\$\\}}\\||v\\||\\{{pdelete\\||%v%\\}}\\}}".
+library.g.segserver-uninstall=1
+postinstall=Your bot now has SegServer functionality. Before SegServer can work, you need to specify a port to listen on. Use "{{trigger}}segserver-config port <portnumber>" to do so. Then add pages with "{{trigger}}segserver-config register <url> <factoid>". 
+postuninstall=segserver-uninstall

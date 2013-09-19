@@ -1,0 +1,1 @@
+Since megahal requests and responses are not synchronous, almost none of the megahal functions evaluate to 

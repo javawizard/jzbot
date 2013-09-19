@@ -1,0 +1,66 @@
+name=local.help.webhelp
+author=Alexander Boyd
+scope=global
+description=Webhelp makes the bot's built-in help pages (accessible by sending "help" to \
+the bot) available via a browser. A tree of help pages is generated, and you can click on any \
+help topic within that tree.\n\
+Webhelp is a SegServer plugin, so you'll need to install local.com.segserver before you \
+can install Webhelp. Webhelp will register itself under the url "/webhelp" within SegServer.
+depends=global:local.com.segserver,Webhelp requires SegServer to serve up help pages.
+#Here's how the webhelp factoid should work. First off, we need to check to see if 
+#we should be serving up an actual help page or if we should be serving up the help 
+#page tree. If http-url is the empty string, then we should be serving up the help page tree.
+#if http-url is not empty, then we should be serving up the help page named by that
+#url, but with forward slashes replaced with spaces. 
+#Serving up a single help page is pretty easy. We just include a snippet of HTML to set the
+#page title and stuff, and maybe add a link back to the TOC and optionally a list of subpages
+#inline at the bottom of a page (with each subpage being a link to where that subpage
+#actually points). this makes it fairly easy to serve up a single help page. Serving up
+#a tree of help pages is somewhat harder, however, as there isn't a function that can be
+#used to obtain a list of all help pages (including recursive ones), so we need to write
+#such a function ourselves. So what we'll do is define a library factoid that evaluates to
+#a pipe-separated list of all help pages. However, for the sake of making the function
+#actually feasible to code, it will output everything with a leading pipe character. This 
+#means that if we had "page1", "page1.1", and "page2" (where "page1.1" is a subpage of 
+#"page1"), then the output from the function would be "|page1|page1 page1.1|page2" instead of 
+#"page1|page1 page1.1|page2" as would be initially expected. So it's not truly a "pipe-delimited"
+#function in that sense, but it makes the function a ton easier to code. Then, code that
+#uses this function just has to add an additional check in the action part of the split
+#function call that they would most likely use that ignores items in the split list that 
+#are empty. This can be done by wrapping the action with "{{ifne||%<var>%||<action>}}", where 
+#<action> is the current text that is in the action field and <var> is the name of the variable
+#used in the split function call. So that covers our recursive generation function. Then we 
+#need to figure out a way to display that information in the UI, so that it can be organized
+#in a tree-like structure. One thing to bear in mind here is that the help pages will be 
+#returned in correct hierarchical order from our recursive help generation function. This
+#means that we should be able to come up with a tree-like structure simply by counting the
+#number of space characters that occur in the help page name. This gives us the level of 
+#indentation at which the help page resides. Then we just have to generate a corresponding
+#number of "&nbsp;" strings (or maybe a multiple thereof, so that there could be, for example,
+#4 spaces per level of indentation, which might serve to make indentation more clear), prefix
+#the help page with that string of "&nbsp;"s, and add it to the page. Then, we'll wrap the
+#help page itself with an anchor tag that points to where that help page can be read. This
+#can be done by prefixing "/webhelp/" onto the beginning of the URL, and then adding to that
+#url the help page, but with each component of it URL-encoded, and then with all spaces 
+#converted to forward slashes. The blank help page will probably be translated to a single
+#underscore, since the blank page is used for the help page tree. Also, each individual help
+#page will have a header at the top that includes the name of the help page, mostly for
+#clarification as to which help page is being read. The help page will probably also be
+#wrapped in a <pre> tag so that there doesn't have to be all this custom stuff to deal
+#with formatting. The one disadvantage that this has is that line wrapping isn't preserved
+#properly, so that everything ends up on the same line, which could frustrate users that are
+#finding that they have to scroll over too much. One solution might be to replace sequences of
+#two spaces with a space and "&nbsp;", which would, ideally, preserve spacing and yet allow 
+#for line wrapping.
+g.webhelp-list-generator=\
+\
+\
+\
+\
+\
+
+library.g.webhelp-list-generator=1
+g.webhelp-serve=
+library.g.webhelp-serve=1
+g.webhelp-postuninstall=
+postinstall={{ignore||{{import||segserver-config||register||webhelp||webhelp-serve}}}}

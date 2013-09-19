@@ -1,0 +1,71 @@
+This article documents the Pastebin Specification Language.
+
+PSL is used to specify the features a pastebin service supports, how a program can send pastes to it, and how a program can download pastes from it.
+
+A PSL file is divided into two sections: the upload section and the download section. The download section always comes first. The download and upload sections are separated by a single line consisting of the two characters "->". 
+
+Just before the download section is a single line that defines the name of a template if it does not start with an exclamation point, or an implementation of a template if it does. If a line in a template starts with !!!, then everything until the next !!! is read and run as a factoid language program and that line is only considered if it outputs 1. Also, for template implementations, there is only one line after the name line, and every word in it is put into p1, p2, p3, etc.
+
+The download section must consist of an even number of lines that don't start with "#" (which denotes a comment line; lines that start with # will be ignored). For every pair of lines, the first line is a regular expression, and the second line is the replacement.
+
+When a URL is to be read by the pastebin provider, each of the regex lines is scanned in turn to see if it matches the URL. If it does, the replacement line is run as a Fact program, with each of the groups in the regex being set into %1%, %2%, et cetera, local variables. The first matching regex will be used, and the rest will be ignored.
+
+If no regex line matches the URL, then this pastebin provider does not, in the sense of PastebinService, "understand" the URL.
+
+This URL's value is then downloaded from the server, and the response used as the pastebin's text.
+
+The upload section consists of these lines in order (lines that are "optional" should be blank if not needed):
+
+	The features supported by this pastebin, which should be a space-separated list of enum constant names from PastebinProvider.Feature
+	
+	The HTTP method (currently GET and POST are supported) that should be used to upload pastes
+	
+	The URL to upload with. This is a Fact program with some local variables pre-set; those will be discussed later.
+	
+	The upload entity, if the method is POST, or blank if the method is GET. This is a fact program exactly like the upload URL is a fact program.
+	
+	Either "redirect" or "noredirect" specifying whether HTTP redirects will automatically be followed by the pastebin service
+	
+	The response code that the final response should have. A response other than this will cause an exception to be thrown.
+	
+	The name of a header in the response whose value should be searched for the pastebin url, or empty to use the response content.
+	
+	A regex that should match the value that the url is to be searched in as per the previous line
+	
+	A factoid language program that represents the URL to generate, with matched groups from the previous line's match included as local variables
+
+The preset variables exactly mirror the field names in jw.jzbot.pastebin.Post.
+
+It's possible to include multiple pastebin specifications in the same file by including one line immediately after the upload section containing the two characters "<-", with the next file immediately following. This can be used to include as many PSL files in one physical file as are needed.
+
+All lines are interpreted as Fact programs, but only those that are specifically mentioned above are evaluated at runtime; the rest are evaluated with the template is instantiated and as such can only reference template parameters and so on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

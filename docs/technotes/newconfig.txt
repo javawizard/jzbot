@@ -1,0 +1,79 @@
+Example conversation:
+
+
+jcp: ~config
+multimarlen: You need to specify a scope level. At your current scope, allowed scope levels are: global server channel. For more help with the config command, use "help config".
+
+jcp: ~config channel
+multimarlen: +roulette-enabled ->wolfbot =log-enabled
+
+
+Quick note here: each name in the list might have a prefix. "+" means that the variable has an explicitly-set value. -> means the variable is actually a folder with more variables and folders. = means the variable is not currently set but it has a default value. No prefix means the variable is not currently set and does not have a default value. Also, variable names must start with a letter and can only contain letters, numbers, underscores, and hyphens.
+
+
+jcp: ~config channel roulette-enabled
+multimarlen: (bool) true
+
+jcp: ~config info channel roulette-enabled
+multimarlen: (bool) This config varaible specifies whether or not roulette is enabled at this channel.
+
+jcp: ~config channel roulette-enabled false
+multimarlen: That config variable has been successfully set to false. Its previous value was true.
+
+jcp: ~config channel roulette-enabled bogus
+multimarlen: That's not a valid value for a configuration variable of type bool.
+
+jcp: ~config info channel wolfbot
+multimarlen: This folder holds configuration variables related to the wolfbot plugin. They provide for a game of Werewolf or Murder in the Dark or Mafia (depending on what name you know it as).
+
+jcp: ~config channel wolfbot
+multimarlen: +enabled =minplayers silverbullets
+
+jcp: ~config info channel wolfbot enabled
+multimarlen: This variable specifies whether or not wolfbot is enabled at this channel.
+
+jcp: ~config channel wolfbot enabled
+multimarlen: (bool) false
+
+jcp: ~config channel wolfbot minplayers
+multimarlen: (integer default) 4
+
+jcp: ~config channel wolfbot silverbullets
+multimarlen: (integer unset)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,70 @@
+# This file contains the default set of pastebins available to JZBot. If you are a JZBot owner,
+# you can modify this file to add additional pastebins. You'll need to restart your bot for it
+# to see changes to this file. This file's format is specified in docs/technotes/pastebin.txt.
+#
+# --------------------------------------------------------------------------------------------
+#
+# The parameters to an implementation of pdpastebin take this form:
+# <baseurl> <subdomains> <downloadfile> (subdomains is either 1 or 0)
+pdpastebin
+^http://%p1%/(.*)$
+http://%p1%/%p3%?dl=%1%
+!!!%p2%!!!^http://([^\.]*\).%p1%/(.*)$
+!!!%p2%!!!http://%1%.%p1%/%p3%?dl=%2%
+->
+author forever update
+POST
+http://%p1%/pastebin.php
+UPLOAD ENTITY HERE
+noredirect
+302
+Location
+^(.*)$
+%1%
+<-
+!pdpastebin
+pastebin.com 1 pastebin.php
+<-
+!pdpastebin
+p.baf.cc 0 pastebin.php
+<-
+!pdpastebin
+pastebin.flamingspork.com 0 pastebin.php
+<-
+!pdpastebin
+paste.amahi.org 0 pastebin.php
+<-
+!pdpastebin
+pastebin.hu 0 pastebin.php
+<-
+!pdpastebin
+ampaste.net 1 pastebin.php
+<-
+!pdpastebin
+paste.liquidswords.org 0 pastebin.php
+<-
+!pdpastebin
+pastebin.im 0 pastebin.php
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

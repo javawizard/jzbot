@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo Welcome to the JZBot installer. This installer will download and install
+echo JZBot for you. JZBot will be installed into a folder called \"jzbot\"\;
+echo you can always move the installed files out of this folder and into
+echo another folder at a later time.
+echo ""
+echo Let\'s get started. Hang on a second while I check to see what you have
+echo currently installed on your computer. I\'ll let you know once I've
+echo finished, and if there\'s anything that you\'ll need to install.
+

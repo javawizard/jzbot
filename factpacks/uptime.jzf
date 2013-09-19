@@ -1,0 +1,7 @@
+name local.stats.uptime
+author Alexander Boyd
+scope any
+description Adds an "~uptime" command that reports how long it's been since the bot 
+  was last restarted. Reconnecting the bot doesn't change its uptime; only hard restarts 
+  (IE restarting the Java process) reset the bot's uptime.
+>uptime {interval|{eval|int(({timems}-{uptime})/1000)}}

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/usr/lib/jvm/java-6-sun/bin/javadoc -sourcepath src -subpackages jw:net.sf.opengroove -link http://download-llnw.oracle.com/javase/6/docs/api/ -private -splitindex -d storage/javadoc

@@ -1,0 +1,39 @@
+<available|list|install|remove|details|info>
+
+Factpack commands:
+
+
+
+available
+
+Pastebins a list of factpacks available in the factpacks folder.
+
+
+
+list
+
+Sends (or pastebins if it's too long) a list of all installed factpacks in the format stored in the "factpack" field of the Factoid interface.
+
+
+
+install
+
+Installs the specified factpack. After "install" should either be a pastebin url or the canonical name of a factpack present in the factpacks folder.
+
+
+
+remove
+
+Removes the specified factpack. After "remove" should be the canonical name of the factpack to remove.
+
+
+
+details
+
+Accepts arguments in exactly the same format as "install" does, but instead of installing the factoid, this parses the factoid contents and sends information on the factoid, such as its description, author, canonical name, and so on.
+
+
+
+info
+
+After "info" should be the canonical name of a factpack that is currently installed. This prints out information about the factpack, such as how many factoids there are that were installed by it, and so on.

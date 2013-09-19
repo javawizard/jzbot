@@ -1,0 +1,62 @@
+This obsoletes the .props-related stuff in factpacks.txt. See the SVN commit history for which portions of which documents obsolete each other.
+
+Anyway, the new factpack format is quite similar to the old format, but it's intended to allow factoids to be inserted verbatim into a file, without the double-escaping of backslashes that the properties format required. It does this in a smiliar manner to bash's heredoc functionality; namely, that the file is made up of keys and values, and values are either single-line, or are multi-line and terminated with a string specified where the value is started.
+
+Keys, however, can also be heredocs. This allows for special characters in keys, where needed, since there are no escape characters in a factpack. This is intentional; if there are no escape characters, then factoids do not have to be double-escaped when being pasted into a factpack, so they can just be copied straight from the output of "~factoid literal".
+
+Anyway, like the old factpack format, the new factpack format is made up of keys and values. Unlike the old format, these are not represented in a .props-style format. Instead, a factpack file is parsed starting at the top of the file and going line-by-line, following these rules:
+
+    If the line starts with a pound sign ("#"), then the line is ignored, and the parser moves on to the next line.
+    
+    If the line is blank, then the line is ignored, and the parser moves on to the next line.
+    
+    Otherwise, the line represents the start of an entry in the file, so:
+    
+    If the line starts with "<", then they key is a heredoc. Everything after the "<" on the line is read, trimmed of all leading and trailing whitespace, and stored as the heredoc terminator. The parser then reads all successive lines until a line consisting exactly of the heredoc terminator is found. This marks the end of the key. The value specifier is the next line.
+    
+    If the line does not start with "<", then the key is everything on the line until the first space character, and the value specifier starts immediately after the first space. If there is no space character, then the value is the empty string, and the parser moves on to the next line, and there is no value specifier.
+    
+    Then, the value specifier is checked. If it starts with ":", then the rest of the line is the value to use for the key. If it starts with "<", then the rest of the line is trimmed and taken to be a heredoc terminator, and all succeeding lines until a line containing only the heredoc terminator are read. These lines, together, form the value of the property. If the line does not start with either of those characters, it is treated as if it had started with ":".
+    
+So, that outlines how factpacks are stored. Now, for the list of properties that can appear within a factpack:
+
+    name: same as in the old format.
+    
+    author: same as in the old format.
+    
+    description: same as in the old format.
+    
+    preinstall: same as in the old format. Since the new format does not have a "depends" property, a preinstall script must be used to check for dependencies.
+    
+    postinstall: same as in the old format.
+    
+    >*: Adds a factoid called "*". For example, ">roulette" would cause a factoid called "roulette" to be added with the contents contained in that property's value.
+    
+    rename.*: same as in the old format, but * is the name of the factoid without ">" prefixed to it or any of the old "g.", "t.", or "c." prefixes.
+    
+    restrict.*: same as in the old format, with the same modifications to rename.* described above.
+    
+    library.*: same as in the old format, with the same modifications to rename.* described above.
+    
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

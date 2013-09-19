@@ -1,0 +1,20 @@
+name local.library.cards
+author Maximilian Dirkmann
+description contains all important functions for a carddeck:
+  carddeck returns a carddeck with the start %1%
+  shuffledeck calls carddeck to create a new carddeck and shuffles it and stores in the pvar thedeck
+  givecards (cvar count) gives cards from the deck with the offset pvar givecardoffset
+  givecardoffsetreset resets the pvar givecardoffset
+>library.carddeck {ife|%1%|{lset|start|2}|{lset|start|%1%}}
+  {split| |{numberlist|%start%|14|1}|num|{if|%num%==11|{lset|num|A}|{if|%num%==12|
+  {lset|num|J}|{if|%num%==13|{lset|num|Q}|{if|%num%==14|{lset|num|K}}}}}
+  \c1♠%num% \c1♣%num% \c5♥%num% \c5♦%num%| }
+>library.shuffledeck {pset|thedeck|{randomize| |{import|library.carddeck|%1%}| }}{pget|thedeck}
+>library.givecards {ife|{pget|givecardoffset}|{pset|givecardoffset|0}}
+  {ife|{cget|count}|{cset|count|7}}
+  Your hand:{lset|i|-1}
+  {while|{eval|{incget|i}<{cget|count}}|{set|thehand|{lget|thehand}}
+  {lset|thehand|{get|thehand} {splitindex| |{pget|thedeck}|0|{eval|{lget|i}+
+  ({cget|count}*{pget|givecardoffset})}}}}{lget|thehand}
+  {set|offset|{pget|givecardoffset}}{pset|givecardoffset|{eval|{get|offset}+1}}
+>library.givecardoffsetreset {pdelete|givecardoffset}

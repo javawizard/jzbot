@@ -1,0 +1,63 @@
+Package jw.jzbot.eval.jexec;
+
+Tokens
+// Numbers
+ number = ( ['0' .. '9']+ ( '.' ['0' .. '9']+ )? ) | ( '.' ['0' .. '9']+ );
+// Operators
+// First, we have all of the operators as separate tokens.
+ plus = '+';
+ minus = '-';
+ mult = '*';
+ div = '/' | '÷';
+ mod = '%';
+ pow = '^';
+ trnq = '?';
+ trnc = ':';
+ andand = '&&';
+ oror = '||';
+ and = '&';
+ or = '|';
+ greater = '>';
+ greatereq = '>=';
+ less = '<';
+ lesseq = '<=';
+ eq = '=' | '==';
+ noteq = '!=' || '<>';
+// Then, we have all of the operators together.
+ operator = '+' | '-' | '*' | '/' | '÷' | '%' | '^' | '?' | ':' | '&&' | '||' | '&' | '|' | '>' | '>=' | '<' | '<=' | '=' | '==' | '!=' | '<>' ;
+// Parentheses
+ l_par = '(';
+ r_par = ')';
+// Functions
+ name = (['a' .. 'z'] | ['A' .. 'Z'])+ ;
+ blank = (' ' | 13 | 10 | 9)+;
+
+Ignored Tokens
+ blank;
+ 
+Productions
+
+ expr      = {pre} prefix_expr | {post} postfix_expr | {in} trnp;
+ trnp      = {next}  [next]:lcmp  | {in}   [first]:lcmp  trnq           [second]:trnp
+                                                         trnc           [third]:trnp   ;
+ lcmp      = {next}  [next]:notp  | {in}   [first]:   
+ addp      = {next}  [next]:subp  | {in}   [first]:addp  plus           [second]:subp  ;
+ subp      = {next}  [next]:mulp  | {in}   [first]:subp  minus          [second]:mulp  ;
+ mulp      = {next}  [next]:divp  | {in}   [first]:mulp  mult           [second]:divp  ;
+ divp      = {next}  [next]:unmp  | {in}   [first]:divp  div            [second]:unmp  ;
+ unmp      = {next}  [next]:nmep  | {in}                 minus          [second]:nmep  ;
+ nmep      = {next}  [next]:term  | {pre}                [name]:name    [second]:term
+                                  | {in}   [first]:nmep  [name]:name    [second]:term  
+                                  | {var}                [name]:name                   
+                                  | {post} [first]:nmep  [name]:name                   ;
+
+ term     = {number} number | {parens} l_par expr r_par ;
+
+ prefix_expr = [operation]:operator [first]:prefix_expr [second]:prefix_expr ;
+ postfix_expr = [first]:postfix_expr [second]:postfix_expr [operation]:operator ;
+ 
+ 
+ 
+ 
+ 
+ 
