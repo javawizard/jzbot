@@ -9,7 +9,7 @@
      \    -----´  --´
       `-----------´
 
-JZBot is an IRC bot. Visit http://jzbot.googlecode.com if
+JZBot is an IRC bot. Visit http://github.com/javawizard/jzbot if
 you have questions.
 
 To set up JZBot, make sure you have java. If you don't, 
