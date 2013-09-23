@@ -42,8 +42,4 @@ by including jar files.
 
 If you've created a function that does something useful, 
 and you wouldn't mind making it open-source, visit 
-http://jzbot.google.com, contact javawizard (whose email 
-address will be in the right sidebar at jzbot.googlecode.com), 
-tell me that you have a custom function, and I'll consider 
-adding it into the JZBot code. I'll also consider giving you
-commit access to the JZBot repository.
+http://github.com/javawizard/jzbot and submit a pull request.
