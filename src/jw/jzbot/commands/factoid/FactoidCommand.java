@@ -106,6 +106,21 @@ public class FactoidCommand implements Command
         if (scope == FactScope.channel)
             c = s.getChannel(channel);
         boolean processed = false;
+
+        if (afterCommand.equals("")) {
+            if (command.equals("delete")) {
+                throw new ResponseException("Syntax: ~factoid delete <name> -- Deletes the specified factoid.");
+            } else if (command.equals("replace")) {
+                throw new ResponseException("Syntax: ~factoid replace <name> <contents> -- Replaces the specified "
+                        + "factoid with a new factoid with the given contents.");
+            } else if (command.equals("create")) {
+                throw new ResponseException("Syntax: ~factoid create <name> <contents> -- Creates a new factoid " +
+                        "with the specified contents.");
+            } else if (command.equals("literal")) {
+                throw new ResponseException("Syntax: ~factoid literal <name> -- Prints the contents of the specified factoid.");
+            }
+        }
+
         /*
          * oldFact is set to the old factoid when the replace command is used. This is
          * then used when the new factoid is created to set its restricted status and
