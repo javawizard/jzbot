@@ -95,6 +95,7 @@ import jw.jzbot.protocols.bzflag.BZFlagProtocol;
 import jw.jzbot.protocols.fb.FacebookProtocol;
 import jw.jzbot.protocols.imap.ImapProtocol;
 import jw.jzbot.protocols.irc.IrcProtocol;
+import jw.jzbot.protocols.slack.SlackProtocol;
 import jw.jzbot.protocols.xmpp.XmppProtocol;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.Scope;
@@ -992,7 +993,7 @@ public class JZBot
     
     public static void main(String[] args) throws Throwable
     {
-        System.out.println("This is JZBot, http://jzbot.googlecode.com");
+        System.out.println("This is JZBot, http://github.com/javawizard/jzbot");
         // System.out.println("Revision " + VersionInfo.revision + ", built on "
         // + VersionInfo.shortDateString);
         System.out.println("Written by a whole bunch of people, see");
@@ -1349,13 +1350,14 @@ public class JZBot
     private static void loadProtocols()
     {
         /*
-         * The five built-in protocols
+         * The six built-in protocols
          */
         ProtocolManager.installProtocol(new IrcProtocol());
         ProtocolManager.installProtocol(new XmppProtocol());
         ProtocolManager.installProtocol(new BZFlagProtocol());
         ProtocolManager.installProtocol(new FacebookProtocol());
         ProtocolManager.installProtocol(new ImapProtocol());
+        ProtocolManager.installProtocol(new SlackProtocol());
     }
     
     private static void startPmUserTimeThread()
