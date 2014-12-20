@@ -57,6 +57,10 @@ public class PastebinService
                 e.printStackTrace();
             }
         }
+
+        System.out.println("We're about to bail because we couldn't find any workable providers. Here's what " +
+                "we were trying to pastebin:");
+        System.out.println(post.getData());
         throw new PastebinException("Tried all pastebin providers (there were "
                 + providers.size() + " providers), and all of them threw exceptions or "
                 + "didn't have correct features");
