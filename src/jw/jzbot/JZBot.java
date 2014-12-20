@@ -1477,9 +1477,25 @@ public class JZBot
     {
         System.out.println("join detected at " + serverName + " on " + channel + " by "
             + sender);
+
         Channel chan = datastoreServer.getChannel(channel);
-        if (chan == null)
-            return;
+        if (chan == null) {
+            // Copied wholesale from JoinCommand to allow things to work properly when we're forcejoined into a
+            // channel - this should be moved into its own method called by both at some point. Note that this
+            // introduces an easy way for annoying server operators to shove large amounts of data into our
+            // database, so maybe this should be configurable.
+            // --- snip ---
+            chan = JZBot.storage.createChannel();
+            chan.setName(channel);
+            chan.setTrigger("~");
+            datastoreServer.getChannels().add(chan);
+            Notify.channelAdded.fireListeners(ScopeLevel.channel, "@" + datastoreServer.getName()
+                    + channel, false);
+            // --- snip ---
+            System.out.println("No matching channel, so we just created one. This is probably because we " +
+                    "were just forcejoined into a channel. Everything's good now.");
+        }
+
         logEvent(serverName, channel, "joined", sender, login + "@" + hostname);
         if (sender.equals(getRealConnection(serverName).getConnection().getNick()))
         {
