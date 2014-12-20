@@ -86,7 +86,7 @@ public class JSONArray {
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
-    private ArrayList myArrayList;
+    public ArrayList myArrayList;
 
 
     /**
