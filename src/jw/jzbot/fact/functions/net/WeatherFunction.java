@@ -30,8 +30,8 @@ public class WeatherFunction extends Function
                     + "that's exactly 5 characters. Canadians/Britans: "
                     + "sorry, but international weather isn't supported "
                     + "yet. If you'd like to modify the bot to support "
-                    + "international weather, feel free to contact jcp on "
-                    + "irc.freenode.net channel #bztraining.");
+                    + "international weather, feel free to open a pull "
+                    + "request against http://github.com/javawizard/jzbot.");
         String prefix = arguments.length() > 1 ? arguments.resolveString(1) : "";
         String weatherbugResultString = null;
         String yahooResultString = null;
@@ -46,7 +46,7 @@ public class WeatherFunction extends Function
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             StringUtils.copy(stream, baos);
             stream.close();
-            weatherbugResultString = new String(baos.toByteArray());
+            weatherbugResultString = new String(baos.toByteArray(), "Windows-1252");
             String[] tokens = weatherbugResultString.split("\\|");
             map.put("date", tokens[2]);
             map.put("time", tokens[1]);
@@ -71,10 +71,15 @@ public class WeatherFunction extends Function
             map.put("pressure", pressure);
             map.put("pressuredir", pressureDir);
             map.put("humid", tokens[11]);
+            map.put("humidraw", tokens[11].replaceAll("[^0-9.]", ""));
             map.put("hightemp", tokens[12]);
+            map.put("hightempraw", tokens[12].replaceAll("[^0-9.]", ""));
             map.put("lowtemp", tokens[13]);
+            map.put("lowtempraw", tokens[13].replaceAll("[^0-9.]", ""));
             map.put("dewpoint", tokens[14]);
+            map.put("dewpointraw", tokens[14].replaceAll("[^0-9.]", ""));
             map.put("windchill", tokens[15]);
+            map.put("windchillraw", tokens[15].replaceAll("[^0-9.]", ""));
             map.put("monthlyrain", tokens[16]);
             map.put("yearlyrain", tokens[31]);
             map.put("gusttime", tokens[25]);
