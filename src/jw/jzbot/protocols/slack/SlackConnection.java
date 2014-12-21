@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class SlackConnection implements Connection {
@@ -40,6 +37,36 @@ public class SlackConnection implements Connection {
     private Map<String, User> usersByName = new HashMap<String, User>();
     private Map<String, Channel> channelsById = new HashMap<String, Channel>(); // Channels and groups
     private Map<String, Channel> channelsByName = new HashMap<String, Channel>();
+
+    public Channel addChannel(JSONObject object) {
+        Channel channel = new Channel(object);
+        channelsById.put(channel.id, channel);
+        channelsByName.put(channel.name, channel);
+        return channel;
+    }
+
+    public Channel updateChannel(JSONObject object) {
+        Channel channel = channelsById.get(object.getString("id"));
+        channelsByName.remove(channel.name);
+        channel.load(object);
+        channelsByName.put(channel.name, channel);
+        return channel;
+    }
+
+    public User addUser(JSONObject object) {
+        User user = new User(object);
+        usersById.put(user.id, user);
+        usersByName.put(user.name, user);
+        return user;
+    }
+
+    public User updateUser(JSONObject object) {
+        User user = usersById.get(object.getString("id"));
+        usersByName.remove(user.name);
+        user.load(object);
+        usersByName.put(user.name, user);
+        return user;
+    }
 
     private class APIRequest {
         private String method;
@@ -112,12 +139,52 @@ public class SlackConnection implements Connection {
             }
             String subtype = event.optString("subtype", null);
 
-            if(type.equals("message") && subtype == null) {
-                context.onMessage(slackTargetNameToIrc(event.optString("channel")),
-                        slackTargetNameToIrc(event.getString("user")),
-                        slackTargetNameToIrc(event.getString("user")),
-                        event.getString("user"),
-                        event.getString("text"));
+            if (type.equals("message") && (subtype == null || subtype.equals("me_message"))) {
+                String text = event.getString("text");
+                String fromHostname = event.getString("user");
+                String fromNick = slackTargetNameToIrc(event.getString("user"));
+                String toChannel = null;
+                if (!event.getString("channel").startsWith("D")) {
+                    toChannel = slackTargetNameToIrc(event.getString("channel"));
+                }
+
+                if (toChannel == null && subtype == null) {
+                    context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
+                } else if (toChannel == null && subtype.equals("me_message")) {
+                    context.onAction(fromNick, fromNick, fromHostname, self.name, text);
+                } else if (subtype == null) {
+                    context.onMessage(toChannel, fromNick, fromNick, fromHostname, text);
+                } else if (subtype.equals("me_message")) {
+                    context.onAction(fromNick, fromNick, fromHostname, toChannel, text);
+                }
+            } else if (type.equals("channel_created") || type.equals("group_created")) {
+                addChannel(event.getJSONObject("channel"));
+            } else if (type.equals("channel_joined") || type.equals("group_joined")) {
+                Channel channel = updateChannel(event.getJSONObject("channel"));
+                context.onJoin(slackTargetToIrc(channel), self.name, self.name, self.id);
+            } else if (type.equals("channel_left") || type.equals("group_left")) {
+                Channel channel = channelsById.get(event.getJSONObject("channel"));
+                channel.isMember = false;
+                channel.members.remove(self);
+                context.onPart(slackTargetToIrc(channel), self.name, self.name, self.id);
+            } else if (type.equals("message") && (subtype.equals("channel_join") || subtype.equals("group_join"))) {
+                Channel channel = channelsById.get(event.getString("channel"));
+                User user = usersById.get(event.getString("user"));
+                channel.members.add(user);
+                context.onJoin(slackTargetToIrc(channel), slackTargetToIrc(user), slackTargetToIrc(user), user.id);
+            } else if (type.equals("message") && (subtype.equals("channel_leave") || subtype.equals("group_leave"))) {
+                Channel channel = channelsById.get(event.getString("channel"));
+                User user = usersById.get(event.getString("user"));
+                channel.members.remove(user);
+                context.onPart(slackTargetToIrc(channel), slackTargetToIrc(user), slackTargetToIrc(user), user.id);
+            } else if (type.equals("channel_rename") || type.equals("group_rename")) {
+                System.out.println("Warning: Slack channel/group renames are not yet supported. We're about to " +
+                        "automatically disconnect.");
+                disconnect("");
+            } else if (type.equals("im_created")) {
+                usersById.get(event.getString("user")).directMessageId = event.getJSONObject("channel").getString("id");
+            } else {
+                System.out.println("Received unknown Slack event: " + event);
             }
         }
 
@@ -142,13 +209,15 @@ public class SlackConnection implements Connection {
         public String name;
     }
 
-    private class User extends MessageTarget {
+    private class User extends MessageTarget implements org.jibble.pircbot.User {
         public boolean deleted;
         public boolean isAdmin;
         public boolean isOwner;
         public String firstName;
         public String lastName;
         public String realName;
+
+        public String directMessageId;
 
         public User(JSONObject object) {
             load(object);
@@ -166,6 +235,37 @@ public class SlackConnection implements Connection {
             this.firstName = profile.optString("first_name");
             this.lastName = profile.optString("last_name");
             this.realName = profile.optString("real_name");
+        }
+
+        @Override
+        public boolean isOp() {
+            // TODO: Not even sure what this is, but better expose it somehow, right?
+            return isAdmin;
+        }
+
+        @Override
+        public boolean isHalfop() {
+            return false;
+        }
+
+        @Override
+        public boolean isAdmin() {
+            return false;
+        }
+
+        @Override
+        public boolean isFounder() {
+            return false;
+        }
+
+        @Override
+        public boolean hasVoice() {
+            return false;
+        }
+
+        @Override
+        public String getNick() {
+            return this.name;
         }
     }
 
@@ -192,13 +292,17 @@ public class SlackConnection implements Connection {
         public long created;
         public User creator;
         public boolean isArchived;
-        public List<User> members = new ArrayList<User>();
+        public Set<User> members = new HashSet<User>();
         public Topic topic;
         public Topic purpose;
         public boolean isMember;
 
-        public Channel(ChannelType type, JSONObject object) {
-            this.type = type;
+        public Channel(JSONObject object) {
+            if (object.getString("id").startsWith("G")) {
+                this.type = ChannelType.GROUP;
+            } else {
+                this.type = ChannelType.CHANNEL;
+            }
             load(object);
         }
 
@@ -271,33 +375,55 @@ public class SlackConnection implements Connection {
 
     @Override
     public void sendAction(String target, String message) {
-
+        // I'm still waiting to hear back from Slack about how to actually do this given bot API limitations, so for
+        // now, do the dirtiest thing ever and emulate it with italicised text.
+        sendMessage(target, "_" + message + "_");
     }
 
     @Override
     public void sendMessage(String target, String message) {
+        // Because I'm paranoid...
+        message = message.replace("@channel", "nospam4u");
+        message = message.replace("@group", "nospam4u");
+        message = message.replace("@everyone", "nospam4u");
+
         MessageTarget slackTarget = ircTargetToSlack(target);
+        String channelId = slackTarget.id;
+        if (slackTarget instanceof User) {
+            User user = (User) slackTarget;
+            channelId = user.directMessageId;
+            if (channelId == null) {
+                // TODO: Test this out
+                user.directMessageId = api("im.open").set("user", slackTarget.id).call().getJSONObject("channel").getString("id");
+                channelId = user.directMessageId;
+            }
+        }
+
+        System.out.println("Sending message to Slack id " + channelId + ": " + message);
+
         webSocket.send(new JSONObject()
                 .put("id", nextMessageId.getAndIncrement())
                 .put("type", "message")
-                .put("channel", slackTarget.id)
+                .put("channel", channelId)
                 .put("text", message)
                 .toString());
     }
 
     @Override
     public void sendNotice(String target, String message) {
-
+        // Not really sure if there's any good Slack equivalent we can map this to...
+        sendMessage(target, "[notice] " + message);
     }
 
     @Override
     public void sendInvite(String nick, String channel) {
-
+        // Not supported by Slack bots
     }
 
     @Override
     public void setMessageDelay(long ms) {
-
+        // I really need to move implementation of this method up into JZBot itself - protocols shouldn't have to
+        // worry about this.
     }
 
     @Override
@@ -341,17 +467,18 @@ public class SlackConnection implements Connection {
             String selfId = rtmInfo.getJSONObject("self").getString("id");
 
             for (Object userObject : rtmInfo.getJSONArray("users").myArrayList) {
-                JSONObject userJson = (JSONObject) userObject;
-                User user = new User(userJson);
-                this.usersById.put(user.id, user);
-                this.usersByName.put(user.name, user);
+                JSONObject user = (JSONObject) userObject;
+                addUser(user);
             }
 
             for (Object channelObject : rtmInfo.getJSONArray("channels").myArrayList) {
-                JSONObject channelJson = (JSONObject) channelObject;
-                Channel channel = new Channel(ChannelType.CHANNEL, channelJson);
-                this.channelsById.put(channel.id, channel);
-                this.channelsByName.put(channel.name, channel);
+                JSONObject channel = (JSONObject) channelObject;
+                addChannel(channel);
+            }
+
+            for (Object imObject : rtmInfo.getJSONArray("ims").myArrayList) {
+                JSONObject im = (JSONObject) imObject;
+                usersById.get(im.getString("user")).directMessageId = im.getString("id");
             }
 
             this.self = this.usersById.get(selfId);
@@ -373,7 +500,13 @@ public class SlackConnection implements Connection {
 
     @Override
     public String[] getChannels() {
-        return new String[0];
+        List<String> results = new ArrayList<String>();
+        for (Channel channel : channelsById.values()) {
+            if (channel.isMember) {
+                results.add(channel.name);
+            }
+        }
+        return results.toArray(new String[results.size()]);
     }
 
     @Override
@@ -383,7 +516,7 @@ public class SlackConnection implements Connection {
 
     @Override
     public org.jibble.pircbot.User[] getUsers(String channel) {
-        return new org.jibble.pircbot.User[0];
+        return ((Channel)ircTargetToSlack(channel)).members.toArray(new org.jibble.pircbot.User[]{});
     }
 
     @Override
@@ -424,8 +557,9 @@ public class SlackConnection implements Connection {
     }
 
     @Override
-    public void setTopic(String channel, String topic) {
-
+    public void setTopic(String channelName, String topic) {
+        Channel channel = (Channel) ircTargetToSlack(channelName);
+        api("channels.setTopic").set("channel", channel.id).set("topic", topic).call();
     }
 
     @Override
