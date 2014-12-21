@@ -2174,7 +2174,7 @@ public class JZBot
     public static void onAction(Server datastoreServer, String serverName, String sender,
             String login, String hostname, String channel, String action)
     {
-        System.out.println("action received on @" + serverName + "!" + sender + channel
+        System.out.println("action received on @" + serverName + "!" + sender + " at/to " + channel
             + ": " + action);
         if (!(channel.startsWith("#")))
             // We don't support actions sent in a pm right now. These might be supported
