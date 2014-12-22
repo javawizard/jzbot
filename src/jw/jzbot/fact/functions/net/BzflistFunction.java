@@ -9,7 +9,9 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.exceptions.BreakException;
 import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.fact.exceptions.NestedLoopException;
 import jw.jzbot.fact.output.DelimitedSink;
 
 import net.sf.opengroove.common.utils.StringUtils;
@@ -30,12 +32,28 @@ public class BzflistFunction extends Function
             DelimitedSink result = new DelimitedSink(sink, delimiter);
             for (Server server : servers)
             {
-                setVars(context.getLocalVars(), server, prefix);
-                result.next();
-                arguments.resolve(1, result);
-                if ("1".equals(context.getLocalVars().get(prefix + "-quit")))
-                    break;
+                try {
+                    setVars(context.getLocalVars(), server, prefix);
+                    result.next();
+                    arguments.resolve(1, result);
+                    if ("1".equals(context.getLocalVars().get(prefix + "-quit")))
+                        break;
+                } catch (NestedLoopException e)
+                {
+                    e.level--;
+                    if (e.level == -1)
+                    {
+                        if (e instanceof BreakException)
+                            break;
+                        else
+                            continue;
+                    }
+                    else
+                        throw e;
+                }
             }
+        } catch (NestedLoopException e) {
+            throw e;
         }
         catch (Exception e)
         {
