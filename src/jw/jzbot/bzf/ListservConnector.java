@@ -13,7 +13,7 @@ import java.util.Comparator;
 public class ListservConnector
 {
     
-    private static final String LIST_SERVER_URL = "http://my.bzflag.org/db/?action=LIST&version=BZFS0026&local=1";
+    private static final String LIST_SERVER_URL = "http://my.bzflag.org/db/?action=LIST&version=BZFS0221&local=1";
     
     public static Server[] getServers() throws IOException
     {
