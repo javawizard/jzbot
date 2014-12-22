@@ -14,9 +14,7 @@ public class PastebinUtils
         try
         {
             return Pastebin.createPost("jzbot", text
-                + "\n\n\n\n\nPASTEBIN OWNER: If you have questions about this "
-                + "post, or its creator (JZBot), send an email to \"alex"
-                + " AT the domain whose name is opengroove DOT org\".\n\n", Pastebin.Duration.DAY, null, features);
+                + "\n", Pastebin.Duration.DAY, null, features);
         }
         catch (RuntimeException e)
         {
