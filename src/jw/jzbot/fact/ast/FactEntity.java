@@ -144,6 +144,8 @@ public abstract class FactEntity
      * @return
      */
     public abstract void explain(Sink sink, int indentation, int increment);
+
+    public abstract String reconstruct();
     
     /**
      * Returns a string that contains exactly <tt>number</tt> characters, all of which are

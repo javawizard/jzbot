@@ -1,6 +1,7 @@
 package jw.jzbot.fact.ast;
 
 import jw.jzbot.fact.FactContext;
+import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.Sink;
 
 public class Literal extends FactEntity
@@ -54,5 +55,11 @@ public class Literal extends FactEntity
         execute(sink, null);
         sink.write("\"\n");
     }
-    
+
+    public String reconstruct() {
+        StringBuilder builder = new StringBuilder();
+        for (char c : finalized.toCharArray())
+            builder.append(FactParser.escapeLiteralCharacter(c));
+        return builder.toString();
+    }
 }

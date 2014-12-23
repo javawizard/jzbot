@@ -11,13 +11,18 @@ public class LdeleteFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        context.getLocalVars().remove(arguments.resolveString(0));
+        int level = 0;
+        if (arguments.length() == 2) {
+            level = Integer.parseInt(arguments.resolveString(0));
+            arguments = arguments.subList(1);
+        }
+        context.getAncestorAtLevel(level).getLocalVars().remove(arguments.resolveString(0));
     }
     
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {ldelete|<varname>} -- Deletes the local variable with "
+        return "Syntax: {ldelete|<varname>} or {ldelete|<level>|<varname} -- Deletes the local variable with "
                 + "the specified name.";
     }
     

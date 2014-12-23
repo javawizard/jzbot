@@ -24,9 +24,7 @@ public class FunctionReference extends FactEntity
     {
         ArgumentList list = new ArgumentList(arguments, context);
         functionName = list.getString(0);
-        Function function = FactParser.getFunction(functionName);
-        if (function == null)
-            function = context.createDynamicFunction(functionName);
+        Function function = context.getFunction(functionName, null);
         ArgumentList sublist = list.subList(1);
         try
         {
@@ -61,6 +59,18 @@ public class FunctionReference extends FactEntity
         sink.write(spaces(indentation));
         sink.write("function:\n");
         arguments.explain(sink, indentation, increment, false);
+    }
+
+    public String reconstruct() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        for (int i = 0; i < arguments.length(); i++) {
+            if (i > 0)
+                builder.append("|");
+            builder.append(arguments.get(i).reconstruct());
+        }
+        builder.append("}");
+        return builder.toString();
     }
     
     public Sequence getArgumentSequence()

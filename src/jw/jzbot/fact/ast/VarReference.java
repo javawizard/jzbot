@@ -44,4 +44,10 @@ public class VarReference extends FactEntity
         if (var != null)
             sink.write(var);
     }
+
+    public String reconstruct() {
+        if (this.global)
+            throw new UnsupportedOperationException();
+        return "%" + this.name + "%";
+    }
 }

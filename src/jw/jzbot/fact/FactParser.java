@@ -270,6 +270,31 @@ public class FactParser {
         }
         return "" + c;
     }
+
+    public static String escapeLiteralCharacter(char c) {
+        if ("$%{}|\\".indexOf(c) != -1)
+            return "\\" + c;
+        else if (c == '\n')
+            return "\\n";
+        else if (c == '\r')
+            return "\\r";
+        else if (c == '\u000f')
+            return "\\p";
+        else if (c == '\u0002')
+            return "\\b";
+        else if (c == '\u001f')
+            return "\\u";
+        else if (c == '\u0016')
+            return "\\i";
+        else if (c == '\u0003')
+            return "\\c";
+        else if (c == '\u0000')
+            return "\\0";
+        else if (c < 32 || c > 126)
+            return "{char|" + ((int) c) + "}";
+        else
+            return "" + c;
+    }
     
     public static void installFunction(String name, Function function) {
         functionMap.put(name.toLowerCase(), function);

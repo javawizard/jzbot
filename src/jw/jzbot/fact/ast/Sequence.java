@@ -93,6 +93,13 @@ public class Sequence extends FactEntity
             entity.explain(sink, indentation + increment, increment);
         }
     }
+
+    public String reconstruct() {
+        StringBuilder builder = new StringBuilder();
+        for (FactEntity entity : list)
+            builder.append(entity.reconstruct());
+        return builder.toString();
+    }
     
     public void remove(int index)
     {

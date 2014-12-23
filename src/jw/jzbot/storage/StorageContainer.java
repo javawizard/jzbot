@@ -19,4 +19,9 @@ public interface StorageContainer
     public ConfigStorage createConfiguration();
     
     public void setConfiguration(ConfigStorage storage);
+
+    public StoredList<StoredFunction> getStoredFunctions();
+
+    public StoredFunction getStoredFunction(String name);
+
 }

@@ -1,5 +1,6 @@
 package jw.jzbot.fact;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -7,12 +8,14 @@ import java.util.Map;
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.ast.FactEntity;
+import jw.jzbot.fact.ast.Sequence;
 import jw.jzbot.fact.debug.DebugInstance;
 import jw.jzbot.fact.debug.DebugSupport;
 import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.Scope;
 import jw.jzbot.scope.UserMessenger;
+import jw.jzbot.storage.Channel;
 import jw.jzbot.storage.Server;
 
 import org.jdom.Document;
@@ -25,16 +28,42 @@ public class FactContext implements Scope
      */
     private static final String NO_SCOPED_SERVER =
             "The current scope does not have an associated "
-                + "server, but a server was needed. Consider "
-                + "wrapping this function call with a call to "
-                + "the {scope} function to add a server to the current scope.";
+                    + "server, but a server was needed. Consider "
+                    + "wrapping this function call with a call to "
+                    + "the {scope} function to add a server to the current scope.";
+    private static final String NO_SCOPED_CHANNEL =
+            "The current scope does not have an associated "
+                    + "channel, but a server was needed. Consider "
+                    + "wrapping this function call with a call to "
+                    + "the {scope} function to add a channel to the current scope.";
     
     public FactContext()
     {
+        this(null);
     }
+
+    public FactContext(FactContext parentContext) {
+        this.parentContext = parentContext;
+        this.functionArguments = new ArgumentList(new Sequence(), this);
+
+        if (parentContext != null) {
+            this.setAction(parentContext.isAction());
+            this.setChannel(parentContext.getChannel());
+            this.setGlobalVars(parentContext.getGlobalVars());
+            // Don't set local vars - the whole point of context nesting is that we get our own local var pool
+            this.setQuota(parentContext.getQuota());
+            this.setSelf(parentContext.getSelf());
+            this.setSender(parentContext.getSender());
+            this.setServer(parentContext.getServer());
+            this.setSource(parentContext.getSource());
+        }
+    }
+
+    private FactContext parentContext = null;
     
     private Map<String, String> localVars =
             Collections.synchronizedMap(new HashMap<String, String>());
+    private ArgumentList functionArguments = null;
     private Map<String, String> globalVars = JZBot.globalVariables;
     private Map<String, Document> xmlDocuments =
             Collections.synchronizedMap(new HashMap<String, Document>());
@@ -146,6 +175,26 @@ public class FactContext implements Scope
     {
         this.action = action;
     }
+
+    public ArgumentList getFunctionArguments() {
+        return functionArguments;
+    }
+
+    public void setFunctionArguments(ArgumentList functionArguments) {
+        this.functionArguments = functionArguments;
+    }
+
+    public FactContext getAncestorAtLevel(int level) {
+        FactContext current = this;
+        while (level > 0) {
+            level--;
+            current = current.parentContext;
+            if (current == null) {
+                throw new RuntimeException("This context doesn't have that many ancestors");
+            }
+        }
+        return current;
+    }
     
     public Map<String, String> getLocalVars()
     {
@@ -201,12 +250,32 @@ public class FactContext implements Scope
      */
     public Server checkedGetDatastoreServer()
     {
-        if (server == null)
-            throw new FactoidException(NO_SCOPED_SERVER);
-        Server s = JZBot.storage.getServer(server);
+        Server s = getDatastoreServer();
         if (s == null)
             throw new FactoidException(NO_SCOPED_SERVER);
         return s;
+    }
+
+    public Server getDatastoreServer() {
+        if (server == null)
+            return null;
+        return JZBot.storage.getServer(server);
+    }
+
+    public Channel checkedGetDatastoreChannel() {
+        Channel c = getDatastoreChannel();
+        if (c == null)
+            throw new FactoidException(NO_SCOPED_CHANNEL);
+        return c;
+    }
+
+    public Channel getDatastoreChannel() {
+        if (channel == null)
+            return null;
+        Server s = getDatastoreServer();
+        if (s == null)
+            return null;
+        return s.getChannel(channel);
     }
     
     public String getCheckedServer()
@@ -260,40 +329,26 @@ public class FactContext implements Scope
             result += getChannel();
         return result;
     }
-    
-    /**
-     * Creates a copy of this FactContext that can be used for new threads spawned from
-     * this factoid invocation. The new context has a new local variable space but shares
-     * the same persistent, global, and chain variable space with the old context.
-     * 
-     * @param localVarRegex
-     *            The regex to check all local vars against. If their names match this
-     *            regex, they will be copied into the new context.
-     * @return
-     */
-    public FactContext cloneForThreading(String localVarRegex)
-    {
-        FactContext context = new FactContext();
-        context.setAction(this.isAction());
-        context.setChannel(this.getChannel());
-        context.setGlobalVars(this.getGlobalVars());
-        // Don't set local vars; the context creates a new map for itself.
-        context.setQuota(this.getQuota());
-        context.setSelf(this.getSelf());
-        context.setSender(this.getSender());
-        context.setServer(this.getServer());
-        context.setSource(this.getSource());
-        for (String name : localVars.keySet())
-        {
-            if (name.matches(localVarRegex))
-                context.getLocalVars().put(name, localVars.get(name));
+
+    public Function getFunction(String functionName, FunctionScope functionScope) {
+        FunctionScope[] scopesToCheck;
+        if (functionScope == null)
+            scopesToCheck = FunctionScope.values();
+        else
+            scopesToCheck = new FunctionScope[] {functionScope};
+        for (FunctionScope scope : scopesToCheck) {
+            Function function = scope.getFunction(this, functionName);
+            if (function != null)
+                return function;
         }
-        return context;
+        throw new FactoidException("No such function at " + Arrays.deepToString(scopesToCheck) + ": " + functionName);
     }
-    
-    public Function createDynamicFunction(String functionName)
-    {
-        return new DynamicFunction(this, functionName);
+
+    public Function getLocalFunction(String name) {
+        if (this.storedSubroutines.containsKey(name))
+            return new DynamicFunction(name, this.storedSubroutines.get(name));
+        else
+            return null;
     }
     
     /**

@@ -148,5 +148,12 @@ public interface Server extends StorageContainer
     
     @Constructor
     public ConfigStorage createConfiguration();
-    
+
+    @Property
+    @ListType(StoredFunction.class)
+    public StoredList<StoredFunction> getStoredFunctions();
+
+    @Search(listProperty = "storedFunctions", searchProperty = "name", exact = true)
+    public StoredFunction getStoredFunction(String name);
+
 }

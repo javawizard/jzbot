@@ -31,10 +31,7 @@ import jw.jzbot.pastebin.PastebinProvider.Feature;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.ScopeManager;
 import jw.jzbot.scope.UserMessenger;
-import jw.jzbot.storage.Channel;
-import jw.jzbot.storage.Factoid;
-import jw.jzbot.storage.StorageContainer;
-import jw.jzbot.storage.Server;
+import jw.jzbot.storage.*;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 import jw.jzbot.utils.Pastebin.Duration;
@@ -105,6 +102,15 @@ public class FactoidCommand implements Command
         Channel c = null;
         if (scope == FactScope.channel)
             c = s.getChannel(channel);
+
+        StorageContainer scopeStorageContainer;
+        if (scope == FactScope.channel)
+            scopeStorageContainer = c;
+        else if (scope == FactScope.server)
+            scopeStorageContainer = s;
+        else
+            scopeStorageContainer = JZBot.storage;
+
         boolean processed = false;
 
         if (afterCommand.equals("")) {
@@ -496,16 +502,32 @@ public class FactoidCommand implements Command
         {
             processed = true;
             if (afterCommand.equals(""))
-                throw new ResponseException("You need to specify the name "
-                    + "of a function. This command will then print out "
-                    + "information on the specified function.");
-            Function function = FactParser.getFunction(afterCommand);
-            if (function == null)
-                throw new ResponseException("There is no such function. "
-                    + "You can get a list of all of the available "
-                    + "functions with \"help functions\".");
-            source.sendSpaced("Function " + afterCommand + ", class: "
-                + function.getClass().getName());
+                throw new ResponseException("Syntax: ~factoid function <create|delete|literal>");
+            String[] argumentsTokenized2 = afterCommand.split(" ", 3);
+            if (argumentsTokenized2[0].equals("create")) {
+                String name = argumentsTokenized2[1];
+                String value = argumentsTokenized2[2];
+                if (scopeStorageContainer.getStoredFunction(name) != null)
+                    throw new ResponseException("Already exists");
+                StoredFunction function = JZBot.storage.createStoredFunction();
+                function.setName(name);
+                function.setValue(value);
+                scopeStorageContainer.getStoredFunctions().add(function);
+                source.sendMessage("Successful.");
+            } else if (argumentsTokenized2[0].equals("delete")) {
+                String name = argumentsTokenized2[1];
+                StoredFunction function = scopeStorageContainer.getStoredFunction(name);
+                if (function == null)
+                    throw new ResponseException("Doesn't exist");
+                scopeStorageContainer.getStoredFunctions().remove(function);
+                source.sendMessage("Successful.");
+            } else if (argumentsTokenized2[0].equals("literal")) {
+                String name = argumentsTokenized2[1];
+                StoredFunction function = scopeStorageContainer.getStoredFunction(name);
+                if (function == null)
+                    throw new ResponseException("Doesn't exist");
+                source.sendMessage(function.getValue());
+            }
         }
         if (command.equals("scope"))
         {
