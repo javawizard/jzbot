@@ -1,9 +1,6 @@
 package jw.jzbot.fact.functions.code;
 
-import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.Function;
-import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.*;
 import jw.jzbot.fact.ast.FactEntity;
 
 public class StoreFunction extends Function
@@ -13,8 +10,8 @@ public class StoreFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String name = arguments.resolveString(0);
-        FactEntity code = arguments.getEntity(1);
-        context.getStoredSubroutines().put(name, code);
+        FactEntity closure = arguments.getEntity(1);
+        context.getStoredSubroutines().put(name, closure);
     }
     
     @Override

@@ -11,7 +11,12 @@ public class LsetFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        context.getLocalVars().put(arguments.resolveString(0), arguments.resolveString(1));
+        int level = 0;
+        if (arguments.length() == 3) {
+            level = Integer.parseInt(arguments.resolveString(0));
+            arguments = arguments.subList(1);
+        }
+        context.getAncestorAtLevel(level).getLocalVars().put(arguments.resolveString(0), arguments.resolveString(1));
     }
     
     public String getName()
@@ -22,7 +27,7 @@ public class LsetFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {lset|<varname>|<value>} -- Sets the specified local variable "
+        return "Syntax: {lset|<varname>|<value>} or {lset|<level>|<varname>|<value>} -- Sets the specified local variable "
                 + "to the specified value. Local variables are those that can be read by "
                 + "using percent signs. For example, after {lset|something|Hello world} "
                 + "is run in a factoid, %something% could be used and would be replaced with"

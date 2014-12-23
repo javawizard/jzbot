@@ -2,10 +2,7 @@ package jw.jzbot.fact.functions;
 
 import java.io.UnsupportedEncodingException;
 
-import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.Function;
-import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.*;
 import jw.jzbot.fact.exceptions.FactoidException;
 import jw.jzbot.fact.output.CharFilterSink;
 import jw.jzbot.fact.output.StringSink;
@@ -30,21 +27,7 @@ public class EscapeFunction extends Function
         @Override
         public void process(char c)
         {
-            if ("$%{}|\\".indexOf(c) != -1)
-            {
-                delegate.write('\\');
-                delegate.write(c);
-            }
-            else if (c == '\n')
-                delegate.write("\\n");
-            else if (c < 32 || c > 126)
-            {
-                delegate.write("{char|");
-                delegate.write((int) c);
-                delegate.write("}");
-            }
-            else
-                delegate.write(c);
+            delegate.write(FactParser.escapeLiteralCharacter(c));
         }
         
     }

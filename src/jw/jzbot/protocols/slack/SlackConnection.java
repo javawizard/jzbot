@@ -386,6 +386,9 @@ public class SlackConnection implements Connection {
         message = message.replace("@channel", "nospam4u");
         message = message.replace("@group", "nospam4u");
         message = message.replace("@everyone", "nospam4u");
+        message = message.replace("<!channel>", "nospam4u");
+        message = message.replace("<!group>", "nospam4u");
+        message = message.replace("<!everyone>", "nospam4u");
 
         MessageTarget slackTarget = ircTargetToSlack(target);
         String channelId = slackTarget.id;

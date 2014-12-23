@@ -1,26 +1,25 @@
 package jw.jzbot.fact;
 
+import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.exceptions.FactoidException;
 
 public class DynamicFunction extends Function
 {
     private String name;
-    private FactContext context;
-    
-    public DynamicFunction(FactContext context, String name)
+    private FactEntity implementation;
+
+    public DynamicFunction(String name, FactEntity implementation)
     {
-        this.context = context;
         this.name = name;
+        this.implementation = implementation;
     }
     
     @Override
-    public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
+    public void evaluate(Sink sink, ArgumentList arguments, FactContext parentContext)
     {
-        if (!context.equals(this.context))
-            throw new FactoidException("Mismatched context while trying to invoke "
-                + "a dynamic function. A dynamic function can only be invoked "
-                + "using the context it was created from.");
-        context.invokeDynamicFunction(name, sink, arguments);
+        FactContext context = new FactContext(parentContext);
+        context.setFunctionArguments(arguments);
+        implementation.resolve(sink, context);
     }
     
     @Override

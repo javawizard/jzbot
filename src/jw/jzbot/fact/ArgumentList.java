@@ -178,11 +178,11 @@ public class ArgumentList
         resolve(index, sink);
         return sink.toString();
     }
-    
+
     /**
      * Gets the unresolved parsed fact entity at the specified index. Most functions don't
      * need to use this; the primary exception is the {store} function.
-     * 
+     *
      * @param index
      *            The index of the fact entity to get
      * @return The fact entity at that index

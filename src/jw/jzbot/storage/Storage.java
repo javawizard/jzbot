@@ -66,6 +66,9 @@ public interface Storage extends StorageContainer
     
     @Constructor
     public Factoid createFactoid();
+
+    @Constructor
+    public StoredFunction createStoredFunction();
     
     @Constructor
     public Operator createOperator();
@@ -122,5 +125,12 @@ public interface Storage extends StorageContainer
     
     @Constructor
     public ConfigStorage createConfiguration();
-    
+
+    @Property
+    @ListType(StoredFunction.class)
+    public StoredList<StoredFunction> getStoredFunctions();
+
+    @Search(listProperty = "storedFunctions", searchProperty = "name", exact = true)
+    public StoredFunction getStoredFunction(String name);
+
 }
