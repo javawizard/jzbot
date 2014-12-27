@@ -91,6 +91,8 @@ public class FactContext implements Scope
     private String channel;
     private UserMessenger sender;
     private Messenger source;
+
+    private String levelName;
     
     public Messenger getSource()
     {
@@ -194,6 +196,50 @@ public class FactContext implements Scope
             }
         }
         return current;
+    }
+
+    public FactContext getAncestorAtLevel(String level) {
+        // If it's the empty string, return this
+        if (level.equals(""))
+            return this;
+
+        // Try to parse it as an integer level first
+        Integer levelAsInt = null;
+        try {
+            levelAsInt = new Integer(level);
+        } catch (NumberFormatException e) {
+        }
+        if (levelAsInt != null)
+            return getAncestorAtLevel(levelAsInt);
+
+        FactContext current = this;
+        while (current != null) {
+            if (current.levelName != null && current.levelName.equals(level))
+                return current;
+            current = current.parentContext;
+        }
+
+        throw new RuntimeException("This context doesn't have an ancestor named \"" + level + "\"");
+    }
+
+    public String getLevelName() {
+        return this.levelName;
+    }
+
+    public void setLevelName(String levelName) {
+        if (levelName.equals(""))
+            throw new RuntimeException("Level names cannot be empty");
+        try {
+            Integer.parseInt(levelName);
+            // Don't allow these for now, since there wouldn't be any way to reference them -
+            // getAncestorAtLevel(String) would interpret them as an attempt to access the
+            // level that many parents up the ancestry chain. I might change this in the
+            // future to try the n-levels-up-the-ancestry-chain method and fall back to
+            // treating it as a level name later on...
+            throw new RuntimeException("Level names cannot (at the moment) be integers");
+        } catch (NumberFormatException e) {
+        }
+        this.levelName = levelName;
     }
     
     public Map<String, String> getLocalVars()
