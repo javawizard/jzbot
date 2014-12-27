@@ -1,9 +1,6 @@
 package jw.jzbot.fact;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
@@ -92,7 +89,7 @@ public class FactContext implements Scope
     private UserMessenger sender;
     private Messenger source;
 
-    private String levelName;
+    private Set<String> levelNames = Collections.synchronizedSet(new HashSet<String>());
     
     public Messenger getSource()
     {
@@ -214,19 +211,19 @@ public class FactContext implements Scope
 
         FactContext current = this;
         while (current != null) {
-            if (current.levelName != null && current.levelName.equals(level))
+            if (current.levelNames.contains(level))
                 return current;
             current = current.parentContext;
         }
 
-        throw new RuntimeException("This context doesn't have an ancestor named \"" + level + "\"");
+        throw new RuntimeException("This context doesn't have an ancestor with the name \"" + level + "\"");
     }
 
-    public String getLevelName() {
-        return this.levelName;
+    public Set<String> getLevelNames() {
+        return this.levelNames;
     }
 
-    public void setLevelName(String levelName) {
+    public void addLevelName(String levelName) {
         if (levelName.equals(""))
             throw new RuntimeException("Level names cannot be empty");
         try {
@@ -239,7 +236,7 @@ public class FactContext implements Scope
             throw new RuntimeException("Level names cannot (at the moment) be integers");
         } catch (NumberFormatException e) {
         }
-        this.levelName = levelName;
+        this.levelNames.add(levelName);
     }
     
     public Map<String, String> getLocalVars()
