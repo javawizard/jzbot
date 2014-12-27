@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import jw.jzbot.utils.Utils;
 import net.sf.opengroove.common.utils.StringUtils;
 
 import jw.jzbot.ResponseException;
@@ -20,8 +21,6 @@ import jw.jzbot.scope.UserMessenger;
 
 public class Crosstalk
 {
-    public static final Random random = new Random();
-    
     public static final String VERSION = "1";
     
     private static final Map<String, Handler> handlerRegistry =
@@ -256,7 +255,7 @@ public class Crosstalk
         {
             e.printStackTrace();
         }
-        return "" + System.currentTimeMillis() + "" + random.nextInt(1000000);
+        return "" + System.currentTimeMillis() + "" + Utils.randomHexBytes(4);
     }
     
     private static void ensureCrosstalkAllowed(UserMessenger sender, String type,

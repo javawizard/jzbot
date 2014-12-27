@@ -6,17 +6,16 @@ import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
+import jw.jzbot.utils.Utils;
 
 public class RandomrangeFunction extends Function
 {
-    private static Random random = new Random();
-    
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         int min = Integer.parseInt(arguments.resolveString(0));
         int max = Integer.parseInt(arguments.resolveString(1));
-        int number = random.nextInt((max - min) + 1);
+        int number = Utils.random.nextInt((max - min) + 1);
         number += min;
         sink.write(number);
     }
