@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +18,10 @@ import org.jibble.pircbot.PircBot;
 
 public class Utils
 {
+    public static final Random random = new Random();
+
+    private static final int DEFAULT_RANDOM_HEX_BYTES = 20;
+
     public static String[] delimitedLengthRestricted(String[] items, String delimiter,
             int length)
     {
@@ -196,5 +201,19 @@ public class Utils
                 }
             }
         }.start();
+    }
+
+    public static String randomHexBytes(int numberOfBytes) {
+        StringBuilder builder = new StringBuilder();
+        byte[] bytes = new byte[numberOfBytes];
+        random.nextBytes(bytes);
+        for (byte b : bytes) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
+
+    public static String randomHexId() {
+        return randomHexBytes(DEFAULT_RANDOM_HEX_BYTES);
     }
 }
