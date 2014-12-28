@@ -1,7 +1,7 @@
 name local.misc.lart
 author Alexander Boyd
 scope any
-description Adds a "lart" command, which chooses from one of 144 creative responses that would 
+description Adds a "lart" command, which chooses from one of over 150 creative responses that would
  generally not be pleasant to the person in question. For example, "~lart jcp" might respond with 
  "/me rm -rf's jcp", "/me smacks jcp upside and over the head with one freakishly huge killer 
  whale named Hugh", "/me shoves avocados down jcp's throat until jcp dies", or "/me cats 
@@ -35,7 +35,7 @@ preinstall {fpcheckdep||local.library.randomfromline}
  calls WHO on the phone ... the lights are on but nobody's home\n
  cats /dev/urandom into WHO's ear\n
  changes WHO's permissions to 0777 and tells the world\n
- chants "Pie Iesu Domine, dona eis requiem" and whacks WHO over the head with a really heavy book\n
+ chants "Pie Jesu Domine, Dona eis requiem" and whacks WHO over the head with a really heavy book\n
  chops WHO in half with a free AOL CD\n
  chops WHO in half with a free Solaris 7 CD\n
  crushes WHO with a full height SCSI disk\n
@@ -51,7 +51,9 @@ preinstall {fpcheckdep||local.library.randomfromline}
  drops a baby grand on WHO\n
  drops a humongous exploding nuke on WHO\n
  drops a truckload of VAXen on WHO\n
- drops WHO from a helicopter 5 miles in the sky. Without a parachute.\n
+ drops WHO from a helicopter 5 miles in the sky. Without a parachute. Have fun!\n
+ # Let's see how much I can annoy dented42...
+ drowns WHO in a bucket of Emacsen\n
  duct-tapes WHO to the floor and drools on WHO\n
  dumps 42 tons of dirt, manure, and fish heads on WHO\n
  eats WHO and falls over dead\n
@@ -72,6 +74,7 @@ preinstall {fpcheckdep||local.library.randomfromline}
  forces WHO to use a computer with ternary logic\n
  forces WHO to use Outlook Express\n
  forces WHO to write an operating system in Fact\n
+ forces WHO to write an operating system in Java\n
  frags WHO with a BFG9000\n
  gets a hotmail account and SPAMs WHO\n
  gives WHO a "free" copy of Windows and then charges double for "Upgrades"\n
@@ -129,7 +132,7 @@ preinstall {fpcheckdep||local.library.randomfromline}
  sets WHO's keyboard layout to gaelic\n
  shoots WHO in WHO's sleep\n
  shoots WHO in the head\n
- shoves a crumpet down WHO's throat, happy now?! Huh? Want some JAM with that?\n
+ shoves a crumpet down WHO's throat. Happy now?! Huh? Want some JAM with that?\n
  slams WHO against a large cement Tux\n
  slaps a compatible dib on WHO's head\n
  slaps WHO around with a large trout\n
