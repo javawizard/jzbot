@@ -28,7 +28,7 @@ public class ExecCommand implements Command
     {
         sender.verifySuperop();
         long startMillis = System.currentTimeMillis();
-        FactEntity entity = FactParser.parse(arguments, "__internal_exec");
+        FactEntity entity = FactParser.parse(arguments, "<exec>");
         FactContext context = new FactContext();
         context.setServer(server);
         context.setChannel(channel);
@@ -55,7 +55,7 @@ public class ExecCommand implements Command
         entity.resolve(sink, context);
         String result = sink.toString();
         long finishedMillis = System.currentTimeMillis();
-        System.out.println("__internal_exec: Parsed in " + (parsedMillis - startMillis)
+        System.out.println("<exec>: Parsed in " + (parsedMillis - startMillis)
             + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
         if (result.equals(""))
             result = "(no result)";
