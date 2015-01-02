@@ -393,17 +393,21 @@ public class SlackConnection implements Connection {
             }
             m.appendReplacement(s, replacement);
         }
+        m.appendTail(s);
         String result = s.toString();
 
         result = result.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
 
+        System.out.println("Decoded Slack message:\n" + slackText + "\nto message:\n" + result);
         return result;
     }
 
     private String encodeSlackMessageText(String ircText) {
         // TODO: Implement @user and #channel parsing later... or maybe don't, and just leave it to the
         // (soon-to-be) formatted text system to handle that (so users have to {slackuser|foo} to get @foo)
-        return ircText.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        String result = ircText.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        System.out.println("Encoded Slack message:\n" + ircText + "\nto message:\n" + result);
+        return result;
     }
 
     private APIRequest api(String method) {
