@@ -1397,7 +1397,7 @@ public class JZBot
         try
         {
             Class.forName("org.h2.Driver");
-            File location = new File("storage/relational/rs");
+            File location = new File("./storage/relational/rs");
             relationalStore =
                     DriverManager.getConnection("jdbc:h2:" + location.getPath()
                         + ";FILE_LOCK=SOCKET", "sa", "");
