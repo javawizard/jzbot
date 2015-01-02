@@ -1497,7 +1497,11 @@ public class JZBot
         }
 
         logEvent(serverName, channel, "joined", sender, login + "@" + hostname);
-        if (sender.equals(getRealConnection(serverName).getConnection().getNick()))
+        ConnectionContext realConnection = getRealConnection(serverName);
+        System.out.println("In onJoin, sender: " + sender + ", realConnection: " + realConnection);
+        System.out.println("realConnection.getConnection(): " + realConnection.getConnection());
+        System.out.println("realConnection.getConnection().getNick(): " + realConnection.getConnection().getNick());
+        if (sender.equals(realConnection.getConnection().getNick()))
         {
             runNotificationFactoid(serverName, datastoreServer, channel, chan, sender,
                     login, hostname, "_selfjoin", null, true, true);
