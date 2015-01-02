@@ -373,6 +373,37 @@ public class FactContext implements Scope
         return result;
     }
 
+
+    /**
+     * Creates a copy of this FactContext that can be used for new threads spawned from
+     * this factoid invocation. The new context has new local variable and local function spaces but shares
+     * the same persistent, global, and chain variable space with the old context.
+     *
+     * @param localVarRegex
+     *            The regex to check all local vars against. If their names match this
+     *            regex, they will be copied into the new context.
+     * @return
+     */
+    public FactContext cloneForThreading(String localVarRegex)
+    {
+        FactContext context = new FactContext();
+        context.setAction(this.isAction());
+        context.setChannel(this.getChannel());
+        context.setGlobalVars(this.getGlobalVars());
+        // Don't set local vars or functions; the context creates new maps for itself.
+        context.setQuota(this.getQuota());
+        context.setSelf(this.getSelf());
+        context.setSender(this.getSender());
+        context.setServer(this.getServer());
+        context.setSource(this.getSource());
+        for (String name : localVars.keySet())
+        {
+            if (name.matches(localVarRegex))
+                context.getLocalVars().put(name, localVars.get(name));
+        }
+        return context;
+    }
+
     public Function getFunction(String functionName, FunctionScope functionScope) {
         FunctionScope[] scopesToCheck;
         if (functionScope == null)
