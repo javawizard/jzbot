@@ -25,6 +25,8 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SlackConnection implements Connection {
     private ConnectionContext context;
@@ -141,6 +143,8 @@ public class SlackConnection implements Connection {
 
             if (type.equals("message") && (subtype == null || subtype.equals("me_message"))) {
                 String text = event.getString("text");
+                if (text != null)
+                    text = decodeSlackMessageText(text);
                 String fromHostname = event.getString("user");
                 String fromNick = slackTargetNameToIrc(event.getString("user"));
                 String toChannel = null;
@@ -364,6 +368,44 @@ public class SlackConnection implements Connection {
         }
     }
 
+    private String decodeSlackMessageText(String slackText) {
+        StringBuffer s = new StringBuffer();
+        Matcher m = Pattern.compile("<(.*?)>").matcher(slackText);
+        while (m.find()) {
+            String content = m.group(1);
+            String replacement;
+            if (content.startsWith("@")) {
+                String[] split = content.substring(1).split("|");
+                if (split.length > 1)
+                    replacement = "@" + split[1];
+                else
+                    replacement = "@" + usersById.get(split[0]).name;
+            } else if (content.startsWith("#C")) {
+                String[] split = content.substring(1).split("|");
+                if (split.length > 1)
+                    replacement = "#" + split[1];
+                else
+                    replacement = "@" + channelsById.get(split[0]).name;
+            } else {
+                // Just pass it through
+                System.out.println("Unsupported Slack escape sequence: <" + content + ">");
+                replacement = "&lt;" + content + "&gt;";
+            }
+            m.appendReplacement(s, replacement);
+        }
+        String result = s.toString();
+
+        result = result.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
+
+        return result;
+    }
+
+    private String encodeSlackMessageText(String ircText) {
+        // TODO: Implement @user and #channel parsing later... or maybe don't, and just leave it to the
+        // (soon-to-be) formatted text system to handle that (so users have to {slackuser|foo} to get @foo)
+        return ircText.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
     private APIRequest api(String method) {
         return new APIRequest(method);
     }
@@ -386,9 +428,8 @@ public class SlackConnection implements Connection {
         message = message.replace("@channel", "nospam4u");
         message = message.replace("@group", "nospam4u");
         message = message.replace("@everyone", "nospam4u");
-        message = message.replace("<!channel>", "nospam4u");
-        message = message.replace("<!group>", "nospam4u");
-        message = message.replace("<!everyone>", "nospam4u");
+
+        message = encodeSlackMessageText(message);
 
         MessageTarget slackTarget = ircTargetToSlack(target);
         String channelId = slackTarget.id;
