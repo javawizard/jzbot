@@ -386,6 +386,9 @@ public class SlackConnection implements Connection {
                     replacement = "#" + split[1];
                 else
                     replacement = "@" + channelsById.get(split[0]).name;
+            } else if (content.startsWith("!")) {
+                // The dreaded @channel/@group/@everyone
+                replacement = "@" + content.substring(1);
             } else {
                 // Just pass it through
                 System.out.println("Unsupported Slack escape sequence: <" + content + ">");
