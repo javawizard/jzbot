@@ -1,4 +1,4 @@
-name local.misc.calc
+name calc
 author Alexander Boyd
 description Adds a "calc" command that can be used to calculate the answer to a mathematical 
   equation. For example, with this factpack installed, you could run "~calc (2+3)*4", and 

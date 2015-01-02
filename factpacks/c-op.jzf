@@ -1,4 +1,4 @@
-name local.library.conditional-op
+name conditional-op
 author Alexander Boyd
 description=Provides two factoids, library.conditional-op and library.conditional-deop. These 
   will ask ChanServ to op/deop the bot if it's not already opped. In essence, you use 

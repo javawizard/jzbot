@@ -1,4 +1,4 @@
-name local.games.wolfbot
+name wolfbot
 author Alexander Boyd
 description A game of Werewolf, also known as Mafia or Murder in the Dark. This factpack 
   should generally be installed on a dedicated bot server connection, at which point a

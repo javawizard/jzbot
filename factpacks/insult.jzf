@@ -1,4 +1,4 @@
-name local.misc.insult
+name insult
 author Alexander Boyd
 description Adds a factoid, ~insult, that says a random insult of the form "Hey <person>, 
   you <adjective> <noun> of <adjective> <noun>". For example, "~insult someperson" might 

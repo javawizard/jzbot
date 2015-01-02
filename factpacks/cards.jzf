@@ -1,4 +1,4 @@
-name local.library.cards
+name cards
 author Maximilian Dirkmann
 description contains all important functions for a carddeck:
   carddeck returns a carddeck with the start %1%

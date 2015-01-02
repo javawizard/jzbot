@@ -1,4 +1,4 @@
-name local.stats.karma
+name karma
 author Alexander Boyd
 description Adds a karma system into the bot. Particularly, this adds a karma command that 
   can be used to view a user's current karma. Then, at each channel where karma should be 

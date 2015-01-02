@@ -1,5 +1,5 @@
-name local.misc.bzfrag
+name bzfrag
 author Alexander Boyd
 description Coming soon.
-preinstall {fpcheckdep||local.library.randomresline}
+preinstall {fpcheckdep||randomresline}
 >bzfrag {action}{firstvar|p|%1%|%0%}{import|library.randomresline|bzfrag.txt|%p%}

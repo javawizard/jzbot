@@ -1,4 +1,4 @@
-name local.admin.restart
+name restart
 author Alexander Boyd
 scope any
 description Adds a factoid, ~restart, that restarts the bot when run. Any arguments provided 

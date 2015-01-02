@@ -1,4 +1,4 @@
-name local.library.randomfromline
+name randomfromline
 author Alexander Boyd
 scope global
 description This factpack contains a utility, library.randomfromline, which is identical 

@@ -1,4 +1,4 @@
-name local.games.roulette
+name roulette
 author Alexander Boyd
 scope any
 description This factpack creates a "roulette" factoid that can be used to play a game of russian 
@@ -11,7 +11,7 @@ description This factpack creates a "roulette" factoid that can be used to play 
  Also, Roulette can install a SegServer page that serves up statistics on which players 
   die what percentage of the time. To get this page to work, install SegServer and 
   run "roulette-config register-web".
-preinstall {fpcheckdep||local.library.conditional-op}
+preinstall {fpcheckdep||conditional-op}
 >roulette {ife|{channel}|Roulette can only be used at a channel.|{exact|roulette-create}{exact|roulette-next}{ifeq|{get|roulette-loaded-{scope}}|{get|roulette-current-{scope}}|{exact|roulette-die|%0%}|{sendmessage|{scope}|%0%: (Chamber {get|roulette-current-{scope}} of 6) *click*}{ifeq|{get|roulette-current-{scope}}|6|{exact|roulette-unloaded}}}}
 >roulette-create {ifeq|{get|roulette-loaded-{scope}}||{set|roulette-loaded-{scope}|{eval|{randomint|7}+1}}}{ifeq|{get|roulette-current-{scope}}||{set|roulette-current-{scope}|0}}{future|roulette-delete-key-{scope}|300|roulette-delete}
 library.roulette-create 1

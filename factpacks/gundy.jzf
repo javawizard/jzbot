@@ -1,4 +1,4 @@
-name local.misc.gundy
+name gundy
 author Alexander Boyd
 description A collection of quotes from my choir teacher, Jay Gunderson. Running the ~gundy 
   command randomly picks a quote. Note that these are almost exclusively humorous, 

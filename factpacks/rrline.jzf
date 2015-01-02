@@ -1,4 +1,4 @@
-name local.library.randomresline
+name randomresline
 author Alexander Boyd
 description This factpack contains a utility, library.randomresline, which can read a 
   particular resource, split it into lines, and evaluate to a random choice of one of 

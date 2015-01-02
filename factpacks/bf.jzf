@@ -1,4 +1,4 @@
-name local.misc.bf
+name bf
 author Alexander Boyd
 description Adds a BF interpreter. ~bf <code> <input> is used to run a program. The
   BF interpreter implemented by this factpack is extremely inefficient, but it works,

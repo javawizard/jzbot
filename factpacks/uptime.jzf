@@ -1,4 +1,4 @@
-name local.stats.uptime
+name uptime
 author Alexander Boyd
 scope any
 description Adds an "~uptime" command that reports how long it's been since the bot 

@@ -1,4 +1,4 @@
-name local.misc.lart
+name lart
 author Alexander Boyd
 scope any
 description Adds a "lart" command, which chooses from one of over 150 creative responses that would
@@ -9,7 +9,7 @@ description Adds a "lart" command, which chooses from one of over 150 creative r
  A lot of the responses (such as the "rm -rf" one or the "/dev/urandom" one) are of a technical 
  nature, and all of them are sent as actions (IE as if they were prefixed with "/me").
 
-preinstall {fpcheckdep||local.library.randomfromline}
+preinstall {fpcheckdep||randomfromline}
 
 >lart {action}{cset|person|{ife|%1-%|%0%|%1-%}}{global|library.randomfromline|{import|lart-generate-content}}
 >lart-generate-content

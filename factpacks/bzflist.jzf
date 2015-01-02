@@ -1,4 +1,4 @@
-name local.stats.bzflist
+name bzflist
 author Alexander Boyd
 description Adds a command, bzflist, that prints out the current top 5 bzflag servers 
   (ordered by number of players), and the number of players on each server and the 

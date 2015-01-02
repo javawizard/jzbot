@@ -1,4 +1,4 @@
-name local.misc.flip
+name flip
 author Alexander Boyd
 description Adds a command, ~flip, that swaps some UTF-8 characters to make the input
   text appear as if it were flipped upside-down.

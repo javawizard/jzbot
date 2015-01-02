@@ -1,4 +1,4 @@
-name local.games.mastermind
+name mastermind
 author Alexander Boyd
 scope any
 description This factpack installs a mastermind command that lets you play a game of Mastermind. 

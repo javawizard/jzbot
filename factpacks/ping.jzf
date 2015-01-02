@@ -1,4 +1,4 @@
-name local.misc.ping
+name ping
 author Alexander Boyd
 scope any
 description Provides a command, "ping", which responds with "<user>: pong", where <user> \

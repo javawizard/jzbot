@@ -1,4 +1,4 @@
-name local.games.8ball
+name 8ball
 author Alexander Boyd
 description Adds an 8ball command, which, when run, prints out one of 20 different answers 
   (the answers on the original Magic 8-ball). 10 are positive, 5 are negative, and 5 

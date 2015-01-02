@@ -1,4 +1,4 @@
-name local.misc.logviewer
+name logviewer
 author Alexander Boyd
 scope any
 description Adds a command, ~logviewer, that, when run, formats the channel's logs 
