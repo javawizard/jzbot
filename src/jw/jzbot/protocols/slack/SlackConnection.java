@@ -458,6 +458,7 @@ public class SlackConnection implements Connection {
     public void connect() throws IOException, IrcException {
         try {
             JSONObject rtmInfo = api("rtm.start").call();
+            System.out.println("Connecting to Slack WebSocket " + rtmInfo.getString("url"));
             webSocket = new WebSocketClientSubclass(new URI(rtmInfo.getString("url")));
 
             // Note to self: write up a pull request to Java-WebSocket to make it do this by default for wss:// URLs
