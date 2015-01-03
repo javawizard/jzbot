@@ -39,6 +39,6 @@ public class PmodFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {pmod|<varname>|<function>|<arg2>|...} -- Like {lmod} but for persistent variables.";
     }
 }

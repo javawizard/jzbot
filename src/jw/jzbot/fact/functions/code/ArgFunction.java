@@ -22,6 +22,10 @@ public class ArgFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {arg|<index>} - Evaluate the <index>th argument to this user-defined function and " +
+                "return whatever the argument evaluates to. An exception will be raised if less than <index> " +
+                "arguments were given to the function or if this is called from anything other than a user-defined " +
+                "function (such as from a factoid). Each subsequent call to {arg} will cause the argument to be " +
+                "reevaluated - if this is undesirable, you may want to use {argcached} instead.";
     }
 }

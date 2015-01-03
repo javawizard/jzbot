@@ -20,6 +20,9 @@ public class IdFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {id} -- Generate a unique string for use as an identifier. This currently generates a " +
+                "hexadecimal representation of a 20-byte random number, the same length as a SHA-1 hash. This may " +
+                "change later on, but the result will always consist solely of alphanumeric characters and possibly " +
+                "hyphens.";
     }
 }

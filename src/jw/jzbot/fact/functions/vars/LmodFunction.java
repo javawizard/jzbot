@@ -31,6 +31,10 @@ public class LmodFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {lmod|<varname>|<function>|<arg2>|...} -- Passes the current value of " +
+                "the specified local variable as the first argument to {<function>}, with <arg2> " +
+                "etc. being passed as the remaining arguments, then sets the variable to the " +
+                "function's return value. Short for " +
+                "{lset|<varname>|{<function>|{lget|<varname}|<arg2>|...}}.";
     }
 }

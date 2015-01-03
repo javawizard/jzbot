@@ -16,6 +16,9 @@ public class ArgcountFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {argcount} -- Return the number of arguments passed to this user-defined function. If this " +
+                "is invoked from anything other than a user-defined function, the results should be considered to be " +
+                "undefined - the current behavior is to return 0, but I may change this function to return the empty " +
+                "string in such a case.";
     }
 }

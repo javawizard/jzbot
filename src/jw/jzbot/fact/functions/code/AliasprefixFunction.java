@@ -15,7 +15,7 @@ public class AliasprefixFunction extends Function {
         String originalPrefix = arguments.resolveString(0);
         String newPrefix = arguments.resolveString(1);
         // First, build up a dictionary of the aliases we're going to put in place. This prevents us from causing
-        // problems by steamrollering over a function we needed to alias (say we ahve functions named "aab" and "ab"
+        // problems by steamrollering over a function we needed to alias (say we have functions named "aab" and "ab"
         // and we're aliasing "a" to "").
         Map<String, Function> map = new HashMap<String, Function>();
         for (String functionName: context.getFunctionNames(originalPrefix, null)) {
@@ -27,6 +27,12 @@ public class AliasprefixFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {aliasprefix|<oldprefix>|<newprefix>} -- For all functions whose names begin with " +
+                "<oldprefix>, create a new name for the function by stripping off <oldprefix> and then prepending " +
+                "<newprefix>, and then act as if {alias|<oldname>|<newname>} had been called for every such function. " +
+                "Note that the aliases are applied atomically, so that, for example, {aliasprefix|a|} (which simply " +
+                "strips off a leading 'a' from the name of any function that has one) will work in the face of two " +
+                "functions named 'aab' and 'ab' - the former 'ab' can now be called as 'b', and 'aab' can now be " +
+                "called as 'ab'.";
     }
 }

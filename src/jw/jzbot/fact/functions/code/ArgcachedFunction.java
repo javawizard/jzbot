@@ -21,6 +21,9 @@ public class ArgcachedFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "TBD";
+        return "Syntax: {argcached|<index>} -- Same as {arg|<index>}, but caches the result of evaluating the " +
+                "argument such that further invocations of {argcached} for the same argument will return the same " +
+                "result without reevaluating the argument. Note that calling {arg} after invoking {argcached} will " +
+                "still cause the argument to be evaluated a second time.";
     }
 }
