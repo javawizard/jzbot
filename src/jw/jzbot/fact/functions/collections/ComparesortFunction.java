@@ -20,29 +20,30 @@ public class ComparesortFunction extends Function
         String regex = arguments.resolveString(0);
         String stringToSplit = arguments.resolveString(1);
         String delimiter = arguments.resolveString(2);
-        final String prefix = arguments.resolveString(3);
+        final String varOne = arguments.resolveString(3);
+        final String varTwo = arguments.resolveString(4);
         String[] tokens = stringToSplit.split(regex);
-        String firstPrevious = context.getLocalVars().get(prefix + "-1");
-        String secondPrevious = context.getLocalVars().get(prefix + "-2");
+        String firstPrevious = context.getLocalVars().get(varOne);
+        String secondPrevious = context.getLocalVars().get(varTwo);
         Arrays.sort(tokens, new Comparator<String>()
         {
             
             @Override
             public int compare(String s1, String s2)
             {
-                context.getLocalVars().put(prefix + "-1", s1);
-                context.getLocalVars().put(prefix + "-2", s2);
-                return Integer.parseInt(arguments.resolveString(4));
+                context.getLocalVars().put(varOne, s1);
+                context.getLocalVars().put(varTwo, s2);
+                return Integer.parseInt(arguments.resolveString(5));
             }
         });
         if (firstPrevious != null)
-            context.getLocalVars().put(prefix + "-1", firstPrevious);
+            context.getLocalVars().put(varOne, firstPrevious);
         else
-            context.getLocalVars().remove(prefix + "-1");
+            context.getLocalVars().remove(varOne);
         if (secondPrevious != null)
-            context.getLocalVars().put(prefix + "-2", secondPrevious);
+            context.getLocalVars().put(varTwo, secondPrevious);
         else
-            context.getLocalVars().remove(prefix + "-2");
+            context.getLocalVars().remove(varTwo);
         DelimitedSink result = new DelimitedSink(sink, delimiter);
         for (String s : tokens)
         {
@@ -54,15 +55,15 @@ public class ComparesortFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {comparesort|<regex>|<string>|<delimiter>|<prefix>|<comparator>}"
+        return "Syntax: {comparesort|<regex>|<string>|<delimiter>|<varone>|<vartwo>|<comparator>}"
                 + " -- Splits <string> around the regular expression <regex>, then applies "
                 + "a comparison sort to the resulting sublist. This comparison sort is "
                 + "currently a modified mergesort. Pairs of items are compared by setting the "
-                + "local variable <prefix>-1 to be the first value, and <prefix>-2 to be the "
+                + "local variable <varone> to be the first value, and <vartwo> to be the "
                 + "second value, and then evaluating <comparator>.\n"
                 + "The result of this evaluation should be negative, 0, or positive if "
-                + "the first item comes before, is the same as, or comes after, the second "
-                + "item, respectively. Once the list is sorted, {comparesort} evaluates "
+                + "<varone> comes before, is the same as, or comes after, <vartwo>, respectively. "
+                + "Once the list is sorted, {comparesort} evaluates "
                 + "to a <delimiter>-separated list of the sorted items.";
     }
     
