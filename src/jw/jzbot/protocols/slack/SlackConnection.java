@@ -431,6 +431,7 @@ public class SlackConnection implements Connection {
 
     @Override
     public void sendMessage(String target, String message) {
+        System.out.println("Asked to send Slack message to target \"" + target + "\"");
         // Because I'm paranoid...
         message = message.replace("@channel", "nospam4u");
         message = message.replace("@group", "nospam4u");
