@@ -20,7 +20,7 @@ public class AliasFunction extends Function {
     public String getHelp(String topic) {
         return "Syntax: {alias|<oldname>|<newname>} -- Creates an alias <newname> for the function " +
                 "<oldname>. {<newname>|...} will thereafter have the same effect as {<oldname>|...}. " +
-                "The alias continues pointing to behave the same regardless of whether <oldname> is " +
+                "The alias continues to behave the same regardless of whether <oldname> is " +
                 "later overwritten, so you can use {alias} to, for example, exchange the names of two " +
                 "functions with {alias|foo|temp}{alias|bar|foo}{alias|temp|bar}.";
     }
