@@ -375,17 +375,17 @@ public class SlackConnection implements Connection {
             String content = m.group(1);
             String replacement;
             if (content.startsWith("@")) {
-                String[] split = content.substring(1).split("|");
+                String[] split = content.substring(1).split("\\|");
                 if (split.length > 1)
                     replacement = "@" + split[1];
                 else
                     replacement = "@" + usersById.get(split[0]).name;
             } else if (content.startsWith("#C")) {
-                String[] split = content.substring(1).split("|");
+                String[] split = content.substring(1).split("\\|");
                 if (split.length > 1)
                     replacement = "#" + split[1];
                 else
-                    replacement = "@" + channelsById.get(split[0]).name;
+                    replacement = "#" + channelsById.get(split[0]).name;
             } else if (content.startsWith("!")) {
                 // The dreaded @channel/@group/@everyone
                 replacement = "@" + content.substring(1);
