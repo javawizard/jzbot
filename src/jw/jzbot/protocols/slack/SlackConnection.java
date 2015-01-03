@@ -507,15 +507,6 @@ public class SlackConnection implements Connection {
     public void connect() throws IOException, IrcException {
         try {
             JSONObject rtmInfo = api("rtm.start").call();
-            System.out.println("Connecting to Slack WebSocket " + rtmInfo.getString("url"));
-            webSocket = new WebSocketClientSubclass(new URI(rtmInfo.getString("url")));
-
-            // Note to self: write up a pull request to Java-WebSocket to make it do this by default for wss:// URLs
-            webSocket.setSocket(SSLSocketFactory.getDefault().createSocket());
-
-            if (!webSocket.connectBlocking()) {
-                throw new RuntimeException("Couldn't connect");
-            }
 
             String selfId = rtmInfo.getJSONObject("self").getString("id");
 
@@ -535,6 +526,16 @@ public class SlackConnection implements Connection {
             }
 
             this.self = this.usersById.get(selfId);
+
+            System.out.println("Connecting to Slack WebSocket " + rtmInfo.getString("url"));
+            webSocket = new WebSocketClientSubclass(new URI(rtmInfo.getString("url")));
+
+            // Note to self: write up a pull request to Java-WebSocket to make it do this by default for wss:// URLs
+            webSocket.setSocket(SSLSocketFactory.getDefault().createSocket());
+
+            if (!webSocket.connectBlocking()) {
+                throw new RuntimeException("Couldn't connect");
+            }
 
             for (Channel channel : channelsById.values()) {
                 if (channel.isMember) {
