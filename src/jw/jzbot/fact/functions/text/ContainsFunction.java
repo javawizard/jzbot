@@ -11,7 +11,7 @@ public class ContainsFunction extends Function
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
-        if (arguments.resolveString(1).contains(arguments.resolveString(0)))
+        if (arguments.resolveString(0).contains(arguments.resolveString(1)))
             sink.write('1');
         else
             sink.write('0');
@@ -20,7 +20,7 @@ public class ContainsFunction extends Function
     @Override
     public String getHelp(String topic)
     {
-        return "Syntax: {contains|<substring>|<string>} -- Evaluates to 1 if <string> "
+        return "Syntax: {contains|<string>|<substring>} -- Evaluates to 1 if <string> "
                 + "contains <substring> anywhere in it, or 0 if it doesn't.";
     }
     
