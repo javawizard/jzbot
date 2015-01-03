@@ -10,8 +10,8 @@ public class StoreFunction extends Function
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context)
     {
         String name = arguments.resolveString(0);
-        FactEntity closure = arguments.getEntity(1);
-        context.getStoredSubroutines().put(name, closure);
+        FactEntity code = arguments.getEntity(1);
+        context.getLocalFunctions().put(name, new DynamicFunction(name, code));
     }
     
     @Override

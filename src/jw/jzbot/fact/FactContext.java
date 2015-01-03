@@ -1,6 +1,7 @@
 package jw.jzbot.fact;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
@@ -70,17 +71,17 @@ public class FactContext implements Scope
     // where <name> is the name of the xml document.
     public final Map<String, Object> objectStorage =
             Collections.synchronizedMap(new HashMap<String, Object>());
-    private Map<String, FactEntity> storedSubroutines =
-            Collections.synchronizedMap(new HashMap<String, FactEntity>());
+    private Map<String, Function> localFunctions =
+            Collections.synchronizedMap(new HashMap<String, Function>());
     
-    public Map<String, FactEntity> getStoredSubroutines()
+    public Map<String, Function> getLocalFunctions()
     {
-        return storedSubroutines;
+        return localFunctions;
     }
     
-    public void setStoredSubroutines(Map<String, FactEntity> storedSubroutines)
+    public void setLocalFunctions(Map<String, Function> LocalFunctions)
     {
-        this.storedSubroutines = storedSubroutines;
+        this.localFunctions = localFunctions;
     }
     
     private boolean action;
@@ -418,68 +419,20 @@ public class FactContext implements Scope
         throw new FactoidException("No such function at " + Arrays.deepToString(scopesToCheck) + ": " + functionName);
     }
 
-    public Function getLocalFunction(String name) {
-        if (this.storedSubroutines.containsKey(name))
-            return new DynamicFunction(name, this.storedSubroutines.get(name));
+    public String[] getFunctionNames(String prefix, FunctionScope functionScope) {
+        FunctionScope[] scopes;
+        if (functionScope == null)
+            scopes = FunctionScope.values();
         else
-            return null;
+            scopes = new FunctionScope[]{functionScope};
+        return Stream.of(scopes)
+                .flatMap((scope) -> Stream.<String>of(scope.listFunctionNames(this, prefix)))
+                .distinct()
+                .toArray((size) -> new String[size]);
     }
-    
-    /**
-     * Called by the Fact interpreter when the user tries to invoke a function that
-     * doesn't exist. This method tries to resolve it as a dynamic function using several
-     * different methods. If it can't figure out how to run this function, it throws a
-     * FactoidException.
-     * 
-     * @param name
-     *            The name of the function to invoke
-     * @param sink
-     *            The sink to write the function's output to
-     * @param arguments
-     *            The arguments to the function
-     */
-    public void invokeDynamicFunction(String name, Sink sink, ArgumentList arguments)
-    {
-        // First, we'll try to invoke this as a stored subroutine. This essentially
-        // shortcuts {something} for {run|something}, except that arguments to {something}
-        // are set as %f.1%, %f.2%, etc.
-        FactEntity entity = storedSubroutines.get(name);
-        if (entity != null)
-        {
-            invokeDynamicAsStoredSubroutine(entity, sink, arguments);
-            return;
-        }
-        // Stored subroutine shortcutting is the only form of dynamic invocation we're
-        // supporting for now. Since that didn't work, we'll throw an exception.
-        throw new FactoidException("No such function: " + name);
-    }
-    
-    private void invokeDynamicAsStoredSubroutine(FactEntity entity, Sink sink,
-            ArgumentList arguments)
-    {
-        String[] argumentArray = arguments.evalToArray();
-        String[] previousVars = new String[argumentArray.length];
-        for (int i = 0; i < argumentArray.length; i++)
-        {
-            String varName = "f." + (i + 1);
-            previousVars[i] = localVars.get(varName);
-            localVars.put(varName, argumentArray[i]);
-        }
-        try
-        {
-            entity.resolve(sink, this);
-        }
-        finally
-        {
-            for (int i = 0; i < argumentArray.length; i++)
-            {
-                String varName = "f." + (i + 1);
-                if (previousVars[i] == null)
-                    localVars.remove(varName);
-                else
-                    localVars.put(varName, previousVars[i]);
-            }
-        }
+
+    public Function getLocalFunction(String name) {
+        return this.localFunctions.get(name);
     }
     
     @Override

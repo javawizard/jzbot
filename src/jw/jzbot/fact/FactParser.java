@@ -359,7 +359,8 @@ public class FactParser {
                                     .replace("Less", "<")
                                     .replace("Percent", "%")
                                     .replace("Dollar", "$")
-                                    .replace("Bang", "!");
+                                    .replace("Bang", "!")
+                                    .replace("Dot", ".");
                         }
                         functionName = functionName.toLowerCase().replace("_",
                                 ".");
