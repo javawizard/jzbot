@@ -439,6 +439,22 @@ public class SlackConnection implements Connection {
 
         message = encodeSlackMessageText(message);
 
+        // Since Slack doesn't seem to want to respect "parse": "full" from us...
+        StringBuffer s = new StringBuffer();
+        Matcher m = Pattern.compile("(?<=^| |\\()([@#])([a-z\\-_]+)").matcher(message);
+        while (m.find()) {
+            String replacement = m.group(1) + m.group(2);
+            if (m.group(1).equals("@") && usersByName.containsKey(m.group(2))) {
+                replacement = "<@" + usersByName.get(m.group(2)).id + ">";
+            } else if (m.group(1).equals("#") && channelsByName.containsKey(m.group(2))) {
+                replacement = "<#" + channelsByName.get(m.group(2)).id + ">";
+            }
+            m.appendReplacement(s, replacement);
+        }
+        m.appendTail(s);
+        message = s.toString();
+        System.out.println("Slack message after encoding #channels and @users: " + message);
+
         MessageTarget slackTarget = ircTargetToSlack(target);
         String channelId = slackTarget.id;
         if (slackTarget instanceof User) {
@@ -458,6 +474,8 @@ public class SlackConnection implements Connection {
                 .put("type", "message")
                 .put("channel", channelId)
                 .put("text", message)
+                .put("parse", "full")
+                .put("link_names", 1)
                 .toString());
     }
 
