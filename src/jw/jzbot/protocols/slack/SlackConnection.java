@@ -441,7 +441,7 @@ public class SlackConnection implements Connection {
 
         // Since Slack doesn't seem to want to respect "parse": "full" from us...
         StringBuffer s = new StringBuffer();
-        Matcher m = Pattern.compile("(?<=^| |\\()([@#])([a-z\\-_]+)").matcher(message);
+        Matcher m = Pattern.compile("(?<=^| |\\()([@#])([a-z0-9\\-_]+)").matcher(message);
         while (m.find()) {
             String replacement = m.group(1) + m.group(2);
             if (m.group(1).equals("@") && usersByName.containsKey(m.group(2))) {
