@@ -34,11 +34,11 @@ public class LgvarsFunction extends Function
     {
         return "Syntax: {lgvars|<regex>|<delimiter>} -- Returns a <delimiter>-delimited "
             + "list of the names of all currently-existing global variables. Variables "
-            + "that have been set to the empty string are included in this list; "
-            + "indeed, checkin members of this list is the only reliable way to see "
-            + "if a particular variable actually exists, as it's impossible to detect "
-            + "with the {get} function if the variable is nonexistent or simply set "
-            + "to the empty string. <regex> is optional, but if it's present, only the "
+            + "that have been set to the empty string are included in this list. (This " +
+                "used to be the only way to detect the difference between a variable whose " +
+                "value was the empty string and a nonexistent variable, but {gexists} now " +
+                "fills that role.) " +
+                "<regex> is optional, but if it's present, only the "
             + "names of variables that match <regex> will be returned. <delimiter> is "
             + "also optional, and defaults to the pipe character (\"|\") if not "
             + "present.";
