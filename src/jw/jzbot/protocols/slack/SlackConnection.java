@@ -391,8 +391,8 @@ public class SlackConnection implements Connection {
                 replacement = "@" + content.substring(1);
             } else {
                 // Just pass it through
-                System.out.println("Unsupported Slack escape sequence: <" + content + ">");
-                replacement = "&lt;" + content + "&gt;";
+                System.out.println("Unknown Slack escape sequence, assuming it's a URL: <" + content + ">");
+                replacement = content;
             }
             m.appendReplacement(s, replacement);
         }
