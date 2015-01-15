@@ -1,0 +1,2 @@
+description=This plugin is a language support plugin for Clojure.
+class=jw.jzbot.plugins.packaged.clojure.ClojureLanguagePlugin
