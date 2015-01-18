@@ -155,6 +155,11 @@ public class FactParser {
                     while ((v = stack.next()) != ']') {
                         currentLiteral.append(v);
                     }
+                } else if ("<".equals(theChar)) {
+                    char v;
+                    while ((v = stack.next()) != '>') {
+                        currentLiteral.append(v);
+                    }
                 } else if (theChar != null)
                     currentLiteral.append(theChar);
             } else if (c == '%'/* || c == '$' */) {
@@ -239,7 +244,7 @@ public class FactParser {
      * '|'.<br/>
      * <br/>
      * 
-     * If this method returns 0, then this indicates that no character is to be
+     * If this method returns null, then this indicates that no character is to be
      * included. This is the case when 'x' is passed in.
      * 
      * @param c
@@ -302,12 +307,17 @@ public class FactParser {
         functionsByClass.put(function.getClass(), function);
         try {
             String helpString = function.getHelp(null);
-            if (helpString == null || helpString.equals(""))
+            if (helpString == null || helpString.equals("") || helpString.trim().equalsIgnoreCase("TBD"))
                 System.out.println("Warning: function " + name
                         + " does not have help text");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void installFunctionSet(FunctionSet set) {
+        for (Map.Entry<String, Function> e : set.getFunctions().entrySet())
+            installFunction(e.getKey(), e.getValue());
     }
     
     public static Function getFunction(String name) {
@@ -345,7 +355,8 @@ public class FactParser {
             File[] files = fileList.toArray(new File[0]);
             for (File file : files) {
                 try {
-                    if (file.getName().endsWith("Function.class")) {
+                    // The !contains("$") check strips out nested classes, which we want
+                    if (file.getName().endsWith("Function.class") && !file.getName().contains("$")) {
                         String className = file.getName().substring(0,
                                 file.getName().length() - ".class".length());
                         String functionName = className.substring(0,
@@ -374,8 +385,20 @@ public class FactParser {
                         Class<? extends Function> c = (Class<? extends Function>) Class
                                 .forName("jw.jzbot.fact.functions."
                                         + classNameInFolder.replaceAll(
-                                                "(/|\\\\)", "."));
+                                        "(/|\\\\)", "."));
                         installFunction(functionName, c.newInstance());
+                    } else if (file.getName().endsWith("FunctionSet.class") && !file.getName().contains("$")) {
+                        String className = file.getName().substring(0, file.getName().length() - ".class".length());
+                        String folderName = generateFolderTo(file,
+                                functionsFolder);
+                        String classNameInFolder = folderName + className;
+                        System.out.println("Loading function set from class "
+                                + classNameInFolder);
+                        Class<? extends FunctionSet> c = (Class<? extends FunctionSet>) Class
+                                .forName("jw.jzbot.fact.functions."
+                                        + classNameInFolder.replaceAll(
+                                        "(/|\\\\)", "."));
+                        installFunctionSet(c.newInstance());
                     } else {
                         System.out.println("Skipping non-function class "
                                 + file);

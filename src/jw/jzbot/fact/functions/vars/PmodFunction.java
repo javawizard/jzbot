@@ -23,6 +23,11 @@ public class PmodFunction extends Function {
         sequence.add(arguments.getEntity(1));
 
         MapEntry entry = JZBot.storage.getPersistentVariable(var);
+        if (entry == null) {
+            entry = JZBot.storage.createMapEntry();
+            entry.setKey(var);
+            JZBot.storage.getPersistentVariables().add(entry);
+        }
 
         sequence.add(new Literal(entry.getValue()));
         arguments = arguments.subList(2);

@@ -17,10 +17,13 @@ public class LmodFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         String var = arguments.resolveString(0);
+        String value = context.getLocalVars().get(var);
+        if (value == null)
+            value = "";
         StringSink result = new StringSink();
         Sequence sequence = new Sequence();
         sequence.add(arguments.getEntity(1));
-        sequence.add(new Literal(context.getLocalVars().get(var)));
+        sequence.add(new Literal(value));
         arguments = arguments.subList(2);
         for (int i = 0; i < arguments.length(); i++)
             sequence.add(arguments.getEntity(i));
