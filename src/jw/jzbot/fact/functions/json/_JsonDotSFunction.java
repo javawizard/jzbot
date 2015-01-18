@@ -8,7 +8,7 @@ import jw.jzbot.fact.Sink;
 /**
  * Created by aboyd on 2015-01-18.
  */
-public class JsonDotSFunction extends Function {
+public class _JsonDotSFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         sink.write(JSON.encode(arguments.resolveString(0)));

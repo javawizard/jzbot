@@ -9,7 +9,7 @@ import jw.jzbot.fact.functions.conditional.IfFunction;
 /**
  * Created by aboyd on 2015-01-18.
  */
-public class JsonDotBFunction extends Function {
+public class _JsonDotBFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         Boolean result = IfFunction.findValueOrNull(arguments.resolveString(0));
