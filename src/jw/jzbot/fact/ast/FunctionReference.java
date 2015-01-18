@@ -36,7 +36,8 @@ public class FunctionReference extends FactEntity
         }
         catch (Exception e)
         {
-            throw new FactoidException("Internal error while running " + functionName, e);
+            throw new FactoidException("Internal error while running " + functionName + ": " +
+                    e.getClass().getCanonicalName() + ": " + e.getMessage(), e);
         }
     }
     
