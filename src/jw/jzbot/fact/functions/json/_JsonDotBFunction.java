@@ -23,7 +23,7 @@ public class _JsonDotBFunction extends Function {
 
     @Override
     public String getHelp(String topic) {
-        return "Syntax; {json.b|<value>} -- Convert <value> to a JSON boolean. The same rules used by {if} will be " +
+        return "Syntax: {json.b|<value>} -- Convert <value> to a JSON boolean. The same rules used by {if} will be " +
                 "applied to determine whether <value> is true or false, and \"true\" or \"false\" returned " +
                 "accordingly. If <value> is neither true nor false, the behavior of {json.b} is undefined - currently " +
                 "{json.b} evaluates to nothing in such a case, but I might change that to, say, throw an exception " +
