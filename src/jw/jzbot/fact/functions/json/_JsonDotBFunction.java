@@ -13,10 +13,12 @@ public class _JsonDotBFunction extends Function {
     @Override
     public void evaluate(Sink sink, ArgumentList arguments, FactContext context) {
         Boolean result = IfFunction.findValueOrNull(arguments.resolveString(0));
-        if (result.equals(Boolean.TRUE))
-            sink.write("true");
-        else if (result.equals(Boolean.FALSE))
-            sink.write("false");
+        if (result != null) {
+            if (result.equals(Boolean.TRUE))
+                sink.write("true");
+            else if (result.equals(Boolean.FALSE))
+                sink.write("false");
+        }
     }
 
     @Override
