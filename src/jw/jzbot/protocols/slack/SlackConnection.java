@@ -38,20 +38,27 @@ public class SlackConnection implements Connection {
     private Map<String, User> usersById = new HashMap<String, User>();
     private Map<String, User> usersByName = new HashMap<String, User>();
     private Map<String, Channel> channelsById = new HashMap<String, Channel>(); // Channels and groups
-    private Map<String, Channel> channelsByName = new HashMap<String, Channel>();
+    private Map<String, Channel> channelsByName = new HashMap<String, Channel>(); // Channels only, without leading '#'s
+    private Map<String, Channel> groupsByName = new HashMap<String, Channel>(); // Groups only
 
     public Channel addChannel(JSONObject object) {
         Channel channel = new Channel(object);
         channelsById.put(channel.id, channel);
-        channelsByName.put(channel.name, channel);
+        Map<String, Channel> byName = channel.type == ChannelType.CHANNEL ? channelsByName : channel.type == ChannelType.GROUP ? groupsByName : null;
+        byName.put(channel.name, channel);
         return channel;
     }
 
     public Channel updateChannel(JSONObject object) {
         Channel channel = channelsById.get(object.getString("id"));
-        channelsByName.remove(channel.name);
+        if (channel == null) {
+            // Happens if, say, it's a group that we just found out about because we just got invited to it
+            return addChannel(object);
+        }
+        Map<String, Channel> byName = channel.type == ChannelType.CHANNEL ? channelsByName : channel.type == ChannelType.GROUP ? groupsByName : null;
+        byName.remove(channel.name);
         channel.load(object);
-        channelsByName.put(channel.name, channel);
+        byName.put(channel.name, channel);
         return channel;
     }
 
@@ -328,14 +335,19 @@ public class SlackConnection implements Connection {
                 this.topic = new Topic(object.getJSONObject("topic"));
             if (object.has("purpose"))
                 this.purpose = new Topic(object.getJSONObject("topic"));
-            this.isMember = object.getBoolean("is_member");
+
+            if (this.type == ChannelType.GROUP) {
+                this.isMember = true;
+            } else {
+                this.isMember = object.getBoolean("is_member");
+            }
         }
     }
 
     private MessageTarget ircTargetToSlack(String target) {
         if (target.startsWith("##")) {
             // private group
-            throw new NotImplementedException();
+            return groupsByName.get(target.substring(2));
         } else if (target.startsWith("#")) {
             // channel
             return channelsByName.get(target.substring(1));
@@ -534,6 +546,11 @@ public class SlackConnection implements Connection {
             }
 
             for (Object channelObject : rtmInfo.getJSONArray("channels").myArrayList) {
+                JSONObject channel = (JSONObject) channelObject;
+                addChannel(channel);
+            }
+
+            for (Object channelObject : rtmInfo.getJSONArray("groups").myArrayList) {
                 JSONObject channel = (JSONObject) channelObject;
                 addChannel(channel);
             }
