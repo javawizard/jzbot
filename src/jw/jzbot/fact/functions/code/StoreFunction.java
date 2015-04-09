@@ -11,7 +11,11 @@ public class StoreFunction extends Function
     {
         String name = arguments.resolveString(0);
         FactEntity code = arguments.getEntity(1);
-        context.getLocalFunctions().put(name, new DynamicFunction(name, code));
+        // TODO: Should we be using latestCodeRunVersion or the context's initial version? Kinda thinking the former
+        // in case any functions it invoked returned code or other stuff that it somehow took into consideration, but
+        // that's treading on thin ice as it is anyway. At any rate, the former only makes us perhaps needlessly more
+        // secure than the latter, so not a huge deal.
+        context.getLocalFunctions().put(name, new DynamicFunction(name, context.getLatestCodeRunVersion(), code));
     }
     
     @Override

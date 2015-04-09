@@ -7,7 +7,7 @@ import net.sf.opengroove.common.proxystorage.ProxyBean;
  * Created by aboyd on 2014-12-23.
  */
 @ProxyBean
-public interface StoredFunction {
+public interface StoredFunction extends ModifiedAtVersion {
     @Property
     public String getName();
     public void setName(String name);

@@ -106,6 +106,7 @@ import jw.jzbot.storage.*;
 import jw.jzbot.utils.Utils;
 import jw.jzbot.utils.Pastebin;
 
+import jw.jzbot.vault.VaultManager;
 import net.sf.opengroove.common.proxystorage.ProxyObject;
 import net.sf.opengroove.common.proxystorage.ProxyStorage;
 import net.sf.opengroove.common.proxystorage.StoredList;
@@ -985,6 +986,7 @@ public class JZBot
     // numeric 320: is signed on as account
     public static ProxyStorage<Storage> proxyStorage;
     public static Storage storage;
+    public static VaultManager vaultManager;
     
     public static Config config;
     public static boolean isRunning = true;
@@ -1447,6 +1449,7 @@ public class JZBot
             config = storage.createConfig();
             storage.setConfig(config);
         }
+        vaultManager = new VaultManager(storage);
     }
     
     private static void loadConfiguration() throws Exception
@@ -1816,7 +1819,9 @@ public class JZBot
         long startMillis = System.currentTimeMillis();
         FactEntity parsedFactoid = FactParser.parse(text, factoid.getName());
         long parsedMillis = System.currentTimeMillis();
-        FactContext context = new FactContext();
+        // FIXME: Should make scoping rules as far as versions go consistent here - currently, this allows
+        // channel-specific factoids invoked at the toplevel to access vaults.
+        FactContext context = new FactContext(null, factoid.getVersionNumber());
         context.setQuota(quota);
         context.setChannel(channel);
         context.setSender(sender);
@@ -3335,5 +3340,11 @@ public class JZBot
             throw new IllegalStateException("The scope " + scope
                 + " does not currently exist.");
         return container;
+    }
+
+    public static long newVersionNumber() {
+        long version = storage.getNextVersionNumber();
+        storage.setNextVersionNumber(version + 1);
+        return version;
     }
 }

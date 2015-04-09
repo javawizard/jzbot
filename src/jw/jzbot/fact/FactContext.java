@@ -37,12 +37,17 @@ public class FactContext implements Scope
     
     public FactContext()
     {
-        this(null);
+        this(null, null);
     }
 
     public FactContext(FactContext parentContext) {
+        this(parentContext, null);
+    }
+
+    public FactContext(FactContext parentContext, Long codeVersion) {
         this.parentContext = parentContext;
         this.functionArguments = new ArgumentList(new Sequence(), this);
+        this.latestCodeRunVersion = codeVersion;
 
         if (parentContext != null) {
             this.setAction(parentContext.isAction());
@@ -54,6 +59,15 @@ public class FactContext implements Scope
             this.setSender(parentContext.getSender());
             this.setServer(parentContext.getServer());
             this.setSource(parentContext.getSource());
+            // If parent accessed a vault, we'll have access to its data, so consider us to have accessed the same
+            // vault as well
+            this.updateOldestVaultAccessedVersion(parentContext.getOldestVaultAccessedVersion());
+            // Make sure that we're not new enough that we shouldn't have access to one of our parent's vaults
+            this.validateVaultAccess();
+            // Then propagate our version to our parent
+            if (this.parentContext != null) {
+                this.parentContext.updateLatestCodeRunVersion(codeVersion);
+            }
         }
     }
 
@@ -73,6 +87,25 @@ public class FactContext implements Scope
             Collections.synchronizedMap(new HashMap<String, Object>());
     private Map<String, Function> localFunctions =
             Collections.synchronizedMap(new HashMap<String, Function>());
+    /**
+     * Largest version number of any code (recursively) run as part of this context. This will be the greater of its
+     * factoid or function's last created/edited version and the versions (recursively) of all functions invoked. A
+     * context without a latestCodeRunVersion is treated as if it were written at an infinite version number, i.e.
+     * newer than all existing vaults, and is thus unable to read from a vault without blowing up.
+     */
+    private Long latestCodeRunVersion = null;
+    /**
+     * Oldest version number at which all vaults whose data this function has been given access to have been reset.
+     * This is updated every time a vault is accessed, and is additionally passed down into all functions invoked from
+     * a given function (as they are likely to be given access to sensitive data - at some point I'll add a mechanism
+     * for indicating that no such data is to be passed into a given function invocation and that the invoked function
+     * may therefore be modified at will). It can also be updated in a parent context with functions like
+     * {svflagcaller}, which can be used if e.g. the function in question wants to return sensitive data to its caller.
+     *
+     * A context without an oldestVaultAccessedVersion is treated as if the only vault it had accessed had been reset
+     * at an infinite version number, i.e. no errors will occur.
+     */
+    private Long oldestVaultAccessedVersion = null;
     
     public Map<String, Function> getLocalFunctions()
     {
@@ -388,6 +421,9 @@ public class FactContext implements Scope
     public FactContext cloneForThreading(String localVarRegex)
     {
         FactContext context = new FactContext();
+        // TODO: What to do about vaults and versioning? Current behavior forbids all vault access from a thread, but
+        // also doesn't propagate code versions up to the caller, which could cause problems if the caller relies on
+        // chain variables
         context.setAction(this.isAction());
         context.setChannel(this.getChannel());
         context.setGlobalVars(this.getGlobalVars());
@@ -449,5 +485,59 @@ public class FactContext implements Scope
     public String getScopeName()
     {
         return getCanonicalName();
+    }
+
+    public Long getLatestCodeRunVersion() {
+        return this.latestCodeRunVersion;
+    }
+
+    public Long getOldestVaultAccessedVersion() {
+        return this.oldestVaultAccessedVersion;
+    }
+
+    public void updateLatestCodeRunVersion(Long version) {
+        if (version == null) {
+            // Received a null version - we presumably somehow ran code that didn't have a version, and we can't be
+            // sure that it should be allowed access to any sensitive data, so null out our version (which we treat as
+            // meaning that we were modified infinitely far in the future).
+            this.latestCodeRunVersion = null;
+        } else if (this.latestCodeRunVersion != null) {
+            this.latestCodeRunVersion = Math.max(this.latestCodeRunVersion, version);
+        }
+
+        validateVaultAccess();
+
+        if (this.parentContext != null) {
+            this.parentContext.updateLatestCodeRunVersion(version);
+        }
+    }
+
+    public void updateOldestVaultAccessedVersion(Long version) {
+        if (this.oldestVaultAccessedVersion == null) {
+            this.oldestVaultAccessedVersion = version;
+        } else if (version != null) {
+            this.oldestVaultAccessedVersion = Math.min(this.oldestVaultAccessedVersion, version);
+        }
+    }
+
+    private void validateVaultAccess() {
+        // If they're both null, we're fine. If we accessed a vault but we don't have a code version, blow up (we're
+        // probably in ~exec, or someone forgot to give us a version - both mean we could be doing things we shouldn't
+        // be able to). If we have a code version but we didn't access a vault, we're fine. If we have both, blow up if
+        // oldestVaultAccessedVersion is less than latestCodeRunVersion. (TODO: They shouldn't ever be equal, but in
+        // case they are, what should we be doing? Blowing up with a message that this shouldn't have happened?)
+        if (this.oldestVaultAccessedVersion == null) {
+            // No vaults accessed, so we're fine
+            return;
+        } else if (this.latestCodeRunVersion == null) {
+            // Vaults accessed but no code version. Blow up.
+            throw new FactoidException("Attempted to access a vault reset at version " + this.oldestVaultAccessedVersion
+                    + " from code without a version (maybe ~exec), which isn't allowed to access vaults at all");
+        } else if (this.oldestVaultAccessedVersion < this.latestCodeRunVersion) {
+            // Vaults that haven't been reset since this code was written were accessed. Blow up.
+            throw new FactoidException("Attempted to access a vault reset at version " + this.oldestVaultAccessedVersion
+                    + " from code written at version " + this.latestCodeRunVersion + ". The vault will need to be reset"
+                    + " before this code will be allowed to access its contents.");
+        }
     }
 }

@@ -1,14 +1,9 @@
 package jw.jzbot.storage;
 
-import net.sf.opengroove.common.proxystorage.Constructor;
-import net.sf.opengroove.common.proxystorage.ListType;
-import net.sf.opengroove.common.proxystorage.Property;
-import net.sf.opengroove.common.proxystorage.ProxyBean;
-import net.sf.opengroove.common.proxystorage.Search;
-import net.sf.opengroove.common.proxystorage.StoredList;
+import net.sf.opengroove.common.proxystorage.*;
 
 @ProxyBean
-public interface Storage extends StorageContainer
+public interface Storage extends StorageContainer, VaultContainer
 {
     @Property
     @ListType(Server.class)
@@ -133,4 +128,8 @@ public interface Storage extends StorageContainer
     @Search(listProperty = "storedFunctions", searchProperty = "name", exact = true)
     public StoredFunction getStoredFunction(String name);
 
+    @Property
+    @Default(longValue = 0)
+    public long getNextVersionNumber();
+    public void setNextVersionNumber(long versionNumber);
 }

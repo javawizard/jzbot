@@ -7,7 +7,7 @@ import net.sf.opengroove.common.proxystorage.Property;
 import net.sf.opengroove.common.proxystorage.ProxyBean;
 
 @ProxyBean
-public interface Factoid
+public interface Factoid extends ModifiedAtVersion
 {
     @Property
     public String getName();

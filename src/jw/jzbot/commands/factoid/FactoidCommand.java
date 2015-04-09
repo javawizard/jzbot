@@ -213,12 +213,15 @@ public class FactoidCommand implements Command
             }
             catch (Exception e)
             {
+                // TODO: We should just not delete it until we're sure everything's good. Or better yet, just modify
+                // the already existing one
                 recreate(oldFact, scope, s, c);
                 throw new ResponseException(
                         "There is a syntax error in the contents of the factoid: "
                             + PastebinUtils.pastebinStack(e));
             }
             Factoid f = JZBot.storage.createFactoid();
+            f.setVersionNumber(JZBot.newVersionNumber());
             f.setCreator(sender.getHostname());
             f.setName(factoidName);
             f.setActive(true);
@@ -510,6 +513,7 @@ public class FactoidCommand implements Command
                 if (scopeStorageContainer.getStoredFunction(name) != null)
                     throw new ResponseException("Already exists");
                 StoredFunction function = JZBot.storage.createStoredFunction();
+                function.setVersionNumber(JZBot.newVersionNumber());
                 function.setName(name);
                 function.setValue(value);
                 scopeStorageContainer.getStoredFunctions().add(function);
@@ -1055,7 +1059,10 @@ public class FactoidCommand implements Command
         localVars.put("sender-server", sender.getServerName());
         localVars.put("sender-hostname", sender.getHostname());
         /*
-         * Time to run the preinstall script
+         * Time to run the preinstall script. TODO: Since we're not setting a version on the FactContext we create for
+         * the preinstall script, the script won't be able to modify any vaults that it creates. Do we want to give it
+         * a version number so that it can? (It shouldn't be able to access vaults that already exist, for obvious
+         * reasons.)
          */
         try
         {
@@ -1185,6 +1192,7 @@ public class FactoidCommand implements Command
             if (realNameMap.get(entry.name).equals(""))
                 continue;
             Factoid fact = JZBot.storage.createFactoid();
+            fact.setVersionNumber(JZBot.newVersionNumber());
             fact.setActive(true);
             fact.setCreationTime(System.currentTimeMillis());
             fact.setCreator(sender.getHostname());
@@ -1357,6 +1365,7 @@ public class FactoidCommand implements Command
             if (factoid != null)
                 storage.getFactoids().remove(factoid);
             factoid = JZBot.storage.createFactoid();
+            factoid.setVersionNumber(JZBot.newVersionNumber());
             factoid.setActive(true);
             factoid.setCreationTime(Long.parseLong(command.properties.get("creationTime")));
             factoid.setCreator(command.properties.get("creator"));
