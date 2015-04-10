@@ -39,6 +39,14 @@ public class VaultManager {
         return vault;
     }
 
+    public synchronized Vault getOrCreateVault(String name) {
+        Vault vault = getVault(name);
+        if (vault == null) {
+            vault = createVault(name);
+        }
+        return vault;
+    }
+
     public Vault[] listVaults() {
         return this.container.getVaults().isolate().stream()
                 .map((storage) -> new Vault(this.container, storage, this))
