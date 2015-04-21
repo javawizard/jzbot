@@ -2478,9 +2478,12 @@ public class JZBot
                     String factValue =
                             safeRunFactoid(f, server, serverName, channel, sender, source,
                                     new String[0], true, new HashMap<String, String>());
-                    if (factValue.trim().equals(""))
-                        factValue = "(Not-found factoid didn't output anything)";
-                    sendActionOrMessage(source, factValue);
+                    // Don't send anything if the result is blank - allows, for example,
+                    // filtering which channels receive a notfound response to prevent
+                    // people from getting annoyed by responses to things like
+                    // "~2 or 3 minutes"
+                    if (!factValue.trim().equals(""))
+                        sendActionOrMessage(source, factValue);
                 }
             }
             catch (Throwable t)
