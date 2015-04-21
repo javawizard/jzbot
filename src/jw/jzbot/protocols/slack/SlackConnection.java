@@ -323,7 +323,7 @@ public class SlackConnection implements Connection {
             this.name = object.getString("name");
             this.created = object.getLong("created");
             this.creator = usersById.get(object.getString("creator"));
-            this.isArchived = object.getBoolean("is_archived");
+            this.isArchived = object.has("is_archived") ? object.getBoolean("is_archived") : false;
             this.members.clear();
             if (object.has("members")) { // Won't have any if we haven't joined etc.
                 JSONArray members = object.getJSONArray("members");
