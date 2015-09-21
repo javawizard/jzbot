@@ -1,8 +1,8 @@
 package jw.jzbot;
 
 /*
- * TODO: this file really needs to be split into multiple files at some point. 
- * It's 3149 lines long as of the writing of this comment, and that's a bit 
+ * TODO: this file really needs to be split into multiple files at some point.
+ * It's 3149 lines long as of the writing of this comment, and that's a bit
  * larger than is practical.
  */
 
@@ -131,29 +131,29 @@ public class JZBot
     // public static Connection bot;
     public static Map<String, ConnectionContext> connectionMap =
             new HashMap<String, ConnectionContext>();
-    
+
     public static File restartFile = new File("storage/restart");
-    
+
     public static File logsFolder = new File("storage/logs");
-    
+
     public static Map<String, String> globalVariables = Collections
             .synchronizedMap(new HashMap<String, String>());
-    
+
     public static Map<Integer, HttpServer> httpServers = new HashMap<Integer, HttpServer>();
-    
+
     public static volatile int notificationSequence = 0;
-    
+
     public static Map<String, String> pmUserScopeMap = new HashMap<String, String>();
-    
+
     public static Map<String, Long> pmUserScopeTimes = new HashMap<String, Long>();
-    
+
     public static Object pmUserScopeLock = new Object();
     /**
      * When a user sets their pm scope with the ~scope command, this is the number of
      * minutes that the scope will stay before being reset to the server scope.
      */
     public static final long PM_USER_SCOPE_TIMEOUT = 1000 * 60 * 10;// 10 minutes
-    
+
     public static Thread pmUserScopeTimeoutThread = new Thread("pm-user-scope-timeout")
     {
         public void run()
@@ -195,13 +195,13 @@ public class JZBot
             }
         }
     };
-    
+
     public static BlockingQueue<LogEvent> logQueue;
-    
+
     public static final Object logQueueLock = new Object();
     // TODO: consider changing this to 90
     private static final long CONNECTION_CYCLE_TIMEOUT = 120;
-    
+
     public static Thread notificationThread = new Thread("factoid-cron-thread")
     {
         public void run()
@@ -233,7 +233,7 @@ public class JZBot
         notificationThread.setDaemon(true);
         notificationThread.start();
     }
-    
+
     public static void startHttpServer(int port, String factoid)
     {
         try
@@ -258,12 +258,12 @@ public class JZBot
                         + " with factoid " + factoid, e);
         }
     }
-    
+
     /**
      * Runs the specified notification first globally, then on all connected servers
      * (Read: not servers that are disconnected, deactivated, or no longer existent), then
      * on all channels within those servers.
-     * 
+     *
      * @param name
      */
     protected static void sendNotificationToAll(String name)
@@ -322,16 +322,16 @@ public class JZBot
             System.out.println("Finished reverse-cascade notification " + name + ".");
         }
     }
-    
+
     /**
      * Sends a message to the specified target, which is a canonical channel name. If the
      * specified server is not connected or if the specified channel is not joined, this
      * message is silently discarded.<br/>
      * <br/>
-     * 
+     *
      * This <b>must not</b> be called from any logging code, as this method will invoke
      * the channel logger to log that a message was sent.
-     * 
+     *
      * @param target
      *            The target to send to, which can be null. If it's null, the message will
      *            be silently discarded.
@@ -366,7 +366,7 @@ public class JZBot
             return;
         wrapper.sendMessage(channelName, message);
     }
-    
+
     public static String extractChannelName(String target)
     {
         if (target.startsWith("#"))
@@ -376,7 +376,7 @@ public class JZBot
         throw new IllegalArgumentException("The target \"" + target
             + "\" does not contain a valid channel.");
     }
-    
+
     public static String extractServerName(String target)
     {
         if (target.startsWith("@") && target.contains("#"))
@@ -386,7 +386,7 @@ public class JZBot
         throw new IllegalArgumentException("The target \"" + target
             + "\" does not contain a valid server name.");
     }
-    
+
     public static String extractRelativeServer(String target, Scope scope)
     {
         if (target.startsWith("@") && target.contains("#"))
@@ -397,7 +397,7 @@ public class JZBot
             return scope.getServerName();
         return null;
     }
-    
+
     public static String extractRelativeChannel(String target, Scope scope)
     {
         if (target.startsWith("#"))
@@ -412,11 +412,11 @@ public class JZBot
             return scope.getChannelName();
         return null;
     }
-    
+
     /**
      * Gets the connection object for the specified server, if it is currently connected.
      * If it is not currently connected, null is returned.
-     * 
+     *
      * @param serverName
      * @return
      */
@@ -430,7 +430,7 @@ public class JZBot
         // FIXME: add caching of the connection wrapper
         return new ConnectionWrapper(con);
     }
-    
+
     /**
      * Extracts the server name from the target specified (which could be
      * "@server#channel", for example), then gets and returns the connection for that
@@ -438,7 +438,7 @@ public class JZBot
      * <tt>scope</tt> is currently using is returned instead. If <tt>scope</tt> doesn't
      * contain a server and <tt>target</tt> doesn't contain one either, an exception is
      * thrown.
-     * 
+     *
      * @param target
      * @param scope
      * @return
@@ -461,7 +461,7 @@ public class JZBot
                 + ". This probably means that the server is currently disconnected.");
         return con;
     }
-    
+
     public static ConnectionContext getRealConnection(String serverName)
     {
         ConnectionContext con = connectionMap.get(serverName);
@@ -471,7 +471,7 @@ public class JZBot
             return null;
         return con;
     }
-    
+
     public static class ConnectionCycleThread extends Thread
     {
         public void run()
@@ -490,17 +490,17 @@ public class JZBot
             }
         }
     }
-    
+
     private static ConnectionCycleThread connectionCycleThread;
-    
+
     private static BlockingQueue<Object> connectionCycleQueue =
             new LinkedBlockingQueue<Object>(500);
-    
+
     public static Map<String, Throwable> connectionLastErrorMap =
             new HashMap<String, Throwable>();
-    
+
     public static final Object connectionCycleLock = new Object();
-    
+
     public static void startConnectionCycleThread()
     {
         connectionCycleThread = new ConnectionCycleThread();
@@ -508,12 +508,12 @@ public class JZBot
         connectionCycleThread.setPriority(3);
         connectionCycleThread.start();
     }
-    
+
     /**
      * This is called about once every 2 minutes. It performs the main connection cycle.
      * It essentially connects the bot to servers that it's supposed to be connected to,
      * and disconnects the bot from servers that it's not supposed to be connected to.
-     * 
+     *
      * @throws InterruptedException
      */
     public static void doSingleConnectionCycle() throws InterruptedException
@@ -521,7 +521,7 @@ public class JZBot
         connectionCycleQueue.poll(CONNECTION_CYCLE_TIMEOUT, TimeUnit.SECONDS);
         connectionCycleQueue.clear();
         // We'll wait a bit, mostly for the heck of it
-        Thread.sleep(2000);
+        Thread.sleep(500);
         System.out.println("Connection cycle");
         if (!isRunning)
             return;
@@ -576,11 +576,11 @@ public class JZBot
          * thread notified. This will cause this whole method to run again, and that time
          * through it will create a new connection and connect it. This ensures that a
          * given connection object is never re-used.
-         * 
+         *
          * We're going to start one thread per connection and then join all the threads so
          * that one server that's being slow to connect doesn't stall the rest of them
          * from connecting.
-         * 
+         *
          * TODO: figure out a more elegant way to handle making sure connections are never
          * re-used. That idea was hacked into the system at the last minute, and I didn't
          * do a very good job at it.
@@ -610,7 +610,7 @@ public class JZBot
          * objects list, or the connection has been marked as needing to be discarded.
          * We're going to do this in separate threads for the same reason that we did the
          * previous step in separate threads.
-         * 
+         *
          * TODO: change it so that it's done in separate threads as noted
          */
         synchronized (connectionCycleLock)
@@ -658,7 +658,7 @@ public class JZBot
          * ...and we're done!
          */
     }
-    
+
     private static void joinAllAndClear(ArrayList<Thread> threads)
     {
         for (Thread thread : threads)
@@ -674,7 +674,7 @@ public class JZBot
         }
         threads.clear();
     }
-    
+
     private static Thread connectionCycleStartConnectThread(final ConnectionContext context)
     {
         Thread thread =
@@ -704,7 +704,7 @@ public class JZBot
         thread.start();
         return thread;
     }
-    
+
     private static List<ConnectionContext> sortByPriority(
             Collection<ConnectionContext> values)
     {
@@ -712,7 +712,7 @@ public class JZBot
         long start = System.currentTimeMillis();
         Collections.sort(list, new Comparator<ConnectionContext>()
         {
-            
+
             @Override
             public int compare(ConnectionContext first, ConnectionContext second)
             {
@@ -729,7 +729,7 @@ public class JZBot
             + (System.currentTimeMillis() - start) + " ms");
         return list;
     }
-    
+
     private static List<Server> sortByPriority(ArrayList<Server> list)
     {
         long start = System.currentTimeMillis();
@@ -739,7 +739,7 @@ public class JZBot
                     server.getPriority());
         Collections.sort(list, new Comparator<Server>()
         {
-            
+
             @Override
             public int compare(Server first, Server second)
             {
@@ -758,12 +758,12 @@ public class JZBot
             + " ms");
         return list;
     }
-    
+
     public static void notifyConnectionCycleThread()
     {
         connectionCycleQueue.offer(new Object());
     }
-    
+
     private static void runPreConnectActions(ConnectionContext context)
     {
         context.getConnection().setMessageDelay(Configuration.getInt(null, "delay"));
@@ -783,7 +783,7 @@ public class JZBot
             e.printStackTrace();
         }
     }
-    
+
     public static void stopHttpServer(int port)
     {
         try
@@ -803,10 +803,10 @@ public class JZBot
                     "Exception occurred while stopping an http server on port " + port);
         }
     }
-    
+
     public static final File serverPortsFile = new File("storage", "serverports.txt");
     public static final File maxServersFile = new File("storage", "maxservers.txt");
-    
+
     /**
      * Throws an exception if a server cannot be started on the specified port. The
      * reasons for throwing an exception are, at present:<br/>
@@ -815,7 +815,7 @@ public class JZBot
      * <li>The specified port does not match the regex in storage/serverports.txt</li>
      * <li>There are too many servers already started</li>
      * </ul>
-     * 
+     *
      * @param port
      */
     private static void verifyStartServer(int port)
@@ -840,28 +840,28 @@ public class JZBot
                 + " servers started. This bot imposes a " + "maximum limit of "
                 + maxServers + " at a time.");
     }
-    
+
     static
     {
         HelpSystem.installProvider(new DefaultHelpProvider());
         HelpSystem.installProvider(new FunctionHelpProvider());
         HelpSystem.installProvider(new PropsHelpProvider("docs/help.props"));
     }
-    
+
     public static Map<String, Evaluator> evalEngines = new HashMap<String, Evaluator>();
-    
+
     public static void registerEvalEngine(Evaluator engine)
     {
         evalEngines.put(engine.getName(), engine);
     }
-    
+
     static
     {
         registerEvalEngine(new JepliteEvaluator());
         registerEvalEngine(new JEvalEvaluator());
         registerEvalEngine(new CaltechEvaluator());
     }
-    
+
     public static Evaluator getEvalEngine(String name)
     {
         Evaluator engine = evalEngines.get(name);
@@ -871,7 +871,7 @@ public class JZBot
                 + StringUtils.delimited(evalEngines.keySet().toArray(new String[0]), ", "));
         return engine;
     }
-    
+
     public static Evaluator getDefaultEvalEngine(String channel)
     {
         /*
@@ -885,7 +885,7 @@ public class JZBot
          */
         return getEvalEngine("jeval");
     }
-    
+
     public static class FutureFactoid implements Runnable
     {
         private int delay;
@@ -897,7 +897,7 @@ public class JZBot
         private String key;
         private FactQuota quota;
         public long startTime;
-        
+
         public FutureFactoid(int delay, String server, String channel,
                 ArgumentList arguments, UserMessenger sender, Messenger source, String key,
                 FactQuota quota)
@@ -928,7 +928,7 @@ public class JZBot
             for (int i = 0; i < arguments.length(); i++)
                 arguments.get(i, new NullSink());
         }
-        
+
         public void run()
         {
             // try
@@ -969,13 +969,13 @@ public class JZBot
                 sendActionOrMessage(source, result);
             }
         }
-        
+
         public void start()
         {
             futureFactoidPool.schedule(this, delay, TimeUnit.SECONDS);
         }
     }
-    
+
     public static HashMap<String, FutureFactoid> futureFactoids =
             new HashMap<String, FutureFactoid>();
     public static final Object futureFactoidLock = new Object();
@@ -987,12 +987,12 @@ public class JZBot
     public static ProxyStorage<Storage> proxyStorage;
     public static Storage storage;
     public static VaultManager vaultManager;
-    
+
     public static Config config;
     public static boolean isRunning = true;
-    
+
     public static volatile boolean logQueueRunning = true;
-    
+
     public static void main(String[] args) throws Throwable
     {
         System.out.println("This is JZBot, http://github.com/javawizard/jzbot");
@@ -1015,7 +1015,7 @@ public class JZBot
         }
         start();
     }
-    
+
     private static void doWithArguments(String[] args)
     {
         if (args[0].equals("help"))
@@ -1216,12 +1216,12 @@ public class JZBot
             System.out.println("That's an invalid command. Try \"jzbot help\".");
         }
     }
-    
+
     private static boolean isOkServerName(String serverName)
     {
         return serverName.matches("^[a-z0-9\\-]*$");
     }
-    
+
     private static void loadCommands()
     {
         installCommand(new CommandListCommand());
@@ -1253,7 +1253,7 @@ public class JZBot
         installCommand(new UpdateCommand());
         // loadCommand(new WeatherCommand());
     }
-    
+
     /**
      * Loads the specified command. If there is already a command with the specified name,
      * chain loading is used; the already-existing command will be invoked first, but if
@@ -1262,7 +1262,7 @@ public class JZBot
      * , then this command will be called. If there are multiple commands with the same
      * name, the first one added will be tried first, then the next, then the next, and so
      * on.
-     * 
+     *
      * @param command
      *            The command to load
      */
@@ -1282,7 +1282,7 @@ public class JZBot
             list.add(command);
         }
     }
-    
+
     private static void start() throws Throwable
     {
         System.out.println("Initializing...");
@@ -1334,7 +1334,7 @@ public class JZBot
             + "connections will be established in a few seconds.");
         System.out.println();
     }
-    
+
     private static void fireInitialNotifyEvents()
     {
         for (Server server : storage.getServers().isolate())
@@ -1348,7 +1348,7 @@ public class JZBot
             }
         }
     }
-    
+
     private static void loadProtocols()
     {
         /*
@@ -1361,15 +1361,15 @@ public class JZBot
         ProtocolManager.installProtocol(new ImapProtocol());
         ProtocolManager.installProtocol(new SlackProtocol());
     }
-    
+
     private static void startPmUserTimeThread()
     {
         pmUserScopeTimeoutThread.setDaemon(true);
         pmUserScopeTimeoutThread.start();
     }
-    
+
     public static boolean shouldRestartOnShutdown = false;
-    
+
     private static void addShutdownHook()
     {
         Runtime.getRuntime().addShutdownHook(new Thread()
@@ -1391,9 +1391,9 @@ public class JZBot
             }
         });
     }
-    
+
     public static java.sql.Connection relationalStore;
-    
+
     public static void startRelationalStore()
     {
         try
@@ -1436,7 +1436,7 @@ public class JZBot
             throw new RuntimeException("Could not connect to the relational data store.", e);
         }
     }
-    
+
     private static void initProxyStorage()
     {
         proxyStorage =
@@ -1451,7 +1451,7 @@ public class JZBot
         }
         vaultManager = new VaultManager(storage);
     }
-    
+
     private static void loadConfiguration() throws Exception
     {
         Configuration.initialize();
@@ -1459,7 +1459,7 @@ public class JZBot
         logQueue = new LinkedBlockingQueue<LogEvent>(Configuration.getInt("", "lqmaxsize"));
         Configuration.addListener("", "proxytrace", new VarListener()
         {
-            
+
             @Override
             public void changed(String scope, String name)
             {
@@ -1468,13 +1468,13 @@ public class JZBot
         });
         proxyTraceConfigChanged();
     }
-    
+
     private static void registerDefaultConfigVars() throws IOException
     {
         new PythonInterpreter().execfile(new FileInputStream(
                 "src/jw/jzbot/configuration/default_config_vars.py"));
     }
-    
+
     public static void onJoin(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname)
     {
@@ -1515,7 +1515,7 @@ public class JZBot
                     login, hostname, "_onjoin", null, true, true);
         }
     }
-    
+
     public static void onPart(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname)
     {
@@ -1523,7 +1523,7 @@ public class JZBot
         runNotificationFactoid(serverName, datastoreServer, channel, null, sender, login,
                 hostname, "_onpart", null, true, true);
     }
-    
+
     public static void onBeforeQuit(Server datastoreServer, String serverName,
             String sourceNick, String sourceLogin, String sourceHostname, String reason)
     {
@@ -1540,9 +1540,9 @@ public class JZBot
             }
         }
     }
-    
+
     public static HashMap<String, String> channelTopics = new HashMap<String, String>();
-    
+
     public static void onTopic(Server datastoreServer, String serverName, String channel,
             String topic, String setBy, String setByUsername, String setByHostname,
             long date, boolean changed)
@@ -1556,7 +1556,7 @@ public class JZBot
                             "" + date }, true, true);
         }
     }
-    
+
     public static void onMode(Server datastoreServer, String serverName, String channel,
             String sourceNick, String sourceLogin, String sourceHostname, String mode)
     {
@@ -1564,7 +1564,7 @@ public class JZBot
         runNotificationFactoid(serverName, datastoreServer, channel, null, sourceNick,
                 sourceLogin, sourceHostname, "_onmode", new String[] { mode }, true, true);
     }
-    
+
     public static void onNickChange(Server datastoreServer, String serverName,
             String oldNick, String login, String hostname, String newNick)
     {
@@ -1580,10 +1580,10 @@ public class JZBot
             }
         }
     }
-    
+
     /**
      * Runs the specified notification factoid.
-     * 
+     *
      * @param channelName
      *            The channel the event occurred at. This must either be the name of a
      *            channel that the bot is currently at, or null. If it's null, then this
@@ -1736,7 +1736,7 @@ public class JZBot
             tkt.active = false;
         }
     }
-    
+
     public static void sendActionOrMessage(ConnectionWrapper target, String channel,
             String message)
     {
@@ -1747,7 +1747,7 @@ public class JZBot
         else
             target.sendMessage(channel, message);
     }
-    
+
     public static void sendActionOrMessage(Messenger target, String message)
     {
         if (message.equals(""))
@@ -1757,12 +1757,12 @@ public class JZBot
         else
             target.sendMessage(message);
     }
-    
+
     public static void incrementIndirectRequests(Factoid f)
     {
         f.setIndirectRequests(f.getIndirectRequests() + 1);
     }
-    
+
     public static void incrementDirectRequests(Factoid f)
     {
         // System.out.println("Incrementing direct requests for " +
@@ -1770,10 +1770,10 @@ public class JZBot
         f.setDirectRequests(f.getDirectRequests() + 1);
         // System.out.println("incremented");
     }
-    
+
     /**
      * Runs the factoid specified, outputting to the string specified.
-     * 
+     *
      * @param factoid
      *            The factoid to run
      * @param channel
@@ -1841,13 +1841,13 @@ public class JZBot
         boolean isAction = context.isAction();
         return (isAction ? "<ACTION>" : "") + result.toString();
     }
-    
+
     public static enum ImportLevel
     {
         // FIXME: add a server level here
         any, exact, global
     }
-    
+
     public static String doFactImport(String server, String channel,
             ArgumentList arguments, UserMessenger sender, Messenger source,
             boolean allowRestricted, FactQuota quota, ImportLevel level)
@@ -1855,7 +1855,7 @@ public class JZBot
         return doFactImport(server, channel, arguments, sender, source, allowRestricted,
                 quota, level, null);
     }
-    
+
     public static String doFactImport(String server, String channel,
             ArgumentList arguments, UserMessenger sender, Messenger source,
             boolean allowRestricted, FactQuota quota, ImportLevel level,
@@ -1904,7 +1904,7 @@ public class JZBot
         return runFactoid(f, server, channel, sender, source, arguments.subList(1)
                 .evalToArray(), varMap, allowRestricted, quota);
     }
-    
+
     public static void onKick(Server datastoreServer, String serverName, String channel,
             String kickerNick, String kickerLogin, String kickerHostname,
             String recipientNick, String reason)
@@ -1923,7 +1923,7 @@ public class JZBot
             getRealConnection(serverName).getConnection().joinChannel(channel);
         }
     }
-    
+
     public static void onMessage(Server datastoreServer, String serverName, String channel,
             String sender, String login, String hostname, String message)
     {
@@ -2021,9 +2021,9 @@ public class JZBot
             tkt.active = false;
         }
     }
-    
+
     public static String NAME_SUFFIXES = ":,!";
-    
+
     private static String replaceNamePrefixWithTrigger(ConnectionContext context,
             String trigger, String message)
     {
@@ -2039,7 +2039,7 @@ public class JZBot
         }
         return oldMessage;
     }
-    
+
     public static void onNotice(Server datastoreServer, String serverName,
             String sourceNick, String sourceLogin, String sourceHostname, String target,
             String line)
@@ -2052,9 +2052,9 @@ public class JZBot
                 sourceNick, sourceLogin, sourceHostname, "_onnotice", new String[] { line,
                         target }, true, true);
         System.out.println("Notice to " + target + " by " + sourceNick + ": " + line);
-        
+
     }
-    
+
     public static void onInvitation(Server datastoreServer, String serverName,
             String channel, String sender, String login, String hostname, String toChannel)
     {
@@ -2074,7 +2074,7 @@ public class JZBot
                     + PastebinUtils.pastebinStack(e));
         }
     }
-    
+
     public static boolean processChannelRegex(Server server, String serverName,
             String channel, String sender, String username, String hostname,
             String message, boolean action)
@@ -2118,14 +2118,14 @@ public class JZBot
             return true;
         }
     }
-    
+
     public static enum OverrideStatus
     {
         override, factoverride, none
     }
-    
+
     /**
-     * 
+     *
      * @param server
      * @param channel
      * @param sender
@@ -2179,7 +2179,7 @@ public class JZBot
             return OverrideStatus.factoverride;
         return OverrideStatus.none;
     }
-    
+
     public static void onAction(Server datastoreServer, String serverName, String sender,
             String login, String hostname, String channel, String action)
     {
@@ -2208,12 +2208,12 @@ public class JZBot
             tkt.active = false;
         }
     }
-    
+
     /**
      * Figures out the commands that should be run for the specified message. The trigger
      * should be removed from the message before this method is called. This method will
      * take care of sending responses as needed for the command.
-     * 
+     *
      * @param datastoreServer
      *            The server at which this command should be run. This is normally the
      *            same as <tt>senderServer</tt>, but if the server is explicitly specified
@@ -2322,11 +2322,11 @@ public class JZBot
         /*
          * If we get here, then the text isn't a command. We'll check to see if it's a
          * factoid.
-         * 
+         *
          * Our first check will be for a channel-specific factoid. However, we should just
          * return if we're not supposed to process factoids, which occurrs if a regex
          * filtered out a call with override or factoverride.
-         * 
+         *
          * And actually, that brings to mind another task that needs to be done, and I'm
          * putting it here in case I forget it: override and factoverride set local
          * varaibles prefixed with two underscores. Some mechanism that doesn't use local
@@ -2385,13 +2385,13 @@ public class JZBot
                 : serverName, channel, serverUser, source);
         System.out.println("Finishing command run #7");
     }
-    
+
     /**
      * Runs the specified factoid, returning its output. If an exception is thrown while
      * running the factoid, the exception's stack trace, along with some additional
      * information, is sent to pastebin.com, and an error message (including a url to the
      * pastebin post) returned instead of the factoid's output.
-     * 
+     *
      * @param f
      *            The factoid to run
      * @param channel
@@ -2408,7 +2408,7 @@ public class JZBot
      * @return The output of the factoid, or an error message containing a pastebin url if
      *         the factoid threw an exception while running
      */
-    
+
     public static String safeRunFactoid(Factoid f, Server server, String serverName,
             String channel, UserMessenger sender, Messenger source, String[] arguments,
             boolean allowRestricted, Map<String, String> vars)
@@ -2445,7 +2445,7 @@ public class JZBot
         }
         return factValue;
     }
-    
+
     private static void doInvalidCommand(boolean pm, Server server, String serverName,
             String channel, UserMessenger sender, Messenger source)
     {
@@ -2494,7 +2494,7 @@ public class JZBot
         }
         System.out.println("Finished processing for invalid command");
     }
-    
+
     public static void onConnect(final Server datastoreServer, final String serverName)
     {
         System.out.println("running onConnect() for server " + serverName);
@@ -2531,17 +2531,17 @@ public class JZBot
             }
         }.start();
     }
-    
+
     public static void onDisconnect(Server datastoreServer, String serverName)
     {
         System.out.println("on disconnect");
         // This method is commented out because the connection cycle thread essentially
         // takes care of all of this for us.
-        
+
         // FIXME: the topic map still needs to be cleared; we're not doing that here,
         // which is bad because it lets us get misinformed about a channel's topic when
         // that channel used to have a topic but lost it while we were reconnecting.
-        
+
         // try
         // {
         // elevatedOpMap.clear();
@@ -2610,7 +2610,7 @@ public class JZBot
         // }
         // }.start();
     }
-    
+
     public static void onPrivateMessage(Server datastoreServer, String serverName,
             String sender, String login, String hostname, String message)
     {
@@ -2703,9 +2703,9 @@ public class JZBot
         {
             tkt.active = false;
         }
-        
+
     }
-    
+
     public static ChannelScope parseFragment(String message, ChannelScope scope)
     {
         String pseudoServer = scope.getServerName();
@@ -2732,14 +2732,14 @@ public class JZBot
         }
         return new ChannelScope(pseudoServer, pseudoChannel);
     }
-    
+
     private static ArrayList<String> elevatedSuperopList = new ArrayList<String>();
-    
+
     public static void elevate(String serverName, String hostname, String channel)
     {
         elevatedSuperopList.add(serverName + "@" + hostname);
     }
-    
+
     public static boolean isSuperop(String serverName, String hostname)
     {
         if (elevatedSuperopList.contains(serverName + "@" + hostname))
@@ -2749,14 +2749,14 @@ public class JZBot
             return false;
         return server.getOperator(hostname) != null;
     }
-    
+
     public static void verifySuperop(String server, String hostname)
     {
         if (!isSuperop(server, hostname))
             throw new ResponseException(
                     "You are not a superop, so you don't have permission to run this command.");
     }
-    
+
     public static User getUser(Connection con, String channel, String nick)
     {
         User[] users = con.getUsers(channel);
@@ -2767,12 +2767,12 @@ public class JZBot
         }
         return null;
     }
-    
+
     public static String evaluateEquation(String toEval, String channel)
     {
         return evaluateEquation(toEval, channel, "jeval");
     }
-    
+
     public static String evaluateEquation(String toEval, String channel, String engineName)
     {
         try
@@ -2786,11 +2786,11 @@ public class JZBot
                 + " with engine " + engineName, e);
         }
     }
-    
+
     /**
      * Returns a string representing this double rounded to 8 decimal points, and with no
      * decimal point if one is not needed.
-     * 
+     *
      * @param value
      *            The value to round
      * @return The value
@@ -2806,7 +2806,7 @@ public class JZBot
             return "0";
         return d.toPlainString();
     }
-    
+
     public static String toString(BigDecimal result)
     {
         result = result.round(jw.jzbot.eval.jeval.Operator.defaultContext);
@@ -2814,7 +2814,7 @@ public class JZBot
             return "0";
         return result.toPlainString();
     }
-    
+
     public static Factoid getChannelFactoid(Server server, String channelName,
             String factoid)
     {
@@ -2823,24 +2823,24 @@ public class JZBot
             throw new ResponseException("No such channel: " + channel);
         return channel.getFactoid(factoid);
     }
-    
+
     public static Factoid getServerFactoid(Server server, String factoid)
     {
         return server.getFactoid(factoid);
     }
-    
+
     public static Factoid getGlobalFactoid(String factoid)
     {
         return storage.getFactoid(factoid);
     }
-    
+
     private static ThreadLocal<String> threadLocalUsername = new ThreadLocal<String>();
-    
+
     public static String getThreadLocalUsername()
     {
         return threadLocalUsername.get();
     }
-    
+
     public static void setCurrentCharset(String charset)
     {
         try
@@ -2868,7 +2868,7 @@ public class JZBot
                         + "(in bot.setEncoding(String))", e);
         }
     }
-    
+
     private static void validateWorkableCharset(String charset)
     {
         byte[] bytes = new byte[] { '~', 's', 'o', 'm', 'e', 't', 'h', 'i', 'n', 'g' };
@@ -2889,20 +2889,20 @@ public class JZBot
                         + "(in new String(byte[],String))", e);
         }
     }
-    
+
     /**
      * Maps server names to a map that maps channel names to a list of all regexes at the
      * channel.
      */
     private static Map<String, Map<String, List<String>>> regexCache =
             new HashMap<String, Map<String, List<String>>>();
-    
+
     private static Object regexLock = new Object();
-    
+
     public static final long startedAtTime = System.currentTimeMillis();
     // Easter egg
     public static final String PART_MESSAGE = "So long, and thanks for all the fish.";
-    
+
     public static void reloadRegexes()
     {
         synchronized (regexLock)
@@ -2925,7 +2925,7 @@ public class JZBot
             }
         }
     }
-    
+
     public static boolean isChannelOp(String serverName, String channel, String sender)
     {
         User[] users = getRealConnection(serverName).getConnection().getUsers(channel);
@@ -2939,7 +2939,7 @@ public class JZBot
         }
         return false;
     }
-    
+
     public static void logEvent(String server, String channel, String event, String nick,
             String details)
     {
@@ -2956,7 +2956,7 @@ public class JZBot
             logQueue.offer(e);
         }
     }
-    
+
     public static void startLogSinkThread()
     {
         Thread thread = new Thread("log-sink-thread")
@@ -2994,7 +2994,7 @@ public class JZBot
         thread.setDaemon(true);
         thread.start();
     }
-    
+
     public static void sinkQueuedLogEvent(LogEvent logEvent)
     {
         // FIXME: This needs to be re-done using an embedded H2 database
@@ -3038,12 +3038,12 @@ public class JZBot
         // .printStackTrace();
         // }
     }
-    
+
     public static File[] listLocalFactpackFiles()
     {
         File[] files = new File("factpacks").listFiles(new FileFilter()
         {
-            
+
             @Override
             public boolean accept(File file)
             {
@@ -3052,7 +3052,7 @@ public class JZBot
         });
         Arrays.sort(files, new Comparator<File>()
         {
-            
+
             @Override
             public int compare(File o1, File o2)
             {
@@ -3061,7 +3061,7 @@ public class JZBot
         });
         return files;
     }
-    
+
     public static File getLocalFactpackFile(String canonicalName)
     {
         for (File file : listLocalFactpackFiles())
@@ -3081,16 +3081,16 @@ public class JZBot
         }
         return null;
     }
-    
+
     public static MathContext datasizeContext = new MathContext(3);
-    
+
     public static BigDecimal kilo = new BigDecimal("1024");
-    
+
     public static BigDecimal one = new BigDecimal("1");
-    
+
     /**
      * Formats the specified data size, in bytes, to be suffixed with MB, GB, KB, etc.
-     * 
+     *
      * @param size
      * @return
      */
@@ -3121,17 +3121,17 @@ public class JZBot
         number = number.round(datasizeContext);
         return "" + number + suffix;
     }
-    
+
     public static boolean isValidFactoidName(String factoidName)
     {
         return factoidName.matches("^[^\\@\\#\\%].*$");
     }
-    
+
     public static String getDefaultPartMessage(String serverName, String channel)
     {
         return "Later everyone.";
     }
-    
+
     public static String failsafeExtractServerName(String string)
     {
         try
@@ -3145,7 +3145,7 @@ public class JZBot
                 + string + ")";
         }
     }
-    
+
     public static String failsafeExtractChannelName(String string)
     {
         try
@@ -3159,10 +3159,10 @@ public class JZBot
                 + string + ")";
         }
     }
-    
+
     /**
      * Returns getConnection(server).
-     * 
+     *
      * @param server
      * @return
      */
@@ -3170,7 +3170,7 @@ public class JZBot
     {
         return getConnection(server);
     }
-    
+
     public static ConnectionWrapper getCheckedConnection(String serverName)
     {
         ConnectionWrapper con = getConnection(serverName);
@@ -3179,7 +3179,7 @@ public class JZBot
                 + serverName + ", but this command requires a valid server name.");
         return con;
     }
-    
+
     private static Thread restartThread = new Thread("jzbot-restart-thread")
     {
         public void run()
@@ -3197,24 +3197,24 @@ public class JZBot
             }
         }
     };
-    
+
     private static void startAutomaticRestartThread()
     {
         restartFile.delete();
         restartThread.setDaemon(true);
         restartThread.start();
     }
-    
+
     public static void restart()
     {
         shutdownOrRestart(true);
     }
-    
+
     public static void shutdown()
     {
         shutdownOrRestart(false);
     }
-    
+
     public static void shutdownOrRestart(final boolean restart)
     {
         shouldRestartOnShutdown = restart;
@@ -3284,7 +3284,7 @@ public class JZBot
         }
         Runtime.getRuntime().halt(exitStatus);
     }
-    
+
     protected static void onShutdownOrRestartGlobalDisconnect(final boolean isRestarting)
     {
         System.out.println("Starting global disconnect...");
@@ -3314,12 +3314,12 @@ public class JZBot
         }
         System.out.println("Global disconnect finished.");
     }
-    
+
     public static void proxyTraceConfigChanged()
     {
         proxyStorage.setTracingEnabled(Configuration.getBool(null, "proxytrace"));
     }
-    
+
     public static StorageContainer getStorageContainer(String scope)
     {
         if (scope.equals("") || scope.equals("@"))
@@ -3335,7 +3335,7 @@ public class JZBot
         }
         throw new IllegalArgumentException(scope + " is not a correctly-formatted scope.");
     }
-    
+
     public static StorageContainer getCheckedStorageContainer(String scope)
     {
         StorageContainer container = getStorageContainer(scope);

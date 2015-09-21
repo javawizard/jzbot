@@ -2,6 +2,7 @@ package jw.jzbot.protocols.slack;
 
 import jw.jzbot.ConnectionContext;
 import jw.jzbot.fact.ArgumentList;
+import jw.jzbot.fact.output.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.protocols.Connection;
@@ -40,6 +41,7 @@ public class SlackConnection implements Connection {
     private Map<String, Channel> channelsById = new HashMap<String, Channel>(); // Channels and groups
     private Map<String, Channel> channelsByName = new HashMap<String, Channel>(); // Channels only, without leading '#'s
     private Map<String, Channel> groupsByName = new HashMap<String, Channel>(); // Groups only
+    private Map<String, Bot> botsById = new HashMap<String, Bot>();
 
     public Channel addChannel(JSONObject object) {
         Channel channel = new Channel(object);
@@ -75,6 +77,18 @@ public class SlackConnection implements Connection {
         user.load(object);
         usersByName.put(user.name, user);
         return user;
+    }
+
+    public Bot addBot(JSONObject object) {
+        Bot bot = new Bot(object);
+        botsById.put(bot.id, bot);
+        return bot;
+    }
+
+    public Bot updateBot(JSONObject object) {
+        Bot bot = botsById.get(object.getString("id"));
+        bot.load(object);
+        return bot;
     }
 
     private class APIRequest {
@@ -194,6 +208,10 @@ public class SlackConnection implements Connection {
                 disconnect("");
             } else if (type.equals("im_created")) {
                 usersById.get(event.getString("user")).directMessageId = event.getJSONObject("channel").getString("id");
+            } else if (type.equals("bot_added")) {
+              addBot(event.getJSONObject("bot"));
+            } else if (type.equals("bot_changed")) {
+              updateBot(event.getJSONObject("bot"));
             } else {
                 System.out.println("Received unknown Slack event: " + event);
             }
@@ -220,6 +238,18 @@ public class SlackConnection implements Connection {
         public String name;
     }
 
+    private class Bot extends MessageTarget {
+      public Bot(JSONObject object) {
+        load(object);
+      }
+
+      public void load(JSONObject object) {
+        System.out.println("LOADING BOT FROM " + object);
+        this.id = object.getString("id");
+        this.name = object.getString("name");
+      }
+    }
+
     private class User extends MessageTarget implements org.jibble.pircbot.User {
         public boolean deleted;
         public boolean isAdmin;
@@ -240,12 +270,20 @@ public class SlackConnection implements Connection {
             this.name = object.getString("name");
             this.deleted = object.optBoolean("deleted");
 
-            JSONObject profile = object.getJSONObject("profile");
-            this.isAdmin = profile.optBoolean("is_admin");
-            this.isOwner = profile.optBoolean("is_owner");
-            this.firstName = profile.optString("first_name");
-            this.lastName = profile.optString("last_name");
-            this.realName = profile.optString("real_name");
+            JSONObject profile = object.optJSONObject("profile");
+            if (profile != null) {
+              this.isAdmin = profile.optBoolean("is_admin");
+              this.isOwner = profile.optBoolean("is_owner");
+              this.firstName = profile.optString("first_name");
+              this.lastName = profile.optString("last_name");
+              this.realName = profile.optString("real_name");
+            } else {
+              this.isAdmin = false;
+              this.isOwner = false;
+              this.firstName = null;
+              this.lastName = null;
+              this.realName = null;
+            }
         }
 
         @Override
@@ -545,6 +583,11 @@ public class SlackConnection implements Connection {
                 addUser(user);
             }
 
+            for (Object botObject : rtmInfo.getJSONArray("bots").myArrayList) {
+              JSONObject bot = (JSONObject) botObject;
+              addBot(bot);
+            }
+
             for (Object channelObject : rtmInfo.getJSONArray("channels").myArrayList) {
                 JSONObject channel = (JSONObject) channelObject;
                 addChannel(channel);
@@ -658,7 +701,43 @@ public class SlackConnection implements Connection {
 
     @Override
     public void processProtocolFunction(Sink sink, ArgumentList arguments, FactContext context) {
+      String name = arguments.resolveString(0);
+      arguments = arguments.subList(1);
 
+      if (name.equals("irc->slack")) {
+        MessageTarget t = ircTargetToSlack(arguments.resolveString(0));
+        if (t != null)
+          sink.write(t.id);
+      } else if (name.equals("slack->irc")) {
+        String s = slackTargetNameToIrc(arguments.resolveString(0));
+        if (s != null)
+          sink.write(s);
+      } else if (name.equals("users")) {
+        DelimitedSink s = new DelimitedSink(sink, "\n");
+        for (User u : usersById.values()) {
+          s.next();
+          s.write(slackTargetToIrc(u));
+        }
+      } else if (name.equals("channels")) {
+        DelimitedSink s = new DelimitedSink(sink, "\n");
+        for (Channel c : channelsById.values()) {
+          s.next();
+          s.write(slackTargetToIrc(c));
+        }
+      } else if (name.equals("bots")) {
+        DelimitedSink s = new DelimitedSink(sink, "\n");
+        for (Bot b : botsById.values()) {
+          s.next();
+          s.write(b.id);
+        }
+      } else if (name.equals("botid->name")) {
+        Bot b = botsById.get(arguments.resolveString(0));
+        if (b != null) {
+          sink.write(b.name);
+        }
+      } else {
+        throw new RuntimeException("Invalid Slack protocol-specific function: " + name);
+      }
     }
 
     @Override
