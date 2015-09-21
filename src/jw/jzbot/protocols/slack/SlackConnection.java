@@ -587,11 +587,6 @@ public class SlackConnection implements Connection {
                 addUser(user);
             }
 
-            for (Object botObject : rtmInfo.getJSONArray("bots").myArrayList) {
-              JSONObject bot = (JSONObject) botObject;
-              addBot(bot);
-            }
-
             for (Object channelObject : rtmInfo.getJSONArray("channels").myArrayList) {
                 JSONObject channel = (JSONObject) channelObject;
                 addChannel(channel);
@@ -605,6 +600,11 @@ public class SlackConnection implements Connection {
             for (Object imObject : rtmInfo.getJSONArray("ims").myArrayList) {
                 JSONObject im = (JSONObject) imObject;
                 usersById.get(im.getString("user")).directMessageId = im.getString("id");
+            }
+
+            for (Object botObject : rtmInfo.getJSONArray("bots").myArrayList) {
+              JSONObject bot = (JSONObject) botObject;
+              addBot(bot);
             }
 
             this.self = this.usersById.get(selfId);
