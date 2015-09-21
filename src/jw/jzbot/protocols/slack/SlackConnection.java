@@ -506,6 +506,10 @@ public class SlackConnection implements Connection {
         System.out.println("Slack message after encoding #channels and @users: " + message);
 
         MessageTarget slackTarget = ircTargetToSlack(target);
+        if (slackTarget == self) {
+          System.out.println("Asked to send a message to ourselves - skipping.");
+          return;
+        }
         String channelId = slackTarget.id;
         if (slackTarget instanceof User) {
             User user = (User) slackTarget;
