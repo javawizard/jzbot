@@ -182,6 +182,16 @@ public class SlackConnection implements Connection {
                 } else if (subtype.equals("me_message")) {
                     context.onAction(fromNick, fromNick, fromHostname, toChannel, text);
                 }
+            } else if (type.equals("message") && subtype.equals("bot_message")) {
+              String text = event.getString("text");
+              if (text != null)
+                text = decodeSlackMessageText(text);
+              String fromHostname = event.getString("bot_id");
+              String fromNick = event.getString("username").replace(" ", "").toLowerCase();
+              String recipient = slackTargetNameToIrc(event.getString("channel"));
+
+              // Would be nice to have a custom notification factoid for this, but failing that...
+              context.onNotice(fromNick, fromHostname, fromHostname, recipient, text);
             } else if (type.equals("channel_created") || type.equals("group_created")) {
                 addChannel(event.getJSONObject("channel"));
             } else if (type.equals("channel_joined") || type.equals("group_joined")) {
