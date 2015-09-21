@@ -190,8 +190,13 @@ public class SlackConnection implements Connection {
               String fromNick = event.getString("username").replace(" ", "").toLowerCase();
               String recipient = slackTargetNameToIrc(event.getString("channel"));
 
-              // Would be nice to have a custom notification factoid for this, but failing that...
-              context.onNotice(fromNick, fromHostname, fromHostname, recipient, text);
+              // Had this as a notification before. Makes things like regexes painful. Changing this to be an ordinary
+              // message, but in the future there should really be a way to tack on some additional metadata like the
+              // fact that this is from an integration.
+              if (event.getString("channel").startsWith("D"))
+                context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
+              else
+                context.onMessage(recipient, fromNick, fromNick, fromHostname, text);
             } else if (type.equals("channel_created") || type.equals("group_created")) {
                 addChannel(event.getJSONObject("channel"));
             } else if (type.equals("channel_joined") || type.equals("group_joined")) {
