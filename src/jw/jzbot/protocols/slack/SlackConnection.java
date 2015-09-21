@@ -186,8 +186,10 @@ public class SlackConnection implements Connection {
               String text = event.getString("text");
               if (text != null)
                 text = decodeSlackMessageText(text);
-              String fromHostname = event.getString("bot_id");
+              String fromHostname = event.optString("bot_id");
               String fromNick = event.getString("username").replace(" ", "").toLowerCase();
+              if (fromHostname == null)
+                fromHostname = fromNick;
               String recipient = slackTargetNameToIrc(event.getString("channel"));
 
               // Had this as a notification before. Makes things like regexes painful. Changing this to be an ordinary
