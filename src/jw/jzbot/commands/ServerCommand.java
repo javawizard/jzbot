@@ -21,13 +21,13 @@ import jw.jzbot.utils.Utils;
 
 public class ServerCommand implements Command
 {
-    
+
     @Override
     public String getName()
     {
         return "server";
     }
-    
+
     @Override
     public void run(String server, String channel, boolean pm, UserMessenger sender,
             Messenger source, String arguments)
@@ -186,17 +186,24 @@ public class ServerCommand implements Command
             // + "So, when running \"server list\", you can only "
             // + "edit servers that do not have flags 1 and 3.");
             if (tokens[0].equals(""))
+                // Yes, I'm lazy - one of these days I might allow online server renames, but I don't
+                // care enough to do it right now
                 throw new ResponseException("You need to specify the name of the property "
                     + "to edit, like \"server edit " + serverName
                     + " <propname> <propvalue>\". Allowed names are "
-                    + "protocol, host, port, nick, and password. Server "
-                    + "name-changing will be supported in the future.");
+                    + "name, protocol, host, port, nick, and password. Changing a server's name "
+                    + "will result in the bot restarting immediately after.");
             String key = tokens[0];
             if (tokens.length < 2)
                 throw new ResponseException("You need to specify the new value "
                     + "for this property, " + "like \"server edit " + serverName + " "
                     + key + " <newvalue>\".");
             String value = tokens[1];
+            if (key.equals("name")) {
+                if ("".equals(value) || JZBot.storage.getServer(value) != null)
+                    throw new ResponseException("A server with that name already exists.");
+                s.setName(value);
+            }
             if (key.equals("protocol"))
                 s.setProtocol(value);
             else if (key.equals("host"))
@@ -216,6 +223,10 @@ public class ServerCommand implements Command
             source.sendMessage("The server was successfully updated. If "
                 + "the server is connected, deactivate and then reactivate "
                 + "it as soon as possible.");
+            if (key.equals("name")) {
+                source.sendMessage("The bot will restart now.");
+                JZBot.restart();
+            }
         }
         else if (subcommand.equals("list"))
         {
@@ -307,13 +318,13 @@ public class ServerCommand implements Command
                         + "without arguments to see a list of all valid commands.");
         }
     }
-    
+
     /**
      * This implements one of the more cool easter eggs in JZBot. It translates various
      * non-number strings to corresponding number strings, all legal 32-bit signed integer
      * values. For example, "Linus Torvalds" gets translated to Integer.MAX_VALUE, since
      * Linus pwns everything, and "over 9000" gets translated to 9001.
-     * 
+     *
      * @param arguments
      */
     private String translateMemeNumbers(String value)
@@ -331,7 +342,7 @@ public class ServerCommand implements Command
                 + "could remotely be conjectured to represent Microsoft.");
         return value;
     }
-    
+
     private String[] buildIntoMultipleServers(String serverName, String arguments)
     {
         ArrayList<String> list = new ArrayList<String>();
@@ -341,14 +352,14 @@ public class ServerCommand implements Command
             list.addAll(Arrays.asList(argumentSplit));
         return list.toArray(new String[0]);
     }
-    
+
     private void verifyOkChars(String serverName)
     {
         if (!serverName.matches("^[a-zA-Z0-9\\-]+$"))
             throw new ResponseException(
                     "Server names can only contain letters, number, and hyphens.");
     }
-    
+
     private static Server server(String name)
     {
         if (name == null || "".equals(name))
@@ -361,7 +372,7 @@ public class ServerCommand implements Command
                 + "that already exists.");
         return server;
     }
-    
+
     @Override
     public boolean relevant(String server, String channel, boolean pm,
             UserMessenger sender, Messenger source, String arguments)
