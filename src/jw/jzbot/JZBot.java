@@ -1795,6 +1795,7 @@ public class JZBot
         {
             vars.put("" + (i + 1), args[i]);
         }
+        vars.put("#", "" + args.length);
         String cAppend = "";
         for (int i = args.length - 1; i >= 0; i--)
         {
