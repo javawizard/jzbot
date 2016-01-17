@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -22,10 +23,10 @@ import org.jibble.pircbot.Colors;
  * A class that can parse factoids. This is the main entry point to the Fact
  * interpreter. The parser is a hand-coded predictive recursive descent parser.<br/>
  * <br/>
- * 
+ *
  * To run a factoid and put the output into a string, you would do something
  * along these lines:<br/>
- * 
+ *
  * <pre>
  * String factoid = &quot;The numbers from 1 to 5 are {numberlist|1|5} and the var 1 is %1%&quot;;
  * FactContext context = new FactContext();
@@ -35,38 +36,39 @@ import org.jibble.pircbot.Colors;
  * entity.resolve(sink, context);
  * String result = sink.toString();
  * </pre>
- * 
+ *
  * <br/>
- * 
+ *
  * At that point, <tt>result</tt> would have the value
  * <tt>"The numbers from 1 to 5 are 1 2 3 4 5 and the var 1 is Hello world!"</tt>
  * . If you instead wanted the factoid's output to be sent to stdout, you could
  * replace the last 3 lines of the above example with this:<br/>
- * 
+ *
  * <pre>
  * entity.resolve(new StreamSink(System.out), context);
  * </pre>
- * 
+ *
  * @author Alexander Boyd
- * 
+ *
  */
 public class FactParser {
     private static Map<String, Function> functionMap = new HashMap<String, Function>();
     private static Map<Function, String> reverseFunctionMap = new HashMap<Function, String>();
     private static Map<Class<? extends Function>, Function> functionsByClass = new HashMap<Class<? extends Function>, Function>();
+    private static Map<String, List<String>> functionNamesByCategory = new HashMap<String, List<String>>();
     private static AtomicLong idSequence = new AtomicLong();
-    
+
     /**
      * Parses the specified factoid into a FactEntity. This fact entity can then
      * be {@link FactEntity#resolve(FactContext) resolved} at any point in the
      * future (and, in fact, resolved multiple times) to actually run this
      * factoid and get its output.<br/>
      * <br/>
-     * 
+     *
      * Parsing a factoid does not cause any side effects, such as changes to
      * local or global variables, to occur. It's only when you actually resolve
      * a factoid that these side effects would occur.
-     * 
+     *
      * @param factoid
      *            The factoid text to parse
      * @param name
@@ -99,15 +101,15 @@ public class FactParser {
         toplevel.setParent(null);
         return toplevel;
     }
-    
+
     /**
      * Parses a CharStack representing a function call into a function
      * reference. Usually, if you're just trying to parse/run a factoid, you'll
      * use {@link #parse(String)} instead. parse(String) interally calls this
      * method with the argument "{identity|" + factText + "}" where factText is
      * the text of the factoid.
-     * 
-     * 
+     *
+     *
      * @param stack
      *            The CharStack to parse
      * @param name
@@ -225,14 +227,14 @@ public class FactParser {
                 "Function call not closed (IE you have "
                         + "more \"{\" than you have \"}\")");
     }
-    
+
     private static <T extends FactEntity> T init(T entity, String factName,
             int index) {
         entity.setFactName(factName);
         entity.setCharIndex(index);
         return entity;
     }
-    
+
     /**
      * Gets the character that corresponds to the escaped character
      * <tt>char</tt>. This is called whenever there is a backslash followed by a
@@ -243,10 +245,10 @@ public class FactParser {
      * as-is. For example, calling this with '|' causes the method to return
      * '|'.<br/>
      * <br/>
-     * 
+     *
      * If this method returns null, then this indicates that no character is to be
      * included. This is the case when 'x' is passed in.
-     * 
+     *
      * @param c
      *            The special character
      * @return The corresponding character
@@ -300,11 +302,15 @@ public class FactParser {
         else
             return "" + c;
     }
-    
+
     public static void installFunction(String name, Function function) {
-        functionMap.put(name.toLowerCase(), function);
-        reverseFunctionMap.put(function, name.toLowerCase());
+        name = name.toLowerCase();
+        functionMap.put(name, function);
+        reverseFunctionMap.put(function, name);
         functionsByClass.put(function.getClass(), function);
+        if (!functionNamesByCategory.containsKey(function.getCategory()))
+            functionNamesByCategory.put(function.getCategory(), new ArrayList<String>());
+        functionNamesByCategory.get(function.getCategory()).add(name);
         try {
             String helpString = function.getHelp(null);
             if (helpString == null || helpString.equals("") || helpString.trim().equalsIgnoreCase("TBD"))
@@ -319,32 +325,40 @@ public class FactParser {
         for (Map.Entry<String, Function> e : set.getFunctions().entrySet())
             installFunction(e.getKey(), e.getValue());
     }
-    
+
     public static Function getFunction(String name) {
         return functionMap.get(name.toLowerCase());
     }
-    
+
     public static String getFunctionName(Function function) {
         return reverseFunctionMap.get(function);
     }
-    
+
     /**
      * Gets the function with the specified class. If more than one function
      * with the specified class has been installed, the last one to be installed
      * will be returned.
-     * 
+     *
      * @param c
      * @return
      */
     public static Function getFunctionByClass(Class<? extends Function> c) {
         return functionsByClass.get(c);
     }
-    
+
+    public static List<String> getFunctionNamesByCategory(String category) {
+        return functionNamesByCategory.get(category);
+    }
+
+    public static String[] getFunctionCategories() {
+        return functionNamesByCategory.keySet().toArray(new String[0]);
+    }
+
     static {
         installDefaultSet();
         installSpecialSet();
     }
-    
+
     private static void installDefaultSet() {
         try {
             File factFolder = new File(FactParser.class.getResource(
@@ -423,13 +437,13 @@ public class FactParser {
             }
         }
     }
-    
+
     private static String generateFolderTo(File lower, File upper) {
         /*
          * f1 -> f2 -> f3 -> f4 -> f5 -> f6 -> f7 -> f8
-         * 
+         *
          * lower=f8 upper=f3
-         * 
+         *
          * Output should be f4/f5/f6/f7/
          */
         File current = lower;
@@ -442,7 +456,7 @@ public class FactParser {
             current = parent;
         }
     }
-    
+
     private static void listFunctionFolders(File folder,
             ArrayList<File> fileList) {
         File[] files = folder.listFiles();
@@ -456,7 +470,7 @@ public class FactParser {
             }
         }
     }
-    
+
     /**
      * @deprecated All of these functions have been replaced by escapes as noted
      *             in each function's help text.
@@ -509,17 +523,17 @@ public class FactParser {
                                 + "succeeding text to be underlined.\n"
                                 + "This function is deprecated, and \"\\u\" should be used instead."));
     }
-    
+
     public static String[] getFunctionNames() {
         String[] names = functionMap.keySet().toArray(new String[0]);
         Arrays.sort(names);
         return names;
     }
-    
+
     /**
      * Parses the specified text and then explains it, omitting the default
      * {identity} function.
-     * 
+     *
      * @param factoid
      *            The text of the factoid to explain
      * @param name
@@ -534,7 +548,7 @@ public class FactParser {
         entity.explain(sink, 0, 4);
         return sink.toString();
     }
-    
+
     public static long nextId() {
         return idSequence.incrementAndGet();
     }

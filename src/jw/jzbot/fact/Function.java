@@ -10,7 +10,7 @@ public abstract class Function
      * stuff like the factoid's local variables, factoid name, etc) is available via
      * <tt>context</tt>. The function should write its output to <tt>sink</tt> via one or
      * more of the sink's <tt>write</tt> methods.
-     * 
+     *
      * @param sink
      *            The sink to which this function's output should be written
      * @param arguments
@@ -22,7 +22,7 @@ public abstract class Function
      *            on.
      */
     public abstract void evaluate(Sink sink, ArgumentList arguments, FactContext context);
-    
+
     /**
      * Gets help on the specified topic for this function. Most functions should, at the
      * very least, return a value from this describing the function. When a user sends
@@ -30,21 +30,42 @@ public abstract class Function
      * method is called with a topic of &lt;tt>null&lt;/tt>. When a user sends
      * "~help functions &lt;name> &lt;topic>", this method is called with a topic of
      * &lt;topic>.
-     * 
+     *
      * @param topic
      * @return
      */
     public abstract String getHelp(String topic);
-    
+
     /**
      * Returns an empty string array. Subclasses should override this and return topics
      * that <tt>getHelp()</tt> responds to if it responds to specific topics other than
      * just null.
-     * 
+     *
      * @return
      */
     public String[] getTopics()
     {
         return new String[0];
+    }
+
+    /**
+     * Returns the name of this function's category. Categories are used to categorize
+     * functions when ~help functionsbycategory is used. They have no other semantic
+     * purpose.
+     *
+     * The default implementation looks at the package this function is in and uses
+     * everything after jw.jzbot.fact.functions as the category name. If there's no
+     * intermediate package, or if this class isn't in jw.jzbot.fact.functions,
+     * "uncategorized" will be returned.
+     */
+    public String getCategory() {
+        Package p = getClass().getPackage();
+        if (p == null) {
+            return "uncategorized";
+        }
+        if (!p.getName().startsWith("jw.jzbot.fact.functions.")) {
+            return "uncategorized";
+        }
+        return p.getName().substring("jw.jzbot.fact.functions.".length());
     }
 }
