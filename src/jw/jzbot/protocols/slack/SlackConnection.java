@@ -20,6 +20,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.net.ssl.SSLSocketFactory;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -756,6 +757,31 @@ public class SlackConnection implements Connection {
         if (b != null) {
           sink.write(b.name);
         }
+      } else if (name.equals("user->dmid")) {
+
+      } else if (name.equals("send-raw-message") && new File("storage/allow-slack-send-raw-data").exists()) {
+        // TODO: Copied nearly wholesale from sendMessage. Make this into a common method.
+        MessageTarget slackTarget = ircTargetToSlack(arguments.getString(0));
+        String channelId = slackTarget.id;
+        if (slackTarget instanceof User) {
+            User user = (User) slackTarget;
+            channelId = user.directMessageId;
+            if (channelId == null) {
+                // TODO: Test this out
+                user.directMessageId = api("im.open").set("user", slackTarget.id).call().getJSONObject("channel").getString("id");
+                channelId = user.directMessageId;
+            }
+        }
+
+        System.out.println("Sending raw Slack message with {p|send-raw-message} to " + arguments.getString(0) +
+                " (resolved as " + channelId + "): " + arguments.getString(1));
+
+        webSocket.send(new JSONObject()
+                .put("id", nextMessageId.getAndIncrement())
+                .put("type", "message")
+                .put("channel", channelId)
+                .put("text", arguments.getString(1))
+                .toString());
       } else {
         throw new RuntimeException("Invalid Slack protocol-specific function: " + name);
       }
