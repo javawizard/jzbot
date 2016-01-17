@@ -200,7 +200,9 @@ public class ServerCommand implements Command
                     + key + " <newvalue>\".");
             String value = tokens[1];
             if (key.equals("name")) {
-                if ("".equals(value) || JZBot.storage.getServer(value) != null)
+                if ("".equals(value)) {
+                    throw new ResponseException("The server name can't be set to the empty string.");
+                } else if (JZBot.storage.getServer(value) != null)
                     throw new ResponseException("A server with that name already exists.");
                 s.setName(value);
             }
