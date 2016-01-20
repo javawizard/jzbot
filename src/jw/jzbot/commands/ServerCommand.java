@@ -38,7 +38,7 @@ public class ServerCommand implements Command
         {
             source
                     .sendMessage("You need to specify one of add, delete, details, activate, "
-                        + "deactivate, edit, list, priority, or current.");
+                        + "deactivate, cycle, edit, list, priority, or current.");
             return;
         }
         String[] tokens = arguments.split(" ", 2);
@@ -168,6 +168,13 @@ public class ServerCommand implements Command
                         + "from it within a few seconds.");
             }
             JZBot.notifyConnectionCycleThread();
+        }
+        else if (subcommand.equals("cycle"))
+        {
+            sender.verifySuperop();
+            JZBot.notifyConnectionCycleThread();
+            source.sendMessage("A connection cycle has been started. Disconnected servers in the retry quiet period " +
+                    "will immediately reconnect.");
         }
         else if (subcommand.equals("edit"))
         {
