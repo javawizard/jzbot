@@ -291,6 +291,10 @@ public class ArgumentList
     {
         return new ArgumentList(this, offset, length, context);
     }
+
+    public ArgumentList subListFromTo(int offsetStart, int offsetEnd) {
+        return new ArgumentList(this, offsetStart, Math.min(offsetEnd, length()) - offsetStart, context);
+    }
     
     /**
      * Gets (with a call to <tt>get()</tt>) all arguments in this argument list, puts them
