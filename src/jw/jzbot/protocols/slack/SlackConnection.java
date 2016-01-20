@@ -6,6 +6,8 @@ import jw.jzbot.fact.output.DelimitedSink;
 import jw.jzbot.fact.FactContext;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.protocols.Connection;
+import net.sf.opengroove.common.utils.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -43,6 +45,7 @@ public class SlackConnection implements Connection {
     private Map<String, Channel> channelsByName = new HashMap<String, Channel>(); // Channels only, without leading '#'s
     private Map<String, Channel> groupsByName = new HashMap<String, Channel>(); // Groups only
     private Map<String, Bot> botsById = new HashMap<String, Bot>();
+    private Map<String, Emoji> emojiByName = new HashMap<String, Emoji>();
 
     public Channel addChannel(JSONObject object) {
         Channel channel = new Channel(object);
@@ -90,6 +93,23 @@ public class SlackConnection implements Connection {
         Bot bot = botsById.get(object.getString("id"));
         bot.load(object);
         return bot;
+    }
+
+    private void updateEmoji() {
+        System.out.println("Requesting emoji list...");
+        JSONObject response = api("emoji.list").call().getJSONObject("emoji");
+        System.out.println("Updating emoji...");
+        HashMap<String, Emoji> map = new HashMap<String, Emoji>();
+        for (String name : JSONObject.getNames(response)) {
+            String value = response.getString(name);
+            if (value.startsWith("alias:")) {
+                map.put(name, new Emoji(name, null, value.substring("alias:".length())));
+            } else {
+                map.put(name, new Emoji(name, value, null));
+            }
+        }
+        this.emojiByName = map;
+        System.out.println("Done. " + this.emojiByName.size() + " emoji found.");
     }
 
     private class APIRequest {
@@ -163,7 +183,11 @@ public class SlackConnection implements Connection {
             }
             String subtype = event.optString("subtype", null);
 
-            if (type.equals("message") && (subtype == null || subtype.equals("me_message"))) {
+            if (type.equals("hello")) {
+                // Slack's API documentation is ambiguous about whether they'll send us an emoji_changed event if emoji
+                // change between us calling rtm.start and actually being connected, so update again just in case.
+                updateEmoji();
+            } else if (type.equals("message") && (subtype == null || subtype.equals("me_message"))) {
                 String text = event.getString("text");
                 if (text != null)
                     text = decodeSlackMessageText(text);
@@ -230,6 +254,8 @@ public class SlackConnection implements Connection {
               addBot(event.getJSONObject("bot"));
             } else if (type.equals("bot_changed")) {
               updateBot(event.getJSONObject("bot"));
+            } else if (type.equals("emoji_changed")) {
+                updateEmoji();
             } else {
                 System.out.println("Received unknown Slack event: " + event);
             }
@@ -248,6 +274,18 @@ public class SlackConnection implements Connection {
             ex.printStackTrace();
             webSocket.close();
             context.onDisconnect();
+        }
+    }
+
+    private class Emoji {
+        public String name;
+        public String url;
+        public String alias;
+
+        public Emoji(String name, String url, String alias) {
+            this.name = name;
+            this.url = url;
+            this.alias = alias;
         }
     }
 
@@ -627,6 +665,8 @@ public class SlackConnection implements Connection {
 
             this.self = this.usersById.get(selfId);
 
+            updateEmoji();
+
             System.out.println("Connecting to Slack WebSocket " + rtmInfo.getString("url"));
             webSocket = new WebSocketClientSubclass(new URI(rtmInfo.getString("url")));
 
@@ -782,6 +822,14 @@ public class SlackConnection implements Connection {
                 .put("channel", channelId)
                 .put("text", arguments.getString(1))
                 .toString());
+      } else if (name.equals("emoji.list")) {
+          List<String> list = new ArrayList<String>();
+          list.addAll(emojiByName.keySet());
+          Collections.sort(list);
+          sink.write(StringUtils.delimited(list.toArray(new String[0]), " "));
+      } else if (name.equals("emoji.exists")) {
+          String emoji = arguments.resolveString(0);
+          sink.write(emojiByName.containsKey(emoji) ? "1" : "0");
       } else {
         throw new RuntimeException("Invalid Slack protocol-specific function: " + name);
       }
