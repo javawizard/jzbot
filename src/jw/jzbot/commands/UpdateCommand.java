@@ -8,6 +8,7 @@ import jw.jzbot.ResponseException;
 import jw.jzbot.scope.Messenger;
 import jw.jzbot.scope.UserMessenger;
 import jw.jzbot.utils.Utils;
+import net.sf.opengroove.common.utils.StringUtils;
 
 public class UpdateCommand implements Command
 {
@@ -30,13 +31,13 @@ public class UpdateCommand implements Command
     public static synchronized void startUpdates(final Messenger source)
     {
         if (startedUpdates)
-            throw new ResponseException("Updates are currently being "
-                + "downloaded and installed.");
+            throw new ResponseException("So that one time I told you not to restart me... " +
+                    "Don't do that either.");
         String scriptName = getAutoUpdateScriptName();
         if (scriptName == null)
             throw new ResponseException("You're running your bot on "
                 + "a system that doesn't currently support automatic "
-                + "updates. Visit us at jzbot.googlecode.com for help with this.");
+                + "updates. Visit us at github.com/javawizard/jzbot for help with this.");
         try
         {
             final Process p = Runtime.getRuntime().exec(new String[] { scriptName });
@@ -56,9 +57,32 @@ public class UpdateCommand implements Command
                     {
                         ex.printStackTrace();
                     }
-                    if (source != null)
-                        source.sendMessage("Updates finished successfully. "
-                            + "The bot will restart itself in a few moments.");
+                    if (p.exitValue() == 0) {
+                        if (source != null) {
+                            File f = new File("storage/update-log");
+                            if (f.exists() && StringUtils.readFile(f).trim().length() > 0) {
+                                source.sendMessage("Updated. Changes:");
+                                String[] lines = StringUtils.readFile(f).trim().split("\n");
+                                int i = 0;
+                                for (String line : lines) {
+                                    if (i == 5) {
+                                        source.sendMessage("...and " + (lines.length - 5) + " more");
+                                        break;
+                                    }
+                                    i += 1;
+                                    source.sendMessage(line);
+                                }
+                                source.sendMessage("Restarting, be back in a moment.");
+                            } else {
+                                source.sendMessage("Doesn't look like there were any updates. " +
+                                        "Restarting just in case...");
+                            }
+                        }
+                    } else {
+                        if (source != null)
+                            source.sendMessage("Updates failed. You'll need to run ./update from the install " +
+                                    "directory manually and see what happens.");
+                    }
                 }
             }.start();
         }
@@ -70,12 +94,7 @@ public class UpdateCommand implements Command
                 + "restarting until you're sure it failed.", e);
         }
         startedUpdates = true;
-        source.sendMessage("Updates have been started. The bot will "
-            + "automatically restart once it has finished updating. "
-            + "Do not attempt to restart the bot in any other way "
-            + "until it restarts itself. This might take a few minutes, "
-            + "and some commands and functionality may not work while "
-            + "the update is going on.");
+        source.sendMessage("Updating... (don't restart me)");
     }
     
     private static String getAutoUpdateScriptName()

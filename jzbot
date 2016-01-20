@@ -3,6 +3,7 @@ test -x storage/environment && . ./storage/environment
 
 classpath=(classes "lib/*" "storage/lib/*" /storage/afn-python/src "/usr/share/java/*")
 
+
 # Because it's painfully difficult to add these to the classpath at runtime... TODO: Figure out a way around this
 classpath+=(plugins/clojure/* storage/plugins/clojure/*)
 
@@ -10,12 +11,14 @@ CMD="java -server -ea -Xmx32m -cp $(IFS=":"; echo "${classpath[*]}") -Djava.net.
 echo 
 echo Running with command $CMD
 echo 
+rm -f storage/update-log
 $CMD
 lastvalue=$?
 echo Exit status was $lastvalue
 while [ $lastvalue == '17' ]
 do
   sleep 5
+  rm -f storage/update-log
   $CMD
   lastvalue=$?
   echo Exit status was $lastvalue

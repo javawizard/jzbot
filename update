@@ -1,6 +1,9 @@
 #!/bin/bash
 echo Downloading updates from origin...
-git pull origin master
+old=`git rev-parse HEAD`
+git pull --ff-only
+new=`git rev-parse HEAD`
+git log --pretty='format:http://github.com/javawizard/jzbot/commit/%h %s' "$old..$new" > storage/update-log
 echo Removing existing classes...
 rm -rf classes
 echo Building JZBot...
