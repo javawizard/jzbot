@@ -1,9 +1,6 @@
 package jw.jzbot.fact.functions.code;
 
-import jw.jzbot.fact.ArgumentList;
-import jw.jzbot.fact.FactContext;
-import jw.jzbot.fact.Function;
-import jw.jzbot.fact.Sink;
+import jw.jzbot.fact.*;
 import jw.jzbot.fact.output.NullSink;
 
 /**
@@ -21,7 +18,7 @@ public class BenchmarkFunction extends Function {
             arguments.resolve(0, nullSink);
         }
         long end = System.nanoTime();
-        sink.write("" + ((((double) end) - ((double) start)) / (1*1000*1000*1000) / times));
+        sink.write(Formatting.shortDecimalToString((((double) end) - ((double) start)) / (1 * 1000 * 1000 * 1000) / times));
     }
 
     @Override
