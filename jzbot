@@ -7,7 +7,7 @@ classpath=(classes "lib/*" "storage/lib/*" /storage/afn-python/src "/usr/share/j
 # Because it's painfully difficult to add these to the classpath at runtime... TODO: Figure out a way around this
 classpath+=(plugins/clojure/* storage/plugins/clojure/*)
 
-CMD="java -server -ea -Xmx32m -cp $(IFS=":"; echo "${classpath[*]}") -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils,org.h2.mvstore.db.MVTableEngine -Dsun.net.inetaddr.ttl=10 `cat storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
+CMD="java -server -ea -Xmx100m -cp $(IFS=":"; echo "${classpath[*]}") -Djava.net.preferIPv4Stack=true -Dh2.allowedClasses=jw.jzbot.PublicDatabaseUtils,org.h2.mvstore.db.MVTableEngine -Dsun.net.inetaddr.ttl=10 `cat storage/startup-args 2>/dev/null` jw.jzbot.JZBot $*"
 echo 
 echo Running with command $CMD
 echo 
