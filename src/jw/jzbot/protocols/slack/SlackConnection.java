@@ -52,6 +52,19 @@ public class SlackConnection implements Connection {
         channelsById.put(channel.id, channel);
         Map<String, Channel> byName = channel.type == ChannelType.CHANNEL ? channelsByName : channel.type == ChannelType.GROUP ? groupsByName : null;
         byName.put(channel.name, channel);
+
+        if (channel.topic != null) {
+            context.onTopic(
+                    slackTargetToIrc(channel),
+                    channel.topic.value,
+                    slackTargetToIrc(channel.topic.creator),
+                    slackTargetToIrc(channel.topic.creator),
+                    channel.topic.creator.id,
+                    channel.topic.lastSet,
+                    false
+            );
+        }
+
         return channel;
     }
 
@@ -461,18 +474,6 @@ public class SlackConnection implements Connection {
             } else {
                 this.isMember = object.getBoolean("is_member");
             }
-
-            if (object.has("topic")) {
-                context.onTopic(
-                        slackTargetToIrc(this),
-                        topic.value,
-                        slackTargetToIrc(topic.creator),
-                        slackTargetToIrc(topic.creator),
-                        topic.creator.id,
-                        topic.lastSet,
-                        false
-                );
-            }
         }
     }
 
@@ -490,7 +491,9 @@ public class SlackConnection implements Connection {
     }
 
     private String slackTargetToIrc(MessageTarget target) {
-        if (target instanceof Channel) {
+        if (target == null) {
+            return "unknown";
+        } else if (target instanceof Channel) {
             Channel channel = (Channel) target;
             if (channel.type == ChannelType.GROUP) {
                 return "##" + channel.name;
