@@ -216,7 +216,7 @@ public class IrcConnection extends PircBot implements Connection
     {
         this.context = context;
         setFinger("If I had any idea what the finger command is supposed to do...");
-        setVersion("JZBot -- http://jzbot.googlecode.com");
+        setVersion("JZBot -- http://github.com/javawizard/jzbot");
     }
     
     @Override
