@@ -263,6 +263,24 @@ public class SlackConnection implements Connection {
               updateBot(event.getJSONObject("bot"));
             } else if (type.equals("emoji_changed")) {
                 updateEmoji();
+            } else if (type.equals("message") && (subtype.equals("channel_topic") || subtype.equals("group_topic"))) {
+                Channel channel = channelsById.get(event.getString("channel"));
+                User user = usersById.get(event.getString("user"));
+                long lastSet = System.currentTimeMillis(); // TODO: Can we pull this from the event
+
+                channel.topic.value = event.getString("topic");
+                channel.topic.creator = user;
+                channel.topic.lastSet = lastSet;
+
+                context.onTopic(
+                        slackTargetToIrc(channel),
+                        channel.topic.value,
+                        slackTargetToIrc(user),
+                        slackTargetToIrc(user),
+                        event.getString("user"),
+                        lastSet,
+                        true
+                        );
             } else {
                 System.out.println("Received unknown Slack event: " + event);
             }
@@ -432,8 +450,9 @@ public class SlackConnection implements Connection {
                     this.members.add(usersById.get(members.getString(i)));
                 }
             }
-            if (object.has("topic"))
+            if (object.has("topic")) {
                 this.topic = new Topic(object.getJSONObject("topic"));
+            }
             if (object.has("purpose"))
                 this.purpose = new Topic(object.getJSONObject("topic"));
 
@@ -441,6 +460,18 @@ public class SlackConnection implements Connection {
                 this.isMember = true;
             } else {
                 this.isMember = object.getBoolean("is_member");
+            }
+
+            if (object.has("topic")) {
+                context.onTopic(
+                        slackTargetToIrc(this),
+                        topic.value,
+                        slackTargetToIrc(topic.creator),
+                        slackTargetToIrc(topic.creator),
+                        topic.creator.id,
+                        topic.lastSet,
+                        false
+                );
             }
         }
     }
