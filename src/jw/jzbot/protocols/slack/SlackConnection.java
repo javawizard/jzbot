@@ -59,7 +59,7 @@ public class SlackConnection implements Connection {
                     channel.topic.value,
                     slackTargetToIrc(channel.topic.creator),
                     slackTargetToIrc(channel.topic.creator),
-                    channel.topic.creator.id,
+                    channel.topic.creator == null ? null : channel.topic.creator.id,
                     channel.topic.lastSet,
                     false
             );
@@ -492,7 +492,7 @@ public class SlackConnection implements Connection {
 
     private String slackTargetToIrc(MessageTarget target) {
         if (target == null) {
-            return "unknown";
+            return null;
         } else if (target instanceof Channel) {
             Channel channel = (Channel) target;
             if (channel.type == ChannelType.GROUP) {
