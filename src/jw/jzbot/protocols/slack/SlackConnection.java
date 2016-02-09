@@ -1,6 +1,7 @@
 package jw.jzbot.protocols.slack;
 
 import jw.jzbot.ConnectionContext;
+import jw.jzbot.JZBot;
 import jw.jzbot.fact.ArgumentList;
 import jw.jzbot.fact.output.DelimitedSink;
 import jw.jzbot.fact.FactContext;
@@ -268,6 +269,8 @@ public class SlackConnection implements Connection {
                 System.out.println("Warning: Slack channel/group renames are not yet supported. We're about to " +
                         "automatically disconnect.");
                 disconnect("");
+                // Force reconnect immediately
+                JZBot.notifyConnectionCycleThread();
             } else if (type.equals("im_created")) {
                 usersById.get(event.getString("user")).directMessageId = event.getJSONObject("channel").getString("id");
             } else if (type.equals("bot_added")) {
