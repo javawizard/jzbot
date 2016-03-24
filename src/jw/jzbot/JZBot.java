@@ -39,6 +39,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -148,6 +149,8 @@ public class JZBot
     public static Map<String, Long> pmUserScopeTimes = new HashMap<String, Long>();
 
     public static Object pmUserScopeLock = new Object();
+
+    private static final ThreadLocal<ProtocolEventContext> protocolEventContext = new ThreadLocal<ProtocolEventContext>();
     /**
      * When a user sets their pm scope with the ~scope command, this is the number of
      * minutes that the scope will stay before being reset to the server scope.
@@ -1831,6 +1834,7 @@ public class JZBot
         context.setServer(server);
         context.setSelf(selfName);
         context.setSource(source);
+        System.out.println("Fact context event context is " + context.getProtocolEventContext());
         // Now we actually run the factoid.
         StringSink resultSink = new StringSink();
         parsedFactoid.resolve(resultSink, context);
@@ -3350,5 +3354,24 @@ public class JZBot
         long version = storage.getNextVersionNumber();
         storage.setNextVersionNumber(version + 1);
         return version;
+    }
+
+    public static ProtocolEventContext getProtocolEventContext() {
+        return protocolEventContext.get();
+    }
+
+    public static void withProtocolEventContext(ProtocolEventContext context, Runnable action) {
+        withProtocolEventContext(context, () -> {
+            action.run();
+            return null;
+        });
+    }
+
+    public static <T> T withProtocolEventContext(ProtocolEventContext context, Supplier<T> action) {
+        ProtocolEventContext oldContext = getProtocolEventContext();
+        protocolEventContext.set(context);
+        T result = action.get();
+        protocolEventContext.set(oldContext);
+        return result;
     }
 }

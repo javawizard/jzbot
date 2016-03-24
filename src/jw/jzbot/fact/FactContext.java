@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import jw.jzbot.ConnectionWrapper;
 import jw.jzbot.JZBot;
+import jw.jzbot.ProtocolEventContext;
 import jw.jzbot.fact.ast.FactEntity;
 import jw.jzbot.fact.ast.Sequence;
 import jw.jzbot.fact.debug.DebugInstance;
@@ -59,6 +60,7 @@ public class FactContext implements Scope
             this.setSender(parentContext.getSender());
             this.setServer(parentContext.getServer());
             this.setSource(parentContext.getSource());
+            this.setProtocolEventContext(parentContext.getProtocolEventContext());
             // If parent accessed a vault, we'll have access to its data, so consider us to have accessed the same
             // vault as well
             this.updateOldestVaultAccessedVersion(parentContext.getOldestVaultAccessedVersion());
@@ -68,6 +70,16 @@ public class FactContext implements Scope
             if (this.parentContext != null) {
                 this.parentContext.updateLatestCodeRunVersion(codeVersion);
             }
+        } else {
+            // TODO: Not sure how to handle this... I'd really like FactContext to be completely decoupled from
+            // JZBot, but we need a centralized location to stuff protocol event contexts in first. Maybe have the
+            // Fact interpreter track context instead? Or have a FactInterpreter instance that can be told how to
+            // find out the current context, and have JZBot have a single global FactInterpreter that's used to
+            // instantiate contexts and other things. I think that's my preferred approach at the moment.
+            // (That would also allow persistent variable functions a way to get and set persistent variables without
+            // being rigidly coupled to JZBot's persistent variable implementation like they are right now, and similar
+            // for a bunch of other things.)
+            this.setProtocolEventContext(JZBot.getProtocolEventContext());
         }
     }
 
@@ -138,7 +150,17 @@ public class FactContext implements Scope
     private String self;
     private FactQuota quota = new FactQuota();
     private DebugInstance debugger;
-    
+
+    private ProtocolEventContext protocolEventContext;
+
+    public ProtocolEventContext getProtocolEventContext() {
+        return protocolEventContext;
+    }
+
+    public void setProtocolEventContext(ProtocolEventContext protocolEventContext) {
+        this.protocolEventContext = protocolEventContext;
+    }
+
     public DebugInstance getDebugger()
     {
         return debugger;
@@ -433,6 +455,7 @@ public class FactContext implements Scope
         context.setSender(this.getSender());
         context.setServer(this.getServer());
         context.setSource(this.getSource());
+        context.setProtocolEventContext(this.getProtocolEventContext());
         for (String name : localVars.keySet())
         {
             if (name.matches(localVarRegex))

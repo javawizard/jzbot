@@ -3,12 +3,14 @@ package jw.jzbot;
 import jw.jzbot.protocols.Connection;
 import jw.jzbot.storage.Server;
 
+import java.util.function.Supplier;
+
 public class ConnectionContext
 {
     private Server datastoreServer;
     private Connection connection;
     private String serverName;
-    
+
     public String getServerName()
     {
         return serverName;
@@ -95,14 +97,13 @@ public class ConnectionContext
         JZBot.onKick(datastoreServer, serverName, channel, kickerNick, kickerLogin,
                 kickerHostname, recipientNick, reason);
     }
-    
+
     public void onMessage(String channel, String sender, String login, String hostname,
-            String message)
-    {
+                          String message) {
         JZBot.onMessage(datastoreServer, serverName, channel, sender, login, hostname,
                 message);
     }
-    
+
     public void onNotice(String sourceNick, String sourceLogin, String sourceHostname,
             String target, String line)
     {
@@ -131,6 +132,7 @@ public class ConnectionContext
     public void onPrivateMessage(String sender, String login, String hostname,
             String message)
     {
+        System.out.println("Protocol event context is " + JZBot.getProtocolEventContext());
         JZBot.onPrivateMessage(datastoreServer, serverName, sender, login, hostname,
                 message);
     }
@@ -171,5 +173,12 @@ public class ConnectionContext
     {
         return discardNeeded;
     }
-    
+
+    public void withProtocolEventContext(ProtocolEventContext context, Runnable action) {
+        JZBot.withProtocolEventContext(context, action);
+    }
+
+    public <T> T withProtocolEventContext(ProtocolEventContext context, Supplier<T> action) {
+        return JZBot.withProtocolEventContext(context, action);
+    }
 }

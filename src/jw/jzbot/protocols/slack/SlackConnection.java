@@ -209,42 +209,57 @@ public class SlackConnection implements Connection {
                 // change between us calling rtm.start and actually being connected, so update again just in case.
                 updateEmoji();
             } else if (type.equals("message") && (subtype == null || subtype.equals("me_message"))) {
-                String text = event.getString("text");
-                if (text != null)
-                    text = decodeSlackMessageText(text);
+                String text;
+                if (event.optString("text", null) != null) {
+                    text = decodeSlackMessageText(event.getString("text"));
+                } else {
+                    text = null;
+                }
                 String fromHostname = event.getString("user");
                 String fromNick = slackTargetNameToIrc(event.getString("user"));
-                String toChannel = null;
+                String toChannel;
                 if (!event.getString("channel").startsWith("D")) {
                     toChannel = slackTargetNameToIrc(event.getString("channel"));
+                } else {
+                    toChannel = null;
                 }
 
-                if (toChannel == null && subtype == null) {
-                    context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
-                } else if (toChannel == null && subtype.equals("me_message")) {
-                    context.onAction(fromNick, fromNick, fromHostname, self.name, text);
-                } else if (subtype == null) {
-                    context.onMessage(toChannel, fromNick, fromNick, fromHostname, text);
-                } else if (subtype.equals("me_message")) {
-                    context.onAction(fromNick, fromNick, fromHostname, toChannel, text);
-                }
+                context.withProtocolEventContext(new SlackEventContext(event), () -> {
+                    if (toChannel == null && subtype == null) {
+                        context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
+                    } else if (toChannel == null && subtype.equals("me_message")) {
+                        context.onAction(fromNick, fromNick, fromHostname, self.name, text);
+                    } else if (subtype == null) {
+                        context.onMessage(toChannel, fromNick, fromNick, fromHostname, text);
+                    } else if (subtype.equals("me_message")) {
+                        context.onAction(fromNick, fromNick, fromHostname, toChannel, text);
+                    }
+                });
             } else if (type.equals("message") && subtype.equals("bot_message")) {
-              String text = event.getString("text");
-              if (text != null)
-                text = decodeSlackMessageText(text);
-              String fromHostname = event.optString("bot_id");
-              String fromNick = event.getString("username").replace(" ", "").toLowerCase();
-              if (fromHostname == null)
-                fromHostname = fromNick;
-              String recipient = slackTargetNameToIrc(event.getString("channel"));
+                String text;
+                if (event.optString("text", null) != null) {
+                    text = decodeSlackMessageText(event.getString("text"));
+                } else {
+                    text = null;
+                }
+                String fromHostname;
+                String fromNick = event.getString("username").replace(" ", "").toLowerCase();
+                if (event.optString("bot_id") != null) {
+                    fromHostname = event.optString("bot_id");
+                } else {
+                    fromHostname = fromNick;
+                }
+                String recipient = slackTargetNameToIrc(event.getString("channel"));
 
-              // Had this as a notification before. Makes things like regexes painful. Changing this to be an ordinary
-              // message, but in the future there should really be a way to tack on some additional metadata like the
-              // fact that this is from an integration.
-              if (event.getString("channel").startsWith("D"))
-                context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
-              else
-                context.onMessage(recipient, fromNick, fromNick, fromHostname, text);
+                // Had this as a notification before. Makes things like regexes painful. Changing this to be an ordinary
+                // message, but in the future there should really be a way to tack on some additional metadata like the
+                // fact that this is from an integration.
+                context.withProtocolEventContext(new SlackEventContext(event), () -> {
+                    if (event.getString("channel").startsWith("D"))
+                        context.onPrivateMessage(fromNick, fromNick, fromHostname, text);
+                    else
+                        context.onMessage(recipient, fromNick, fromNick, fromHostname, text);
+                });
             } else if (type.equals("channel_created") || type.equals("group_created")) {
                 addChannel(event.getJSONObject("channel"));
             } else if (type.equals("channel_joined") || type.equals("group_joined")) {
@@ -877,6 +892,11 @@ public class SlackConnection implements Connection {
       } else if (name.equals("emoji.exists")) {
           String emoji = arguments.resolveString(0);
           sink.write(emojiByName.containsKey(emoji) ? "1" : "0");
+      } else if (name.equals("message")) {
+          SlackEventContext eventContext = (SlackEventContext) context.getProtocolEventContext();
+          if (eventContext != null && eventContext.getMessage() != null) {
+              sink.write(eventContext.getMessage().toString());
+          }
       } else {
         throw new RuntimeException("Invalid Slack protocol-specific function: " + name);
       }
