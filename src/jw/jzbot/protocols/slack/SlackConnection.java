@@ -136,7 +136,9 @@ public class SlackConnection implements Connection {
         }
 
         public APIRequest set(String name, String value) {
-            this.queryString += "&" + URLEncoder.encode(name) + "=" + URLEncoder.encode(value);
+            if (name != null && value != null) {
+                this.queryString += "&" + URLEncoder.encode(name) + "=" + URLEncoder.encode(value);
+            }
             return this;
         }
 
@@ -897,6 +899,34 @@ public class SlackConnection implements Connection {
           if (eventContext != null && eventContext.getMessage() != null) {
               sink.write(eventContext.getMessage().toString());
           }
+      } else if (name.equals("reactions.add") || name.equals("react")) {
+          addOrRemoveReaction("reactions.add", context, arguments);
+      } else if (name.equals("reactions.get")) {
+          JSONObject event = new JSONObject(arguments.resolveString(0));
+          JSONObject result = api("reactions.get")
+                  .set("channel", event.getString("channel"))
+                  .set("timestamp", event.has("ts") ? event.getString("ts") : event.getString("timestamp"))
+                  .set("full", "true")
+                  .call();
+          sink.write(result.getJSONObject("message").getJSONArray("reactions").toString());
+      } else if (name.equals("reactions.remove")) {
+          addOrRemoveReaction("reactions.remove", context, arguments);
+      } else if (name.equals("reactions.list")) {
+          String user = arguments.length() > 0 ? arguments.resolveString(0) : "";
+          if (user.equals("")) {
+              user = null;
+          } else {
+              user = ircTargetToSlack(user).id;
+          }
+          String pageNumber = arguments.length() > 1 ? arguments.resolveString(1) : "1";
+          String count = arguments.length() > 2 ? arguments.resolveString(2) : "10";
+          JSONObject response = api("reactions.list")
+                  .set("user", user)
+                  .set("full", "true")
+                  .set("page", pageNumber)
+                  .set("count", count)
+                  .call();
+          sink.write(response.getJSONArray("items").toString());
       } else {
         throw new RuntimeException("Invalid Slack protocol-specific function: " + name);
       }
@@ -910,5 +940,27 @@ public class SlackConnection implements Connection {
     @Override
     public boolean likesPastebin() {
         return true;
+    }
+
+    private void addOrRemoveReaction(String apiCall, FactContext context, ArgumentList arguments) {
+        String reaction;
+        JSONObject event;
+        if (arguments.length() == 1) {
+            reaction = arguments.resolveString(0);
+            SlackEventContext eventContext = (SlackEventContext) context.getProtocolEventContext();
+            if (eventContext == null || eventContext.getMessage() == null) {
+                throw new RuntimeException("{p|reactions.add} called by a factoid not being run in response to " +
+                        "a Slack message. You need to explicitly specify which message to add a reaction to.");
+            }
+            event = eventContext.getMessage();
+        } else {
+            event = new JSONObject(arguments.resolveString(0));
+            reaction = arguments.resolveString(1);
+        }
+        api(apiCall)
+                .set("name", reaction)
+                .set("channel", event.getString("channel"))
+                .set("timestamp", event.has("ts") ? event.getString("ts") : event.getString("timestamp"))
+                .call();
     }
 }
