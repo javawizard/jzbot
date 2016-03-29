@@ -2,9 +2,7 @@ package jw.jzbot.help;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by aboyd on 2016-03-28.
@@ -13,6 +11,7 @@ public class HelpPageBuilder {
     private String[] path;
     private String content;
     private Map<String, HelpPage> children = new HashMap<>();
+    private List<HelpPage> mergedPages = new ArrayList<>();
 
     public HelpPageBuilder() {
         this(new String[0]);
@@ -32,8 +31,26 @@ public class HelpPageBuilder {
         return this;
     }
 
+    public HelpPageBuilder merge(HelpPage page) {
+        this.mergedPages.add(page);
+        return this;
+    }
+
     public HelpPage build() {
-        HelpPage page = new DefaultHelpPage(this.content, this.children);
+        List<HelpPage> pages = new ArrayList<HelpPage>();
+
+        if (content != null || children.size() > 0) {
+            pages.add(new DefaultHelpPage(this.content, this.children));
+        }
+
+        pages.addAll(mergedPages);
+
+        HelpPage page;
+        if (pages.size() == 1) {
+            page = pages.get(0);
+        } else {
+            page = new MergedHelpPage(pages);
+        }
 
         for (int i = path.length - 1; i >= 0; i--) {
             page = new DefaultHelpPage(null, Collections.singletonMap(path[i], page));

@@ -16,6 +16,10 @@ public class Help {
         return new HelpPageBuilder().child(name, child);
     }
 
+    public HelpPageBuilder merge(HelpPage page) {
+        return new HelpPageBuilder().merge(page);
+    }
+
     public HelpPage build(String content) {
         return new HelpPageBuilder().build(content);
     }
