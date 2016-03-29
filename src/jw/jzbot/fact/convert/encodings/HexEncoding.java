@@ -3,6 +3,8 @@ package jw.jzbot.fact.convert.encodings;
 import java.math.BigInteger;
 
 import jw.jzbot.fact.convert.Encoding;
+import jw.jzbot.help.Help;
+import jw.jzbot.help.HelpPage;
 
 public class HexEncoding implements Encoding
 {
@@ -21,11 +23,11 @@ public class HexEncoding implements Encoding
     }
     
     @Override
-    public String getHelp()
+    public HelpPage getHelp()
     {
-        return "An encoding representing a string of hex digits. Decoding removes "
-            + "all non-alphanumeric characters, so they can be present without "
-            + "problems occurring. Encoding does not separate output with spaces.";
+        return Help.build("An encoding representing a string of hex digits. Decoding removes "
+                + "all non-alphanumeric characters, so they can be present without "
+                + "problems occurring. Encoding does not separate output with spaces.");
     }
     
 }

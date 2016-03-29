@@ -3,6 +3,8 @@ package jw.jzbot.fact.convert.encodings;
 import java.math.BigInteger;
 
 import jw.jzbot.fact.convert.Encoding;
+import jw.jzbot.help.Help;
+import jw.jzbot.help.HelpPage;
 
 public class IpEncoding implements Encoding
 {
@@ -32,12 +34,12 @@ public class IpEncoding implements Encoding
     }
     
     @Override
-    public String getHelp()
+    public HelpPage getHelp()
     {
-        return "An encoding representing ip addresses in standard dotted decimal "
-            + "notation. Decodes to integral and byte array, and encodes from "
-            + "integral and byte array, provided the byte array has exactly "
-            + "four bytes. Encoding precedence order is integral, byte array.";
+        return Help.build("An encoding representing ip addresses in standard dotted decimal "
+                + "notation. Decodes to integral and byte array, and encodes from "
+                + "integral and byte array, provided the byte array has exactly "
+                + "four bytes. Encoding precedence order is integral, byte array.");
     }
     
 }

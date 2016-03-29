@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import jw.jzbot.JZBot;
 import jw.jzbot.fact.convert.Encoding;
 import jw.jzbot.fact.exceptions.FactoidException;
+import jw.jzbot.help.Help;
+import jw.jzbot.help.HelpPage;
 
 public class IntEncoding implements Encoding
 {
@@ -36,10 +38,10 @@ public class IntEncoding implements Encoding
     }
     
     @Override
-    public String getHelp()
+    public HelpPage getHelp()
     {
-        return "An encoding that represents integers in decimal form. Decodes to "
-            + "and encodes from integral.";
+        return Help.build("An encoding that represents integers in decimal form. Decodes to "
+            + "and encodes from integral.");
     }
     
 }

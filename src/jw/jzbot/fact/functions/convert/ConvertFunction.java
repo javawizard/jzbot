@@ -12,6 +12,9 @@ import jw.jzbot.fact.FactParser;
 import jw.jzbot.fact.Function;
 import jw.jzbot.fact.Sink;
 import jw.jzbot.fact.convert.Encoding;
+import jw.jzbot.help.Help;
+import jw.jzbot.help.HelpPage;
+import jw.jzbot.help.HelpPageBuilder;
 
 @SuppressWarnings("unchecked")
 public class ConvertFunction extends Function
@@ -66,34 +69,27 @@ public class ConvertFunction extends Function
         Encoding toEncoding = encodings.get(to);
         sink.write(toEncoding.encode(fromEncoding.decode(input)));
     }
-    
-    @Override
-    public String getHelp(String topic)
-    {
-        if (topic == null)
-            return "Syntax: {convert|<from>|<to>|<input>} -- Converts input between "
-                + "several available encodings. Each encoding is a subpage of this "
-                + "help page; request help on each of those subpages to see what "
-                + "those encodings do. <from> and <to> are the names of encodings; "
-                + "<input> is the input to convert in a form expected by the "
-                + "encoding named by <from>. This function then evaluates to the "
-                + "input in the encoding named by <to>. If the encodings are not "
-                + "compatible, an exception will be thrown. The help page for "
-                + "each encoding will say something like \"decodes to integral "
-                + "and byte array, and encodes from integral\". If <from> decodes "
-                + "to at least one of the types that <to> can encode from, then "
-                + "the encodings are compatible.";
-        Encoding encoding = encodings.get(topic);
-        if (encoding != null)
-            return encoding.getHelp();
-        return "There isn't an encoding named " + topic + ".";
-    }
-    
-    @Override
-    public String[] getTopics()
-    {
-        String[] results = encodings.keySet().toArray(new String[0]);
-        System.out.println("Topics for convert: " + Arrays.toString(results));
-        return results;
+
+    public HelpPage getHelp() {
+        HelpPageBuilder builder = Help.content(
+                "Syntax: {convert|<from>|<to>|<input>} -- Converts input between "
+                        + "several available encodings. Each encoding is a subpage of this "
+                        + "help page; request help on each of those subpages to see what "
+                        + "those encodings do. <from> and <to> are the names of encodings; "
+                        + "<input> is the input to convert in a form expected by the "
+                        + "encoding named by <from>. This function then evaluates to the "
+                        + "input in the encoding named by <to>. If the encodings are not "
+                        + "compatible, an exception will be thrown. The help page for "
+                        + "each encoding will say something like \"decodes to integral "
+                        + "and byte array, and encodes from integral\". If <from> decodes "
+                        + "to at least one of the types that <to> can encode from, then "
+                        + "the encodings are compatible."
+        );
+
+        for (Map.Entry<String, Encoding> entry : encodings.entrySet()) {
+            builder = builder.child(entry.getKey(), entry.getValue().getHelp());
+        }
+
+        return builder.build();
     }
 }
