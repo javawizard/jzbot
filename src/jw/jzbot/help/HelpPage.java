@@ -1,14 +1,21 @@
 package jw.jzbot.help;
 
+import java.util.Collections;
 import java.util.Set;
 
 /**
  * Created by aboyd on 2016-03-28.
  */
 public interface HelpPage {
-    public String getContent();
+    public default String getContent() {
+        return null;
+    }
 
-    public Set<String> getChildNames();
+    public default Set<String> getChildNames() {
+        return Collections.emptySet();
+    }
 
-    public HelpPage getChild(String name);
+    public default HelpPage getChild(String name) {
+        return null;
+    }
 }

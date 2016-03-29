@@ -1,5 +1,13 @@
 package jw.jzbot.fact;
 
+import jw.jzbot.help.Help;
+import jw.jzbot.help.HelpPage;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public abstract class Function
 {
     // public abstract String getName();
@@ -34,7 +42,31 @@ public abstract class Function
      * @param topic
      * @return
      */
-    public abstract String getHelp(String topic);
+    public String getHelp(String topic) {
+        throw new UnsupportedOperationException("Functions must override one of the getHelp() methods");
+    }
+
+    public HelpPage getHelp() {
+        return new HelpPage() {
+            public String getContent() {
+                return getHelp(null);
+            }
+
+            public Set<String> getChildNames() {
+                Set<String> s = new HashSet<>();
+                s.addAll(Arrays.asList(getTopics()));
+                return s;
+            }
+
+            public HelpPage getChild(String name) {
+                if (getChildNames().contains(name)) {
+                    return Help.build(getHelp(name));
+                } else {
+                    return null;
+                }
+            }
+        };
+    }
 
     /**
      * Returns an empty string array. Subclasses should override this and return topics
