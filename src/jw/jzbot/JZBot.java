@@ -1042,6 +1042,20 @@ public class JZBot
             System.out.println("Once you've set up the bot successfully, run \"jzbot\"");
             System.out.println("to actually start your bot.");
             System.out.println("");
+            System.out.println("You can also set up your bot by setting the following");
+            System.out.println("environment variables, and then running ./jzbot:");
+            System.out.println("  JZBOT_PROTOCOL - the protocol to connect with");
+            System.out.println("  JZBOT_SERVER - the server to connect to");
+            System.out.println("  JZBOT_PORT - the port to connect to");
+            System.out.println("  JZBOT_NICK - the nickname to use");
+            System.out.println("  JZBOT_SUPEROP_HOSTNAME - a hostname to add as a superop");
+            System.out.println("  JZBOT_PASSWORD - the password to use");
+            System.out.println("");
+            System.out.println("Setting these environment variables will cause a server");
+            System.out.println("named default to be created or updated. Note that, if the");
+            System.out.println("value of JZBOT_SUPEROP_HOSTNAME changes, the new value will");
+            System.out.println("be added as a superop, but the old one will not be removed.");
+            System.out.println("");
             System.out.println("Advanced users can also do \"jzbot addsuperop <server> "
                 + "<hostname>\"");
             System.out.println("or \"jzbot config\" or \"jzbot config <varname>\" or");
@@ -1293,6 +1307,7 @@ public class JZBot
         Options.showJavaExceptions = true;
         System.out.println("Starting the ProxyStorage system...");
         initProxyStorage();
+        updateDefaultServer();
         if (storage.getServers().size() == 0)
         {
             System.out.println();
@@ -1333,6 +1348,87 @@ public class JZBot
         System.out.println("JZBot has successfully started up. Server "
             + "connections will be established in a few seconds.");
         System.out.println();
+    }
+
+    private static void updateDefaultServer() {
+        Map<String, String> env = System.getenv();
+
+        String protocol = env.get("JZBOT_PROTOCOL");
+        String server = env.get("JZBOT_SERVER");
+        String portString = env.get("JZBOT_PORT");
+        String nick = env.get("JZBOT_NICK");
+        String hostname = env.get("JZBOT_SUPEROP_HOSTNAME");
+        String password = env.get("JZBOT_PASSWORD");
+
+        if (protocol == null && server == null && portString == null && nick == null && hostname == null && password == null) {
+            return;
+        }
+
+        System.out.println();
+        System.out.println("Default server environment variables specified. Updating the default server...");
+        Server datastoreServer = storage.getServer("default");
+        boolean created = datastoreServer == null;
+        if (created) {
+            datastoreServer = storage.createServer();
+            datastoreServer.setName("default");
+            datastoreServer.setPassword("");
+
+            if (protocol == null || server == null || portString == null || nick == null) {
+                System.out.println("The default server doesn't exist yet, so you need to specify all of");
+                System.out.println("JZBOT_PROTOCOL, JZBOT_SERVER, JZBOT_PORT, and JZBOT_NICK.");
+                System.out.println("You'll probably want to specify JZBOT_SUPEROP_HOSTNAME as well");
+                System.out.println("or no-one will be able to run any administrative commands from");
+                System.out.println("this server.");
+                System.exit(0);
+            }
+        }
+
+        // Do this one first cuz it's the only one that needs validation
+        if (portString != null) {
+            int port = 0;
+            try {
+                port = Integer.parseInt(portString);
+            } catch (NumberFormatException e) {
+                System.out.println("You specified " + portString + " for the port, but");
+                System.out.println("the port must be a number.");
+                System.exit(0);
+            }
+            if (port < 0 || port > 65535) {
+                System.out.println("The port number you specified (" + port + "), should");
+                System.out.println("have been within the range 0 - 65535, but it was not.");
+                System.exit(0);
+            }
+            datastoreServer.setPort(port);
+        }
+
+        datastoreServer.setActive(true);
+        if (protocol != null) {
+            datastoreServer.setProtocol(protocol);
+        }
+        if (server != null) {
+            datastoreServer.setServer(server);
+        }
+        if (nick != null) {
+            datastoreServer.setNick(nick);
+        }
+        if (hostname != null && datastoreServer.getOperator(hostname) == null) {
+            Operator op = storage.createOperator();
+            op.setHostname(hostname);
+            datastoreServer.getOperators().add(op);
+        }
+        if (password != null) {
+            datastoreServer.setPassword(password);
+        }
+
+        if (created) {
+            storage.getServers().add(datastoreServer);
+            Notify.serverAdded.fireListeners(ScopeLevel.server, "@default", false);
+            System.out.println("A new default server has been created.");
+            System.out.println();
+        } else {
+            System.out.println("The default server has been updated.");
+            System.out.println();
+        }
     }
 
     private static void fireInitialNotifyEvents()
