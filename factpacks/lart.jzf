@@ -11,7 +11,7 @@ description Adds a "lart" command, which chooses from one of over 150 creative r
 
 preinstall {fpcheckdep||randomfromline}
 
->lart {action}{cset|person|{ife|%1-%|%0%|%1-%}}{global|library.randomfromline|{import|lart-generate-content}}
+>lart {action}{cset|person|{ife|%1-%|%who%|%1-%}}{global|library.randomfromline|{import|lart-generate-content}}
 >lart-generate-content
  --purges WHO\n
  accelerates a free AOL cd to 50,000 rpm and lets WHO feel it\n
