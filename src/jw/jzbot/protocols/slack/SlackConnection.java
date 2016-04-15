@@ -492,7 +492,7 @@ public class SlackConnection implements Connection {
             if (this.type == ChannelType.GROUP) {
                 this.isMember = true;
             } else {
-                this.isMember = object.getBoolean("is_member");
+                this.isMember = object.optBoolean("is_member", false); // doesn't exist on some objects apparently
             }
         }
     }
