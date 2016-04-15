@@ -1001,9 +1001,6 @@ public class JZBot
         System.out.println("This is JZBot, http://github.com/javawizard/jzbot");
         // System.out.println("Revision " + VersionInfo.revision + ", built on "
         // + VersionInfo.shortDateString);
-        System.out.println("Written by a whole bunch of people, see");
-        System.out.println("http://code.google.com/p/jzbot/wiki/People for "
-            + "the full list.");
         System.out.println();
         System.out.println("--- Stats ---");
         System.out.println("JVM path: " + System.getProperty("java.home"));
