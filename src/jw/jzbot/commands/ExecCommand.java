@@ -57,9 +57,8 @@ public class ExecCommand implements Command
         long finishedMillis = System.currentTimeMillis();
         System.out.println("<exec>: Parsed in " + (parsedMillis - startMillis)
             + " ms, ran in " + (finishedMillis - parsedMillis) + " ms");
-        if (result.equals(""))
-            result = "(no result)";
-        source.sendMessage(result);
+        if (!result.equals(""))
+            source.sendMessage(result);
     }
     
     @Override
